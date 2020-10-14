@@ -1,91 +1,87 @@
- $$$$$ We will only consider here exact approaches and will not discuss heuristic strategies such as grafting (Perkins et al., 2003; Riezler and Vasserman, 2004).
- $$$$$ A number of studies have tried to alleviate this problem.
- $$$$$ Here again, performance steadily increase with the number of features, showing the benefits of large-scale models.
- $$$$$ However, the introduction of a `1 penalty term makes the optimization of (6) more problematic, as the objective function is no longer differentiable in 0.
+ $$$$$ The algorithms studied in this paper have complementary strength and weaknesses: OWL-QN is probably the method of choice in small or moderate size applications while BCD is most efficient when using very large feature sets combined with limited-size observation alphabets; SGD complemented with fine tuning appears to be the preferred choice in most large-scale applications.
+ $$$$$ In comparison, OWL-QN requires much more memory, due to the internals of the update routines, which require several histories of the parameter vector and of its gradient.
+ $$$$$ The features used in Nettalk experiments take the form fy,,,, (unigram) and fy0,y,,,, (bigram), where w is a n-gram of letters.
+ $$$$$ Even for the simple linearchain model, taking structure into account implies a number of parameters and a computational effort that grows quadratically with the cardinality of the label set.
 
-Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ SGD updates have the following form where η is the learning rate.
-Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ Thus, even in moderate size applications, the number of parameters can be very large, mostly due to the introduction of sequential dependencies in the model.
+Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ (2009), who use approximations to simplify the forward-backward recursions.
+Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ The performance it achieves are consistently slightly worst than the other optimizers, and only catch up when the parameters are fine-tuned (see above).
 Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ Conditional Random Fields (CRFs) (Lafferty et al., 2001; Sutton and McCallum, 2006) constitute a widely-used and effective approach for supervised structure learning tasks involving the mapping between complex objects such as strings and trees.
-Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ The coordinate descent approach of Dudik et al. (2004) and Friedman et al.
+Elastic nets interpolate between L1 and L2, having been proposed by Zou and Hastie (2005) and used by Lavergne et al (2010) to regularize CRFs. $$$$$ The gradient of l(θ) is where Epθ(y|x) denotes the conditional expectation given the observation sequence, i.e.
 
- $$$$$ We then detail several implementation issues that need to be addressed when dealing with massive feature sets in Section 4.
- $$$$$ Using this implementation, the complexity of the forward-backward procedure for x(�) can be made proportional to the average number of active features per position, which can be much smaller than the number of potentially active features.
- $$$$$ Given N independent sequences {x(i), y(i)}Ni=1, where x(i) and y(i) contain T(i) symbols, conditional maximum likelihood estimation is based on the minimization, with respect to θ, of the negated conditional log-likelihood of the observations This term is usually complemented with an additional regularization term so as to avoid overfitting (see Section 3.1 below).
- $$$$$ From a performance point of view, it might also be interesting to combine the use of large-scale feature sets with other recent improvements such as the use of semi-supervised learning techniques (Suzuki and Isozaki, 2008) or variable-length dependencies (Qian et al., 2009).
-
- $$$$$ Using only unigram features {fy,x}(y,x)∈Y ×X results in a model equivalent to a simple bag-of-tokens positionby-position logistic regression model.
- $$$$$ Thus, even in moderate size applications, the number of parameters can be very large, mostly due to the introduction of sequential dependencies in the model.
- $$$$$ However, even for simple linear chain CRFs, the complexity of learning and inference This work was partly supported by ANR projects CroTaL (ANR-07-MDCO-003) and MGA (ANR-07-BLAN-031102). grows quadratically with respect to the number of output labels and so does the number of structural features, ie. features testing adjacent pairs of labels.
- $$$$$ In this paper, we show that the sparsity that is induced by il-penalized estimation of CRFs can be used to reduce the total training time, while yielding extremely compact models.
-
- $$$$$ As the three algorithms share as much code as possible, we believe the comparison reported hereafter to be fair and reliable.
- $$$$$ Our contribution is therefore twofold: firstly a detailed analysis of these three algorithms, discussing implementation, convergence and comparing the effect of various speed-ups.
- $$$$$ In the future, we intend to study how sparsity can be used to speed-up training in the face of more complex dependency patterns (such as higher-order CRFs or hierarchical dependency structures (Rozenknop, 2002; Finkel et al., 2008).
+ $$$$$ This benchmark, which has been used in many studies, allows for direct comparisons with other published work.
+ $$$$$ This is implemented by patching the update (7) as follows Based on a study of three NLP benchmarks, the authors of (Tsuruoka et al., 2009) claim this approach to be much faster than the orthant-wise approach and yet to yield very comparable performance, while selecting slightly larger feature sets.
  $$$$$ In this respect, BCD is the most efficient, as it only requires to store one K-dimensional vector for the parameter itself.
-
- $$$$$ Second, the experimental demonstration that using large output label sets is doable and that very large feature sets actually help improve prediction accuracy.
- $$$$$ We lack comparisons for this task, which seems considerably harder than the sole phonetization task, and all systems seem to plateau around 13.5% accuracy.
- $$$$$ Using a `1 penalty term thus implicitly performs feature selection, where ρ1 controls the amount of regularization and the number of extracted features.
-
-As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ Efficiency stems here from the sparinduced by the use of a term.
-As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ CRFs are based on the following model where x = (x1, ...,xT) and y = (y1, ... , yT) are, respectively, the input and output sequences2, and Fk(x, y) is equal to PTt=1 fk(yt−1, yt, xt), where {fk}1≤k≤K is an arbitrary set of feature functions and {θk}1≤k≤K are the associated parameter values.
-As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ In this paper, we address the issue of training very large CRFs, containing up to hundreds output labels and several billion features.
-As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ Our experiments use two standard NLP tasks, phonetization and part-of-speech tagging, chosen here to illustrate two very different situations, and to allow for comparison with results reported elsewhere in the literature.
-
- $$$$$ For all algorithms, the computation time is dominated by the evaluations of the gradient: our implementation takes advantage of the sparsity to accelerate these computations.
- $$$$$ For all algorithms, the computation time is dominated by the evaluations of the gradient: our implementation takes advantage of the sparsity to accelerate these computations.
- $$$$$ In this paper, we have discussed various ways to train extremely large CRFs with a ' penalty term and compared experimentally the results obtained, both in terms of training speed and of accuracy.
-
- $$$$$ In this paper, we show that the sparsity that is induced by il-penalized estimation of CRFs can be used to reduce the total training time, while yielding extremely compact models.
- $$$$$ (8)).
- $$$$$ The standard approach for parameter estimation in CRFs consists in minimizing the logarithmic loss l(θ) defined by (3) with an additional `2 penalty term ρ22 kθk22, where ρ2 is a regularization parameter.
- $$$$$ Note finally that forward-backward is performed on a per-observation basis and is easily parallelized (see also (Mann et al., 2009) for more powerful ways to distribute the computation when dealing with very large datasets).
-
-We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ Optimization is straightforward, but the number of parameters is doubled and convergence is slow (Andrew and Gao, 2007): the procedure lacks a mechanism for zeroing out useless parameters.
-We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ Both information are quite correlated, as the stress mark and the syllable openness, for instance, greatly influence the realization of some archi-phonemes.
-We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ The normalization factor in (1) is defined by The most common choice of feature functions is to use binary tests.
-
- $$$$$ In this setting, the number of parameters K is equal to |Y |2x|X|train, where |· |denotes the cardinal and |X|train refers to the number of configurations of xt observed during training.
- $$$$$ Using only unigram features {fy,x}(y,x)∈Y ×X results in a model equivalent to a simple bag-of-tokens positionby-position logistic regression model.
- $$$$$ After four iterations, we throw in features testing word trigrams, subject to the corresponding unigram block being active.
-
- $$$$$ However, even for simple linear chain CRFs, the complexity of learning and inference This work was partly supported by ANR projects CroTaL (ANR-07-MDCO-003) and MGA (ANR-07-BLAN-031102). grows quadratically with respect to the number of output labels and so does the number of structural features, ie. features testing adjacent pairs of labels.
- $$$$$ Making this scheme practical requires a number of adaptations, including (i) approximating the second order term in (10), (ii) performing updates in block, where a block contains the |Y  |× |Y + 1 |features νy1,y,x and λy,x for a fixed test x on the observation sequence and (iii) approximating the Hessian for a block by its diagonal terms.
  $$$$$ Efficiency stems here from the sparinduced by the use of a term.
+
  $$$$$ SGD requires two such vectors, one for the parameter and one for storing the zk (see Eq.
-
- $$$$$ Efficiency stems here from the sparinduced by the use of a term.
- $$$$$ The most significant alternative to `2 regularization is to use a `1 penalty term ρ1kθk1: such regularizers are able to yield sparse parameter vectors in which many component have been zeroed (Tibshirani, 1996).
- $$$$$ In this paper, we show that the sparsity that is induced by il-penalized estimation of CRFs can be used to reduce the total training time, while yielding extremely compact models.
- $$$$$ Second, the experimental demonstration that using large output label sets is doable and that very large feature sets actually help improve prediction accuracy.
-
- $$$$$ Our experiments demonstrate that very large CRFs can be trained efficiently and that very large models are able to improve the accuracy, while delivering compact parameter sets.
+ $$$$$ One advantage of the resulting algorithm, termed BCD in the following, is that the update of θk only involves carrying out the forward-backward recursions for the set of sequences that contain symbols x such that at least one {fk(y', y, x)}(y y1)EY 2 is non null, which can be much smaller than the whole training set.
+ $$$$$ The n-grm feature sets (n = 11, 3, 5, 7}) includes all features testing embedded windows of k letters, for all 0 < k < n; the n-grm- setting is similar, but only includes the window of length n; in the n-grm+ setting, we add features for odd-size windows; in the ngrm++ setting, we add all sequences of letters up to size n occurring in current window.
  $$$$$ In this section, we present several optimizations devised to speed up training.
- $$$$$ For comparison, all measures of run-times include the cumulated activity of all cores and give very pessimistic estimates of the wall time, which can be up to 7 times smaller.
-
- $$$$$ The benefits of sparsity are even greater during inference: less features need to be extracted and included in the potential functions, speeding up decoding with a lesser memory footprint.
- $$$$$ Parallelization only makes things worse, as each core will also need to maintain its own copy of the gradient.
- $$$$$ This package is released as open-source software and is available at http://wapiti.limsi.fr.
- $$$$$ In the future, we intend to study how sparsity can be used to speed-up training in the face of more complex dependency patterns (such as higher-order CRFs or hierarchical dependency structures (Rozenknop, 2002; Finkel et al., 2008).
-
- $$$$$ For all algorithms, the computation time is dominated by the evaluations of the gradient: our implementation takes advantage of the sparsity to accelerate these computations.
- $$$$$ This package is released as open-source software and is available at http://wapiti.limsi.fr.
- $$$$$ The main conclusions of this study are drawn in Section 6.
 
  $$$$$ Related ideas are discussed by Dietterich et al. (2004); by Cohn (2006), who considers “generalized” feature functions; and by Jeong et al.
+ $$$$$ Based on our own implementation, we compare three recent proposals for implementing this regularization strategy.
+ $$$$$ In this setting, the number of parameters K is equal to |Y |2x|X|train, where |· |denotes the cardinal and |X|train refers to the number of configurations of xt observed during training.
+ $$$$$ Table 5 gives the results obtained for the larger Nettalk+prosody task.
+
+ $$$$$ From a performance point of view, it might also be interesting to combine the use of large-scale feature sets with other recent improvements such as the use of semi-supervised learning techniques (Suzuki and Isozaki, 2008) or variable-length dependencies (Qian et al., 2009).
+ $$$$$ As an alternative way of avoiding numerical problems, our implementation, like crfSuite’s, resorts to “scaling”, a solution commonly used for HMMs.
+ $$$$$ Also note that in our implementation, all the computations of exp(x) are vectorized, which provides an additional speed up of about 20%.
+
+As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ Pal et al. (2006) propose to use a “sparse” version of the forward-backward algorithm during training, where sparsity is enforced through beam pruning.
+As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ An OWL-QN update then simply consists in (i) computing the Newton update in a well-chosen orthant; (ii) performing the update, which might cause some component of the parameter vector to change sign; and (iii) projecting back the parameter value onto the initial orthant, thereby zeroing out those components.
+As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ As far as convergence is concerned, the two forms of regularization (E2 and E1) yield the same performance (see Table 3), and the three algorithms exhibit more or less the same behavior.
+As our sequence labeling model we use the Wapiti implementation of Conditional Random Fields (Lavergne et al, 2010) with the L-BFGS optimizer and elastic net regularization with default settings. $$$$$ Most empirical studies on CRFs thus either consider tasks with a restricted output space (typically in the order of few dozens of output labels), heuristically reduce the use of features, especially of features that test pairs of adjacent labels1, and/or propose heuristics to simulate contextual dependencies, via extended tests on the observations (see discussions in, eg., (Punyakanok et al., 2005; Liang et al., 2008)).
+
+ $$$$$ Based on our own implementation, we compare three recent proposals for implementing this regularization strategy.
+ $$$$$ In this paper, we show that the sparsity that is induced by il-penalized estimation of CRFs can be used to reduce the total training time, while yielding extremely compact models.
+ $$$$$ On the other hand, bigram features {fy/,y,x}(y,x)∈Y 2×X are helpful in modelling dependencies between successive labels.
+
+ $$$$$ Our first benchmark is the word phonetization task, using the Nettalk dictionary (Sejnowski and Rosenberg, 1987).
+ $$$$$ The algorithms studied in this paper have complementary strength and weaknesses: OWL-QN is probably the method of choice in small or moderate size applications while BCD is most efficient when using very large feature sets combined with limited-size observation alphabets; SGD complemented with fine tuning appears to be the preferred choice in most large-scale applications.
+
+We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ The normalization factor in (1) is defined by The most common choice of feature functions is to use binary tests.
+We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ In this setting, the number of parameters K is equal to |Y |2x|X|train, where |· |denotes the cardinal and |X|train refers to the number of configurations of xt observed during training.
+We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ Even for the simple linearchain model, taking structure into account implies a number of parameters and a computational effort that grows quadratically with the cardinality of the label set.
+We report results for the following hybridizations and CRF-based system using Wapiti (Lavergne et al., 2010). $$$$$ Even for the simple linearchain model, taking structure into account implies a number of parameters and a computational effort that grows quadratically with the cardinality of the label set.
+
+ $$$$$ Our analysis demonstrate that training large-scale sparse models can be done efficiently and allows to improve over the performance of smaller models.
+ $$$$$ The algorithms studied in this paper have complementary strength and weaknesses: OWL-QN is probably the method of choice in small or moderate size applications while BCD is most efficient when using very large feature sets combined with limited-size observation alphabets; SGD complemented with fine tuning appears to be the preferred choice in most large-scale applications.
+
+ $$$$$ Here, we only report the results obtained with SGD and BCD.
+ $$$$$ Based on an efficient implementation of these algorithms, we were able to train very large CRFs containing more than a hundred of output labels and up to several billion features, yielding results that are as good or better than the best reported results for two NLP benchmarks, text phonetization and part-of-speech tagging.
+
+ $$$$$ Of the three algorithms, BCD is the most affected by increases in the number of features, or more precisely, in the number of features blocks, where one block correspond to a specific test of the observation.
+ $$$$$ An OWL-QN update then simply consists in (i) computing the Newton update in a well-chosen orthant; (ii) performing the update, which might cause some component of the parameter vector to change sign; and (iii) projecting back the parameter value onto the initial orthant, thereby zeroing out those components.
+ $$$$$ Conditional Random Fields (CRFs) are a widely-used approach for supervised sequence labelling, notably due to their ability to handle large description spaces and to integrate structural dependency between labels.
+ $$$$$ Given N independent sequences {x(i), y(i)}Ni=1, where x(i) and y(i) contain T(i) symbols, conditional maximum likelihood estimation is based on the minimization, with respect to θ, of the negated conditional log-likelihood of the observations This term is usually complemented with an additional regularization term so as to avoid overfitting (see Section 3.1 below).
+
+ $$$$$ Conditional Random Fields (CRFs) are a widely-used approach for supervised sequence labelling, notably due to their ability to handle large description spaces and to integrate structural dependency between labels.
+ $$$$$ Even for the simple linearchain model, taking structure into account implies a number of parameters and a computational effort that grows quadratically with the cardinality of the label set.
+ $$$$$ Our experiments demonstrate that very large CRFs can be trained efficiently and that very large models are able to improve the accuracy, while delivering compact parameter sets.
+ $$$$$ Pal et al. (2006) propose to use a “sparse” version of the forward-backward algorithm during training, where sparsity is enforced through beam pruning.
+
+ $$$$$ Various strategies have been tried to further accelerate BCD, such as processing blocks that only visit one observation in parallel and updating simultaneously all the blocks that visit all the training instances, leading to a small speed-up on the POS-tagging task.
+ $$$$$ This comparison is made fair and reliable thanks to the reimplementation of these techniques in the same software package.
+ $$$$$ Even for the simple linearchain model, taking structure into account implies a number of parameters and a computational effort that grows quadratically with the cardinality of the label set.
  $$$$$ Efficiency stems here from the sparinduced by the use of a term.
- $$$$$ One advantage of the resulting algorithm, termed BCD in the following, is that the update of θk only involves carrying out the forward-backward recursions for the set of sequences that contain symbols x such that at least one {fk(y', y, x)}(y y1)EY 2 is non null, which can be much smaller than the whole training set.
- $$$$$ In this paper, we have discussed various ways to train extremely large CRFs with a ' penalty term and compared experimentally the results obtained, both in terms of training speed and of accuracy.
 
- $$$$$ For all algorithms, the computation time is dominated by the evaluations of the gradient: our implementation takes advantage of the sparsity to accelerate these computations.
- $$$$$ In the future, we intend to study how sparsity can be used to speed-up training in the face of more complex dependency patterns (such as higher-order CRFs or hierarchical dependency structures (Rozenknop, 2002; Finkel et al., 2008).
- $$$$$ In this paper, we address the issue of training very large CRFs, containing up to hundreds output labels and several billion features.
+ $$$$$ This package is released as open-source software and is available at http://wapiti.limsi.fr.
+ $$$$$ In the following, we will jointly use both penalty terms, yielding the socalled elastic net penalty (Zhou and Hastie, 2005) which corresponds to the objective function The use of both penalty terms makes it possible to control the number of non zero coefficients and to avoid the numerical problems that might occur in large dimensional parameter settings (see also (Chen, 2009)).
+ $$$$$ Typically, our implementation necessitates in the order of a dozen K-dimensional vectors.
+ $$$$$ CRFs are based on the following model where x = (x1, ...,xT) and y = (y1, ... , yT) are, respectively, the input and output sequences2, and Fk(x, y) is equal to PTt=1 fk(yt−1, yt, xt), where {fk}1≤k≤K is an arbitrary set of feature functions and {θk}1≤k≤K are the associated parameter values.
 
- $$$$$ In (Tsuruoka et al., 2009), various ways of adapting this update to `1penalized likelihood functions are discussed.
- $$$$$ In the sequel, we distinguish between two types of feature functions: unigram features fy,x, associated with parameters µy,x, and bigram features fyl,y,x, associated with parameters λy/,y,x.
- $$$$$ Thus, even in moderate size applications, the number of parameters can be very large, mostly due to the introduction of sequential dependencies in the model.
+ $$$$$ Related ideas are discussed by Dietterich et al. (2004); by Cohn (2006), who considers “generalized” feature functions; and by Jeong et al.
  $$$$$ The CRF package developed in the course of this study implements many algorithmic optimizations and allows to design innovative training strategies, such as the one presented in section 5.4.
+ $$$$$ It is however very inefficient from an implementation point of view, due to the repeated calls to the exp() and log() functions.
 
-We therefore treat the prediction of IS labels as a sequence labeling task. We train a CRF using wapiti (Lavergne et al, 2010), with the features outlined in Table 1. $$$$$ An important property of CRFs is their ability to handle large and redundant feature sets and to integrate structural dependency between output labels.
-We therefore treat the prediction of IS labels as a sequence labeling task. We train a CRF using wapiti (Lavergne et al, 2010), with the features outlined in Table 1. $$$$$ The CRF package developed in the course of this study implements many algorithmic optimizations and allows to design innovative training strategies, such as the one presented in section 5.4.
-We therefore treat the prediction of IS labels as a sequence labeling task. We train a CRF using wapiti (Lavergne et al, 2010), with the features outlined in Table 1. $$$$$ Although l(θ) is a smooth convex function, its optimum cannot be computed in closed form, and l(θ) has to be optimized numerically.
+ $$$$$ We study and compare three different ways to implement il penalty for CRFs that have been introduced recently: orthantwise Quasi Newton (Andrew and Gao, 2007), stochastic gradient descent (Tsuruoka et al., 2009) and coordinate descent (Sokolovska et al., 2010), concluding that these methods have complementary strengths and weaknesses.
+ $$$$$ In the future, we intend to study how sparsity can be used to speed-up training in the face of more complex dependency patterns (such as higher-order CRFs or hierarchical dependency structures (Rozenknop, 2002; Finkel et al., 2008).
+ $$$$$ Pal et al. (2006) propose to use a “sparse” version of the forward-backward algorithm during training, where sparsity is enforced through beam pruning.
+ $$$$$ Assume the set of bigram features {λy0,y,xt+1}(y0,y)∈Y 2 is sparse with only r(xt+1) « |Y |2 non null values and define al., 2010) explains how computational savings can be obtained using the fact that the vector/matrix products in the recursions above only involve the sparse matrix Mt+1(y0, y).
+
+ $$$$$ SGD updates have the following form where η is the learning rate.
+ $$$$$ This package is released as open-source software and is available at http://wapiti.limsi.fr.
+ $$$$$ In comparison, OWL-QN requires much more memory, due to the internals of the update routines, which require several histories of the parameter vector and of its gradient.
+
+We therefore treat the prediction of IS labels as a sequence labeling task. We train a CRF using wapiti (Lavergne et al, 2010), with the features outlined in Table 1. $$$$$ Full convergence, reflected by a stabilization of the objective function, is however not so easily achieved.
+We therefore treat the prediction of IS labels as a sequence labeling task. We train a CRF using wapiti (Lavergne et al, 2010), with the features outlined in Table 1. $$$$$ This package is released as open-source software and is available at http://wapiti.limsi.fr.
