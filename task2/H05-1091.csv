@@ -1,268 +1,268 @@
 col1,col2
-"We present a novel approach to relation extraction, based on the observation thatthe information required to assert a rela tionship between two named entities in the same sentence is typically capturedby the shortest path between the two entities in the dependency graph.",{}
-Exper iments on extracting top-level relationsfrom the ACE (Automated Content Ex traction) newspaper corpus show that thenew shortest path dependency kernel outperforms a recent approach based on de pendency tree kernels.,{}
-"One of the key tasks in natural language process ing is that of Information Extraction (IE), which istraditionally divided into three subproblems: coref erence resolution, named entity recognition, and relation extraction.","{'title': 'Introduction', 'number': '1'}"
-"Consequently, IE corpora are typically annotated with information corresponding to these subtasks (MUC (Grishman, 1995), ACE(NIST, 2000)), facilitating the development of sys tems that target only one or a subset of the threeproblems.","{'title': 'Introduction', 'number': '1'}"
-In this paper we focus exclusively on extracting relations between predefined types of entities in the ACE corpus.,"{'title': 'Introduction', 'number': '1'}"
-"Reliably extracting relations between entities in natural-language docu ments is still a difficult, unsolved problem, whose inherent difficulty is compounded by the emergenceof new application domains, with new types of nar rative that challenge systems developed for previouswell-studied domains.","{'title': 'Introduction', 'number': '1'}"
-The accuracy level of current syntactic and semantic parsers on natural lan guage text from different domains limit the extent to which syntactic and semantic information can be used in real IE systems.,"{'title': 'Introduction', 'number': '1'}"
-"Nevertheless, various linesof work on relation extraction have shown experimentally that the use of automatically derived syntactic information can lead to significant improvements in extraction accuracy.","{'title': 'Introduction', 'number': '1'}"
-"The amount of syntactic knowledge used in IE systems varies from part of-speech only (Ray and Craven, 2001) to chunking(Ray and Craven, 2001) to shallow parse trees (Ze lenko et al, 2003) to dependency trees derived from full parse trees (Culotta and Sorensen, 2004).","{'title': 'Introduction', 'number': '1'}"
-"Eventhough exhaustive experiments comparing the per formance of a relation extraction system based on these four levels of syntactic information are yet tobe conducted, a reasonable assumption is that the extraction accuracy increases with the amount of syn tactic information used.","{'title': 'Introduction', 'number': '1'}"
-"The performance howeverdepends not only on the amount of syntactic infor mation, but also on the details of the exact modelsusing this information.","{'title': 'Introduction', 'number': '1'}"
-Training a machine learn ing system in a setting where the information usedfor representing the examples is only partially rele vant to the actual task often leads to overfitting.,"{'title': 'Introduction', 'number': '1'}"
-It is therefore important to design the IE system so that the input data is stripped of unnecessary features as much as possible.,"{'title': 'Introduction', 'number': '1'}"
-"In the case of the tree kernels from (Zelenko et al, 2003; Culotta and Sorensen, 2004), the authors reduce each relation example to the smallest subtree in the parse or dependency tree that includes both entities.","{'title': 'Introduction', 'number': '1'}"
-We will show in this paper that increased extraction performance can be 724 obtained by designing a kernel method that uses an even smaller part of the dependency structure ? theshortest path between the two entities in the undi rected version of the dependency graph.,"{'title': 'Introduction', 'number': '1'}"
-"Let e1 and e2 be two entities mentioned in the samesentence such that they are observed to be in a re lationship R, i.e R(e1, e2) = 1.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"For example, R can specify that entity e1 is LOCATED (AT) entity e2.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Figure 1 shows two sample sentences from ACE, with entity mentions in bold.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Correspondingly, the first column in Table 1 lists the four relations of typeLOCATED that need to be extracted by the IE sys tem.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"We assume that a relation is to be extractedonly between entities mentioned in the same sen tence, and that the presence or absence of a relation is independent of the text preceding or following the sentence.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-This means that only information derived from the sentence including the two entities will be relevant for relation extraction.,"{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Furthermore, with each sentence we associate its dependency graph,with words figured as nodes and word-word dependencies figured as directed edges, as shown in Fig ure 1.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-A subset of these word-word dependencies capture the predicate-argument relations present inthe sentence.,"{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Arguments are connected to their target predicates either directly through an arc point ing to the predicate (?troops ? raided?), or indirectly through a preposition or infinitive particle (?warning?","{'title': 'Dependency Graphs. ', 'number': '2'}"
-to ? stop?).,"{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Other types of word-word dependen cies account for modifier-head relationships present in adjective-noun compounds (?several ? stations?), noun-noun compounds (?pumping ? stations?), or adverb-verb constructions (?recently ? raided?).","{'title': 'Dependency Graphs. ', 'number': '2'}"
-In Figure 1 we show the full dependency graphs for two sentences from the ACE newspaper corpus.Word-word dependencies are typically catego rized in two classes as follows:?,"{'title': 'Dependency Graphs. ', 'number': '2'}"
-"[Local Dependencies] These correspond to local predicate-argument (or head-modifier) constructions such as ?troops ? raided?, or ?pump ing ? stations?","{'title': 'Dependency Graphs. ', 'number': '2'}"
-in Figure 1.?,"{'title': 'Dependency Graphs. ', 'number': '2'}"
-"[Non-local Dependencies] Long-distance dependencies arise due to various linguistic con structions such as coordination, extraction,raising and control.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"In Figure 1, among non local dependencies are ?troops ? warning?, or ?ministers ? preaching?.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"A Context Free Grammar (CFG) parser can be used to extract local dependencies, which for each sentence form a dependency tree.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"Mildly contextsensitive formalisms such as Combinatory Categorial Grammar (CCG) (Steedman, 2000) model word word dependencies more directly and can be used to extract both local and long-distance dependencies, giving rise to a directed acyclic graph, as illustrated in Figure 1.","{'title': 'Dependency Graphs. ', 'number': '2'}"
-"If e1 and e2 are two entities mentioned in the samesentence such that they are observed to be in a relationship R, our hypothesis stipulates that the contribution of the sentence dependency graph to establishing the relationship R(e1, e2) is almost exclu sively concentrated in the shortest path between e1 and e2 in the undirected version of the dependency graph.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"If entities e1 and e2 are arguments of the same predicate, then the shortest path between them willpass through the predicate, which may be con nected directly to the two entities, or indirectly through prepositions.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"If e1 and e2 belong to different predicate-argument structures that share a common argument, then the shortest path will pass through this argument.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-This is the case with the shortest pathbetween ?stations?,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-and ?workers?,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"in Figure 1, passing through ?protesters?, which is an argument com mon to both predicates ?holding?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-and ?seized?.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-In Table 1 we show the paths corresponding to the four relation instances encoded in the ACE corpus for thetwo sentences from Figure 1.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-All these paths sup port the LOCATED relationship.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"For the first path, it is reasonable to infer that if a PERSON entity (e.g. ?protesters?)","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-is doing some action (e.g. ?seized?),"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"to a FACILITY entity (e.g. ?station?), then the PERSONentity is LOCATED at that FACILITY entity.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-The sec ond path captures the fact that the same PERSON entity (e.g. ?protesters?),"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-is doing two actions (e.g.?holding?,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-and ?seized?),"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-", one action to a PERSON entity (e.g. ?workers?), and the other action to a FACIL ITY entity (e.g. ?station?).","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-A reasonable inference in this case is that the ?workers?,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"are LOCATED at the 725 S1 = =S2 Protesters stations workers Troops churches ministers seized several pumping , holding 127 Shell hostage . recently have raided , warning to stop preaching . Figure 1: Sentences as dependency graphs.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-Relation Instance Shortest Path in Undirected Dependency Graph S1: protesters AT stations protesters ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-seized ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-stations S1: workers AT stations workers ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-holding ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-protesters ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-seized ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-stations S2: troops AT churches troops ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-raided ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-churches S2: ministers AT churches ministers ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-warning ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-troops ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-raided ??,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-churches Table 1: Shortest Path representation of relations.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-?station?.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-In Figure 2 we show three more examples of the LOCATED (AT) relationship as dependency pathscreated from one or two predicate-argument struc tures.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"The second example is an interesting case,as it illustrates how annotation decisions are accom modated in our approach.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"Using a reasoning similarwith that from the previous paragraph, it is reason able to infer that ?troops?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"are LOCATED in ?vans?, and that ?vans?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-are LOCATED in ?city?.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"However, because ?vans?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"is not an ACE markable, it cannot participate in an annotated relationship.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"Therefore, ?troops?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"is annotated as being LOCATED in ?city?,which makes sense due to the transitivity of the relation LOCATED.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"In our approach, this leads to shortest paths that pass through two or more predicate argument structures.The last relation example is a case where there ex ist multiple shortest paths in the dependency graph between the same two entities ? there are actually two different paths, with each path replicated into three similar paths due to coordination.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"Our current approach considers only one of the shortest paths, nevertheless it seems reasonable to investigate usingall of them as multiple sources of evidence for rela tion extraction.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-There may be cases where e1 and e2 belongto predicate-argument structures that have no argument in common.,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"However, because the dependency graph is always connected, we are guaranteed to find a shortest path between the two enti ties.","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-"In general, we shall find a shortest sequence of predicate-argument structures with target predicates P1, P2, ..., Pn such that e1 is an argument of P1, e2 isan argument of Pn, and any two consecutive predi cates Pi and Pi+1 share a common argument (whereby ?argument?","{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-we mean both arguments and com plements).,"{'title': 'The Shortest Path Hypothesis. ', 'number': '3'}"
-The shortest path between two entities in a depen dency graph offers a very condensed representationof the information needed to assess their relationship.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-A dependency path is represented as a sequence of words interspersed with arrows that in 726 (1) He had no regrets for his actions in Brcko.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-his?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-actions?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-in?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Brcko (2) U.S. troops today acted for the first time to capture an alleged Bosnian war criminal, rushing from unmarked vans parked in the northern Serb-dominated city of Bijeljina.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-troops?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-rushing?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-from?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-vans?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-parked?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-in?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"city (3) Jelisic created an atmosphere of terror at the camp by killing, abusing and threatening the detainees.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-killing?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Jelisic?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-camp detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-abusing?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Jelisic?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-camp detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-threatning?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Jelisic?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-camp detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-killing?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-by?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-camp detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-abusing?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-by?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-camp detainees?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-threatening?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-by?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-created?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-at?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"camp Figure 2: Relation examples.dicate the orientation of each dependency, as illustrated in Table 1.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-These paths however are completely lexicalized and consequently their performance will be limited by data sparsity.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"We can al leviate this by categorizing words into classes with varying degrees of generality, and then allowing paths to use both words and their classes.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Examples of word classes are part-of-speech (POS) tags and generalizations over POS tags such as Noun, Active Verb or Passive Verb.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-The entity type is also used forthe two ends of the dependency path.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Other poten tially useful classes might be created by associatingwith each noun or verb a set of hypernyms corre sponding to their synsets in WordNet.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"The set of features can then be defined as aCartesian product over these word classes, as illus trated in Figure 3 for the dependency path between?protesters?","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-and ?station?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-in sentence S1.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"In this rep resentation, sparse or contiguous subsequences of nodes along the lexicalized dependency path (i.e. path fragments) are included as features simply byreplacing the rest of the nodes with their correspond ing generalizations.The total number of features generated by this de pendency path is 4?1?3?1?4, and some of them are listed in Table 2.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-protesters NNS Noun PERSON ? ?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-[ seized VBD Verb ] ? [?]?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-stations NNS Noun FACILITY ? ?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Figure 3: Feature generation from dependency path.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-protesters ? seized ? stations Noun ? Verb ? Noun PERSON ? seized ? FACILITY PERSON ? Verb ? FACILITY ...,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-(48 features) Table 2: Sample Features.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-For verbs and nouns (and their respective word classes) occurring along a dependency path we also use an additional suffix ?(-)?,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-to indicate a negative polarity item.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"In the case of verbs, this suffix is usedwhen the verb (or an attached auxiliary) is modi fied by a negative polarity adverb such as ?not?","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-or ?never?.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Nouns get the negative suffix whenever they are modified by negative determiners such as ?no?, ?neither?","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-or ?nor?.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"For example, the phrase ?Henever went to Paris?","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-is associated with the depen dency path ?He ? went(-) ? to ? Paris?.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Explicitly creating for each relation example avector with a position for each dependency path fea ture is infeasible, due to the high dimensionality ofthe feature space.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Here we can exploit dual learning algorithms that process examples only via computing their dot-products, such as the Support Vec tor Machines (SVMs) (Vapnik, 1998; Cristianiniand Shawe-Taylor, 2000).","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"These dot-products be tween feature vectors can be efficiently computed through a kernel function, without iterating over allthe corresponding features.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Given the kernel func tion, the SVM learner tries to find a hyperplane that separates positive from negative examples and at thesame time maximizes the separation (margin) be tween them.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-This type of max-margin separator hasbeen shown both theoretically and empirically to re sist overfitting and to provide good generalization performance on unseen examples.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Computing the dot-product (i.e. kernel) between two relation examples amounts to calculating the 727 number of common features of the type illustrated in Table 2.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"If x = x1x2...xm and y = y1y2...yn are two relation examples, where xi denotes the set ofword classes corresponding to position i (as in Fig ure 3), then the number of common features between x and y is computed as in Equation 1.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"K(x, y) = { 0, m 6= n ?n i=1 c(xi, yi), m = n (1) where c(xi, yi) = |xi?yi| is the number of common word classes between xi and yi.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"This is a simple kernel, whose computation takes O(n) time.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"If the two paths have different lengths,they correspond to different ways of expressing a re lationship ? for instance, they may pass through a different number of predicate argument structures.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Consequently, the kernel is defined to be 0 in this case.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"Otherwise, it is the product of the number of common word classes at each position in the two paths.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"As an example, let us consider two instances of the LOCATED relationship: 1.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"?his actions in Brcko?, and 2.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-?his arrival in Beijing?.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Their corresponding dependency paths are: 1.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"?his ? actions ? in ? Brcko?, and 2.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-?his ? arrival ? in ? Beijing?.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-Their representation as a sequence of sets of word classes is given by: 1.,"{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"x = [x1 x2 x3 x4 x5 x6 x7], where x1 = {his, PRP, PERSON}, x2 = {?}, x3 = {actions, NNS, Noun}, x4 = {?}, x5 = {in, IN}, x6 = {?}, x7 = {Brcko, NNP, Noun, LOCATION} 2.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"y = [y1 y2 y3 y4 y5 y6 y7], where y1 = {his, PRP, PERSON}, y2 = {?}, y3 = {arrival, NN, Noun}, y4 = {?}, y5 = {in, IN}, y6 = {?}, y7 = {Beijing, NNP, Noun, LOCATION} Based on the formula from Equation 1, the kernel is computed as K(x, y) = 3?1?1?1?2?1?3 = 18.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"We use this relation kernel in conjunction with SVMs in order to find decision hyperplanes that best separate positive examples from negative examples.We modified the LibSVM1 package for SVM learn ing by plugging in the kernel described above, and used its default one-against-one implementation for multiclass classification.","{'title': 'Learning with Dependency Paths. ', 'number': '4'}"
-"We applied the shortest path dependency kernel to the problem of extracting top-level relations from the ACE corpus (NIST, 2000), the version used for the September 2002 evaluation.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The training part of this dataset consists of 422 documents, witha separate set of 97 documents allocated for test ing.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"This version of the ACE corpus contains three types of annotations: coreference, named entities and relations.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Entities can be of the type PERSON,ORGANIZATION, FACILITY, LOCATION, and GEO POLITICAL ENTITY.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"There are 5 general, top-levelrelations: ROLE, PART, LOCATED, NEAR, and SOCIAL.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The ROLE relation links people to an organization to which they belong, own, founded, or provide some service.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The PART relation indicates subset relationships, such as a state to a nation, or a subsidiary to its parent company.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-The AT relation indi cates the location of a person or organization at somelocation.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-The NEAR relation indicates the proximity of one location to another.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The SOCIAL relation links two people in personal, familial or profes sional relationships.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Each top-level relation type is further subdivided into more fine-grained subtypes,resulting in a total of 24 relation types.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"For exam ple, the LOCATED relation includes subtypes such as LOCATED-AT, BASED-IN, and RESIDENCE.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"In total, there are 7,646 intra-sentential relations, of which 6,156 are in the training data and 1,490 in the test data.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-We assume that the entities and their labels areknown.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"All preprocessing steps ? sentence segmentation, tokenization, and POS tagging ? were per formed using the OpenNLP2 package.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-5.1 Extracting dependencies using a CCG.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"parser CCG (Steedman, 2000) is a type-driven theory of grammar where most language-specific aspects ofthe grammar are specified into lexicon.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-To each lex 1URL:http://www.csie.ntu.edu.tw/?cjlin/libsvm/ 2URL: http://opennlp.sourceforge.net 728 ical item corresponds a set of syntactic categories specifying its valency and the directionality of itsarguments.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"For example, the words from the sen tence ?protesters seized several stations?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-are mapped in the lexicon to the following categories: protesters : NP seized : (S\NP )/NP several : NP/NP stations : NP The transitive verb ?seized?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-expects two arguments: a noun phrase to the right (the object) and another noun phrase to the left (the subject).,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Similarly, the adjective ?several?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-expects a noun phrase to its right.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Depending on whether its valency is greater than zero or not, a syntactic category is called a functor or an argument.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"In the example above, ?seized?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-and?several?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"are functors, while ?protesters?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-and ?sta tions?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-are arguments.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Syntactic categories are combined using a smallset of typed combinatory rules such as functional ap plication, composition and type raising.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-In Table 3we show a sample derivation based on three func tional applications.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"protesters seized several stations NP (S\NP )/NP NP/NP NP NP (S\NP )/NP NP NP S\NP S Table 3: Sample derivation.In order to obtain CCG derivations for all sen tences in the ACE corpus, we used the CCG parser introduced in (Hockenmaier and Steedman,2002)3.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"This parser also outputs a list of dependen cies, with each dependency represented as a 4-tuple ?f, a, wf , wa?, where f is the syntactic category of the functor, a is the argument number, wf is the head word of the functor, and wa is the head word of theargument.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"For example, the three functional appli cations from Table 3 result in the functor-argument dependencies enumerated below in Table 4.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-3URL:http://www.ircs.upenn.edu/?juliahr/Parser/ f a wf wa NP/NP 1 ?several?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-?stations?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-(S\NP )/NP 2 ?seized?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-?stations?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-(S\NP )/NP 1 ?seized?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-?protesters?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-Table 4: Sample dependencies.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-Because predicates (e.g. ?seized?),"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-and adjuncts(e.g. ?several?),"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"are always represented as functors, while complements (e.g. ?protesters?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-and ?sta tions?),"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"are always represented as arguments, it isstraightforward to transform a functor-argument de pendency into a head-modifier dependency.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The head-modifier dependencies corresponding to the three functor-argument dependencies in Table 4 are:?protesters ? seized?, ?stations ? seized?, and ?sev eral ? stations?.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Special syntactic categories are assigned in CCGto lexical items that project unbounded dependen cies, such as the relative pronouns ?who?, ?which?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-and ?that?.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Coupled with a head-passing mechanism, these categories allow the extraction of long-range dependencies.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Together with the local word-worddependencies, they create a directed acyclic depen dency graph for each parsed sentence, as shown in Figure 1.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-5.2 Extracting dependencies using a CFG.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-parser Local dependencies can be extracted from a CFG parse tree using simple heuristic rules for findingthe head child for each type of constituent.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Alter natively, head-modifier dependencies can be directly output by a parser whose model is based on lexical dependencies.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"In our experiments, we used the full parse output from Collins?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"parser (Collins, 1997), in which every non-terminal node is already annotated with head information.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Because local dependencies assemble into a tree for each sentence, there is onlyone (shortest) path between any two entities in a de pendency tree.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-5.3 Experimental Results.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"A recent approach to extracting relations is described in (Culotta and Sorensen, 2004).","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The au thors use a generalized version of the tree kernel from (Zelenko et al, 2003) to compute a kernel over 729 relation examples, where a relation example consists of the smallest dependency tree containing the two entities of the relation.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Precision and recall values are reported for the task of extracting the 5 top-levelrelations in the ACE corpus under two different sce narios: ? [S1] This is the classic setting: one multi-classSVM is learned to discriminate among the 5 top level classes, plus one more class for the no-relation cases.?","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"[S2] Because of the highly skewed data distribution, the recall of the SVM approach in the first sce nario is very low.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"In (Culotta and Sorensen, 2004) the authors propose doing relation extraction in twosteps: first, one binary SVM is trained for relation detection, which means that all positive rela tion instances are combined into one class.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Then the thresholded output of this binary classifier is used as training data for a second multi-class SVM, which is trained for relation classification.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-The same kernel is used in both stages.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"We present in Table 5 the performance of our shortest path (SP) dependency kernel on the task ofrelation extraction from ACE, where the dependencies are extracted using either a CCG parser (SP CCG), or a CFG parser (SP-CFG).","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"We also show the results presented in (Culotta and Sorensen, 2004) for their best performing kernel K4 (a sum between a bag-of-words kernel and their dependency kernel) under both scenarios.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-Method Precision Recall F-measure (S1) SP-CCG 67.5 37.2 48.0 (S1) SP-CFG 71.1 39.2 50.5 (S1) K4 70.3 26.3 38.0 (S2) SP-CCG 63.7 41.4 50.2 (S2) SP-CFG 65.5 43.8 52.5 (S2) K4 67.1 35.0 45.8 Table 5: Extraction Performance on ACE.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"The shortest-path dependency kernels outperform the dependency kernel from (Culotta and Sorensen,2004) in both scenarios, with a more significant dif ference for SP-CFG.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-An error analysis revealed thatCollins?,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"parser was better at capturing local depen dencies, hence the increased accuracy of SP-CFG.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-Another advantage of our shortest-path dependency kernels is that their training and testing are very fast ? this is due to representing the sentence as a chainof dependencies on which a fast kernel can be com puted.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-All the four SP kernels from Table 5 take between 2 and 3 hours to train and test on a 2.6GHz Pentium IV machine.,"{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"To avoid numerical problems, we constrained the dependency paths to pass through at most 10 words(as observed in the training data) by setting the kernel to 0 for longer paths.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"We also tried the alterna tive solution of normalizing the kernel, however this led to a slight decrease in accuracy.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Having longer paths give larger kernel scores in the unnormalizedversion does not pose a problem because, by definition, paths of different lengths correspond to disjoint sets of features.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"Consequently, the SVM algorithm will induce lower weights for features occur ring in longer paths, resulting in a linear separator that works irrespective of the size of the dependency paths.","{'title': 'Experimental Evaluation. ', 'number': '5'}"
-"In (Zelenko et al, 2003), the authors do relation extraction using a tree kernel defined over shallow parse tree representations of sentences.","{'title': 'Related Work. ', 'number': '6'}"
-"The same tree kernel is slightly generalized in (Culotta andSorensen, 2004) and used in conjunction with dependency trees.","{'title': 'Related Work. ', 'number': '6'}"
-"In both approaches, a relation in stance is defined to be the smallest subtree in the parse or dependency tree that includes both entities.","{'title': 'Related Work. ', 'number': '6'}"
-"In this paper we argued that the information relevant to relation extraction is almost entirely concentrated in the shortest path in the dependency tree, leading to an even smaller representation.","{'title': 'Related Work. ', 'number': '6'}"
-Another difference between the tree kernels above and our new kernel is that the tree kernels used for relation extraction are opaque i.e. the semantics of the dimensions in the corresponding Hilbert space is not obvious.,"{'title': 'Related Work. ', 'number': '6'}"
-"For the shortest-path kernels, the semantics is known bydefinition: each path feature corresponds to a dimen sion in the Hilbert space.","{'title': 'Related Work. ', 'number': '6'}"
-This transparency allows us to easily restrict the types of patterns counted by the kernel to types that we deem relevant for relationextraction.,"{'title': 'Related Work. ', 'number': '6'}"
-"The tree kernels are also more time con suming, especially in the sparse setting, where they count sparse subsequences of children common to nodes in the two trees.","{'title': 'Related Work. ', 'number': '6'}"
-"In (Zelenko et al, 2003), the 730 tree kernel is computed in O(mn) time, where m and n are the number of nodes in the two trees.","{'title': 'Related Work. ', 'number': '6'}"
-"This changes to O(mn3) in the sparse setting.Our shortest-path intuition bears some similar ity with the underlying assumption of the relational pathfinding algorithm from (Richards and Mooney,1992) : ?in most relational domains, important con cepts will be represented by a small number of fixedpaths among the constants defining a positive instance ? for example, the grandparent relation is de fined by a single fixed path consisting of two parent relations.?","{'title': 'Related Work. ', 'number': '6'}"
-"We can see this happening also in the task of relation extraction from ACE, where ?importantconcepts?","{'title': 'Related Work. ', 'number': '6'}"
-"are the 5 types of relations, and the ?con stants?","{'title': 'Related Work. ', 'number': '6'}"
-defining a positive instance are the 5 types of entities.,"{'title': 'Related Work. ', 'number': '6'}"
-Local and non-local (deep) dependencies are equally important for finding relations.,"{'title': 'Future Work. ', 'number': '7'}"
-"In this paper we tried extracting both types of dependencies using a CCG parser, however another approach is to recover deepdependencies from syntactic parses, as in (Camp bell, 2004; Levy and Manning, 2004).","{'title': 'Future Work. ', 'number': '7'}"
-"This mayhave the advantage of preserving the quality of local dependencies while completing the representa tion with non-local dependencies.Currently, the method assumes that the named entities are known.","{'title': 'Future Work. ', 'number': '7'}"
-A natural extension is to automati cally extract both the entities and their relationships.,"{'title': 'Future Work. ', 'number': '7'}"
-"Recent research (Roth and Yih, 2004) indicates thatintegrating entity recognition with relation extraction in a global model that captures the mutual influ ences between the two tasks can lead to significant improvements in accuracy.","{'title': 'Future Work. ', 'number': '7'}"
-We have presented a new kernel for relation extraction based on the shortest-path between the two rela tion entities in the dependency graph.,"{'title': 'Conclusion. ', 'number': '8'}"
-Comparative experiments on extracting top-level relations from the ACE corpus show significant improvements over a recent dependency tree kernel.,"{'title': 'Conclusion. ', 'number': '8'}"
-This work was supported by grants IIS-0117308 and IIS-0325116 from the NSF.,"{'title': 'Acknowledgements. ', 'number': '9'}"
+"We present a novel approach to relation extraction, based on the observation thatthe information required to assert a rela tionship between two named entities in the same sentence is typically capturedby the shortest path between the two entities in the dependency graph.",Introduction
+Exper iments on extracting top-level relationsfrom the ACE (Automated Content Ex traction) newspaper corpus show that thenew shortest path dependency kernel outperforms a recent approach based on de pendency tree kernels.,Introduction
+"One of the key tasks in natural language process ing is that of Information Extraction (IE), which istraditionally divided into three subproblems: coref erence resolution, named entity recognition, and relation extraction.",Experiment/Discussion
+"Consequently, IE corpora are typically annotated with information corresponding to these subtasks (MUC (Grishman, 1995), ACE(NIST, 2000)), facilitating the development of sys tems that target only one or a subset of the threeproblems.",Experiment/Discussion
+In this paper we focus exclusively on extracting relations between predefined types of entities in the ACE corpus.,Experiment/Discussion
+"Reliably extracting relations between entities in natural-language docu ments is still a difficult, unsolved problem, whose inherent difficulty is compounded by the emergenceof new application domains, with new types of nar rative that challenge systems developed for previouswell-studied domains.",Experiment/Discussion
+The accuracy level of current syntactic and semantic parsers on natural lan guage text from different domains limit the extent to which syntactic and semantic information can be used in real IE systems.,Experiment/Discussion
+"Nevertheless, various linesof work on relation extraction have shown experimentally that the use of automatically derived syntactic information can lead to significant improvements in extraction accuracy.",Experiment/Discussion
+"The amount of syntactic knowledge used in IE systems varies from part of-speech only (Ray and Craven, 2001) to chunking(Ray and Craven, 2001) to shallow parse trees (Ze lenko et al, 2003) to dependency trees derived from full parse trees (Culotta and Sorensen, 2004).",Experiment/Discussion
+"Eventhough exhaustive experiments comparing the per formance of a relation extraction system based on these four levels of syntactic information are yet tobe conducted, a reasonable assumption is that the extraction accuracy increases with the amount of syn tactic information used.",Experiment/Discussion
+"The performance howeverdepends not only on the amount of syntactic infor mation, but also on the details of the exact modelsusing this information.",Experiment/Discussion
+Training a machine learn ing system in a setting where the information usedfor representing the examples is only partially rele vant to the actual task often leads to overfitting.,Experiment/Discussion
+It is therefore important to design the IE system so that the input data is stripped of unnecessary features as much as possible.,Experiment/Discussion
+"In the case of the tree kernels from (Zelenko et al, 2003; Culotta and Sorensen, 2004), the authors reduce each relation example to the smallest subtree in the parse or dependency tree that includes both entities.",Experiment/Discussion
+We will show in this paper that increased extraction performance can be 724 obtained by designing a kernel method that uses an even smaller part of the dependency structure ? theshortest path between the two entities in the undi rected version of the dependency graph.,Experiment/Discussion
+"Let e1 and e2 be two entities mentioned in the samesentence such that they are observed to be in a re lationship R, i.e R(e1, e2) = 1.",Experiment/Discussion
+"For example, R can specify that entity e1 is LOCATED (AT) entity e2.",Experiment/Discussion
+"Figure 1 shows two sample sentences from ACE, with entity mentions in bold.",Experiment/Discussion
+"Correspondingly, the first column in Table 1 lists the four relations of typeLOCATED that need to be extracted by the IE sys tem.",Experiment/Discussion
+"We assume that a relation is to be extractedonly between entities mentioned in the same sen tence, and that the presence or absence of a relation is independent of the text preceding or following the sentence.",Experiment/Discussion
+This means that only information derived from the sentence including the two entities will be relevant for relation extraction.,Experiment/Discussion
+"Furthermore, with each sentence we associate its dependency graph,with words figured as nodes and word-word dependencies figured as directed edges, as shown in Fig ure 1.",Experiment/Discussion
+A subset of these word-word dependencies capture the predicate-argument relations present inthe sentence.,Experiment/Discussion
+"Arguments are connected to their target predicates either directly through an arc point ing to the predicate (?troops ? raided?), or indirectly through a preposition or infinitive particle (?warning?",Experiment/Discussion
+to ? stop?).,Experiment/Discussion
+"Other types of word-word dependen cies account for modifier-head relationships present in adjective-noun compounds (?several ? stations?), noun-noun compounds (?pumping ? stations?), or adverb-verb constructions (?recently ? raided?).",Experiment/Discussion
+In Figure 1 we show the full dependency graphs for two sentences from the ACE newspaper corpus.Word-word dependencies are typically catego rized in two classes as follows:?,Experiment/Discussion
+"[Local Dependencies] These correspond to local predicate-argument (or head-modifier) constructions such as ?troops ? raided?, or ?pump ing ? stations?",Experiment/Discussion
+in Figure 1.?,Experiment/Discussion
+"[Non-local Dependencies] Long-distance dependencies arise due to various linguistic con structions such as coordination, extraction,raising and control.",Experiment/Discussion
+"In Figure 1, among non local dependencies are ?troops ? warning?, or ?ministers ? preaching?.",Experiment/Discussion
+"A Context Free Grammar (CFG) parser can be used to extract local dependencies, which for each sentence form a dependency tree.",Experiment/Discussion
+"Mildly contextsensitive formalisms such as Combinatory Categorial Grammar (CCG) (Steedman, 2000) model word word dependencies more directly and can be used to extract both local and long-distance dependencies, giving rise to a directed acyclic graph, as illustrated in Figure 1.",Experiment/Discussion
+"If e1 and e2 are two entities mentioned in the samesentence such that they are observed to be in a relationship R, our hypothesis stipulates that the contribution of the sentence dependency graph to establishing the relationship R(e1, e2) is almost exclu sively concentrated in the shortest path between e1 and e2 in the undirected version of the dependency graph.",Experiment/Discussion
+"If entities e1 and e2 are arguments of the same predicate, then the shortest path between them willpass through the predicate, which may be con nected directly to the two entities, or indirectly through prepositions.",Experiment/Discussion
+"If e1 and e2 belong to different predicate-argument structures that share a common argument, then the shortest path will pass through this argument.",Experiment/Discussion
+This is the case with the shortest pathbetween ?stations?,Experiment/Discussion
+and ?workers?,Experiment/Discussion
+"in Figure 1, passing through ?protesters?, which is an argument com mon to both predicates ?holding?",Experiment/Discussion
+and ?seized?.,Experiment/Discussion
+In Table 1 we show the paths corresponding to the four relation instances encoded in the ACE corpus for thetwo sentences from Figure 1.,Experiment/Discussion
+All these paths sup port the LOCATED relationship.,Experiment/Discussion
+"For the first path, it is reasonable to infer that if a PERSON entity (e.g. ?protesters?)",Experiment/Discussion
+is doing some action (e.g. ?seized?),Experiment/Discussion
+"to a FACILITY entity (e.g. ?station?), then the PERSONentity is LOCATED at that FACILITY entity.",Experiment/Discussion
+The sec ond path captures the fact that the same PERSON entity (e.g. ?protesters?),Experiment/Discussion
+is doing two actions (e.g.?holding?,Experiment/Discussion
+and ?seized?),Experiment/Discussion
+", one action to a PERSON entity (e.g. ?workers?), and the other action to a FACIL ITY entity (e.g. ?station?).",Experiment/Discussion
+A reasonable inference in this case is that the ?workers?,Experiment/Discussion
+"are LOCATED at the 725 S1 = =S2 Protesters stations workers Troops churches ministers seized several pumping , holding 127 Shell hostage . recently have raided , warning to stop preaching . Figure 1: Sentences as dependency graphs.",Experiment/Discussion
+Relation Instance Shortest Path in Undirected Dependency Graph S1: protesters AT stations protesters ??,Experiment/Discussion
+seized ??,Experiment/Discussion
+stations S1: workers AT stations workers ??,Experiment/Discussion
+holding ??,Experiment/Discussion
+protesters ??,Experiment/Discussion
+seized ??,Experiment/Discussion
+stations S2: troops AT churches troops ??,Experiment/Discussion
+raided ??,Experiment/Discussion
+churches S2: ministers AT churches ministers ??,Experiment/Discussion
+warning ??,Experiment/Discussion
+troops ??,Experiment/Discussion
+raided ??,Experiment/Discussion
+churches Table 1: Shortest Path representation of relations.,Experiment/Discussion
+?station?.,Experiment/Discussion
+In Figure 2 we show three more examples of the LOCATED (AT) relationship as dependency pathscreated from one or two predicate-argument struc tures.,Experiment/Discussion
+"The second example is an interesting case,as it illustrates how annotation decisions are accom modated in our approach.",Experiment/Discussion
+"Using a reasoning similarwith that from the previous paragraph, it is reason able to infer that ?troops?",Experiment/Discussion
+"are LOCATED in ?vans?, and that ?vans?",Experiment/Discussion
+are LOCATED in ?city?.,Experiment/Discussion
+"However, because ?vans?",Experiment/Discussion
+"is not an ACE markable, it cannot participate in an annotated relationship.",Experiment/Discussion
+"Therefore, ?troops?",Experiment/Discussion
+"is annotated as being LOCATED in ?city?,which makes sense due to the transitivity of the relation LOCATED.",Experiment/Discussion
+"In our approach, this leads to shortest paths that pass through two or more predicate argument structures.The last relation example is a case where there ex ist multiple shortest paths in the dependency graph between the same two entities ? there are actually two different paths, with each path replicated into three similar paths due to coordination.",Experiment/Discussion
+"Our current approach considers only one of the shortest paths, nevertheless it seems reasonable to investigate usingall of them as multiple sources of evidence for rela tion extraction.",Experiment/Discussion
+There may be cases where e1 and e2 belongto predicate-argument structures that have no argument in common.,Experiment/Discussion
+"However, because the dependency graph is always connected, we are guaranteed to find a shortest path between the two enti ties.",Experiment/Discussion
+"In general, we shall find a shortest sequence of predicate-argument structures with target predicates P1, P2, ..., Pn such that e1 is an argument of P1, e2 isan argument of Pn, and any two consecutive predi cates Pi and Pi+1 share a common argument (whereby ?argument?",Experiment/Discussion
+we mean both arguments and com plements).,Experiment/Discussion
+The shortest path between two entities in a depen dency graph offers a very condensed representationof the information needed to assess their relationship.,Experiment/Discussion
+A dependency path is represented as a sequence of words interspersed with arrows that in 726 (1) He had no regrets for his actions in Brcko.,Experiment/Discussion
+his?,Experiment/Discussion
+actions?,Experiment/Discussion
+in?,Experiment/Discussion
+"Brcko (2) U.S. troops today acted for the first time to capture an alleged Bosnian war criminal, rushing from unmarked vans parked in the northern Serb-dominated city of Bijeljina.",Experiment/Discussion
+troops?,Experiment/Discussion
+rushing?,Experiment/Discussion
+from?,Experiment/Discussion
+vans?,Experiment/Discussion
+parked?,Experiment/Discussion
+in?,Experiment/Discussion
+"city (3) Jelisic created an atmosphere of terror at the camp by killing, abusing and threatening the detainees.",Experiment/Discussion
+detainees?,Experiment/Discussion
+killing?,Experiment/Discussion
+Jelisic?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+camp detainees?,Experiment/Discussion
+abusing?,Experiment/Discussion
+Jelisic?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+camp detainees?,Experiment/Discussion
+threatning?,Experiment/Discussion
+Jelisic?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+camp detainees?,Experiment/Discussion
+killing?,Experiment/Discussion
+by?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+camp detainees?,Experiment/Discussion
+abusing?,Experiment/Discussion
+by?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+camp detainees?,Experiment/Discussion
+threatening?,Experiment/Discussion
+by?,Experiment/Discussion
+created?,Experiment/Discussion
+at?,Experiment/Discussion
+"camp Figure 2: Relation examples.dicate the orientation of each dependency, as illustrated in Table 1.",Experiment/Discussion
+These paths however are completely lexicalized and consequently their performance will be limited by data sparsity.,Experiment/Discussion
+"We can al leviate this by categorizing words into classes with varying degrees of generality, and then allowing paths to use both words and their classes.",Experiment/Discussion
+"Examples of word classes are part-of-speech (POS) tags and generalizations over POS tags such as Noun, Active Verb or Passive Verb.",Experiment/Discussion
+The entity type is also used forthe two ends of the dependency path.,Experiment/Discussion
+Other poten tially useful classes might be created by associatingwith each noun or verb a set of hypernyms corre sponding to their synsets in WordNet.,Experiment/Discussion
+"The set of features can then be defined as aCartesian product over these word classes, as illus trated in Figure 3 for the dependency path between?protesters?",Experiment/Discussion
+and ?station?,Experiment/Discussion
+in sentence S1.,Experiment/Discussion
+"In this rep resentation, sparse or contiguous subsequences of nodes along the lexicalized dependency path (i.e. path fragments) are included as features simply byreplacing the rest of the nodes with their correspond ing generalizations.The total number of features generated by this de pendency path is 4?1?3?1?4, and some of them are listed in Table 2.",Experiment/Discussion
+protesters NNS Noun PERSON ? ?,Experiment/Discussion
+[ seized VBD Verb ] ? [?]?,Experiment/Discussion
+stations NNS Noun FACILITY ? ?,Experiment/Discussion
+Figure 3: Feature generation from dependency path.,Experiment/Discussion
+protesters ? seized ? stations Noun ? Verb ? Noun PERSON ? seized ? FACILITY PERSON ? Verb ? FACILITY ...,Experiment/Discussion
+(48 features) Table 2: Sample Features.,Experiment/Discussion
+For verbs and nouns (and their respective word classes) occurring along a dependency path we also use an additional suffix ?(-)?,Experiment/Discussion
+to indicate a negative polarity item.,Experiment/Discussion
+"In the case of verbs, this suffix is usedwhen the verb (or an attached auxiliary) is modi fied by a negative polarity adverb such as ?not?",Experiment/Discussion
+or ?never?.,Experiment/Discussion
+"Nouns get the negative suffix whenever they are modified by negative determiners such as ?no?, ?neither?",Experiment/Discussion
+or ?nor?.,Experiment/Discussion
+"For example, the phrase ?Henever went to Paris?",Experiment/Discussion
+is associated with the depen dency path ?He ? went(-) ? to ? Paris?.,Experiment/Discussion
+"Explicitly creating for each relation example avector with a position for each dependency path fea ture is infeasible, due to the high dimensionality ofthe feature space.",Experiment/Discussion
+"Here we can exploit dual learning algorithms that process examples only via computing their dot-products, such as the Support Vec tor Machines (SVMs) (Vapnik, 1998; Cristianiniand Shawe-Taylor, 2000).",Experiment/Discussion
+"These dot-products be tween feature vectors can be efficiently computed through a kernel function, without iterating over allthe corresponding features.",Experiment/Discussion
+"Given the kernel func tion, the SVM learner tries to find a hyperplane that separates positive from negative examples and at thesame time maximizes the separation (margin) be tween them.",Experiment/Discussion
+This type of max-margin separator hasbeen shown both theoretically and empirically to re sist overfitting and to provide good generalization performance on unseen examples.,Experiment/Discussion
+Computing the dot-product (i.e. kernel) between two relation examples amounts to calculating the 727 number of common features of the type illustrated in Table 2.,Experiment/Discussion
+"If x = x1x2...xm and y = y1y2...yn are two relation examples, where xi denotes the set ofword classes corresponding to position i (as in Fig ure 3), then the number of common features between x and y is computed as in Equation 1.",Experiment/Discussion
+"K(x, y) = { 0, m 6= n ?n i=1 c(xi, yi), m = n (1) where c(xi, yi) = |xi?yi| is the number of common word classes between xi and yi.",Experiment/Discussion
+"This is a simple kernel, whose computation takes O(n) time.",Experiment/Discussion
+"If the two paths have different lengths,they correspond to different ways of expressing a re lationship ? for instance, they may pass through a different number of predicate argument structures.",Experiment/Discussion
+"Consequently, the kernel is defined to be 0 in this case.",Experiment/Discussion
+"Otherwise, it is the product of the number of common word classes at each position in the two paths.",Experiment/Discussion
+"As an example, let us consider two instances of the LOCATED relationship: 1.",Experiment/Discussion
+"?his actions in Brcko?, and 2.",Experiment/Discussion
+?his arrival in Beijing?.,Experiment/Discussion
+Their corresponding dependency paths are: 1.,Experiment/Discussion
+"?his ? actions ? in ? Brcko?, and 2.",Experiment/Discussion
+?his ? arrival ? in ? Beijing?.,Experiment/Discussion
+Their representation as a sequence of sets of word classes is given by: 1.,Experiment/Discussion
+"x = [x1 x2 x3 x4 x5 x6 x7], where x1 = {his, PRP, PERSON}, x2 = {?}, x3 = {actions, NNS, Noun}, x4 = {?}, x5 = {in, IN}, x6 = {?}, x7 = {Brcko, NNP, Noun, LOCATION} 2.",Experiment/Discussion
+"y = [y1 y2 y3 y4 y5 y6 y7], where y1 = {his, PRP, PERSON}, y2 = {?}, y3 = {arrival, NN, Noun}, y4 = {?}, y5 = {in, IN}, y6 = {?}, y7 = {Beijing, NNP, Noun, LOCATION} Based on the formula from Equation 1, the kernel is computed as K(x, y) = 3?1?1?1?2?1?3 = 18.",Experiment/Discussion
+"We use this relation kernel in conjunction with SVMs in order to find decision hyperplanes that best separate positive examples from negative examples.We modified the LibSVM1 package for SVM learn ing by plugging in the kernel described above, and used its default one-against-one implementation for multiclass classification.",Experiment/Discussion
+"We applied the shortest path dependency kernel to the problem of extracting top-level relations from the ACE corpus (NIST, 2000), the version used for the September 2002 evaluation.",Experiment/Discussion
+"The training part of this dataset consists of 422 documents, witha separate set of 97 documents allocated for test ing.",Experiment/Discussion
+"This version of the ACE corpus contains three types of annotations: coreference, named entities and relations.",Experiment/Discussion
+"Entities can be of the type PERSON,ORGANIZATION, FACILITY, LOCATION, and GEO POLITICAL ENTITY.",Experiment/Discussion
+"There are 5 general, top-levelrelations: ROLE, PART, LOCATED, NEAR, and SOCIAL.",Experiment/Discussion
+"The ROLE relation links people to an organization to which they belong, own, founded, or provide some service.",Experiment/Discussion
+"The PART relation indicates subset relationships, such as a state to a nation, or a subsidiary to its parent company.",Experiment/Discussion
+The AT relation indi cates the location of a person or organization at somelocation.,Experiment/Discussion
+The NEAR relation indicates the proximity of one location to another.,Experiment/Discussion
+"The SOCIAL relation links two people in personal, familial or profes sional relationships.",Experiment/Discussion
+"Each top-level relation type is further subdivided into more fine-grained subtypes,resulting in a total of 24 relation types.",Experiment/Discussion
+"For exam ple, the LOCATED relation includes subtypes such as LOCATED-AT, BASED-IN, and RESIDENCE.",Experiment/Discussion
+"In total, there are 7,646 intra-sentential relations, of which 6,156 are in the training data and 1,490 in the test data.",Experiment/Discussion
+We assume that the entities and their labels areknown.,Experiment/Discussion
+"All preprocessing steps ? sentence segmentation, tokenization, and POS tagging ? were per formed using the OpenNLP2 package.",Experiment/Discussion
+5.1 Extracting dependencies using a CCG.,Experiment/Discussion
+"parser CCG (Steedman, 2000) is a type-driven theory of grammar where most language-specific aspects ofthe grammar are specified into lexicon.",Experiment/Discussion
+To each lex 1URL:http://www.csie.ntu.edu.tw/?cjlin/libsvm/ 2URL: http://opennlp.sourceforge.net 728 ical item corresponds a set of syntactic categories specifying its valency and the directionality of itsarguments.,Experiment/Discussion
+"For example, the words from the sen tence ?protesters seized several stations?",Experiment/Discussion
+are mapped in the lexicon to the following categories: protesters : NP seized : (S\NP )/NP several : NP/NP stations : NP The transitive verb ?seized?,Experiment/Discussion
+expects two arguments: a noun phrase to the right (the object) and another noun phrase to the left (the subject).,Experiment/Discussion
+"Similarly, the adjective ?several?",Experiment/Discussion
+expects a noun phrase to its right.,Experiment/Discussion
+"Depending on whether its valency is greater than zero or not, a syntactic category is called a functor or an argument.",Experiment/Discussion
+"In the example above, ?seized?",Experiment/Discussion
+and?several?,Experiment/Discussion
+"are functors, while ?protesters?",Experiment/Discussion
+and ?sta tions?,Experiment/Discussion
+are arguments.,Experiment/Discussion
+"Syntactic categories are combined using a smallset of typed combinatory rules such as functional ap plication, composition and type raising.",Experiment/Discussion
+In Table 3we show a sample derivation based on three func tional applications.,Experiment/Discussion
+"protesters seized several stations NP (S\NP )/NP NP/NP NP NP (S\NP )/NP NP NP S\NP S Table 3: Sample derivation.In order to obtain CCG derivations for all sen tences in the ACE corpus, we used the CCG parser introduced in (Hockenmaier and Steedman,2002)3.",Experiment/Discussion
+"This parser also outputs a list of dependen cies, with each dependency represented as a 4-tuple ?f, a, wf , wa?, where f is the syntactic category of the functor, a is the argument number, wf is the head word of the functor, and wa is the head word of theargument.",Experiment/Discussion
+"For example, the three functional appli cations from Table 3 result in the functor-argument dependencies enumerated below in Table 4.",Experiment/Discussion
+3URL:http://www.ircs.upenn.edu/?juliahr/Parser/ f a wf wa NP/NP 1 ?several?,Experiment/Discussion
+?stations?,Experiment/Discussion
+(S\NP )/NP 2 ?seized?,Experiment/Discussion
+?stations?,Experiment/Discussion
+(S\NP )/NP 1 ?seized?,Experiment/Discussion
+?protesters?,Experiment/Discussion
+Table 4: Sample dependencies.,Experiment/Discussion
+Because predicates (e.g. ?seized?),Experiment/Discussion
+and adjuncts(e.g. ?several?),Experiment/Discussion
+"are always represented as functors, while complements (e.g. ?protesters?",Experiment/Discussion
+and ?sta tions?),Experiment/Discussion
+"are always represented as arguments, it isstraightforward to transform a functor-argument de pendency into a head-modifier dependency.",Experiment/Discussion
+"The head-modifier dependencies corresponding to the three functor-argument dependencies in Table 4 are:?protesters ? seized?, ?stations ? seized?, and ?sev eral ? stations?.",Experiment/Discussion
+"Special syntactic categories are assigned in CCGto lexical items that project unbounded dependen cies, such as the relative pronouns ?who?, ?which?",Experiment/Discussion
+and ?that?.,Experiment/Discussion
+"Coupled with a head-passing mechanism, these categories allow the extraction of long-range dependencies.",Experiment/Discussion
+"Together with the local word-worddependencies, they create a directed acyclic depen dency graph for each parsed sentence, as shown in Figure 1.",Experiment/Discussion
+5.2 Extracting dependencies using a CFG.,Experiment/Discussion
+parser Local dependencies can be extracted from a CFG parse tree using simple heuristic rules for findingthe head child for each type of constituent.,Experiment/Discussion
+"Alter natively, head-modifier dependencies can be directly output by a parser whose model is based on lexical dependencies.",Experiment/Discussion
+"In our experiments, we used the full parse output from Collins?",Experiment/Discussion
+"parser (Collins, 1997), in which every non-terminal node is already annotated with head information.",Experiment/Discussion
+"Because local dependencies assemble into a tree for each sentence, there is onlyone (shortest) path between any two entities in a de pendency tree.",Experiment/Discussion
+5.3 Experimental Results.,Experiment/Discussion
+"A recent approach to extracting relations is described in (Culotta and Sorensen, 2004).",Experiment/Discussion
+"The au thors use a generalized version of the tree kernel from (Zelenko et al, 2003) to compute a kernel over 729 relation examples, where a relation example consists of the smallest dependency tree containing the two entities of the relation.",Experiment/Discussion
+"Precision and recall values are reported for the task of extracting the 5 top-levelrelations in the ACE corpus under two different sce narios: ? [S1] This is the classic setting: one multi-classSVM is learned to discriminate among the 5 top level classes, plus one more class for the no-relation cases.?",Experiment/Discussion
+"[S2] Because of the highly skewed data distribution, the recall of the SVM approach in the first sce nario is very low.",Experiment/Discussion
+"In (Culotta and Sorensen, 2004) the authors propose doing relation extraction in twosteps: first, one binary SVM is trained for relation detection, which means that all positive rela tion instances are combined into one class.",Experiment/Discussion
+"Then the thresholded output of this binary classifier is used as training data for a second multi-class SVM, which is trained for relation classification.",Experiment/Discussion
+The same kernel is used in both stages.,Experiment/Discussion
+"We present in Table 5 the performance of our shortest path (SP) dependency kernel on the task ofrelation extraction from ACE, where the dependencies are extracted using either a CCG parser (SP CCG), or a CFG parser (SP-CFG).",Experiment/Discussion
+"We also show the results presented in (Culotta and Sorensen, 2004) for their best performing kernel K4 (a sum between a bag-of-words kernel and their dependency kernel) under both scenarios.",Experiment/Discussion
+Method Precision Recall F-measure (S1) SP-CCG 67.5 37.2 48.0 (S1) SP-CFG 71.1 39.2 50.5 (S1) K4 70.3 26.3 38.0 (S2) SP-CCG 63.7 41.4 50.2 (S2) SP-CFG 65.5 43.8 52.5 (S2) K4 67.1 35.0 45.8 Table 5: Extraction Performance on ACE.,Experiment/Discussion
+"The shortest-path dependency kernels outperform the dependency kernel from (Culotta and Sorensen,2004) in both scenarios, with a more significant dif ference for SP-CFG.",Experiment/Discussion
+An error analysis revealed thatCollins?,Experiment/Discussion
+"parser was better at capturing local depen dencies, hence the increased accuracy of SP-CFG.",Experiment/Discussion
+Another advantage of our shortest-path dependency kernels is that their training and testing are very fast ? this is due to representing the sentence as a chainof dependencies on which a fast kernel can be com puted.,Experiment/Discussion
+All the four SP kernels from Table 5 take between 2 and 3 hours to train and test on a 2.6GHz Pentium IV machine.,Experiment/Discussion
+"To avoid numerical problems, we constrained the dependency paths to pass through at most 10 words(as observed in the training data) by setting the kernel to 0 for longer paths.",Experiment/Discussion
+"We also tried the alterna tive solution of normalizing the kernel, however this led to a slight decrease in accuracy.",Experiment/Discussion
+"Having longer paths give larger kernel scores in the unnormalizedversion does not pose a problem because, by definition, paths of different lengths correspond to disjoint sets of features.",Experiment/Discussion
+"Consequently, the SVM algorithm will induce lower weights for features occur ring in longer paths, resulting in a linear separator that works irrespective of the size of the dependency paths.",Experiment/Discussion
+"In (Zelenko et al, 2003), the authors do relation extraction using a tree kernel defined over shallow parse tree representations of sentences.",Experiment/Discussion
+"The same tree kernel is slightly generalized in (Culotta andSorensen, 2004) and used in conjunction with dependency trees.",Experiment/Discussion
+"In both approaches, a relation in stance is defined to be the smallest subtree in the parse or dependency tree that includes both entities.",Experiment/Discussion
+"In this paper we argued that the information relevant to relation extraction is almost entirely concentrated in the shortest path in the dependency tree, leading to an even smaller representation.",Experiment/Discussion
+Another difference between the tree kernels above and our new kernel is that the tree kernels used for relation extraction are opaque i.e. the semantics of the dimensions in the corresponding Hilbert space is not obvious.,Experiment/Discussion
+"For the shortest-path kernels, the semantics is known bydefinition: each path feature corresponds to a dimen sion in the Hilbert space.",Experiment/Discussion
+This transparency allows us to easily restrict the types of patterns counted by the kernel to types that we deem relevant for relationextraction.,Experiment/Discussion
+"The tree kernels are also more time con suming, especially in the sparse setting, where they count sparse subsequences of children common to nodes in the two trees.",Experiment/Discussion
+"In (Zelenko et al, 2003), the 730 tree kernel is computed in O(mn) time, where m and n are the number of nodes in the two trees.",Experiment/Discussion
+"This changes to O(mn3) in the sparse setting.Our shortest-path intuition bears some similar ity with the underlying assumption of the relational pathfinding algorithm from (Richards and Mooney,1992) : ?in most relational domains, important con cepts will be represented by a small number of fixedpaths among the constants defining a positive instance ? for example, the grandparent relation is de fined by a single fixed path consisting of two parent relations.?",Experiment/Discussion
+"We can see this happening also in the task of relation extraction from ACE, where ?importantconcepts?",Experiment/Discussion
+"are the 5 types of relations, and the ?con stants?",Experiment/Discussion
+defining a positive instance are the 5 types of entities.,Experiment/Discussion
+Local and non-local (deep) dependencies are equally important for finding relations.,Experiment/Discussion
+"In this paper we tried extracting both types of dependencies using a CCG parser, however another approach is to recover deepdependencies from syntactic parses, as in (Camp bell, 2004; Levy and Manning, 2004).",Experiment/Discussion
+"This mayhave the advantage of preserving the quality of local dependencies while completing the representa tion with non-local dependencies.Currently, the method assumes that the named entities are known.",Experiment/Discussion
+A natural extension is to automati cally extract both the entities and their relationships.,Experiment/Discussion
+"Recent research (Roth and Yih, 2004) indicates thatintegrating entity recognition with relation extraction in a global model that captures the mutual influ ences between the two tasks can lead to significant improvements in accuracy.",Experiment/Discussion
+We have presented a new kernel for relation extraction based on the shortest-path between the two rela tion entities in the dependency graph.,Results/Conclusion
+Comparative experiments on extracting top-level relations from the ACE corpus show significant improvements over a recent dependency tree kernel.,Results/Conclusion
+This work was supported by grants IIS-0117308 and IIS-0325116 from the NSF.,Results/Conclusion

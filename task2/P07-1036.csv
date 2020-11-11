@@ -1,208 +1,208 @@
 col1,col2
-"Over the last few years, two of the main research directions in machine learning of natural language processing have been the study of semi-supervised learning algorithms as a way to train classifiers when the labeled data is scarce, and the study of ways to exploit knowledge and global information in structured learning tasks.",{}
-"In this paper, we suggest a method for incorporating domain knowledge in semi-supervised learning algorithms.",{}
-"Our novel framework unifies can exploit several kinds of specific The experimental results presented in the information extraction domain demonstrate that applying constraints helps the model to generate better feedback during learning, and hence the framework allows for high performance learning with significantly less training data than was possible before on these tasks.",{}
-Natural Language Processing (NLP) systems typically require large amounts of knowledge to achieve good performance.,"{'title': '1 Introduction', 'number': '1'}"
-Acquiring labeled data is a difficult and expensive task.,"{'title': '1 Introduction', 'number': '1'}"
-"Therefore, an increasing attention has been recently given to semi-supervised learning, where large amounts of unlabeled data are used to improve the models learned from a small training set (Collins and Singer, 1999; Thelen and Riloff, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"The hope is that semi-supervised or even unsupervised approaches, when given enough knowledge about the structure of the problem, will be competitive with the supervised models trained on large training sets.","{'title': '1 Introduction', 'number': '1'}"
-"However, in the general case, semi-supervised approaches give mixed results, and sometimes even degrade the model performance (Nigam et al., 2000).","{'title': '1 Introduction', 'number': '1'}"
-"In many cases, improving semi-supervised models was done by seeding these models with domain information taken from dictionaries or ontology (Cohen and Sarawagi, 2004; Collins and Singer, 1999; Haghighi and Klein, 2006; Thelen and Riloff, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"On the other hand, in the supervised setting, it has been shown that incorporating domain and problem specific structured information can result in substantial improvements (Toutanova et al., 2005; Roth and Yih, 2005).","{'title': '1 Introduction', 'number': '1'}"
-This paper proposes a novel constraints-based learning protocol for guiding semi-supervised learning.,"{'title': '1 Introduction', 'number': '1'}"
-"We develop a formalism for constraints-based learning that unifies several kinds of constraints: unary, dictionary based and n-ary constraints, which encode structural information and interdependencies among possible labels.","{'title': '1 Introduction', 'number': '1'}"
-One advantage of our formalism is that it allows capturing different levels of constraint violation.,"{'title': '1 Introduction', 'number': '1'}"
-"Our protocol can be used in the presence of any learning model, including those that acquire additional statistical constraints from observed data while learning (see Section 5.","{'title': '1 Introduction', 'number': '1'}"
-"In the experimental part of this paper we use HMMs as the underlying model, and exhibit significant reduction in the number of training examples required in two information extraction problems.","{'title': '1 Introduction', 'number': '1'}"
-"As is often the case in semi-supervised learning, the algorithm can be viewed as a process that improves the model by generating feedback through labeling unlabeled examples.","{'title': '1 Introduction', 'number': '1'}"
-"Our algorithm pushes this intuition further, in that the use of constraints allows us to better exploit domain information as a way to label, along with the current learned model, unlabeled examples.","{'title': '1 Introduction', 'number': '1'}"
-"Given a small amount of labeled data and a large unlabeled pool, our framework initializes the model with the labeled data and then repeatedly: This way, we can generate better “training” examples during the semi-supervised learning process.","{'title': '1 Introduction', 'number': '1'}"
-"The core of our approach, (1), is described in Section 5.","{'title': '1 Introduction', 'number': '1'}"
-The task is described in Section 3 and the Experimental study in Section 6.,"{'title': '1 Introduction', 'number': '1'}"
-It is shown there that the improvement on the training examples via the constraints indeed boosts the learned model and the proposed method significantly outperforms the traditional semi-supervised framework.,"{'title': '1 Introduction', 'number': '1'}"
-In the semi-supervised domain there are two main approaches for injecting domain specific knowledge.,"{'title': '2 Related Work', 'number': '2'}"
-One is using the prior knowledge to accurately tailor the generative model so that it captures the domain structure.,"{'title': '2 Related Work', 'number': '2'}"
-"For example, (Grenager et al., 2005) proposes Diagonal Transition Models for sequential labeling tasks where neighboring words tend to have the same labels.","{'title': '2 Related Work', 'number': '2'}"
-"This is done by constraining the HMM transition matrix, which can be done also for other models, such as CRF.","{'title': '2 Related Work', 'number': '2'}"
-"However (Roth and Yih, 2005) showed that reasoning with more expressive, non-sequential constraints can improve the performance for the supervised protocol.","{'title': '2 Related Work', 'number': '2'}"
-A second approach has been to use a small highaccuracy set of labeled tokens as a way to seed and bootstrap the semi-supervised learning.,"{'title': '2 Related Work', 'number': '2'}"
-"This was used, for example, by (Thelen and Riloff, 2002; Collins and Singer, 1999) in information extraction, and by (Smith and Eisner, 2005) in POS tagging.","{'title': '2 Related Work', 'number': '2'}"
-"(Haghighi and Klein, 2006) extends the dictionarybased approach to sequential labeling tasks by propagating the information given in the seeds with contextual word similarity.","{'title': '2 Related Work', 'number': '2'}"
-"This follows a conceptually similar approach by (Cohen and Sarawagi, 2004) that uses a large named-entity dictionary, where the similarity between the candidate named-entity and its matching prototype in the dictionary is encoded as a feature in a supervised classifier.","{'title': '2 Related Work', 'number': '2'}"
-"In our framework, dictionary lookup approaches are viewed as unary constraints on the output states.","{'title': '2 Related Work', 'number': '2'}"
-"We extend these kinds of constraints and allow for more general, n-ary constraints.","{'title': '2 Related Work', 'number': '2'}"
-"In the supervised learning setting it has been established that incorporating global information can significantly improve performance on several NLP tasks, including information extraction and semantic role labeling.","{'title': '2 Related Work', 'number': '2'}"
-"(Punyakanok et al., 2005; Toutanova et al., 2005; Roth and Yih, 2005).","{'title': '2 Related Work', 'number': '2'}"
-Our formalism is most related to this last work.,"{'title': '2 Related Work', 'number': '2'}"
-"But, we develop a semi-supervised learning protocol based on this formalism.","{'title': '2 Related Work', 'number': '2'}"
-"We also make use of soft constraints and, furthermore, extend the notion of soft constraints to account for multiple levels of constraints’ violation.","{'title': '2 Related Work', 'number': '2'}"
-"Conceptually, although not technically, the most related work to ours is (Shen et al., 2005) that, in a somewhat ad-hoc manner uses soft constraints to guide an unsupervised model that was crafted for mention tracking.","{'title': '2 Related Work', 'number': '2'}"
-"To the best of our knowledge, we are the first to suggest a general semi-supervised protocol that is driven by soft constraints.","{'title': '2 Related Work', 'number': '2'}"
-We propose learning with constraints - a framework that combines the approaches described above in a unified and intuitive way.,"{'title': '2 Related Work', 'number': '2'}"
-In Section 4 we will develop a general framework for semi-supervised learning with constraints.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"However, it is useful to illustrate the ideas on concrete problems.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Therefore, in this section, we give a brief introduction to the two domains on which we tested our algorithms.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"We study two information extraction problems in each of which, given text, a set of pre-defined fields is to be identified.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Since the fields are typically related and interdependent, these kinds of applications provide a good test case for an approach like ours.1 The first task is to identify fields from citations (McCallum et al., 2000) .","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"The data originally included 500 labeled references, and was later extended with 5,000 unannotated citations collected from papers found on the Internet (Grenager et al., 2005).","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Given a citation, the task is to extract the each open bracket.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-The correct assignment was shown in (a).,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"While the predicted label assignment (b) is generally coherent, some constraints are violated.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Most obviously, punctuation marks are ignored as cues for state transitions.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-The constraint “Fields cannot end with stop words (such as “the”)” may be also good. fields that appear in the given reference.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-See Fig.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-1.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"There are 13 possible fields including author, title, location, etc.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"To gain an insight to how the constraints can guide semi-supervised learning, assume that the sentence shown in Figure 1 appears in the unlabeled data pool.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-Part (a) of the figure shows the correct labeled assignment and part (b) shows the assignment labeled by a HMM trained on 30 labels.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"However, if we apply the constraint that state transition can occur only on punctuation marks, the same HMM model parameters will result in the correct labeling (a).","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Therefore, by adding the improved labeled assignment we can generate better training samples during semi-supervised learning.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"In fact, the punctuation marks are only some of the constraints that can be applied to this problem.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-The set of constraints we used in our experiments appears in Table 1.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"Note that some of the constraints are non-local and are very intuitive for people, yet it is very difficult to inject this knowledge into most models.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"The second problem we consider is extracting fields from advertisements (Grenager et al., 2005).","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"The dataset consists of 8,767 advertisements for apartment rentals in the San Francisco Bay Area downloaded in June 2004 from the Craigslist website.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"In the dataset, only 302 entries have been labeled with 12 fields, including size, rent, neighborhood, features, and so on.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"The data was preprocessed using regular expressions for phone numbers, email addresses and URLs.","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-The list of the constraints for this domain is given in Table 1.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"We implement some global constraints and include unary constraints which were largely imported from the list of seed words used in (Haghighi and Klein, 2006).","{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-We slightly modified the seedwords due to difference in preprocessing.,"{'title': '3 Tasks, Examples and Datasets', 'number': '3'}"
-"given an input sequence x = (x1,... , xN), the task is to find the best assignment to the output variables y = (y1, ... , yM).","{'title': '4 Notation and Definitions', 'number': '4'}"
-We denote X to be the space of the possible input sequences and Y to be the set of possible output sequences.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-We define a structured output classifier as a function h : X  Y that uses a global scoring function f : X × Y  R to assign scores to each possible input/output pair.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-"Given an input x, a desired function f will assign the correct output y the highest score among all the possible outputs.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"The global scoring function is often decomposed as a weighted sum of feature functions, This decomposition applies both to discriminative linear models and to generative models such as HMMs and CRFs, in which case the linear sum corresponds to log likelihood assigned to the input/output pair by the model (for details see (Roth, 1999) for the classification case and (Collins, 2002) for the structured case).","{'title': '4 Notation and Definitions', 'number': '4'}"
-"Even when not dictated by the model, the feature functions fi(x, y) used are local to allow inference tractability.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"Local feature function can capture some context for each input or output variable, yet it is very limited to allow dynamic programming decoding during inference.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"Now, consider a scenario where we have a set of constraints C1, ... , CK.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"We define a constraint C : X × Y  {0, 1} as a function that indicates whether the input/output sequence violates some desired properties.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"When the constraints are hard, the solution is given by from citations and advertisements.","{'title': '4 Notation and Definitions', 'number': '4'}"
-Some constraints (represented in the first block of each domain) are global and are relatively difficult to inject into traditional models.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-"While all the constraints hold for the vast majority of the data, some of them are violated by some correct labeled assignments. where 1C(x) is a subset of Y for which all Ci assign the value 1 for the given (x, y).","{'title': '4 Notation and Definitions', 'number': '4'}"
-"When the constraints are soft, we want to incur some penalty for their violation.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"Moreover, we want to incorporate into our cost function a measure for the amount of violation incurred by violating the constraint.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"A generic way to capture this intuition is to introduce a distance function d(y, 1Ci(x)) between the space of outputs that respect the constraint,1Ci(x), and the given output sequence y.","{'title': '4 Notation and Definitions', 'number': '4'}"
-"One possible way to implement this distance function is as the minimal Hamming distance to a sequence that respects the constraint Ci, that is: d(y, 1Ci(x)) = min(y'E1C(.))","{'title': '4 Notation and Definitions', 'number': '4'}"
-"H(y, y').","{'title': '4 Notation and Definitions', 'number': '4'}"
-"If the penalty for violating the soft constraint Ci is pi, we write the score function as: We refer to d(y, 1C(x)) as the valuation of the constraint C on (x, y).","{'title': '4 Notation and Definitions', 'number': '4'}"
-The intuition behind (1) is as follows.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-"Instead of merely maximizing the model’s likelihood, we also want to bias the model using some knowledge.","{'title': '4 Notation and Definitions', 'number': '4'}"
-The first term of (1) is used to learn from data.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-The second term biases the mode by using the knowledge encoded in the constraints.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-Note that we do not normalize our objective function to be a true probability distribution.,"{'title': '4 Notation and Definitions', 'number': '4'}"
-In this section we present a new constraint-driven learning algorithm (CODL) for using constraints to guide semi-supervised learning.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-The task is to learn the parameter vector A by using the new objective function (1).,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"While our formulation allows us to train also the coefficients of the constraints valuation, pi, we choose not to do it, since we view this as a way to bias (or enforce) the prior knowledge into the learned model, rather than allowing the data to brush it away.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-Our experiments demonstrate that the proposed approach is robust to inaccurate approximation of the prior knowledge (assigning the same penalty to all the pi ).,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"We note that in the presence of constraints, the inference procedure (for finding the output y that maximizes the cost function) is usually done with search techniques (rather than Viterbi decoding, see (Toutanova et al., 2005; Roth and Yih, 2005) for a discussion), we chose beamsearch decoding.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-The semi-supervised learning with constraints is done with an EM-like procedure.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-We initialize the model with traditional supervised learning (ignoring the constraints) on a small labeled set.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Given an unlabeled set U, in the estimation step, the traditional EM algorithm assigns a distribution over labeled assignments Y of each x E U, and in the maximization step, the set of model parameters is learned from the distributions assigned in the estimation step.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"However, in the presence of constraints, assigning the complete distributions in the estimation step is infeasible since the constraints reshape the distribution in an arbitrary way.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"As in existing methods for training a model by maximizing a linear cost function (maximize likelihood or discriminative maximization), the distribution over y is represented as the set of scores assigned to it; rather than considering the score assigned to all y's, we truncate the distribution to the top K assignments as returned by the search.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Given a set of K top assignments yi, , yK, we approximate the estimation step by assigning uniform probability to the top K candidates, and zero to the other output sequences.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-We denote this algorithm top-K hard EM.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"In this paper, we use beamsearch to generate K candidates according to (1).","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-Our training algorithm is summarized in Figure 2.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Several things about the algorithm should be clarified: the Top-K-Inference procedure in line 7, the learning procedure in line 9, and the new parameter estimation in line 9.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-The Top-K-Inference is a procedure that returns the K labeled assignments that maximize the new objective function (1).,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"In our case we used the topK elements in the beam, but this could be applied to any other inference procedure.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"The fact that the constraints are used in the inference procedure (in particular, for generating new training examples) allows us to use a learning algorithm that ignores the constraints, which is a lot more efficient (although algorithms that do take the constraints into account can be used too).","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"We used maximum likelihood estimation of A but, in general, perceptron or quasiNewton can also be used.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-It is known that traditional semi-supervised training can degrade the learned model’s performance.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"(Nigam et al., 2000) has suggested to balance the contribution of labeled and unlabeled data to the parameters.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"The intuition is that when iteratively estimating the parameters with EM, we disallow the parameters to drift too far from the supervised model.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"The parameter re-estimation in line 9, uses a similar intuition, but instead of weighting data instances, we introduced a smoothing parameter -y which controls the convex combination of models induced by the labeled and the unlabeled data.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Unlike the technique mentioned above which focuses on naive Bayes, our method allows us to weight linear models generated by different learning algorithms.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Another way to look the algorithm is from the self-training perspective (McClosky et al., 2006).","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"Similarly to self-training, we use the current model to generate new training examples from the unlaTop-K-Inference, we use beamsearch to find the Kbest solution according to Eq.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-(1). beled set.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"However, there are two important differences.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"One is that in self-training, once an unlabeled sample was labeled, it is never labeled again.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-In our case all the samples are relabeled in each iteration.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-In self-training it is often the case that only high-confidence samples are added to the labeled data pool.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"While we include all the samples in the training pool, we could also limit ourselves to the high-confidence samples.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-The second difference is that each unlabeled example generates K labeled instances.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"The case of one iteration of top-1 hard EM is equivalent to self training, where all the unlabeled samples are added to the labeled pool.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-There are several possible benefits to using K > 1 samples.,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-(1) It effectively increases the training set by a factor of K (albeit by somewhat noisy examples).,"{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"In the structured scenario, each of the top-K assignments is likely to have some good components so generating top-K assignments helps leveraging the noise.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"(2) Given an assignment that does not satisfy some constraints, using top-K allows for multiple ways to correct it.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"For example, consider the output 11101000 with the constraint that it should belong to the language 1*0*.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"If the two top scoring corrections are 11111000 and 11100000, considering only one of those can negatively bias the model.","{'title': '5 Learning and Inference with Constraints', 'number': '5'}"
-"In this section, we present empirical results of our algorithms on two domains: citations and advertisements.","{'title': '6 Experiments and Results', 'number': '6'}"
-Both problems are modeled with a simple token-based HMM.,"{'title': '6 Experiments and Results', 'number': '6'}"
-We stress that token-based HMM cannot represent many of our constraints.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"The function d(y, 1C(x)) used is an approximation of a Hamming distance function, discussed in Section 7.","{'title': '6 Experiments and Results', 'number': '6'}"
-"For both domains, and all the experiments, -y was set to 0.1.","{'title': '6 Experiments and Results', 'number': '6'}"
-"The constraints violation penalty p is set to − log 10−4 and − log 10−1 for citations and advertisements, resp.2 Note that all constraints share the same penalty.","{'title': '6 Experiments and Results', 'number': '6'}"
-The number of semi-supervised training cycles (line 3 of Figure 2) was set to 5.,"{'title': '6 Experiments and Results', 'number': '6'}"
-The constraints for the two domains are listed in Table 1.,"{'title': '6 Experiments and Results', 'number': '6'}"
-We trained models on training sets of size varying from 5 to 300 for the citations and from 5 to 100 for the advertisements.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"Additionally, in all the semi-supervised experiments, 1000 unlabeled examples are used.","{'title': '6 Experiments and Results', 'number': '6'}"
-We report token-based3 accuracy on 100 held-out examples (which do not overlap neither with the training nor with the unlabeled data).,"{'title': '6 Experiments and Results', 'number': '6'}"
-"We ran 5 experiments in each setting, randomly choosing the training set.","{'title': '6 Experiments and Results', 'number': '6'}"
-The results reported below are the averages over these 5 runs.,"{'title': '6 Experiments and Results', 'number': '6'}"
-To verify our claims we implemented several baselines.,"{'title': '6 Experiments and Results', 'number': '6'}"
-The first baseline is the supervised learning protocol denoted by sup.,"{'title': '6 Experiments and Results', 'number': '6'}"
-The second baseline was a traditional top-1 Hard EM also known as truncated EM4 (denoted by H for Hard).,"{'title': '6 Experiments and Results', 'number': '6'}"
-"In the third baseline, denoted H&W, we balanced the weight of the supervised and unsupervised models as described in line 9 of Figure 2.","{'title': '6 Experiments and Results', 'number': '6'}"
-"We compare these baselines to our proposed protocol, H&W&C, where we added the constraints to guide the H&W protocol.","{'title': '6 Experiments and Results', 'number': '6'}"
-We experimented with two flavors of the algorithm: the top-1 and the top-K version.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"In the top-K version, the algorithm uses K-best predictions (K=50) for each instance in order to update the model as described in Figure 2.","{'title': '6 Experiments and Results', 'number': '6'}"
-The experimental results for both domains are in given Table 2.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"As hypothesized, hard EM sometimes from citations and advertisements.","{'title': '6 Experiments and Results', 'number': '6'}"
-N is the number of labeled samples.,"{'title': '6 Experiments and Results', 'number': '6'}"
-H is the traditional hard-EM and H&W weighs labeled and unlabeled data as mentioned in Sec.,"{'title': '6 Experiments and Results', 'number': '6'}"
-5.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"Our proposed model is H&W&C, which uses constraints in the learning procedure.","{'title': '6 Experiments and Results', 'number': '6'}"
-I refers to using constraints during inference at evaluation time.,"{'title': '6 Experiments and Results', 'number': '6'}"
-Note that adding constraints improves the accuracy during both learning and inference. degrade the performance.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"Indeed, with 300 labeled examples in the citations domain, the performance decreases from 86.1 to 80.7.","{'title': '6 Experiments and Results', 'number': '6'}"
-The usefulness of injecting constraints in semi-supervised learning is exhibited in the two right most columns: using constraints H&W&C improves the performance over H&W quite significantly.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"We carefully examined the contribution of using constraints to the learning stage and the testing stage, and two separate results are presented: testing with constraints (denoted I for inference) and without constraints (no I).","{'title': '6 Experiments and Results', 'number': '6'}"
-The I results are consistently better.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"And, it is also clear from Table 2, that using constraints in training always improves the model and the amount of improvement depends on the amount of labeled data.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Figure 3 compares two protocols on the advertisements domain: H&W+I, where we first run the H&W protocol and then apply the constraints during testing stage, and H&W&C+I, which uses constraints to guide the model during learning and uses it also in testing.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Although injecting constraints in the learning process helps, testing with constraints is more important than using constraints during learning, especially when the labeled data size is large.","{'title': '6 Experiments and Results', 'number': '6'}"
-"This confirms results reported for the supervised learning case in (Punyakanok et al., 2005; Roth and Yih, 2005).","{'title': '6 Experiments and Results', 'number': '6'}"
-"However, as shown, our proposed algorithm H&W&C for training with constraints is critical when the amount labeled data is small.","{'title': '6 Experiments and Results', 'number': '6'}"
-Figure 4 further strengthens this point.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"In the citations domain, H&W&C+I achieves with 20 labeled samples similar performance to the supervised version without constraints with 300 labeled samples.","{'title': '6 Experiments and Results', 'number': '6'}"
-"(Grenager et al., 2005) and (Haghighi and Klein, 2006) also report results for semi-supervised learning for these domains.","{'title': '6 Experiments and Results', 'number': '6'}"
-"However, due to different preprocessing, the comparison is not straightforward.","{'title': '6 Experiments and Results', 'number': '6'}"
-"For the citation domain, when 20 labeled and 300 unlabeled samples are available, (Grenager et al., 2005) observed an increase from 65.2% to 71.3%.","{'title': '6 Experiments and Results', 'number': '6'}"
-Our improvement is from 70.1% to 79.4%.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"For the advertisement domain, they observed no improvement, while our model improves from 68.1% to 74.6% with 20 labeled samples.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Moreover, we successfully use out-of-domain data (web data) to improve our model, while they report that this data did not improve their unsupervised model.","{'title': '6 Experiments and Results', 'number': '6'}"
-"(Haghighi and Klein, 2006) also worked on one of our data sets.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Their underlying model, Markov Random Fields, allows more expressive features.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Nevertheless, when they use only unary constraints they get 53.75%.","{'title': '6 Experiments and Results', 'number': '6'}"
-"When they use their final model, along with a mechanism for extending the prototypes to other tokens, they get results that are comparable to our model with 10 labeled examples.","{'title': '6 Experiments and Results', 'number': '6'}"
-"Additionally, in their framework, it is not clear how to use small amounts of labeled data when available.","{'title': '6 Experiments and Results', 'number': '6'}"
-Our model outperforms theirs once we add 10 more examples.,"{'title': '6 Experiments and Results', 'number': '6'}"
-"This section discusses the importance of using soft constraints rather than hard constraints, the choice of Hamming distance for d(y, 1C(x)) and how we approximate it.","{'title': '7 Soft Constraints', 'number': '7'}"
-We use two constraints to illustrate the ideas.,"{'title': '7 Soft Constraints', 'number': '7'}"
-"(C1): “state transitions can only occur on punctuation marks or newlines”, and (C2): “the field TITLE must appear”.","{'title': '7 Soft Constraints', 'number': '7'}"
-"First, we claim that defining d(y, 1C(x)) to be the Hamming distance is superior to using a binary value, d(y, 1C(x)) = 0 if y E 1C(x) and 1 otherwise.","{'title': '7 Soft Constraints', 'number': '7'}"
-"Consider, for example, the constraint C1 in the advertisements domain.","{'title': '7 Soft Constraints', 'number': '7'}"
-"While the vast majority of the instances satisfy the constraint, some violate it in more than one place.","{'title': '7 Soft Constraints', 'number': '7'}"
-"Therefore, once the binary distance is set to 1, the algorithm looses the ability to discriminate constraint violations in other locations of the same instance.","{'title': '7 Soft Constraints', 'number': '7'}"
-This may hurt the performance in both the inference and the learning stage.,"{'title': '7 Soft Constraints', 'number': '7'}"
-Computing the Hamming distance exactly can be a computationally hard problem.,"{'title': '7 Soft Constraints', 'number': '7'}"
-"Furthermore, it is unreasonable to implement the exact computation for each constraint.","{'title': '7 Soft Constraints', 'number': '7'}"
-"Therefore, we implemented a generic approximation for the hamming distance assuming only that we are given a boolean function OC(yN) that returns whether labeling the token xN with state yN violates constraint with respect to an already labeled consider the prefix x1, x2, x3, x4, which contains no punctuation or newlines and was labeled AUTH, AUTH, DATE, DATE.","{'title': '7 Soft Constraints', 'number': '7'}"
-"This labeling violates C1, the minimal hamming distance is 2, and our approximation gives 1, (since there is only one transition that violates the constraint.)","{'title': '7 Soft Constraints', 'number': '7'}"
-"For constraints which cannot be validated based on prefix information, our approximation resorts to binary violation count.","{'title': '7 Soft Constraints', 'number': '7'}"
-"For instance, the constraint C2 cannot be implemented with prefix information when the assignment is not complete.","{'title': '7 Soft Constraints', 'number': '7'}"
-"Otherwise, it would mean that the field TITLE should appear as early as possible in the assignment.","{'title': '7 Soft Constraints', 'number': '7'}"
-"While (Roth and Yih, 2005) showed the significance of using hard constraints, our experiments show that using soft constraints is a superior option.","{'title': '7 Soft Constraints', 'number': '7'}"
-"For example, in the advertisements domain, C1 holds for the large majority of the gold-labeled instances, but is sometimes violated.","{'title': '7 Soft Constraints', 'number': '7'}"
-"In supervised training with 100 labeled examples on this domain, sup gave 76.3% accuracy.","{'title': '7 Soft Constraints', 'number': '7'}"
-"When the constraint violation penalty p was infinity (equivalent to hard constraint), the accuracy improved to 78.7%, but when the penalty was set to −log(0.1), the accuracy of the model jumped to 80.6%.","{'title': '7 Soft Constraints', 'number': '7'}"
-We proposed to use constraints as a way to guide semi-supervised learning.,"{'title': '8 Conclusions and Future Work', 'number': '8'}"
-"The framework developed is general both in terms of the representation and expressiveness of the constraints, and in terms of the underlying model being learned – HMM in the current implementation.","{'title': '8 Conclusions and Future Work', 'number': '8'}"
-"Moreover, our framework is a useful tool when the domain knowledge cannot be expressed by the model.","{'title': '8 Conclusions and Future Work', 'number': '8'}"
-The results show that constraints improve not only the performance of the final inference stage but also propagate useful information during the semisupervised learning process and that training with the constraints is especially significant when the number of labeled training data is small.,"{'title': '8 Conclusions and Future Work', 'number': '8'}"
-Acknowledgments: This work is supported by NSF SoDHCER-0613885 and by a grant from Boeing.,"{'title': '8 Conclusions and Future Work', 'number': '8'}"
-"Part of this work was done while Dan Roth visited the Technion, Israel, supported by a Lady Davis Fellowship.","{'title': '8 Conclusions and Future Work', 'number': '8'}"
+"Over the last few years, two of the main research directions in machine learning of natural language processing have been the study of semi-supervised learning algorithms as a way to train classifiers when the labeled data is scarce, and the study of ways to exploit knowledge and global information in structured learning tasks.",Introduction
+"In this paper, we suggest a method for incorporating domain knowledge in semi-supervised learning algorithms.",Introduction
+"Our novel framework unifies can exploit several kinds of specific The experimental results presented in the information extraction domain demonstrate that applying constraints helps the model to generate better feedback during learning, and hence the framework allows for high performance learning with significantly less training data than was possible before on these tasks.",Introduction
+Natural Language Processing (NLP) systems typically require large amounts of knowledge to achieve good performance.,Experiment/Discussion
+Acquiring labeled data is a difficult and expensive task.,Experiment/Discussion
+"Therefore, an increasing attention has been recently given to semi-supervised learning, where large amounts of unlabeled data are used to improve the models learned from a small training set (Collins and Singer, 1999; Thelen and Riloff, 2002).",Experiment/Discussion
+"The hope is that semi-supervised or even unsupervised approaches, when given enough knowledge about the structure of the problem, will be competitive with the supervised models trained on large training sets.",Experiment/Discussion
+"However, in the general case, semi-supervised approaches give mixed results, and sometimes even degrade the model performance (Nigam et al., 2000).",Experiment/Discussion
+"In many cases, improving semi-supervised models was done by seeding these models with domain information taken from dictionaries or ontology (Cohen and Sarawagi, 2004; Collins and Singer, 1999; Haghighi and Klein, 2006; Thelen and Riloff, 2002).",Experiment/Discussion
+"On the other hand, in the supervised setting, it has been shown that incorporating domain and problem specific structured information can result in substantial improvements (Toutanova et al., 2005; Roth and Yih, 2005).",Experiment/Discussion
+This paper proposes a novel constraints-based learning protocol for guiding semi-supervised learning.,Experiment/Discussion
+"We develop a formalism for constraints-based learning that unifies several kinds of constraints: unary, dictionary based and n-ary constraints, which encode structural information and interdependencies among possible labels.",Experiment/Discussion
+One advantage of our formalism is that it allows capturing different levels of constraint violation.,Experiment/Discussion
+"Our protocol can be used in the presence of any learning model, including those that acquire additional statistical constraints from observed data while learning (see Section 5.",Experiment/Discussion
+"In the experimental part of this paper we use HMMs as the underlying model, and exhibit significant reduction in the number of training examples required in two information extraction problems.",Experiment/Discussion
+"As is often the case in semi-supervised learning, the algorithm can be viewed as a process that improves the model by generating feedback through labeling unlabeled examples.",Experiment/Discussion
+"Our algorithm pushes this intuition further, in that the use of constraints allows us to better exploit domain information as a way to label, along with the current learned model, unlabeled examples.",Experiment/Discussion
+"Given a small amount of labeled data and a large unlabeled pool, our framework initializes the model with the labeled data and then repeatedly: This way, we can generate better “training” examples during the semi-supervised learning process.",Experiment/Discussion
+"The core of our approach, (1), is described in Section 5.",Experiment/Discussion
+The task is described in Section 3 and the Experimental study in Section 6.,Experiment/Discussion
+It is shown there that the improvement on the training examples via the constraints indeed boosts the learned model and the proposed method significantly outperforms the traditional semi-supervised framework.,Experiment/Discussion
+In the semi-supervised domain there are two main approaches for injecting domain specific knowledge.,Experiment/Discussion
+One is using the prior knowledge to accurately tailor the generative model so that it captures the domain structure.,Experiment/Discussion
+"For example, (Grenager et al., 2005) proposes Diagonal Transition Models for sequential labeling tasks where neighboring words tend to have the same labels.",Experiment/Discussion
+"This is done by constraining the HMM transition matrix, which can be done also for other models, such as CRF.",Experiment/Discussion
+"However (Roth and Yih, 2005) showed that reasoning with more expressive, non-sequential constraints can improve the performance for the supervised protocol.",Experiment/Discussion
+A second approach has been to use a small highaccuracy set of labeled tokens as a way to seed and bootstrap the semi-supervised learning.,Experiment/Discussion
+"This was used, for example, by (Thelen and Riloff, 2002; Collins and Singer, 1999) in information extraction, and by (Smith and Eisner, 2005) in POS tagging.",Experiment/Discussion
+"(Haghighi and Klein, 2006) extends the dictionarybased approach to sequential labeling tasks by propagating the information given in the seeds with contextual word similarity.",Experiment/Discussion
+"This follows a conceptually similar approach by (Cohen and Sarawagi, 2004) that uses a large named-entity dictionary, where the similarity between the candidate named-entity and its matching prototype in the dictionary is encoded as a feature in a supervised classifier.",Experiment/Discussion
+"In our framework, dictionary lookup approaches are viewed as unary constraints on the output states.",Experiment/Discussion
+"We extend these kinds of constraints and allow for more general, n-ary constraints.",Experiment/Discussion
+"In the supervised learning setting it has been established that incorporating global information can significantly improve performance on several NLP tasks, including information extraction and semantic role labeling.",Experiment/Discussion
+"(Punyakanok et al., 2005; Toutanova et al., 2005; Roth and Yih, 2005).",Experiment/Discussion
+Our formalism is most related to this last work.,Experiment/Discussion
+"But, we develop a semi-supervised learning protocol based on this formalism.",Experiment/Discussion
+"We also make use of soft constraints and, furthermore, extend the notion of soft constraints to account for multiple levels of constraints’ violation.",Experiment/Discussion
+"Conceptually, although not technically, the most related work to ours is (Shen et al., 2005) that, in a somewhat ad-hoc manner uses soft constraints to guide an unsupervised model that was crafted for mention tracking.",Experiment/Discussion
+"To the best of our knowledge, we are the first to suggest a general semi-supervised protocol that is driven by soft constraints.",Experiment/Discussion
+We propose learning with constraints - a framework that combines the approaches described above in a unified and intuitive way.,Experiment/Discussion
+In Section 4 we will develop a general framework for semi-supervised learning with constraints.,Experiment/Discussion
+"However, it is useful to illustrate the ideas on concrete problems.",Experiment/Discussion
+"Therefore, in this section, we give a brief introduction to the two domains on which we tested our algorithms.",Experiment/Discussion
+"We study two information extraction problems in each of which, given text, a set of pre-defined fields is to be identified.",Experiment/Discussion
+"Since the fields are typically related and interdependent, these kinds of applications provide a good test case for an approach like ours.1 The first task is to identify fields from citations (McCallum et al., 2000) .",Experiment/Discussion
+"The data originally included 500 labeled references, and was later extended with 5,000 unannotated citations collected from papers found on the Internet (Grenager et al., 2005).",Experiment/Discussion
+"Given a citation, the task is to extract the each open bracket.",Experiment/Discussion
+The correct assignment was shown in (a).,Experiment/Discussion
+"While the predicted label assignment (b) is generally coherent, some constraints are violated.",Experiment/Discussion
+"Most obviously, punctuation marks are ignored as cues for state transitions.",Experiment/Discussion
+The constraint “Fields cannot end with stop words (such as “the”)” may be also good. fields that appear in the given reference.,Experiment/Discussion
+See Fig.,Experiment/Discussion
+1.,Experiment/Discussion
+"There are 13 possible fields including author, title, location, etc.",Experiment/Discussion
+"To gain an insight to how the constraints can guide semi-supervised learning, assume that the sentence shown in Figure 1 appears in the unlabeled data pool.",Experiment/Discussion
+Part (a) of the figure shows the correct labeled assignment and part (b) shows the assignment labeled by a HMM trained on 30 labels.,Experiment/Discussion
+"However, if we apply the constraint that state transition can occur only on punctuation marks, the same HMM model parameters will result in the correct labeling (a).",Experiment/Discussion
+"Therefore, by adding the improved labeled assignment we can generate better training samples during semi-supervised learning.",Experiment/Discussion
+"In fact, the punctuation marks are only some of the constraints that can be applied to this problem.",Experiment/Discussion
+The set of constraints we used in our experiments appears in Table 1.,Experiment/Discussion
+"Note that some of the constraints are non-local and are very intuitive for people, yet it is very difficult to inject this knowledge into most models.",Experiment/Discussion
+"The second problem we consider is extracting fields from advertisements (Grenager et al., 2005).",Experiment/Discussion
+"The dataset consists of 8,767 advertisements for apartment rentals in the San Francisco Bay Area downloaded in June 2004 from the Craigslist website.",Experiment/Discussion
+"In the dataset, only 302 entries have been labeled with 12 fields, including size, rent, neighborhood, features, and so on.",Experiment/Discussion
+"The data was preprocessed using regular expressions for phone numbers, email addresses and URLs.",Experiment/Discussion
+The list of the constraints for this domain is given in Table 1.,Experiment/Discussion
+"We implement some global constraints and include unary constraints which were largely imported from the list of seed words used in (Haghighi and Klein, 2006).",Experiment/Discussion
+We slightly modified the seedwords due to difference in preprocessing.,Experiment/Discussion
+"given an input sequence x = (x1,... , xN), the task is to find the best assignment to the output variables y = (y1, ... , yM).",Experiment/Discussion
+We denote X to be the space of the possible input sequences and Y to be the set of possible output sequences.,Experiment/Discussion
+We define a structured output classifier as a function h : X  Y that uses a global scoring function f : X × Y  R to assign scores to each possible input/output pair.,Experiment/Discussion
+"Given an input x, a desired function f will assign the correct output y the highest score among all the possible outputs.",Experiment/Discussion
+"The global scoring function is often decomposed as a weighted sum of feature functions, This decomposition applies both to discriminative linear models and to generative models such as HMMs and CRFs, in which case the linear sum corresponds to log likelihood assigned to the input/output pair by the model (for details see (Roth, 1999) for the classification case and (Collins, 2002) for the structured case).",Experiment/Discussion
+"Even when not dictated by the model, the feature functions fi(x, y) used are local to allow inference tractability.",Experiment/Discussion
+"Local feature function can capture some context for each input or output variable, yet it is very limited to allow dynamic programming decoding during inference.",Experiment/Discussion
+"Now, consider a scenario where we have a set of constraints C1, ... , CK.",Experiment/Discussion
+"We define a constraint C : X × Y  {0, 1} as a function that indicates whether the input/output sequence violates some desired properties.",Experiment/Discussion
+"When the constraints are hard, the solution is given by from citations and advertisements.",Experiment/Discussion
+Some constraints (represented in the first block of each domain) are global and are relatively difficult to inject into traditional models.,Experiment/Discussion
+"While all the constraints hold for the vast majority of the data, some of them are violated by some correct labeled assignments. where 1C(x) is a subset of Y for which all Ci assign the value 1 for the given (x, y).",Experiment/Discussion
+"When the constraints are soft, we want to incur some penalty for their violation.",Experiment/Discussion
+"Moreover, we want to incorporate into our cost function a measure for the amount of violation incurred by violating the constraint.",Experiment/Discussion
+"A generic way to capture this intuition is to introduce a distance function d(y, 1Ci(x)) between the space of outputs that respect the constraint,1Ci(x), and the given output sequence y.",Experiment/Discussion
+"One possible way to implement this distance function is as the minimal Hamming distance to a sequence that respects the constraint Ci, that is: d(y, 1Ci(x)) = min(y'E1C(.))",Experiment/Discussion
+"H(y, y').",Experiment/Discussion
+"If the penalty for violating the soft constraint Ci is pi, we write the score function as: We refer to d(y, 1C(x)) as the valuation of the constraint C on (x, y).",Experiment/Discussion
+The intuition behind (1) is as follows.,Experiment/Discussion
+"Instead of merely maximizing the model’s likelihood, we also want to bias the model using some knowledge.",Experiment/Discussion
+The first term of (1) is used to learn from data.,Experiment/Discussion
+The second term biases the mode by using the knowledge encoded in the constraints.,Experiment/Discussion
+Note that we do not normalize our objective function to be a true probability distribution.,Experiment/Discussion
+In this section we present a new constraint-driven learning algorithm (CODL) for using constraints to guide semi-supervised learning.,Experiment/Discussion
+The task is to learn the parameter vector A by using the new objective function (1).,Experiment/Discussion
+"While our formulation allows us to train also the coefficients of the constraints valuation, pi, we choose not to do it, since we view this as a way to bias (or enforce) the prior knowledge into the learned model, rather than allowing the data to brush it away.",Experiment/Discussion
+Our experiments demonstrate that the proposed approach is robust to inaccurate approximation of the prior knowledge (assigning the same penalty to all the pi ).,Experiment/Discussion
+"We note that in the presence of constraints, the inference procedure (for finding the output y that maximizes the cost function) is usually done with search techniques (rather than Viterbi decoding, see (Toutanova et al., 2005; Roth and Yih, 2005) for a discussion), we chose beamsearch decoding.",Experiment/Discussion
+The semi-supervised learning with constraints is done with an EM-like procedure.,Experiment/Discussion
+We initialize the model with traditional supervised learning (ignoring the constraints) on a small labeled set.,Experiment/Discussion
+"Given an unlabeled set U, in the estimation step, the traditional EM algorithm assigns a distribution over labeled assignments Y of each x E U, and in the maximization step, the set of model parameters is learned from the distributions assigned in the estimation step.",Experiment/Discussion
+"However, in the presence of constraints, assigning the complete distributions in the estimation step is infeasible since the constraints reshape the distribution in an arbitrary way.",Experiment/Discussion
+"As in existing methods for training a model by maximizing a linear cost function (maximize likelihood or discriminative maximization), the distribution over y is represented as the set of scores assigned to it; rather than considering the score assigned to all y's, we truncate the distribution to the top K assignments as returned by the search.",Experiment/Discussion
+"Given a set of K top assignments yi, , yK, we approximate the estimation step by assigning uniform probability to the top K candidates, and zero to the other output sequences.",Experiment/Discussion
+We denote this algorithm top-K hard EM.,Experiment/Discussion
+"In this paper, we use beamsearch to generate K candidates according to (1).",Experiment/Discussion
+Our training algorithm is summarized in Figure 2.,Experiment/Discussion
+"Several things about the algorithm should be clarified: the Top-K-Inference procedure in line 7, the learning procedure in line 9, and the new parameter estimation in line 9.",Experiment/Discussion
+The Top-K-Inference is a procedure that returns the K labeled assignments that maximize the new objective function (1).,Experiment/Discussion
+"In our case we used the topK elements in the beam, but this could be applied to any other inference procedure.",Experiment/Discussion
+"The fact that the constraints are used in the inference procedure (in particular, for generating new training examples) allows us to use a learning algorithm that ignores the constraints, which is a lot more efficient (although algorithms that do take the constraints into account can be used too).",Experiment/Discussion
+"We used maximum likelihood estimation of A but, in general, perceptron or quasiNewton can also be used.",Experiment/Discussion
+It is known that traditional semi-supervised training can degrade the learned model’s performance.,Experiment/Discussion
+"(Nigam et al., 2000) has suggested to balance the contribution of labeled and unlabeled data to the parameters.",Experiment/Discussion
+"The intuition is that when iteratively estimating the parameters with EM, we disallow the parameters to drift too far from the supervised model.",Experiment/Discussion
+"The parameter re-estimation in line 9, uses a similar intuition, but instead of weighting data instances, we introduced a smoothing parameter -y which controls the convex combination of models induced by the labeled and the unlabeled data.",Experiment/Discussion
+"Unlike the technique mentioned above which focuses on naive Bayes, our method allows us to weight linear models generated by different learning algorithms.",Experiment/Discussion
+"Another way to look the algorithm is from the self-training perspective (McClosky et al., 2006).",Experiment/Discussion
+"Similarly to self-training, we use the current model to generate new training examples from the unlaTop-K-Inference, we use beamsearch to find the Kbest solution according to Eq.",Experiment/Discussion
+(1). beled set.,Experiment/Discussion
+"However, there are two important differences.",Experiment/Discussion
+"One is that in self-training, once an unlabeled sample was labeled, it is never labeled again.",Experiment/Discussion
+In our case all the samples are relabeled in each iteration.,Experiment/Discussion
+In self-training it is often the case that only high-confidence samples are added to the labeled data pool.,Experiment/Discussion
+"While we include all the samples in the training pool, we could also limit ourselves to the high-confidence samples.",Experiment/Discussion
+The second difference is that each unlabeled example generates K labeled instances.,Experiment/Discussion
+"The case of one iteration of top-1 hard EM is equivalent to self training, where all the unlabeled samples are added to the labeled pool.",Experiment/Discussion
+There are several possible benefits to using K > 1 samples.,Experiment/Discussion
+(1) It effectively increases the training set by a factor of K (albeit by somewhat noisy examples).,Experiment/Discussion
+"In the structured scenario, each of the top-K assignments is likely to have some good components so generating top-K assignments helps leveraging the noise.",Experiment/Discussion
+"(2) Given an assignment that does not satisfy some constraints, using top-K allows for multiple ways to correct it.",Experiment/Discussion
+"For example, consider the output 11101000 with the constraint that it should belong to the language 1*0*.",Experiment/Discussion
+"If the two top scoring corrections are 11111000 and 11100000, considering only one of those can negatively bias the model.",Experiment/Discussion
+"In this section, we present empirical results of our algorithms on two domains: citations and advertisements.",Experiment/Discussion
+Both problems are modeled with a simple token-based HMM.,Experiment/Discussion
+We stress that token-based HMM cannot represent many of our constraints.,Experiment/Discussion
+"The function d(y, 1C(x)) used is an approximation of a Hamming distance function, discussed in Section 7.",Experiment/Discussion
+"For both domains, and all the experiments, -y was set to 0.1.",Experiment/Discussion
+"The constraints violation penalty p is set to − log 10−4 and − log 10−1 for citations and advertisements, resp.2 Note that all constraints share the same penalty.",Experiment/Discussion
+The number of semi-supervised training cycles (line 3 of Figure 2) was set to 5.,Experiment/Discussion
+The constraints for the two domains are listed in Table 1.,Experiment/Discussion
+We trained models on training sets of size varying from 5 to 300 for the citations and from 5 to 100 for the advertisements.,Experiment/Discussion
+"Additionally, in all the semi-supervised experiments, 1000 unlabeled examples are used.",Experiment/Discussion
+We report token-based3 accuracy on 100 held-out examples (which do not overlap neither with the training nor with the unlabeled data).,Experiment/Discussion
+"We ran 5 experiments in each setting, randomly choosing the training set.",Experiment/Discussion
+The results reported below are the averages over these 5 runs.,Experiment/Discussion
+To verify our claims we implemented several baselines.,Experiment/Discussion
+The first baseline is the supervised learning protocol denoted by sup.,Experiment/Discussion
+The second baseline was a traditional top-1 Hard EM also known as truncated EM4 (denoted by H for Hard).,Experiment/Discussion
+"In the third baseline, denoted H&W, we balanced the weight of the supervised and unsupervised models as described in line 9 of Figure 2.",Experiment/Discussion
+"We compare these baselines to our proposed protocol, H&W&C, where we added the constraints to guide the H&W protocol.",Experiment/Discussion
+We experimented with two flavors of the algorithm: the top-1 and the top-K version.,Experiment/Discussion
+"In the top-K version, the algorithm uses K-best predictions (K=50) for each instance in order to update the model as described in Figure 2.",Experiment/Discussion
+The experimental results for both domains are in given Table 2.,Experiment/Discussion
+"As hypothesized, hard EM sometimes from citations and advertisements.",Experiment/Discussion
+N is the number of labeled samples.,Experiment/Discussion
+H is the traditional hard-EM and H&W weighs labeled and unlabeled data as mentioned in Sec.,Experiment/Discussion
+5.,Experiment/Discussion
+"Our proposed model is H&W&C, which uses constraints in the learning procedure.",Experiment/Discussion
+I refers to using constraints during inference at evaluation time.,Experiment/Discussion
+Note that adding constraints improves the accuracy during both learning and inference. degrade the performance.,Experiment/Discussion
+"Indeed, with 300 labeled examples in the citations domain, the performance decreases from 86.1 to 80.7.",Experiment/Discussion
+The usefulness of injecting constraints in semi-supervised learning is exhibited in the two right most columns: using constraints H&W&C improves the performance over H&W quite significantly.,Experiment/Discussion
+"We carefully examined the contribution of using constraints to the learning stage and the testing stage, and two separate results are presented: testing with constraints (denoted I for inference) and without constraints (no I).",Experiment/Discussion
+The I results are consistently better.,Experiment/Discussion
+"And, it is also clear from Table 2, that using constraints in training always improves the model and the amount of improvement depends on the amount of labeled data.",Experiment/Discussion
+"Figure 3 compares two protocols on the advertisements domain: H&W+I, where we first run the H&W protocol and then apply the constraints during testing stage, and H&W&C+I, which uses constraints to guide the model during learning and uses it also in testing.",Experiment/Discussion
+"Although injecting constraints in the learning process helps, testing with constraints is more important than using constraints during learning, especially when the labeled data size is large.",Experiment/Discussion
+"This confirms results reported for the supervised learning case in (Punyakanok et al., 2005; Roth and Yih, 2005).",Experiment/Discussion
+"However, as shown, our proposed algorithm H&W&C for training with constraints is critical when the amount labeled data is small.",Experiment/Discussion
+Figure 4 further strengthens this point.,Experiment/Discussion
+"In the citations domain, H&W&C+I achieves with 20 labeled samples similar performance to the supervised version without constraints with 300 labeled samples.",Experiment/Discussion
+"(Grenager et al., 2005) and (Haghighi and Klein, 2006) also report results for semi-supervised learning for these domains.",Experiment/Discussion
+"However, due to different preprocessing, the comparison is not straightforward.",Experiment/Discussion
+"For the citation domain, when 20 labeled and 300 unlabeled samples are available, (Grenager et al., 2005) observed an increase from 65.2% to 71.3%.",Experiment/Discussion
+Our improvement is from 70.1% to 79.4%.,Experiment/Discussion
+"For the advertisement domain, they observed no improvement, while our model improves from 68.1% to 74.6% with 20 labeled samples.",Experiment/Discussion
+"Moreover, we successfully use out-of-domain data (web data) to improve our model, while they report that this data did not improve their unsupervised model.",Experiment/Discussion
+"(Haghighi and Klein, 2006) also worked on one of our data sets.",Experiment/Discussion
+"Their underlying model, Markov Random Fields, allows more expressive features.",Experiment/Discussion
+"Nevertheless, when they use only unary constraints they get 53.75%.",Experiment/Discussion
+"When they use their final model, along with a mechanism for extending the prototypes to other tokens, they get results that are comparable to our model with 10 labeled examples.",Experiment/Discussion
+"Additionally, in their framework, it is not clear how to use small amounts of labeled data when available.",Experiment/Discussion
+Our model outperforms theirs once we add 10 more examples.,Experiment/Discussion
+"This section discusses the importance of using soft constraints rather than hard constraints, the choice of Hamming distance for d(y, 1C(x)) and how we approximate it.",Results/Conclusion
+We use two constraints to illustrate the ideas.,Results/Conclusion
+"(C1): “state transitions can only occur on punctuation marks or newlines”, and (C2): “the field TITLE must appear”.",Results/Conclusion
+"First, we claim that defining d(y, 1C(x)) to be the Hamming distance is superior to using a binary value, d(y, 1C(x)) = 0 if y E 1C(x) and 1 otherwise.",Results/Conclusion
+"Consider, for example, the constraint C1 in the advertisements domain.",Results/Conclusion
+"While the vast majority of the instances satisfy the constraint, some violate it in more than one place.",Results/Conclusion
+"Therefore, once the binary distance is set to 1, the algorithm looses the ability to discriminate constraint violations in other locations of the same instance.",Results/Conclusion
+This may hurt the performance in both the inference and the learning stage.,Results/Conclusion
+Computing the Hamming distance exactly can be a computationally hard problem.,Results/Conclusion
+"Furthermore, it is unreasonable to implement the exact computation for each constraint.",Results/Conclusion
+"Therefore, we implemented a generic approximation for the hamming distance assuming only that we are given a boolean function OC(yN) that returns whether labeling the token xN with state yN violates constraint with respect to an already labeled consider the prefix x1, x2, x3, x4, which contains no punctuation or newlines and was labeled AUTH, AUTH, DATE, DATE.",Results/Conclusion
+"This labeling violates C1, the minimal hamming distance is 2, and our approximation gives 1, (since there is only one transition that violates the constraint.)",Results/Conclusion
+"For constraints which cannot be validated based on prefix information, our approximation resorts to binary violation count.",Results/Conclusion
+"For instance, the constraint C2 cannot be implemented with prefix information when the assignment is not complete.",Results/Conclusion
+"Otherwise, it would mean that the field TITLE should appear as early as possible in the assignment.",Results/Conclusion
+"While (Roth and Yih, 2005) showed the significance of using hard constraints, our experiments show that using soft constraints is a superior option.",Results/Conclusion
+"For example, in the advertisements domain, C1 holds for the large majority of the gold-labeled instances, but is sometimes violated.",Results/Conclusion
+"In supervised training with 100 labeled examples on this domain, sup gave 76.3% accuracy.",Results/Conclusion
+"When the constraint violation penalty p was infinity (equivalent to hard constraint), the accuracy improved to 78.7%, but when the penalty was set to −log(0.1), the accuracy of the model jumped to 80.6%.",Results/Conclusion
+We proposed to use constraints as a way to guide semi-supervised learning.,Results/Conclusion
+"The framework developed is general both in terms of the representation and expressiveness of the constraints, and in terms of the underlying model being learned – HMM in the current implementation.",Results/Conclusion
+"Moreover, our framework is a useful tool when the domain knowledge cannot be expressed by the model.",Results/Conclusion
+The results show that constraints improve not only the performance of the final inference stage but also propagate useful information during the semisupervised learning process and that training with the constraints is especially significant when the number of labeled training data is small.,Results/Conclusion
+Acknowledgments: This work is supported by NSF SoDHCER-0613885 and by a grant from Boeing.,Results/Conclusion
+"Part of this work was done while Dan Roth visited the Technion, Israel, supported by a Lady Davis Fellowship.",Results/Conclusion

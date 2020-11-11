@@ -1,214 +1,214 @@
 col1,col2
-"Previous work demonstrated that web counts can be used to approximate bigram frequencies, and thus should be useful for a wide variety of NLP tasks.",{}
-"So far, only two generation tasks (candidate selection for machine translation and confusion-set disambiguation) have been tested using web-scale data sets.",{}
-"The present paper investigates if these results generalize to tasks covering both syntax and semantics, both generation and analysis, and a larger of For the majority of tasks, we find that simple, unsupervised models perform when frequencies are obtained from the web rather than from a large corpus.",{}
-"However, in most cases, web-based models fail to outperform more sophisticated state-of-theart models trained on small corpora.",{}
-"We argue that web-based models should therefore be used as a baseline for, rather than an alternative to, standard models.",{}
-"Keller and Lapata (2003) investigated the validity of web counts for a range of predicate-argument bigrams (verbobject, adjective-noun, and noun-noun bigrams).","{'title': '1 Introduction', 'number': '1'}"
-"They presented a simple method for retrieving bigram counts from the web by querying a search engine and demonstrated that web counts (a) correlate with frequencies obtained from a carefully edited, balanced corpus such as the 100M words British National Corpus (BNC), (b) correlate with frequencies recreated using smoothing methods in the case of unseen bigrams, (c) reliably predict human plausibility judgments, and (d) yield state-of-the-art performance on pseudo-disambiguation tasks.","{'title': '1 Introduction', 'number': '1'}"
-Keller and Lapata’s (2003) results suggest that webbased frequencies can be a viable alternative to bigram frequencies obtained from smaller corpora or recreated using smoothing.,"{'title': '1 Introduction', 'number': '1'}"
-"However, they do not demonstrate that realistic NLP tasks can benefit from web counts.","{'title': '1 Introduction', 'number': '1'}"
-"In order to show this, web counts would have to be applied to a diverse range of NLP tasks, both syntactic and semantic, involving analysis (e.g., disambiguation) and generation (e.g., selection among competing outputs).","{'title': '1 Introduction', 'number': '1'}"
-"Also, it remains to be shown that the web-based approach scales up to larger n-grams (e.g., trigrams), and to combinations of different parts of speech (Keller and Lapata 2003 only tested bigrams involving nouns, verbs, and adjectives).","{'title': '1 Introduction', 'number': '1'}"
-"Another important question is whether web-based methods, which are by definition unsupervised, can be competitive alternatives to supervised approaches used for most tasks in the literature.","{'title': '1 Introduction', 'number': '1'}"
-This paper aims to address these questions.,"{'title': '1 Introduction', 'number': '1'}"
-"We start by using web counts for two generation tasks for which the use of large data sets has shown promising results: (a) target language candidate selection for machine translation (Grefenstette, 1998) and (b) context sensitive spelling correction (Banko and Brill, 2001a,b).","{'title': '1 Introduction', 'number': '1'}"
-"Then we investigate the generality of the web-based approach by applying it to a range of analysis and generations tasks, involving both syntactic and semantic knowledge: (c) ordering of prenominal adjectives, (d) compound noun bracketing, (e) compound noun interpretation, and (f) noun countability detection.","{'title': '1 Introduction', 'number': '1'}"
-Table 1 gives an overview of these tasks and their properties.,"{'title': '1 Introduction', 'number': '1'}"
-"In all cases, we propose a simple, unsupervised n-gram based model whose parameters are estimated using web counts.","{'title': '1 Introduction', 'number': '1'}"
-"We compare this model both against a baseline (same model, but parameters estimated on the BNC) and against state-of-the-art models from the literature, which are either supervised (i.e., use annotated training data) or unsupervised but rely on taxonomies to recreate missing counts.","{'title': '1 Introduction', 'number': '1'}"
-"Following Keller and Lapata (2003), web counts for ngrams were obtained using a simple heuristic based on queries to the search engine Altavista.1 In this approach, the web count for a given n-gram is simply the number of hits (pages) returned by the search engine for the queries generated for this n-gram.","{'title': '2 Method', 'number': '2'}"
-"Three different types of queries were used for the NLP tasks in the present paper: Literal queries use the quoted n-gram directly as a search term for Altavista (e.g., the bigram history changes expands to the query &quot;history changes&quot;).","{'title': '2 Method', 'number': '2'}"
-"Near queries use Altavista’s NEAR operator to expand the n-gram; a NEAR b means that a has to occur in the same ten word window as b; the window is treated as a bag of words (e.g., history changes expands to &quot;history&quot; NEAR &quot;changes&quot;).","{'title': '2 Method', 'number': '2'}"
-Inflected queries are performed by expanding an n-gram into all its morphological forms.,"{'title': '2 Method', 'number': '2'}"
-"These forms are then submitted as literal queries, and the resulting hits are summed up (e.g., history changes expands to &quot;history change&quot;, &quot;histories change&quot;, &quot;history changed&quot;, etc.).","{'title': '2 Method', 'number': '2'}"
-"John Carroll’s suite of morphological tools (morpha, morphg, and ana) was used to generate inflected forms of verbs and nouns.2 In certain cases (detailed below), determiners were inserted before nouns in order to make it possible to recognize simple NPs.","{'title': '2 Method', 'number': '2'}"
-"This insertion was limited to a/an, the, and the empty determiner (for bare plurals).","{'title': '2 Method', 'number': '2'}"
-All queries (other than the ones using the NEAR operator) were performed as exact matches (using quotation marks in Altavista).,"{'title': '2 Method', 'number': '2'}"
-All search terms were submitted to the search engine in lower case.,"{'title': '2 Method', 'number': '2'}"
-"If a query consists of a single, highly frequent word (such as the), Altavista will return an error message.","{'title': '2 Method', 'number': '2'}"
-"In these cases, we set the web count to a large constant (108).","{'title': '2 Method', 'number': '2'}"
-"This problem is limited to unigrams, which were used in some of the models detailed below.","{'title': '2 Method', 'number': '2'}"
-Sometimes the search engine fails to return a hit for a given n-gram (for any of its morphological variants).,"{'title': '2 Method', 'number': '2'}"
-We smooth zero counts by setting them to .5.,"{'title': '2 Method', 'number': '2'}"
-"For all tasks, the web-based models are compared against identical models whose parameters were estimated from the BNC (Burnard, 1995).","{'title': '2 Method', 'number': '2'}"
-"The BNC is a static 100M word corpus of British English, which is about 1000 times smaller than the web (Keller and Lapata, 2003).","{'title': '2 Method', 'number': '2'}"
-Comparing the performance of the same model on the web and on the BNC allows us to assess how much improvement can be expected simply by using a larger data set.,"{'title': '2 Method', 'number': '2'}"
-"The BNC counts were retrieved using the Gsearch corpus query tool (Corley et al., 2001); the morphological query expansion was the same as for web queries; the NEAR operator was simulated by assuming a window of five words to the left and five to the right.","{'title': '2 Method', 'number': '2'}"
-"Gsearch was used to search solely for adjacent words; no POS information was incorporated in the queries, and no parsing was performed.","{'title': '2 Method', 'number': '2'}"
-"For all of our tasks, we have to select either the best of several possible models or the best parameter setting for a single model.","{'title': '2 Method', 'number': '2'}"
-We therefore require a separate development set.,"{'title': '2 Method', 'number': '2'}"
-This was achieved by using the gold standard data set from the literature for a given task and randomly dividing it into a development set and a test set (of equal size).,"{'title': '2 Method', 'number': '2'}"
-"We report the test set performance for all models for a given task, and indicate which model shows optimal performance on the development set (marked by a ‘#’ in all subsequent tables).","{'title': '2 Method', 'number': '2'}"
-We then compare the test set performance of this optimal model to the performance of the models reported in the literature.,"{'title': '2 Method', 'number': '2'}"
-"It is important to note that the figures taken from the literature were typically obtained on the whole gold standard data set, and hence may differ from the performance on our test set.","{'title': '2 Method', 'number': '2'}"
-We work on the assumption that such differences are negligible.,"{'title': '2 Method', 'number': '2'}"
-We use χ2 tests to determine whether the performance of the best web model on the test set is significantly different from that of the best BNC model.,"{'title': '2 Method', 'number': '2'}"
-We also determine whether both models differ significantly from the baseline and from the best model in the literature.,"{'title': '2 Method', 'number': '2'}"
-"A set of diacritics is used to indicate significance throughout this paper, see Table 2.","{'title': '2 Method', 'number': '2'}"
-Target word selection is a generation task that occurs in machine translation (MT).,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-A word in a source language can often be translated into different words in the target language and the choice of the appropriate translation depends on a variety of semantic and pragmatic factors.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"The task is illustrated in (1) where there are five translation alternatives for the German noun Geschichte listed in curly brackets, the first being the correct one.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Statistical approaches to target word selection rely on bilingual lexica to provide all possible translations of words in the source language.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Once the set of translation candidates is generated, statistical information gathered from target language corpora is used to select the most appropriate alternative (Dagan and Itai, 1994).","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-The task is somewhat simplified by Grefenstette (1998) and Prescher et al. (2000) who do not produce a translation of the entire sentence.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Instead, they focus on specific syntactic relations.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Grefenstette translates compounds from German and Spanish into English, and uses BNC frequencies as a filter for candidate translations.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"He observes that this approach suffers from an acute data sparseness problem and goes on to obtain counts for candidate compounds through web searches, thus achieving a translation accuracy of 86–87%.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Prescher et al. (2000) concentrate on verbs and their objects.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Assuming that the target language translation of the verb is known, they select from the candidate translations the noun that is semantically most compatible with the verb.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-The semantic fit between a verb and its argument is modeled using a class-based lexicon that is derived from unlabeled data using the expectation maximization algorithm (verb-argument model).,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Prescher et al. also propose a refined version of this approach that only models the fit between a verb and its object (verb-object model), disregarding other arguments of the verb.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"The two models are trained on the BNC and evaluated against two corpora of 1,340 and 814 bilingual sentence pairs, with an average of 8.63 and 2.83 translations for the object noun, respectively.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Table 4 lists Prescher et al.’s results for the two corpora and for both models together with a random baseline (select a target noun at random) and a frequency baseline (select the most frequent target noun).,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Grefenstette’s (1998) evaluation was restricted to compounds that are listed in a dictionary.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"These compounds are presumably well-established and fairly frequent, which makes it easy to obtain reliable web frequencies.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-We wanted to test if the web-based approach extends from lexicalized compounds to productive syntactic units for which dictionary entries do not exist.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-We therefore performed our evaluation using Prescher et al.’s (2000) test set of verb-object pairs.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Web counts were retrieved for all possible verb-object translations; the most likely one was selected using either co-occurrence frequency (f(v,n)) or conditional probability (f (v,n)/f (n)).","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"The web counts were gathered using inflected queries involving the verb, a determiner, and the object (see Section 2).","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Table 3 compares the web-based models against the BNC models.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"For both the high ambiguity and the low ambiguity data set, we find that the performance of the best Altavista model is not significantly different from that of the best BNC model.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"Table 4 compares our simple, unsupervised methods with the two sophisticated class-based models discussed above.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-The results show that there is no significant difference in performance between the best model reported in the literature and the best Altavista or the best BNC model.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-"However, both models significantly outperform the baseline.","{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-This holds for both the high and low ambiguity data sets.,"{'title': '3 Candidate Selection for Machine Translation', 'number': '3'}"
-Context-sensitive spelling correction is the task of correcting spelling errors that result in valid words.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Such a spelling error is illustrated in (4) where principal was typed when principle was intended.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-(2) Introduction of the dialogue principal proved strikingly effective.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"The task can be viewed as generation task, as it consists of choosing between alternative surface realizations of a word.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"This choice is typically modeled by confusion sets such as {principal, principle} or {then, than} under the assumption that each word in the set could be mistakenly typed when another word in the set was intended.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-The task is to infer which word in a confusion set is the correct one in a given context.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"This choice can be either syntactic (as for {then, than}) or semantic (as for {principal, principle}).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-A number of machine learning methods have been proposed for context-sensitive spelling correction.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"These include a variety of Bayesian classifiers (Golding, 1995; Golding and Schabes, 1996), decision lists (Golding, 1995) transformation-based learning (Mangu and Brill, 1997), Latent Semantic Analysis (LSA) (Jones and Martin, 1997), multiplicative weight update algorithms (Golding and Roth, 1999), and augmented mixture models (Cucerzan and Yarowsky, 2002).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"Despite their differences, most approaches use two types of features: context words and collocations.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Context word features record the presence of a word within a fixed window around the target word (bag of words); collocational features capture the syntactic environment of the target word and are usually represented by a small number of words and/or partof-speech tags to the left or right of the target word.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-The results obtained by a variety of classification methods are given in Table 6.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-All methods use either the full set or a subset of 18 confusion sets originally gathered by Golding (1995).,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"Most methods are trained and tested on the Brown corpus, using 80% for training and 20% for testing.3 We devised a simple, unsupervised method for performing spelling correction using web counts.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"The method takes into account collocational features, i.e., words that are adjacent to the target word.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"For each word in the confusion set, we used the web to estimate how frequently it co-occurs with a word or a pair of words immediately to its left or right.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Disambiguation is then performed by selecting the word in the confusion set with the highest co-occurrence frequency or probability.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-The web counts were retrieved using literal queries (see Section 2).,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Ties are resolved by comparing the unigram frequencies of the words in the confusion set and defaulting to the word with the highest one.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Table 5 shows the types of collocations we considered and their corresponding accuracy.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-The baseline (f(t)) in Table 5 was obtained by always choosing the most frequent unigram in the confusion set.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"We used the same test set (2056 tokens from the Brown corpus) and confusion sets as Golding and Schabes (1996), Mangu and Brill (1997), and Cucerzan and Yarowsky (2002).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"Table 5 shows that the best result (89.24%) for the webbased approach is obtained with a context of one word to the left and one word to the right of the target word (f (w1,t,w2)).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"The BNC-based models perform consistently worse than the web-based models with the exception of f(t,w1)/t; the best Altavista model performs significantly better than the best BNC model.","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Table 6 shows that both the best Altavista model and the best BNC model outperform their respective baselines.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"A comparison with the literature shows that the best Altavista model outperforms Golding (1995), Jones and Martin (1997) and performs similar to Golding and Schabes (1996).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"The highest accuracy on the task is achieved by the class of multiplicative weight-update algorithms such as Winnow (Golding and Roth, 1999).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Both the best BNC model and the best Altavista model perform significantly worse than this model.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-Note that Golding and Roth (1999) use algorithms that can handle large numbers of features and are robust to noise.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-"Our method uses a very small feature set, it relies only on co-occurrence frequencies and does not have access to POS information (the latter has been shown to have an improvement on confusion sets whose words belong to different parts of speech).","{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-An advantage of our method is that it can be used for a large number of confusion sets without relying on the availability of training data.,"{'title': '4 Context-sensitive Spelling Correction', 'number': '4'}"
-The ordering of prenominal modifiers is important for natural language generation systems where the text must be both fluent and grammatical.,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"For example, the sequence big fat Greek wedding is perfectly acceptable, whereas fat Greek big wedding sounds odd.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"The ordering of prenominal adjectives has sparked a great deal of theoretical debate (see Shaw and Hatzivassiloglou 1999 for an overview) and efforts have concentrated on defining rules based on semantic criteria that account for different orders (e.g., age � color, value � dimension).","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-Data intensive approaches to the ordering problem rely on corpora for gathering evidence for the likelihood of different orders.,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"They rest on the hypothesis that the relative order of premodifiers is fixed, and independent of context and the noun being modified.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-The simplest strategy is what Shaw and Hatzivassiloglou (1999) call direct evidence.,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"Given an adjective pair {a,b}, they count how many times (a,b) and (b,a) appear in the corpus and choose the pair with the highest frequency.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-Unfortunately the direct evidence method performs poorly when a given order is unseen in the training data.,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"To compensate for this, Shaw and Hatzivassiloglou (1999) propose to compute the transitive closure of the ordering relation: if a � c and c � b, then a � b. Malouf (2000) further proposes a back-off bigram model of adjective pairs for choosing among alternative orders (P((a,b) {a,b}) vs. P((b,a) {a,b})).","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-He also proposes positional probabilities as a means of estimating how likely it is for a given adjective a to appear first in a sequence by looking at each pair in the training data that contains the adjective a and recording its position.,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"Finally, he uses memory-based learning as a means to encode morphological and semantic similarities among different adjective orders.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"Each adjective pair ab is encoded as a vector of 16 features (the last eight characters of a and the last eight characters of b) and a class ((a,b) or Table 7: Performance of Altavista counts and BNC counts for adjective ordering (data from Malouf 2000) (b,a)).","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"Malouf (2000) extracted 263,838 individual pairs of adjectives from the BNC which he randomly partitioned into test (10%) and training data (90%) and evaluated all the above methods for ordering prenominal adjectives.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-His results showed that a memory-based classifier that uses morphological information as well as positional probabilities as features outperforms all other methods (see Table 7).,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-For the ordering task we restricted ourselves to the direct evidence strategy which simply chooses the adjective order with the highest frequency or probability (see Table 7).,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-Web counts were obtained by submitting literal queries to Altavista (see Section 2).,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"We used the same 263,838 adjective pairs that Malouf extracted from the BNC.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-These were randomly partitioned into a training (90%) and test corpus (10%).,"{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"The test corpus contained 26,271 adjective pairs.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"Given that submitting 26,271 queries to Altavista would be fairly timeconsuming, a random sample of 1000 sequences was obtained from the test corpus and the web frequencies of these pairs were retrieved.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"The best Altavista model significantly outperformed the best BNC model, as indicated in Table 7.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"We also found that there was no significant difference between the best Altavista model and the best model reported by Malouf, a supervised method using positional probability estimates from the BNC and morphological variants.","{'title': '5 Ordering of Prenominal Adjectives', 'number': '5'}"
-"The first analysis task we consider is the syntactic disambiguation of compound nouns, which has received a fair amount of attention in the NLP literature (Pustejovsky et al., 1993; Resnik, 1993; Lauer, 1995).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"The task can be summarized as follows: given a three word compound n1 n3 n3, determine the correct binary bracketing of the word sequence (see (3) for an example).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-Previous approaches typically compare different bracketings and choose the most likely one.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The adjacency model compares [n1 n2] against [n2 n3] and adopts a right branching analysis if [n2 n3] is more likely than [n1 n2].,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The dependency model compares [n1 n2] against [n1 n3] and adopts a right branching analysis if [n1 n3] is more likely than [n1 n2].,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"The simplest model of compound noun disambiguation compares the frequencies of the two competing analyses and opts for the most frequent one (Pustejovsky et al., 1993).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-Lauer (1995) proposes an unsupervised method for estimating the frequencies of the competing bracketings based on a taxonomy or a thesaurus.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-He uses a probability ratio to compare the probability of the leftbranching analysis to that of the right-branching (see (4) for the dependency model and (5) for the adjacency model).,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"Here t1, t2 and t3 are conceptual categories in the taxonomy or thesaurus, and the nouns w1...wi are members of these categories.","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The estimation ofprobabilities over concepts (rather than words) reduces the number of model parameters and effectively decreases the amount of training data required.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The probability P(t1 -> t2) denotes the modification of a category t2 by a category t1.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"Lauer (1995) tested both the adjacency and dependency models on 244 compounds extracted from Grolier’s encyclopedia, a corpus of 8 million words.","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"Frequencies for the two models were obtained from the same corpus and from Roget’s thesaurus (version 1911) by counting pairs of nouns that are either strictly adjacent or co-occur within a window of a fixed size (e.g., two, three, fifty, or hundred words).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"The majority of the bracketings in our test set were left-branching, yielding a baseline of 63.93% (see Table 9).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-Lauer’s best results (77.50%) were obtained with the dependency model and a training scheme which takes strictly adjacent nouns into account.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-Performance increased further by 3.2% when POS tags were taken into account.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The results for this tuned model are also given in Table 9.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"Finally, Lauer conducted an experiment with human judges to assess the upper bound for the bracketing task.","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-An average accuracy of 81.50% was obtained.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-We replicated Lauer’s (1995) results for compound noun bracketing using the same test set.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"We compared the performance of the adjacency and dependency models (see (4) and (5)), but instead of relying on a corpus and a thesaurus, we estimated the relevant probabilities using web counts.","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The latter were obtained using inflected queries (see Section 2) and Altavista’s NEAR operator.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"Ties were resolved by defaulting to the most frequent analysis (i.e., left-branching).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-To gauge the performance of the web-based models we compared them against their BNC-based alternatives; the performance of the best Altavista model was significantly higher than that of the best BNC model (see Table 8).,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"A comparison with the literature (see Table 9) shows that the best BNC model fails to significantly outperform the baseline, and it performs significantly worse than the best model in the literature (Lauer’s tuned model).","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-"The best Altavista model, on the other hand, is not significantly different from Lauer’s tuned model and significantly outperforms the baseline.","{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-Hence we achieve the same performance as Lauer without recourse to a predefined taxonomy or a thesaurus.,"{'title': '6 Bracketing of Compound Nouns', 'number': '6'}"
-The second analysis task we consider is the semantic interpretation of compound nouns.,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"Most previous approaches to this problem have focused on the interpretation of two word compounds whose nouns are related via a basic set of semantic relations (e.g., CAUSE relates onion tears, FOR relates pet spray).","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-The majority of proposals are symbolic and therefore limited to a specific domain due to the large effort involved in hand-coding semantic information (see Lauer 1995 for an extensive overview).,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-Lauer (1995) is the first to propose and evaluate an unsupervised probabilistic model of compound noun interpretation for domain independent text.,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"By recasting the interpretation problem in terms of paraphrasing, Lauer assumes that the semantic relations of compound heads and modifiers can be expressed via prepositions that (in contrast to abstract semantic relations) can be found in a corpus.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"For example, in order to interpret war story, one needs to find in a corpus related paraphrases: story about the war, story of the war, story in the war, etc.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"Lauer uses eight prepositions for the paraphrasing task (of, for, in, at, on, from, with, about).","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"A simple model of compound noun paraphrasing is shown in (6): Lauer (1995) points out that the above model contains one parameter for every triple (p,n1,n2), and as a result hundreds of millions of training instances would be necessary.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"As an alternative to (6), he proposes the model in (7) which combines the probability of the modifier given a certain preposition with the probability of the head given the same preposition, and assumes that these two probabilities are independent.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"Here, t1 and t2 represent concepts in Roget’s thesaurus.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-Lauer (1995) also experimented with a lexicalized version of (7) where probabilities are calculated on the basis of word (rather than concept) frequencies which Lauer obtained from Grolier’s encyclopedia heuristically via pattern matching.,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-Lauer (1995) tested the model in (7) on 282 compounds that he selected randomly from Grolier’s encyclopedia and annotated with their paraphrasing prepositions.,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-The preposition of accounted for 33% of the paraphrases in this data set (see Baseline in Table 11).,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"The conceptbased model (see (7)) achieved an accuracy of 28% on this test set, whereas its lexicalized version reached an accuracy of 40% (see Table 11).","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"We attempted the interpretation task with the lexicalized version of the bigram model (see (7)), but also tried the more data intensive trigram model (see (6)), again in its lexicalized form.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"Furthermore, we experimented with several conditional and unconditional variants of (7) and (6).","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-Co-occurrence frequencies were estimated from the web using inflected queries (see Section 2).,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-Determiners were inserted before nouns resulting in queries of the type story/stories about and about the/a/0 war/wars for the compound war story.,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"As shown in Table 10, the best performance was obtained using the web-based trigram model (f(n1, p,n2)); it significantly outperformed the best BNC model.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-The comparison with the literature in Table 11 showed that the best Altavista model significantly outperformed both the baseline and the best model in the literature (Lauer’s word-based model).,"{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-"The BNC model, on the other hand, achieved a performance that is not significantly different from the baseline, and significantly worse than Lauer’s best model.","{'title': '7 Interpretation of Compound Nouns', 'number': '7'}"
-The next analysis task that we consider is the problem of determining the countability of nouns.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"Countability is the semantic property that determines whether a noun can occur in singular and plural forms, and affects the range of permissible modifiers.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-"In English, nouns are typically either countable (e.g., one dog, two dogs) or uncountable (e.g., some peace, *one peace, *two peaces).","{'title': '8 Noun Countability Detection', 'number': '8'}"
-Baldwin and Bond (2003) propose a method for automatically learning the countability of English nouns from the BNC.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"They obtain information about noun countability by merging lexical entries from COMLEX (Grishman et al., 1994) and the ALTJ/E Japanese-to-English semantic transfer dictionary (Ikehara et al., 1991).","{'title': '8 Noun Countability Detection', 'number': '8'}"
-"Words are classified into four classes: countable, uncountable, bipartite (e.g., trousers), and plural only (e.g., goods).","{'title': '8 Noun Countability Detection', 'number': '8'}"
-"A memory-based classifier is used to learn the four-way distinction on the basis of several linguistically motivated features such as: number of the head noun, number of the modifier, subject-verb agreement, plural determiners.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-We devised unsupervised models for the countability learning task and evaluated their performance on Baldwin and Bond’s (2003) test data.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"We concentrated solely on countable and uncountable nouns, as they account for the vast majority of the data.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-"Four models were tested: (a) compare the frequency of the singular and plural forms of the noun; (b) compare the frequency of determiner-noun pairs that are characteristic of countable or uncountable nouns; the determiners used were many for countable and much for uncountable ones; (c) same as model (b), but the det-noun frequencies are normalized by the frequency of the noun; (d) backoff: try to make a decision using det-noun frequencies; if these are too sparse, back off to singular/plural frequencies.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-Unigram and bigram frequencies were estimated from the web using literal queries; for models (a)–(c) a threshold parameter was optimized on the development set (this parameter determines the ratio of singular/plural frequencies or det-noun frequencies above which a noun was considered as countable).,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"For model (b), an additional backoffparameter was used, specifying the minimum frequency that triggers backoff.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-The models and their performance on the test set are listed in Table 12.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"The best Altavista model is the conditional det-noun model (f (det,n)/f (n)), which achieves 88.38% on countable and 91.22% on uncountable nouns.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-"On the BNC, the simple unigram model performs best.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-Its performance is not statistically different from that of the best Altavista model.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"Note that for the BNC models, data sparseness means the det-noun models perform poorly, which is why the backoff model was not attempted here.","{'title': '8 Noun Countability Detection', 'number': '8'}"
-Table 13 shows that both the Altavista model and BNC model significantly outperform the baseline (relative frequency of the majority class on the gold-standard data).,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-The comparison with the literature shows that both the Altavista and the BNC model perform significantly worse than the best model proposed by Baldwin and Bond (2003); this is a supervised model that uses many more features than just singular/plural frequency and det-noun frequency.,"{'title': '8 Noun Countability Detection', 'number': '8'}"
-"We showed that simple, unsupervised models using web counts can be devised for a variety of NLP tasks.","{'title': '9 Conclusions', 'number': '9'}"
-"The tasks were selected so that they cover both syntax and semantics, both generation and analysis, and a wider range of n-grams than have been previously used.","{'title': '9 Conclusions', 'number': '9'}"
-"For all but two tasks (candidate selection for MT and noun countability detection) we found that simple, unsupervised models perform significantly better when ngram frequencies are obtained from the web rather than from a standard large corpus.","{'title': '9 Conclusions', 'number': '9'}"
-This result is consistent with Keller and Lapata’s (2003) findings that the web yields better counts than the BNC.,"{'title': '9 Conclusions', 'number': '9'}"
-"The reason for this seems to be that the web is much larger than the BNC (about 1000 times); the size seems to compensate for the fact that simple heuristics were used to obtain web counts, and for the noise inherent in web data.","{'title': '9 Conclusions', 'number': '9'}"
-Our results were less encouraging when it comes to comparisons with state-of-the-art models.,"{'title': '9 Conclusions', 'number': '9'}"
-"We found that in all but one case, web-based models fail to significantly outperform the state of the art.","{'title': '9 Conclusions', 'number': '9'}"
-"The exception was compound noun interpretation, for which the Altavista model was significantly better than the Lauer’s (1995) model.","{'title': '9 Conclusions', 'number': '9'}"
-"For three tasks (candidate selection for MT, adjective ordering, and compound noun bracketing), we found that the performance of the web-based models was not significantly different from the performance of the best models reported in the literature.","{'title': '9 Conclusions', 'number': '9'}"
-"Note that for all the tasks we investigated, the best performance in the literature was obtained by supervised models that have access not only to simple bigram or trigram frequencies, but also to linguistic information such as part-of-speech tags, semantic restrictions, or context (or a thesaurus, in the case of Lauer’s models).","{'title': '9 Conclusions', 'number': '9'}"
-"When unsupervised web-based models are compared against supervised methods that employ a wide variety of features, we observe that having access to linguistic information makes up for the lack of vast amounts of data.","{'title': '9 Conclusions', 'number': '9'}"
-Our results therefore indicate that large data sets such as those obtained from the web are not the panacea that they are claimed to be (at least implicitly) by authors such as Grefenstette (1998) and Keller and Lapata (2003).,"{'title': '9 Conclusions', 'number': '9'}"
-"Rather, in our opinion, web-based models should be used as a new baseline for NLP tasks.","{'title': '9 Conclusions', 'number': '9'}"
-"The web baseline indicates how much can be achieved with a simple, unsupervised model based on n-grams with access to a huge data set.","{'title': '9 Conclusions', 'number': '9'}"
-"This baseline is more realistic than baselines obtained from standard corpora; it is generally harder to beat, as our comparisons with the BNC baseline throughout this paper have shown.","{'title': '9 Conclusions', 'number': '9'}"
-"Note that for certain tasks, the performance of a web baseline model might actually be sufficient, so that the effort of constructing a sophisticated supervised model and annotating the necessary training data can be avoided.","{'title': '9 Conclusions', 'number': '9'}"
-Another possibility that needs further investigation is the combination of web-based models with supervised methods.,"{'title': '9 Conclusions', 'number': '9'}"
-This can be done with ensemble learning methods or simply by using web-based frequencies (or probabilities) as features (in addition to linguistically motivated features) to train supervised classifiers.,"{'title': '9 Conclusions', 'number': '9'}"
-"We are grateful to Tim Baldwin, Silviu Cucerzan, Mark Lauer, Rob Malouf, Detelef Prescher, and Adwait Ratnaparkhi for making their data sets available.","{'title': 'Acknowledgments', 'number': '10'}"
+"Previous work demonstrated that web counts can be used to approximate bigram frequencies, and thus should be useful for a wide variety of NLP tasks.",Introduction
+"So far, only two generation tasks (candidate selection for machine translation and confusion-set disambiguation) have been tested using web-scale data sets.",Introduction
+"The present paper investigates if these results generalize to tasks covering both syntax and semantics, both generation and analysis, and a larger of For the majority of tasks, we find that simple, unsupervised models perform when frequencies are obtained from the web rather than from a large corpus.",Introduction
+"However, in most cases, web-based models fail to outperform more sophisticated state-of-theart models trained on small corpora.",Introduction
+"We argue that web-based models should therefore be used as a baseline for, rather than an alternative to, standard models.",Introduction
+"Keller and Lapata (2003) investigated the validity of web counts for a range of predicate-argument bigrams (verbobject, adjective-noun, and noun-noun bigrams).",Experiment/Discussion
+"They presented a simple method for retrieving bigram counts from the web by querying a search engine and demonstrated that web counts (a) correlate with frequencies obtained from a carefully edited, balanced corpus such as the 100M words British National Corpus (BNC), (b) correlate with frequencies recreated using smoothing methods in the case of unseen bigrams, (c) reliably predict human plausibility judgments, and (d) yield state-of-the-art performance on pseudo-disambiguation tasks.",Experiment/Discussion
+Keller and Lapata’s (2003) results suggest that webbased frequencies can be a viable alternative to bigram frequencies obtained from smaller corpora or recreated using smoothing.,Experiment/Discussion
+"However, they do not demonstrate that realistic NLP tasks can benefit from web counts.",Experiment/Discussion
+"In order to show this, web counts would have to be applied to a diverse range of NLP tasks, both syntactic and semantic, involving analysis (e.g., disambiguation) and generation (e.g., selection among competing outputs).",Experiment/Discussion
+"Also, it remains to be shown that the web-based approach scales up to larger n-grams (e.g., trigrams), and to combinations of different parts of speech (Keller and Lapata 2003 only tested bigrams involving nouns, verbs, and adjectives).",Experiment/Discussion
+"Another important question is whether web-based methods, which are by definition unsupervised, can be competitive alternatives to supervised approaches used for most tasks in the literature.",Experiment/Discussion
+This paper aims to address these questions.,Experiment/Discussion
+"We start by using web counts for two generation tasks for which the use of large data sets has shown promising results: (a) target language candidate selection for machine translation (Grefenstette, 1998) and (b) context sensitive spelling correction (Banko and Brill, 2001a,b).",Experiment/Discussion
+"Then we investigate the generality of the web-based approach by applying it to a range of analysis and generations tasks, involving both syntactic and semantic knowledge: (c) ordering of prenominal adjectives, (d) compound noun bracketing, (e) compound noun interpretation, and (f) noun countability detection.",Experiment/Discussion
+Table 1 gives an overview of these tasks and their properties.,Experiment/Discussion
+"In all cases, we propose a simple, unsupervised n-gram based model whose parameters are estimated using web counts.",Experiment/Discussion
+"We compare this model both against a baseline (same model, but parameters estimated on the BNC) and against state-of-the-art models from the literature, which are either supervised (i.e., use annotated training data) or unsupervised but rely on taxonomies to recreate missing counts.",Experiment/Discussion
+"Following Keller and Lapata (2003), web counts for ngrams were obtained using a simple heuristic based on queries to the search engine Altavista.1 In this approach, the web count for a given n-gram is simply the number of hits (pages) returned by the search engine for the queries generated for this n-gram.",Experiment/Discussion
+"Three different types of queries were used for the NLP tasks in the present paper: Literal queries use the quoted n-gram directly as a search term for Altavista (e.g., the bigram history changes expands to the query &quot;history changes&quot;).",Experiment/Discussion
+"Near queries use Altavista’s NEAR operator to expand the n-gram; a NEAR b means that a has to occur in the same ten word window as b; the window is treated as a bag of words (e.g., history changes expands to &quot;history&quot; NEAR &quot;changes&quot;).",Experiment/Discussion
+Inflected queries are performed by expanding an n-gram into all its morphological forms.,Experiment/Discussion
+"These forms are then submitted as literal queries, and the resulting hits are summed up (e.g., history changes expands to &quot;history change&quot;, &quot;histories change&quot;, &quot;history changed&quot;, etc.).",Experiment/Discussion
+"John Carroll’s suite of morphological tools (morpha, morphg, and ana) was used to generate inflected forms of verbs and nouns.2 In certain cases (detailed below), determiners were inserted before nouns in order to make it possible to recognize simple NPs.",Experiment/Discussion
+"This insertion was limited to a/an, the, and the empty determiner (for bare plurals).",Experiment/Discussion
+All queries (other than the ones using the NEAR operator) were performed as exact matches (using quotation marks in Altavista).,Experiment/Discussion
+All search terms were submitted to the search engine in lower case.,Experiment/Discussion
+"If a query consists of a single, highly frequent word (such as the), Altavista will return an error message.",Experiment/Discussion
+"In these cases, we set the web count to a large constant (108).",Experiment/Discussion
+"This problem is limited to unigrams, which were used in some of the models detailed below.",Experiment/Discussion
+Sometimes the search engine fails to return a hit for a given n-gram (for any of its morphological variants).,Experiment/Discussion
+We smooth zero counts by setting them to .5.,Experiment/Discussion
+"For all tasks, the web-based models are compared against identical models whose parameters were estimated from the BNC (Burnard, 1995).",Experiment/Discussion
+"The BNC is a static 100M word corpus of British English, which is about 1000 times smaller than the web (Keller and Lapata, 2003).",Experiment/Discussion
+Comparing the performance of the same model on the web and on the BNC allows us to assess how much improvement can be expected simply by using a larger data set.,Experiment/Discussion
+"The BNC counts were retrieved using the Gsearch corpus query tool (Corley et al., 2001); the morphological query expansion was the same as for web queries; the NEAR operator was simulated by assuming a window of five words to the left and five to the right.",Experiment/Discussion
+"Gsearch was used to search solely for adjacent words; no POS information was incorporated in the queries, and no parsing was performed.",Experiment/Discussion
+"For all of our tasks, we have to select either the best of several possible models or the best parameter setting for a single model.",Experiment/Discussion
+We therefore require a separate development set.,Experiment/Discussion
+This was achieved by using the gold standard data set from the literature for a given task and randomly dividing it into a development set and a test set (of equal size).,Experiment/Discussion
+"We report the test set performance for all models for a given task, and indicate which model shows optimal performance on the development set (marked by a ‘#’ in all subsequent tables).",Experiment/Discussion
+We then compare the test set performance of this optimal model to the performance of the models reported in the literature.,Experiment/Discussion
+"It is important to note that the figures taken from the literature were typically obtained on the whole gold standard data set, and hence may differ from the performance on our test set.",Experiment/Discussion
+We work on the assumption that such differences are negligible.,Experiment/Discussion
+We use χ2 tests to determine whether the performance of the best web model on the test set is significantly different from that of the best BNC model.,Experiment/Discussion
+We also determine whether both models differ significantly from the baseline and from the best model in the literature.,Experiment/Discussion
+"A set of diacritics is used to indicate significance throughout this paper, see Table 2.",Experiment/Discussion
+Target word selection is a generation task that occurs in machine translation (MT).,Experiment/Discussion
+A word in a source language can often be translated into different words in the target language and the choice of the appropriate translation depends on a variety of semantic and pragmatic factors.,Experiment/Discussion
+"The task is illustrated in (1) where there are five translation alternatives for the German noun Geschichte listed in curly brackets, the first being the correct one.",Experiment/Discussion
+Statistical approaches to target word selection rely on bilingual lexica to provide all possible translations of words in the source language.,Experiment/Discussion
+"Once the set of translation candidates is generated, statistical information gathered from target language corpora is used to select the most appropriate alternative (Dagan and Itai, 1994).",Experiment/Discussion
+The task is somewhat simplified by Grefenstette (1998) and Prescher et al. (2000) who do not produce a translation of the entire sentence.,Experiment/Discussion
+"Instead, they focus on specific syntactic relations.",Experiment/Discussion
+"Grefenstette translates compounds from German and Spanish into English, and uses BNC frequencies as a filter for candidate translations.",Experiment/Discussion
+"He observes that this approach suffers from an acute data sparseness problem and goes on to obtain counts for candidate compounds through web searches, thus achieving a translation accuracy of 86–87%.",Experiment/Discussion
+Prescher et al. (2000) concentrate on verbs and their objects.,Experiment/Discussion
+"Assuming that the target language translation of the verb is known, they select from the candidate translations the noun that is semantically most compatible with the verb.",Experiment/Discussion
+The semantic fit between a verb and its argument is modeled using a class-based lexicon that is derived from unlabeled data using the expectation maximization algorithm (verb-argument model).,Experiment/Discussion
+"Prescher et al. also propose a refined version of this approach that only models the fit between a verb and its object (verb-object model), disregarding other arguments of the verb.",Experiment/Discussion
+"The two models are trained on the BNC and evaluated against two corpora of 1,340 and 814 bilingual sentence pairs, with an average of 8.63 and 2.83 translations for the object noun, respectively.",Experiment/Discussion
+Table 4 lists Prescher et al.’s results for the two corpora and for both models together with a random baseline (select a target noun at random) and a frequency baseline (select the most frequent target noun).,Experiment/Discussion
+Grefenstette’s (1998) evaluation was restricted to compounds that are listed in a dictionary.,Experiment/Discussion
+"These compounds are presumably well-established and fairly frequent, which makes it easy to obtain reliable web frequencies.",Experiment/Discussion
+We wanted to test if the web-based approach extends from lexicalized compounds to productive syntactic units for which dictionary entries do not exist.,Experiment/Discussion
+We therefore performed our evaluation using Prescher et al.’s (2000) test set of verb-object pairs.,Experiment/Discussion
+"Web counts were retrieved for all possible verb-object translations; the most likely one was selected using either co-occurrence frequency (f(v,n)) or conditional probability (f (v,n)/f (n)).",Experiment/Discussion
+"The web counts were gathered using inflected queries involving the verb, a determiner, and the object (see Section 2).",Experiment/Discussion
+Table 3 compares the web-based models against the BNC models.,Experiment/Discussion
+"For both the high ambiguity and the low ambiguity data set, we find that the performance of the best Altavista model is not significantly different from that of the best BNC model.",Experiment/Discussion
+"Table 4 compares our simple, unsupervised methods with the two sophisticated class-based models discussed above.",Experiment/Discussion
+The results show that there is no significant difference in performance between the best model reported in the literature and the best Altavista or the best BNC model.,Experiment/Discussion
+"However, both models significantly outperform the baseline.",Experiment/Discussion
+This holds for both the high and low ambiguity data sets.,Experiment/Discussion
+Context-sensitive spelling correction is the task of correcting spelling errors that result in valid words.,Experiment/Discussion
+Such a spelling error is illustrated in (4) where principal was typed when principle was intended.,Experiment/Discussion
+(2) Introduction of the dialogue principal proved strikingly effective.,Experiment/Discussion
+"The task can be viewed as generation task, as it consists of choosing between alternative surface realizations of a word.",Experiment/Discussion
+"This choice is typically modeled by confusion sets such as {principal, principle} or {then, than} under the assumption that each word in the set could be mistakenly typed when another word in the set was intended.",Experiment/Discussion
+The task is to infer which word in a confusion set is the correct one in a given context.,Experiment/Discussion
+"This choice can be either syntactic (as for {then, than}) or semantic (as for {principal, principle}).",Experiment/Discussion
+A number of machine learning methods have been proposed for context-sensitive spelling correction.,Experiment/Discussion
+"These include a variety of Bayesian classifiers (Golding, 1995; Golding and Schabes, 1996), decision lists (Golding, 1995) transformation-based learning (Mangu and Brill, 1997), Latent Semantic Analysis (LSA) (Jones and Martin, 1997), multiplicative weight update algorithms (Golding and Roth, 1999), and augmented mixture models (Cucerzan and Yarowsky, 2002).",Experiment/Discussion
+"Despite their differences, most approaches use two types of features: context words and collocations.",Experiment/Discussion
+Context word features record the presence of a word within a fixed window around the target word (bag of words); collocational features capture the syntactic environment of the target word and are usually represented by a small number of words and/or partof-speech tags to the left or right of the target word.,Experiment/Discussion
+The results obtained by a variety of classification methods are given in Table 6.,Experiment/Discussion
+All methods use either the full set or a subset of 18 confusion sets originally gathered by Golding (1995).,Experiment/Discussion
+"Most methods are trained and tested on the Brown corpus, using 80% for training and 20% for testing.3 We devised a simple, unsupervised method for performing spelling correction using web counts.",Experiment/Discussion
+"The method takes into account collocational features, i.e., words that are adjacent to the target word.",Experiment/Discussion
+"For each word in the confusion set, we used the web to estimate how frequently it co-occurs with a word or a pair of words immediately to its left or right.",Experiment/Discussion
+Disambiguation is then performed by selecting the word in the confusion set with the highest co-occurrence frequency or probability.,Experiment/Discussion
+The web counts were retrieved using literal queries (see Section 2).,Experiment/Discussion
+Ties are resolved by comparing the unigram frequencies of the words in the confusion set and defaulting to the word with the highest one.,Experiment/Discussion
+Table 5 shows the types of collocations we considered and their corresponding accuracy.,Experiment/Discussion
+The baseline (f(t)) in Table 5 was obtained by always choosing the most frequent unigram in the confusion set.,Experiment/Discussion
+"We used the same test set (2056 tokens from the Brown corpus) and confusion sets as Golding and Schabes (1996), Mangu and Brill (1997), and Cucerzan and Yarowsky (2002).",Experiment/Discussion
+"Table 5 shows that the best result (89.24%) for the webbased approach is obtained with a context of one word to the left and one word to the right of the target word (f (w1,t,w2)).",Experiment/Discussion
+"The BNC-based models perform consistently worse than the web-based models with the exception of f(t,w1)/t; the best Altavista model performs significantly better than the best BNC model.",Experiment/Discussion
+Table 6 shows that both the best Altavista model and the best BNC model outperform their respective baselines.,Experiment/Discussion
+"A comparison with the literature shows that the best Altavista model outperforms Golding (1995), Jones and Martin (1997) and performs similar to Golding and Schabes (1996).",Experiment/Discussion
+"The highest accuracy on the task is achieved by the class of multiplicative weight-update algorithms such as Winnow (Golding and Roth, 1999).",Experiment/Discussion
+Both the best BNC model and the best Altavista model perform significantly worse than this model.,Experiment/Discussion
+Note that Golding and Roth (1999) use algorithms that can handle large numbers of features and are robust to noise.,Experiment/Discussion
+"Our method uses a very small feature set, it relies only on co-occurrence frequencies and does not have access to POS information (the latter has been shown to have an improvement on confusion sets whose words belong to different parts of speech).",Experiment/Discussion
+An advantage of our method is that it can be used for a large number of confusion sets without relying on the availability of training data.,Experiment/Discussion
+The ordering of prenominal modifiers is important for natural language generation systems where the text must be both fluent and grammatical.,Experiment/Discussion
+"For example, the sequence big fat Greek wedding is perfectly acceptable, whereas fat Greek big wedding sounds odd.",Experiment/Discussion
+"The ordering of prenominal adjectives has sparked a great deal of theoretical debate (see Shaw and Hatzivassiloglou 1999 for an overview) and efforts have concentrated on defining rules based on semantic criteria that account for different orders (e.g., age � color, value � dimension).",Experiment/Discussion
+Data intensive approaches to the ordering problem rely on corpora for gathering evidence for the likelihood of different orders.,Experiment/Discussion
+"They rest on the hypothesis that the relative order of premodifiers is fixed, and independent of context and the noun being modified.",Experiment/Discussion
+The simplest strategy is what Shaw and Hatzivassiloglou (1999) call direct evidence.,Experiment/Discussion
+"Given an adjective pair {a,b}, they count how many times (a,b) and (b,a) appear in the corpus and choose the pair with the highest frequency.",Experiment/Discussion
+Unfortunately the direct evidence method performs poorly when a given order is unseen in the training data.,Experiment/Discussion
+"To compensate for this, Shaw and Hatzivassiloglou (1999) propose to compute the transitive closure of the ordering relation: if a � c and c � b, then a � b. Malouf (2000) further proposes a back-off bigram model of adjective pairs for choosing among alternative orders (P((a,b) {a,b}) vs. P((b,a) {a,b})).",Experiment/Discussion
+He also proposes positional probabilities as a means of estimating how likely it is for a given adjective a to appear first in a sequence by looking at each pair in the training data that contains the adjective a and recording its position.,Experiment/Discussion
+"Finally, he uses memory-based learning as a means to encode morphological and semantic similarities among different adjective orders.",Experiment/Discussion
+"Each adjective pair ab is encoded as a vector of 16 features (the last eight characters of a and the last eight characters of b) and a class ((a,b) or Table 7: Performance of Altavista counts and BNC counts for adjective ordering (data from Malouf 2000) (b,a)).",Experiment/Discussion
+"Malouf (2000) extracted 263,838 individual pairs of adjectives from the BNC which he randomly partitioned into test (10%) and training data (90%) and evaluated all the above methods for ordering prenominal adjectives.",Experiment/Discussion
+His results showed that a memory-based classifier that uses morphological information as well as positional probabilities as features outperforms all other methods (see Table 7).,Experiment/Discussion
+For the ordering task we restricted ourselves to the direct evidence strategy which simply chooses the adjective order with the highest frequency or probability (see Table 7).,Experiment/Discussion
+Web counts were obtained by submitting literal queries to Altavista (see Section 2).,Experiment/Discussion
+"We used the same 263,838 adjective pairs that Malouf extracted from the BNC.",Experiment/Discussion
+These were randomly partitioned into a training (90%) and test corpus (10%).,Experiment/Discussion
+"The test corpus contained 26,271 adjective pairs.",Experiment/Discussion
+"Given that submitting 26,271 queries to Altavista would be fairly timeconsuming, a random sample of 1000 sequences was obtained from the test corpus and the web frequencies of these pairs were retrieved.",Experiment/Discussion
+"The best Altavista model significantly outperformed the best BNC model, as indicated in Table 7.",Experiment/Discussion
+"We also found that there was no significant difference between the best Altavista model and the best model reported by Malouf, a supervised method using positional probability estimates from the BNC and morphological variants.",Experiment/Discussion
+"The first analysis task we consider is the syntactic disambiguation of compound nouns, which has received a fair amount of attention in the NLP literature (Pustejovsky et al., 1993; Resnik, 1993; Lauer, 1995).",Experiment/Discussion
+"The task can be summarized as follows: given a three word compound n1 n3 n3, determine the correct binary bracketing of the word sequence (see (3) for an example).",Experiment/Discussion
+Previous approaches typically compare different bracketings and choose the most likely one.,Experiment/Discussion
+The adjacency model compares [n1 n2] against [n2 n3] and adopts a right branching analysis if [n2 n3] is more likely than [n1 n2].,Experiment/Discussion
+The dependency model compares [n1 n2] against [n1 n3] and adopts a right branching analysis if [n1 n3] is more likely than [n1 n2].,Experiment/Discussion
+"The simplest model of compound noun disambiguation compares the frequencies of the two competing analyses and opts for the most frequent one (Pustejovsky et al., 1993).",Experiment/Discussion
+Lauer (1995) proposes an unsupervised method for estimating the frequencies of the competing bracketings based on a taxonomy or a thesaurus.,Experiment/Discussion
+He uses a probability ratio to compare the probability of the leftbranching analysis to that of the right-branching (see (4) for the dependency model and (5) for the adjacency model).,Experiment/Discussion
+"Here t1, t2 and t3 are conceptual categories in the taxonomy or thesaurus, and the nouns w1...wi are members of these categories.",Experiment/Discussion
+The estimation ofprobabilities over concepts (rather than words) reduces the number of model parameters and effectively decreases the amount of training data required.,Experiment/Discussion
+The probability P(t1 -> t2) denotes the modification of a category t2 by a category t1.,Experiment/Discussion
+"Lauer (1995) tested both the adjacency and dependency models on 244 compounds extracted from Grolier’s encyclopedia, a corpus of 8 million words.",Experiment/Discussion
+"Frequencies for the two models were obtained from the same corpus and from Roget’s thesaurus (version 1911) by counting pairs of nouns that are either strictly adjacent or co-occur within a window of a fixed size (e.g., two, three, fifty, or hundred words).",Experiment/Discussion
+"The majority of the bracketings in our test set were left-branching, yielding a baseline of 63.93% (see Table 9).",Experiment/Discussion
+Lauer’s best results (77.50%) were obtained with the dependency model and a training scheme which takes strictly adjacent nouns into account.,Experiment/Discussion
+Performance increased further by 3.2% when POS tags were taken into account.,Experiment/Discussion
+The results for this tuned model are also given in Table 9.,Experiment/Discussion
+"Finally, Lauer conducted an experiment with human judges to assess the upper bound for the bracketing task.",Experiment/Discussion
+An average accuracy of 81.50% was obtained.,Experiment/Discussion
+We replicated Lauer’s (1995) results for compound noun bracketing using the same test set.,Experiment/Discussion
+"We compared the performance of the adjacency and dependency models (see (4) and (5)), but instead of relying on a corpus and a thesaurus, we estimated the relevant probabilities using web counts.",Experiment/Discussion
+The latter were obtained using inflected queries (see Section 2) and Altavista’s NEAR operator.,Experiment/Discussion
+"Ties were resolved by defaulting to the most frequent analysis (i.e., left-branching).",Experiment/Discussion
+To gauge the performance of the web-based models we compared them against their BNC-based alternatives; the performance of the best Altavista model was significantly higher than that of the best BNC model (see Table 8).,Experiment/Discussion
+"A comparison with the literature (see Table 9) shows that the best BNC model fails to significantly outperform the baseline, and it performs significantly worse than the best model in the literature (Lauer’s tuned model).",Experiment/Discussion
+"The best Altavista model, on the other hand, is not significantly different from Lauer’s tuned model and significantly outperforms the baseline.",Experiment/Discussion
+Hence we achieve the same performance as Lauer without recourse to a predefined taxonomy or a thesaurus.,Experiment/Discussion
+The second analysis task we consider is the semantic interpretation of compound nouns.,Experiment/Discussion
+"Most previous approaches to this problem have focused on the interpretation of two word compounds whose nouns are related via a basic set of semantic relations (e.g., CAUSE relates onion tears, FOR relates pet spray).",Experiment/Discussion
+The majority of proposals are symbolic and therefore limited to a specific domain due to the large effort involved in hand-coding semantic information (see Lauer 1995 for an extensive overview).,Experiment/Discussion
+Lauer (1995) is the first to propose and evaluate an unsupervised probabilistic model of compound noun interpretation for domain independent text.,Experiment/Discussion
+"By recasting the interpretation problem in terms of paraphrasing, Lauer assumes that the semantic relations of compound heads and modifiers can be expressed via prepositions that (in contrast to abstract semantic relations) can be found in a corpus.",Experiment/Discussion
+"For example, in order to interpret war story, one needs to find in a corpus related paraphrases: story about the war, story of the war, story in the war, etc.",Experiment/Discussion
+"Lauer uses eight prepositions for the paraphrasing task (of, for, in, at, on, from, with, about).",Experiment/Discussion
+"A simple model of compound noun paraphrasing is shown in (6): Lauer (1995) points out that the above model contains one parameter for every triple (p,n1,n2), and as a result hundreds of millions of training instances would be necessary.",Experiment/Discussion
+"As an alternative to (6), he proposes the model in (7) which combines the probability of the modifier given a certain preposition with the probability of the head given the same preposition, and assumes that these two probabilities are independent.",Experiment/Discussion
+"Here, t1 and t2 represent concepts in Roget’s thesaurus.",Experiment/Discussion
+Lauer (1995) also experimented with a lexicalized version of (7) where probabilities are calculated on the basis of word (rather than concept) frequencies which Lauer obtained from Grolier’s encyclopedia heuristically via pattern matching.,Experiment/Discussion
+Lauer (1995) tested the model in (7) on 282 compounds that he selected randomly from Grolier’s encyclopedia and annotated with their paraphrasing prepositions.,Experiment/Discussion
+The preposition of accounted for 33% of the paraphrases in this data set (see Baseline in Table 11).,Experiment/Discussion
+"The conceptbased model (see (7)) achieved an accuracy of 28% on this test set, whereas its lexicalized version reached an accuracy of 40% (see Table 11).",Experiment/Discussion
+"We attempted the interpretation task with the lexicalized version of the bigram model (see (7)), but also tried the more data intensive trigram model (see (6)), again in its lexicalized form.",Experiment/Discussion
+"Furthermore, we experimented with several conditional and unconditional variants of (7) and (6).",Experiment/Discussion
+Co-occurrence frequencies were estimated from the web using inflected queries (see Section 2).,Experiment/Discussion
+Determiners were inserted before nouns resulting in queries of the type story/stories about and about the/a/0 war/wars for the compound war story.,Experiment/Discussion
+"As shown in Table 10, the best performance was obtained using the web-based trigram model (f(n1, p,n2)); it significantly outperformed the best BNC model.",Experiment/Discussion
+The comparison with the literature in Table 11 showed that the best Altavista model significantly outperformed both the baseline and the best model in the literature (Lauer’s word-based model).,Experiment/Discussion
+"The BNC model, on the other hand, achieved a performance that is not significantly different from the baseline, and significantly worse than Lauer’s best model.",Experiment/Discussion
+The next analysis task that we consider is the problem of determining the countability of nouns.,Experiment/Discussion
+"Countability is the semantic property that determines whether a noun can occur in singular and plural forms, and affects the range of permissible modifiers.",Experiment/Discussion
+"In English, nouns are typically either countable (e.g., one dog, two dogs) or uncountable (e.g., some peace, *one peace, *two peaces).",Experiment/Discussion
+Baldwin and Bond (2003) propose a method for automatically learning the countability of English nouns from the BNC.,Experiment/Discussion
+"They obtain information about noun countability by merging lexical entries from COMLEX (Grishman et al., 1994) and the ALTJ/E Japanese-to-English semantic transfer dictionary (Ikehara et al., 1991).",Experiment/Discussion
+"Words are classified into four classes: countable, uncountable, bipartite (e.g., trousers), and plural only (e.g., goods).",Experiment/Discussion
+"A memory-based classifier is used to learn the four-way distinction on the basis of several linguistically motivated features such as: number of the head noun, number of the modifier, subject-verb agreement, plural determiners.",Experiment/Discussion
+We devised unsupervised models for the countability learning task and evaluated their performance on Baldwin and Bond’s (2003) test data.,Experiment/Discussion
+"We concentrated solely on countable and uncountable nouns, as they account for the vast majority of the data.",Experiment/Discussion
+"Four models were tested: (a) compare the frequency of the singular and plural forms of the noun; (b) compare the frequency of determiner-noun pairs that are characteristic of countable or uncountable nouns; the determiners used were many for countable and much for uncountable ones; (c) same as model (b), but the det-noun frequencies are normalized by the frequency of the noun; (d) backoff: try to make a decision using det-noun frequencies; if these are too sparse, back off to singular/plural frequencies.",Experiment/Discussion
+Unigram and bigram frequencies were estimated from the web using literal queries; for models (a)–(c) a threshold parameter was optimized on the development set (this parameter determines the ratio of singular/plural frequencies or det-noun frequencies above which a noun was considered as countable).,Experiment/Discussion
+"For model (b), an additional backoffparameter was used, specifying the minimum frequency that triggers backoff.",Experiment/Discussion
+The models and their performance on the test set are listed in Table 12.,Experiment/Discussion
+"The best Altavista model is the conditional det-noun model (f (det,n)/f (n)), which achieves 88.38% on countable and 91.22% on uncountable nouns.",Experiment/Discussion
+"On the BNC, the simple unigram model performs best.",Experiment/Discussion
+Its performance is not statistically different from that of the best Altavista model.,Experiment/Discussion
+"Note that for the BNC models, data sparseness means the det-noun models perform poorly, which is why the backoff model was not attempted here.",Experiment/Discussion
+Table 13 shows that both the Altavista model and BNC model significantly outperform the baseline (relative frequency of the majority class on the gold-standard data).,Experiment/Discussion
+The comparison with the literature shows that both the Altavista and the BNC model perform significantly worse than the best model proposed by Baldwin and Bond (2003); this is a supervised model that uses many more features than just singular/plural frequency and det-noun frequency.,Experiment/Discussion
+"We showed that simple, unsupervised models using web counts can be devised for a variety of NLP tasks.",Results/Conclusion
+"The tasks were selected so that they cover both syntax and semantics, both generation and analysis, and a wider range of n-grams than have been previously used.",Results/Conclusion
+"For all but two tasks (candidate selection for MT and noun countability detection) we found that simple, unsupervised models perform significantly better when ngram frequencies are obtained from the web rather than from a standard large corpus.",Results/Conclusion
+This result is consistent with Keller and Lapata’s (2003) findings that the web yields better counts than the BNC.,Results/Conclusion
+"The reason for this seems to be that the web is much larger than the BNC (about 1000 times); the size seems to compensate for the fact that simple heuristics were used to obtain web counts, and for the noise inherent in web data.",Results/Conclusion
+Our results were less encouraging when it comes to comparisons with state-of-the-art models.,Results/Conclusion
+"We found that in all but one case, web-based models fail to significantly outperform the state of the art.",Results/Conclusion
+"The exception was compound noun interpretation, for which the Altavista model was significantly better than the Lauer’s (1995) model.",Results/Conclusion
+"For three tasks (candidate selection for MT, adjective ordering, and compound noun bracketing), we found that the performance of the web-based models was not significantly different from the performance of the best models reported in the literature.",Results/Conclusion
+"Note that for all the tasks we investigated, the best performance in the literature was obtained by supervised models that have access not only to simple bigram or trigram frequencies, but also to linguistic information such as part-of-speech tags, semantic restrictions, or context (or a thesaurus, in the case of Lauer’s models).",Results/Conclusion
+"When unsupervised web-based models are compared against supervised methods that employ a wide variety of features, we observe that having access to linguistic information makes up for the lack of vast amounts of data.",Results/Conclusion
+Our results therefore indicate that large data sets such as those obtained from the web are not the panacea that they are claimed to be (at least implicitly) by authors such as Grefenstette (1998) and Keller and Lapata (2003).,Results/Conclusion
+"Rather, in our opinion, web-based models should be used as a new baseline for NLP tasks.",Results/Conclusion
+"The web baseline indicates how much can be achieved with a simple, unsupervised model based on n-grams with access to a huge data set.",Results/Conclusion
+"This baseline is more realistic than baselines obtained from standard corpora; it is generally harder to beat, as our comparisons with the BNC baseline throughout this paper have shown.",Results/Conclusion
+"Note that for certain tasks, the performance of a web baseline model might actually be sufficient, so that the effort of constructing a sophisticated supervised model and annotating the necessary training data can be avoided.",Results/Conclusion
+Another possibility that needs further investigation is the combination of web-based models with supervised methods.,Results/Conclusion
+This can be done with ensemble learning methods or simply by using web-based frequencies (or probabilities) as features (in addition to linguistically motivated features) to train supervised classifiers.,Results/Conclusion
+"We are grateful to Tim Baldwin, Silviu Cucerzan, Mark Lauer, Rob Malouf, Detelef Prescher, and Adwait Ratnaparkhi for making their data sets available.",Results/Conclusion

@@ -1,129 +1,129 @@
 col1,col2
-and Vincent J. Della Pietra.,{}
-1996.,{}
-A maximum entropy approach to natural lanprocessing.,{}
-"Linguistics,",{}
-"Parsing sentences using statistical information gathered from a treebank was first examined a decade ago in (ChitraD and Grishman, 1990) and is by now a fairly well-studied problem ((Charniak, 1997), (Collins, 1997), (Ratnaparkhi, 1997)).","{'title': '1 Introduction', 'number': '1'}"
-"But to date, the end product of the parsing process has for the most part been a bracketing with simple constituent labels like NP, VP, or SBAR.","{'title': '1 Introduction', 'number': '1'}"
-The Penn treebank contains a great deal of additional syntactic and semantic information from which to gather statistics; reproducing more of this information automatically is a goal which has so far been mostly ignored.,"{'title': '1 Introduction', 'number': '1'}"
-This paper details a process by which some of this information—the function tags— may be recovered automatically.,"{'title': '1 Introduction', 'number': '1'}"
-"In the Penn treebank, there are 20 tags (figure 1) that can be appended to constituent labels in order to indicate additional information about the syntactic or semantic role of the constituent.","{'title': '1 Introduction', 'number': '1'}"
-"We have divided them into four categories (given in figure 2) based on those in the bracketing guidelines (Bies et al., 1995).","{'title': '1 Introduction', 'number': '1'}"
-"A constituent can be tagged with multiple tags, but never with two tags from the same category.1 In actuality, the case where a constituent has tags from all four categories never happens, but constituents with three tags do occur (rarely).","{'title': '1 Introduction', 'number': '1'}"
-"At a high level, we can simply say that having the function tag information for a given text is useful just because any further information would help.","{'title': '1 Introduction', 'number': '1'}"
-"But specifically, there are distinct advantages for each of the various categories.","{'title': '1 Introduction', 'number': '1'}"
-"Grammatical tags are useful for any application trying to follow the thread of the text—they find the 'who does what' of each clause, which can be useful to gain information about the situation or to learn more about the behaviour of the words in the sentence.","{'title': '1 Introduction', 'number': '1'}"
-"The form/function tags help to find those constituents behaving in ways not conforming to their labelled type, as well as further clarifying the behaviour of adverbial phrases.","{'title': '1 Introduction', 'number': '1'}"
-"Information retrieval applications specialising in describing events, as with a number of the MUC applications, could greatly benefit from some of these in determining the where-when-why of things.","{'title': '1 Introduction', 'number': '1'}"
-"Noting a topicalised constituent could also prove useful to these applications, and it might also help in discourse analysis, or pronoun resolution.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, the 'miscellaneous' tags are convenient at various times; particularly the CLR 'closely related' tag, which among other things marks phrasal verbs and prepositional ditransitives.","{'title': '1 Introduction', 'number': '1'}"
-"To our knowledge, there has been no attempt so far to recover the function tags in parsing treebank text.","{'title': '1 Introduction', 'number': '1'}"
-"In fact, we know of only one project that used them at all: (Collins, 1997) defines certain constituents as complements based on a combination of label and function tag information.","{'title': '1 Introduction', 'number': '1'}"
-This boolean condition is then used to train an improved parser.,"{'title': '1 Introduction', 'number': '1'}"
-We have found it useful to define our statistical model in terms of features.,"{'title': '2 Features', 'number': '2'}"
-"A 'feature', in this context, is a boolean-valued function, generally over parse tree nodes and either node labels or lexical items.","{'title': '2 Features', 'number': '2'}"
-Features can be fairly simple and easily read off the tree (e.g.,"{'title': '2 Features', 'number': '2'}"
-"'this node's label is X', 'this node's parent's label is Y'), or slightly more complex (`this node's head's partof-speech is Z').","{'title': '2 Features', 'number': '2'}"
-"This is concordant with the usage in the maximum entropy literature (Berger et al., 1996).","{'title': '2 Features', 'number': '2'}"
-"When using a number of known features to guess an unknown one, the usual procedure is to calculate the value of each feature, and then essentially look up the empirically most probable value for the feature to be guessed based on those known values.","{'title': '2 Features', 'number': '2'}"
-"Due to sparse data, some of the features later in the list may need to be ignored; thus the probability of an unknown feature value would be estimated as where P refers to an empirically observed probability.","{'title': '2 Features', 'number': '2'}"
-"Of course, if features 1 through i only co-occur a few times in the training, this value may not be reliable, so the empirical probability is usually smoothed: The values for Ai can then be determined according to the number of occurrences of features 1 through i together in the training.","{'title': '2 Features', 'number': '2'}"
-"One way to think about equation 1 (and specifically, the notion that j will depend on the values of Ii fn) is as follows: We begin with the prior probability of f. If we have data indicating P(fIfi), we multiply in that likelihood, while dividing out the original prior.","{'title': '2 Features', 'number': '2'}"
-"If we have data for P( fl f2), we multiply that in while dividing out the P (f in) term.","{'title': '2 Features', 'number': '2'}"
-"This is repeated for each piece of feature data we have; at each point, we are adjusting the probability we already have estimated.","{'title': '2 Features', 'number': '2'}"
-"If knowledge about feature fi makes f more likely than with just fi_i, the term where fi is added will be greater than one and the running probability will be adjusted upward.","{'title': '2 Features', 'number': '2'}"
-"This gives us the new probability shown in equation 3, which is exactly equivalent to equation 1 since everything except the last numerator cancels out of the equation.","{'title': '2 Features', 'number': '2'}"
-"The value of j is chosen such that features Ii fi are sufficiently represented in the training data; sometimes all n features are used, but often that would cause sparse data problems.","{'title': '2 Features', 'number': '2'}"
-"Smoothing is performed on this equation exactly as before: each term is interpolated between the empirical value and the prior estimated probability, according to a value of Ai that estimates confidence.","{'title': '2 Features', 'number': '2'}"
-"But aside from perhaps providing a new way to think about the problem, equation 3 is not particularly useful as it is—it is exactly the same as what we had before.","{'title': '2 Features', 'number': '2'}"
-"Its real usefulness comes, as shown in (Charniak, 1999), when we move from the notion of a feature chain to a feature tree.","{'title': '2 Features', 'number': '2'}"
-These feature chains don't capture everything we'd like them to.,"{'title': '2 Features', 'number': '2'}"
-"If there are two independent features that are each relatively sparse but occasionally carry a lot of information, then putting one before the other in a chain will effectively block the second from having any effect, since its information is (uselessly) conditioned on the first one, whose sparseness will completely dilute any gain.","{'title': '2 Features', 'number': '2'}"
-"What we'd really like is to be able to have a feature tree, whereby we can condition those two sparse features independently on one common predecessor feature.","{'title': '2 Features', 'number': '2'}"
-"As we said before, equation 3 represents, for each feature the probability of f based on fi and all its predecessors, divided by the probability of f based only on the predecessors.","{'title': '2 Features', 'number': '2'}"
-"In the chain case, this means that the denominator is conditioned on every feature from 1 to i — 1, but if we use a feature tree, it is conditioned only on those features along the path to the root of the tree.","{'title': '2 Features', 'number': '2'}"
-A notable issue with feature trees as opposed to feature chains is that the terms do not all cancel out.,"{'title': '2 Features', 'number': '2'}"
-"Every leaf on the tree will be represented in the numerator, and every fork in the tree (from which multiple nodes depend) will be represented at least once in the denominator.","{'title': '2 Features', 'number': '2'}"
-For example: in figure 3 we have a small feature tree that has one target feature and four conditioning features.,"{'title': '2 Features', 'number': '2'}"
-"Features b and d are independent of each other, but each depends on a; c depends directly only on b.","{'title': '2 Features', 'number': '2'}"
-"The unsmoothed version of the corresponding equation would be which, after cancelling of terms and smoothing, results in Note that strictly speaking the result is not a probability distribution.","{'title': '2 Features', 'number': '2'}"
-It could be made into one with an appropriate normalisation—the so-called partition function in the maximumentropy literature.,"{'title': '2 Features', 'number': '2'}"
-"However, if the independence assumptions made in the derivation of equation 4 are good ones, the partition function will be close to 1.0.","{'title': '2 Features', 'number': '2'}"
-We assume this to be the case for our feature trees.,"{'title': '2 Features', 'number': '2'}"
-Now we return the discussion to function tagging.,"{'title': '2 Features', 'number': '2'}"
-"There are a number of features that seem tar et feature to condition strongly for one function tag or another; we have assembled them into the feature tree shown in figure 4.2 This figure should be relatively self-explanatory, except for the notion of an 'alternate head'; currently, an alternate head is only defined for prepositional phrases, and is the head of the object of the prepositional phrase.","{'title': '2 Features', 'number': '2'}"
-"This data is very important in distinguishing, for example, 'by John' (where John might be a logical subject) from 'by next year' (a temporal modifier) and 'by selling it' (an adverbial indicating manner).","{'title': '2 Features', 'number': '2'}"
-"In the training phase of our experiment, we gathered statistics on the occurrence of function tags in sections 2-21 of the Penn treebank.","{'title': '3 Experiment', 'number': '3'}"
-"Specifically, for every constituent in the treebank, we recorded the presence of its function tags (or lack thereof) along with its conditioning information.","{'title': '3 Experiment', 'number': '3'}"
-From this we calculated the empirical probabilities of each function tag referenced in section 2 of this paper.,"{'title': '3 Experiment', 'number': '3'}"
-Values of A were determined using EM on the development corpus (treebank section 24).,"{'title': '3 Experiment', 'number': '3'}"
-"To test, then, we simply took the output of our parser on the test corpus (treebank section 23), and applied a postprocessing step to add function tags.","{'title': '3 Experiment', 'number': '3'}"
-"For each constituent in the tree, we calculated the likelihood of each function tag according to the feature tree in figure 4, and for each category (see figure 2) we assigned the most likely function tag (which might be the null tag).","{'title': '3 Experiment', 'number': '3'}"
-"2The reader will note that the 'features' listed in the tree are in fact not boolean-valued; each node in the given tree can be assumed to stand for a chain of boolean features, one per potential value at that node, exactly one of which will be true.","{'title': '3 Experiment', 'number': '3'}"
-"To evaluate our results, we first need to determine what is 'correct'.","{'title': '4 Evaluation', 'number': '4'}"
-"The definition we chose is to call a constituent correct if there exists in the correct parse a constituent with the same start and end points, label, and function tag (or lack thereof).","{'title': '4 Evaluation', 'number': '4'}"
-"Since we treated each of the four function tag categories as a separate feature for the purpose of tagging, evaluation was also done on a per-category basis.","{'title': '4 Evaluation', 'number': '4'}"
-The denominator of the accuracy measure should be the maximum possible number we could get correct.,"{'title': '4 Evaluation', 'number': '4'}"
-"In this case, that means excluding those constituents that were already wrong in the parser output; the parser we used attains 89% labelled precision-recall, so roughly 11% of the constituents are excluded from the function tag accuracy evaluation.","{'title': '4 Evaluation', 'number': '4'}"
-"(For reference, we have also included the performance of our function tagger directly on treebank parses; the slight gain that resulted is discussed below.)","{'title': '4 Evaluation', 'number': '4'}"
-Another consideration is whether to count non-tagged constituents in our evaluation.,"{'title': '4 Evaluation', 'number': '4'}"
-"On the one hand, we could count as correct any constituent with the correct tag as well as any correctly non-tagged constituent, and use as our denominator the number of all correctlylabelled constituents.","{'title': '4 Evaluation', 'number': '4'}"
-(We will henceforth refer to this as the 'with-null' measure.),"{'title': '4 Evaluation', 'number': '4'}"
-"On the other hand, we could just count constituents with the correct tag, and use as our denominators the total number of tagged, correctly-labelled constituents.","{'title': '4 Evaluation', 'number': '4'}"
-"We believe the latter number (`nonull') to be a better performance metric, as it is not overwhelmed by the large number of untagged constituents.","{'title': '4 Evaluation', 'number': '4'}"
-Both are reported below.,"{'title': '4 Evaluation', 'number': '4'}"
-"There are, it seems, two reasonable baselines for this and future work.","{'title': '5 Results', 'number': '5'}"
-"First of all, most constituents in the corpus have no tags at all, so obviously one baseline is to simply guess no tag for any constituent.","{'title': '5 Results', 'number': '5'}"
-"Even for the most common type of function tag (grammatical), this method performs with 87% accuracy.","{'title': '5 Results', 'number': '5'}"
-Thus the with-null accuracy of a function tagger needs to be very high to be significant here.,"{'title': '5 Results', 'number': '5'}"
-The second baseline might be useful in examining the no-null accuracy values (particularly the recall): always guess the most common tag in a category.,"{'title': '5 Results', 'number': '5'}"
-This means that every constituent gets labelled with `--SBJ-TMP-TPC-CLR' (meaning that it is a topicalised temporal subject that is 'closely related' to its verb).,"{'title': '5 Results', 'number': '5'}"
-"This combination of tags is in fact entirely illegal by the treebank guidelines, but performs adequately for a baseline.","{'title': '5 Results', 'number': '5'}"
-"The precision is, of course, abysmal, for the same reasons the first baseline did so well; but the recall is (as one might expect) substantial.","{'title': '5 Results', 'number': '5'}"
-The performances of the two baseline measures are given in Table 1.,"{'title': '5 Results', 'number': '5'}"
-"In table 2, we give the results for each category.","{'title': '5 Results', 'number': '5'}"
-"The first column is the with-null accuracy, and the precision and recall values given are the nonull accuracy, as noted in section 4.","{'title': '5 Results', 'number': '5'}"
-Grammatical tagging performs the best of the four categories.,"{'title': '5 Results', 'number': '5'}"
-"Even using the more difficult no-null accuracy measure, it has a 96% accuracy.","{'title': '5 Results', 'number': '5'}"
-"This seems to reflect the fact that grammatical relations can often be guessed based on constituent labels, parts of speech, and highfrequency lexical items, largely avoiding sparsedata problems.","{'title': '5 Results', 'number': '5'}"
-"Topicalisation can similarly be guessed largely on high-frequency information, and performed almost as well (93%).","{'title': '5 Results', 'number': '5'}"
-"On the other hand, we have the form/function tags and the 'miscellaneous' tags.","{'title': '5 Results', 'number': '5'}"
-"These are characterised by much more semantic information, and the relationships between lexical items are very important, making sparse data a real problem.","{'title': '5 Results', 'number': '5'}"
-"All the same, it should be noted that the performance is still far better than the baselines.","{'title': '5 Results', 'number': '5'}"
-The feature tree given in figure 4 is by no means the only feature tree we could have used.,"{'title': '5 Results', 'number': '5'}"
-"Indeed, we tried a number of different trees on the development corpus; this tree gave among the best overall results, with no category performing too badly.","{'title': '5 Results', 'number': '5'}"
-"However, there is no reason to use only one feature tree for all four categories; the best results can be got by using a separate tree for each one.","{'title': '5 Results', 'number': '5'}"
-One can thus achieve slight (one to three point) gains in each category.,"{'title': '5 Results', 'number': '5'}"
-"The overall performance, given in table 3, appears promising.","{'title': '5 Results', 'number': '5'}"
-"With a tagging accuracy of about 87%, various information retrieval and knowledge base applications can reasonably expect to extract useful information.","{'title': '5 Results', 'number': '5'}"
-The performance given in the first row is (like all previously given performance values) the function-tagger's performance on the correctlylabelled constituents output by our parser.,"{'title': '5 Results', 'number': '5'}"
-"For comparison, we also give its performance when run directly on the original treebank parse; since the parser's accuracy is about 89%, working directly with the treebank means our statistics are over roughly 12% more constituents.","{'title': '5 Results', 'number': '5'}"
-This second version does slightly better.,"{'title': '5 Results', 'number': '5'}"
-"The main reason that tagging does worse on the parsed version is that although the constituent itself may be correctly bracketed and labelled, its exterior conditioning information can still be incorrect.","{'title': '5 Results', 'number': '5'}"
-"An example of this that actually occurred in the development corpus (section 24 of the treebank) is the 'that' clause in the phrase 'can swallow the premise that the rewards for such ineptitude are six-figure salaries', correctly diagrammed in figure 5.","{'title': '5 Results', 'number': '5'}"
-"The function tagger gave this SBAR an ADV tag, indicating an unspecified adverbial function.","{'title': '5 Results', 'number': '5'}"
-"This seems extremely odd, given that its conditioning information (nodes circled in the figure) clearly show that it is part of an NP, and hence probably modifies the preceding NN.","{'title': '5 Results', 'number': '5'}"
-"Indeed, the statistics give the probability of an ADV tag in this conditioning environment as vanishingly small.","{'title': '5 Results', 'number': '5'}"
-"However, this was not the conditioning information that the tagger received.","{'title': '5 Results', 'number': '5'}"
-The parser had instead decided on the (incorrect) parse in figure 6.,"{'title': '5 Results', 'number': '5'}"
-"As such, the tagger's decision makes much more sense, since an SBAR under two VPs whose heads are VB and MD is rather likely to be an ADV.","{'title': '5 Results', 'number': '5'}"
-"(For instance, the 'although' clause of the sentence 'he can help, although he doesn't want to.' has exactly the conditioning environment given in figure 6, except that its predecessor is a comma; and this SBAR would be correctly tagged ADV.)","{'title': '5 Results', 'number': '5'}"
-"The SBAR itself is correctly bracketed and labelled, so it still gets counted in the statistics.","{'title': '5 Results', 'number': '5'}"
-"Happily, this sort of case seems to be relatively rare.","{'title': '5 Results', 'number': '5'}"
-Another thing that lowers the overall performance somewhat is the existence of error and inconsistency in the treebank tagging.,"{'title': '5 Results', 'number': '5'}"
-"Some tags seem to have been relatively easy for the human treebank taggers, and have few errors.","{'title': '5 Results', 'number': '5'}"
-"Other tags have explicit caveats that, however welljustified, proved difficult to remember for the taggers—for instance, there are 37 instances of a PP being tagged with LGS (logical subject) in spite of the guidelines specifically saying, '[LGS] attaches to the NP object of by and not to the PP node itself.'","{'title': '5 Results', 'number': '5'}"
-"(Bies et al., 1995) Each mistagging in the test corpus can cause up to two spurious errors, one in precision and one in recall.","{'title': '5 Results', 'number': '5'}"
-Still another source of difficulty comes when the guidelines are vague or silent on a specific issue.,"{'title': '5 Results', 'number': '5'}"
-"To return to logical subjects, it is clear that `the loss' is a logical subject in 'The company was hurt by the loss', but what about in 'The company was unperturbed by the loss'?","{'title': '5 Results', 'number': '5'}"
-"In addition, a number of the function tags are authorised for 'metaphorical use', but what exactly constitutes such a use is somewhat inconsistently marked.","{'title': '5 Results', 'number': '5'}"
-It is as yet unclear just to what degree these tagging errors in the corpus are affecting our results.,"{'title': '5 Results', 'number': '5'}"
-This work presents a method for assigning function tags to text that has been parsed to the simple label level.,"{'title': '6 Conclusion', 'number': '6'}"
-"Because of the lack of prior research on this task, we are unable to compare our results to those of other researchers; but the results do seem promising.","{'title': '6 Conclusion', 'number': '6'}"
-"However, a great deal of future work immediately suggests itself: • Although we tested twenty or so feature trees besides the one given in figure 4, the space of possible trees is still rather unexplored.","{'title': '6 Conclusion', 'number': '6'}"
-A more systematic investigation into the advantages of different feature trees would be useful.,"{'title': '6 Conclusion', 'number': '6'}"
-"• We could add to the feature tree the values of other categories of function tag, or the function tags of various tree-relatives (parent, sibling).","{'title': '6 Conclusion', 'number': '6'}"
-"• One of the weaknesses of the lexical features is sparse data; whereas the part of speech is too coarse to distinguish 'by John' (LGS) from 'by Monday' (TMP), the lexical information may be too sparse.","{'title': '6 Conclusion', 'number': '6'}"
-"This could be assisted by clustering the lexical items into useful categories (names, dates, etc.","{'title': '6 Conclusion', 'number': '6'}"
-"), and adding those categories as an additional feature type.","{'title': '6 Conclusion', 'number': '6'}"
-"• There is no reason to think that this work could not be integrated directly into the parsing process, particularly if one's parser is already geared partially or entirely towards feature-based statistics; the function tag information could prove quite useful within the parse itself, to rank several parses to find the most plausible.","{'title': '6 Conclusion', 'number': '6'}"
+and Vincent J. Della Pietra.,Introduction
+1996.,Introduction
+A maximum entropy approach to natural lanprocessing.,Introduction
+"Linguistics,",Introduction
+"Parsing sentences using statistical information gathered from a treebank was first examined a decade ago in (ChitraD and Grishman, 1990) and is by now a fairly well-studied problem ((Charniak, 1997), (Collins, 1997), (Ratnaparkhi, 1997)).",Experiment/Discussion
+"But to date, the end product of the parsing process has for the most part been a bracketing with simple constituent labels like NP, VP, or SBAR.",Experiment/Discussion
+The Penn treebank contains a great deal of additional syntactic and semantic information from which to gather statistics; reproducing more of this information automatically is a goal which has so far been mostly ignored.,Experiment/Discussion
+This paper details a process by which some of this information—the function tags— may be recovered automatically.,Experiment/Discussion
+"In the Penn treebank, there are 20 tags (figure 1) that can be appended to constituent labels in order to indicate additional information about the syntactic or semantic role of the constituent.",Experiment/Discussion
+"We have divided them into four categories (given in figure 2) based on those in the bracketing guidelines (Bies et al., 1995).",Experiment/Discussion
+"A constituent can be tagged with multiple tags, but never with two tags from the same category.1 In actuality, the case where a constituent has tags from all four categories never happens, but constituents with three tags do occur (rarely).",Experiment/Discussion
+"At a high level, we can simply say that having the function tag information for a given text is useful just because any further information would help.",Experiment/Discussion
+"But specifically, there are distinct advantages for each of the various categories.",Experiment/Discussion
+"Grammatical tags are useful for any application trying to follow the thread of the text—they find the 'who does what' of each clause, which can be useful to gain information about the situation or to learn more about the behaviour of the words in the sentence.",Experiment/Discussion
+"The form/function tags help to find those constituents behaving in ways not conforming to their labelled type, as well as further clarifying the behaviour of adverbial phrases.",Experiment/Discussion
+"Information retrieval applications specialising in describing events, as with a number of the MUC applications, could greatly benefit from some of these in determining the where-when-why of things.",Experiment/Discussion
+"Noting a topicalised constituent could also prove useful to these applications, and it might also help in discourse analysis, or pronoun resolution.",Experiment/Discussion
+"Finally, the 'miscellaneous' tags are convenient at various times; particularly the CLR 'closely related' tag, which among other things marks phrasal verbs and prepositional ditransitives.",Experiment/Discussion
+"To our knowledge, there has been no attempt so far to recover the function tags in parsing treebank text.",Experiment/Discussion
+"In fact, we know of only one project that used them at all: (Collins, 1997) defines certain constituents as complements based on a combination of label and function tag information.",Experiment/Discussion
+This boolean condition is then used to train an improved parser.,Experiment/Discussion
+We have found it useful to define our statistical model in terms of features.,Experiment/Discussion
+"A 'feature', in this context, is a boolean-valued function, generally over parse tree nodes and either node labels or lexical items.",Experiment/Discussion
+Features can be fairly simple and easily read off the tree (e.g.,Experiment/Discussion
+"'this node's label is X', 'this node's parent's label is Y'), or slightly more complex (`this node's head's partof-speech is Z').",Experiment/Discussion
+"This is concordant with the usage in the maximum entropy literature (Berger et al., 1996).",Experiment/Discussion
+"When using a number of known features to guess an unknown one, the usual procedure is to calculate the value of each feature, and then essentially look up the empirically most probable value for the feature to be guessed based on those known values.",Experiment/Discussion
+"Due to sparse data, some of the features later in the list may need to be ignored; thus the probability of an unknown feature value would be estimated as where P refers to an empirically observed probability.",Experiment/Discussion
+"Of course, if features 1 through i only co-occur a few times in the training, this value may not be reliable, so the empirical probability is usually smoothed: The values for Ai can then be determined according to the number of occurrences of features 1 through i together in the training.",Experiment/Discussion
+"One way to think about equation 1 (and specifically, the notion that j will depend on the values of Ii fn) is as follows: We begin with the prior probability of f. If we have data indicating P(fIfi), we multiply in that likelihood, while dividing out the original prior.",Experiment/Discussion
+"If we have data for P( fl f2), we multiply that in while dividing out the P (f in) term.",Experiment/Discussion
+"This is repeated for each piece of feature data we have; at each point, we are adjusting the probability we already have estimated.",Experiment/Discussion
+"If knowledge about feature fi makes f more likely than with just fi_i, the term where fi is added will be greater than one and the running probability will be adjusted upward.",Experiment/Discussion
+"This gives us the new probability shown in equation 3, which is exactly equivalent to equation 1 since everything except the last numerator cancels out of the equation.",Experiment/Discussion
+"The value of j is chosen such that features Ii fi are sufficiently represented in the training data; sometimes all n features are used, but often that would cause sparse data problems.",Experiment/Discussion
+"Smoothing is performed on this equation exactly as before: each term is interpolated between the empirical value and the prior estimated probability, according to a value of Ai that estimates confidence.",Experiment/Discussion
+"But aside from perhaps providing a new way to think about the problem, equation 3 is not particularly useful as it is—it is exactly the same as what we had before.",Experiment/Discussion
+"Its real usefulness comes, as shown in (Charniak, 1999), when we move from the notion of a feature chain to a feature tree.",Experiment/Discussion
+These feature chains don't capture everything we'd like them to.,Experiment/Discussion
+"If there are two independent features that are each relatively sparse but occasionally carry a lot of information, then putting one before the other in a chain will effectively block the second from having any effect, since its information is (uselessly) conditioned on the first one, whose sparseness will completely dilute any gain.",Experiment/Discussion
+"What we'd really like is to be able to have a feature tree, whereby we can condition those two sparse features independently on one common predecessor feature.",Experiment/Discussion
+"As we said before, equation 3 represents, for each feature the probability of f based on fi and all its predecessors, divided by the probability of f based only on the predecessors.",Experiment/Discussion
+"In the chain case, this means that the denominator is conditioned on every feature from 1 to i — 1, but if we use a feature tree, it is conditioned only on those features along the path to the root of the tree.",Experiment/Discussion
+A notable issue with feature trees as opposed to feature chains is that the terms do not all cancel out.,Experiment/Discussion
+"Every leaf on the tree will be represented in the numerator, and every fork in the tree (from which multiple nodes depend) will be represented at least once in the denominator.",Experiment/Discussion
+For example: in figure 3 we have a small feature tree that has one target feature and four conditioning features.,Experiment/Discussion
+"Features b and d are independent of each other, but each depends on a; c depends directly only on b.",Experiment/Discussion
+"The unsmoothed version of the corresponding equation would be which, after cancelling of terms and smoothing, results in Note that strictly speaking the result is not a probability distribution.",Experiment/Discussion
+It could be made into one with an appropriate normalisation—the so-called partition function in the maximumentropy literature.,Experiment/Discussion
+"However, if the independence assumptions made in the derivation of equation 4 are good ones, the partition function will be close to 1.0.",Experiment/Discussion
+We assume this to be the case for our feature trees.,Experiment/Discussion
+Now we return the discussion to function tagging.,Experiment/Discussion
+"There are a number of features that seem tar et feature to condition strongly for one function tag or another; we have assembled them into the feature tree shown in figure 4.2 This figure should be relatively self-explanatory, except for the notion of an 'alternate head'; currently, an alternate head is only defined for prepositional phrases, and is the head of the object of the prepositional phrase.",Experiment/Discussion
+"This data is very important in distinguishing, for example, 'by John' (where John might be a logical subject) from 'by next year' (a temporal modifier) and 'by selling it' (an adverbial indicating manner).",Experiment/Discussion
+"In the training phase of our experiment, we gathered statistics on the occurrence of function tags in sections 2-21 of the Penn treebank.",Experiment/Discussion
+"Specifically, for every constituent in the treebank, we recorded the presence of its function tags (or lack thereof) along with its conditioning information.",Experiment/Discussion
+From this we calculated the empirical probabilities of each function tag referenced in section 2 of this paper.,Experiment/Discussion
+Values of A were determined using EM on the development corpus (treebank section 24).,Experiment/Discussion
+"To test, then, we simply took the output of our parser on the test corpus (treebank section 23), and applied a postprocessing step to add function tags.",Experiment/Discussion
+"For each constituent in the tree, we calculated the likelihood of each function tag according to the feature tree in figure 4, and for each category (see figure 2) we assigned the most likely function tag (which might be the null tag).",Experiment/Discussion
+"2The reader will note that the 'features' listed in the tree are in fact not boolean-valued; each node in the given tree can be assumed to stand for a chain of boolean features, one per potential value at that node, exactly one of which will be true.",Experiment/Discussion
+"To evaluate our results, we first need to determine what is 'correct'.",Experiment/Discussion
+"The definition we chose is to call a constituent correct if there exists in the correct parse a constituent with the same start and end points, label, and function tag (or lack thereof).",Experiment/Discussion
+"Since we treated each of the four function tag categories as a separate feature for the purpose of tagging, evaluation was also done on a per-category basis.",Experiment/Discussion
+The denominator of the accuracy measure should be the maximum possible number we could get correct.,Experiment/Discussion
+"In this case, that means excluding those constituents that were already wrong in the parser output; the parser we used attains 89% labelled precision-recall, so roughly 11% of the constituents are excluded from the function tag accuracy evaluation.",Experiment/Discussion
+"(For reference, we have also included the performance of our function tagger directly on treebank parses; the slight gain that resulted is discussed below.)",Experiment/Discussion
+Another consideration is whether to count non-tagged constituents in our evaluation.,Experiment/Discussion
+"On the one hand, we could count as correct any constituent with the correct tag as well as any correctly non-tagged constituent, and use as our denominator the number of all correctlylabelled constituents.",Experiment/Discussion
+(We will henceforth refer to this as the 'with-null' measure.),Experiment/Discussion
+"On the other hand, we could just count constituents with the correct tag, and use as our denominators the total number of tagged, correctly-labelled constituents.",Experiment/Discussion
+"We believe the latter number (`nonull') to be a better performance metric, as it is not overwhelmed by the large number of untagged constituents.",Experiment/Discussion
+Both are reported below.,Experiment/Discussion
+"There are, it seems, two reasonable baselines for this and future work.",Results/Conclusion
+"First of all, most constituents in the corpus have no tags at all, so obviously one baseline is to simply guess no tag for any constituent.",Results/Conclusion
+"Even for the most common type of function tag (grammatical), this method performs with 87% accuracy.",Results/Conclusion
+Thus the with-null accuracy of a function tagger needs to be very high to be significant here.,Results/Conclusion
+The second baseline might be useful in examining the no-null accuracy values (particularly the recall): always guess the most common tag in a category.,Results/Conclusion
+This means that every constituent gets labelled with `--SBJ-TMP-TPC-CLR' (meaning that it is a topicalised temporal subject that is 'closely related' to its verb).,Results/Conclusion
+"This combination of tags is in fact entirely illegal by the treebank guidelines, but performs adequately for a baseline.",Results/Conclusion
+"The precision is, of course, abysmal, for the same reasons the first baseline did so well; but the recall is (as one might expect) substantial.",Results/Conclusion
+The performances of the two baseline measures are given in Table 1.,Results/Conclusion
+"In table 2, we give the results for each category.",Results/Conclusion
+"The first column is the with-null accuracy, and the precision and recall values given are the nonull accuracy, as noted in section 4.",Results/Conclusion
+Grammatical tagging performs the best of the four categories.,Results/Conclusion
+"Even using the more difficult no-null accuracy measure, it has a 96% accuracy.",Results/Conclusion
+"This seems to reflect the fact that grammatical relations can often be guessed based on constituent labels, parts of speech, and highfrequency lexical items, largely avoiding sparsedata problems.",Results/Conclusion
+"Topicalisation can similarly be guessed largely on high-frequency information, and performed almost as well (93%).",Results/Conclusion
+"On the other hand, we have the form/function tags and the 'miscellaneous' tags.",Results/Conclusion
+"These are characterised by much more semantic information, and the relationships between lexical items are very important, making sparse data a real problem.",Results/Conclusion
+"All the same, it should be noted that the performance is still far better than the baselines.",Results/Conclusion
+The feature tree given in figure 4 is by no means the only feature tree we could have used.,Results/Conclusion
+"Indeed, we tried a number of different trees on the development corpus; this tree gave among the best overall results, with no category performing too badly.",Results/Conclusion
+"However, there is no reason to use only one feature tree for all four categories; the best results can be got by using a separate tree for each one.",Results/Conclusion
+One can thus achieve slight (one to three point) gains in each category.,Results/Conclusion
+"The overall performance, given in table 3, appears promising.",Results/Conclusion
+"With a tagging accuracy of about 87%, various information retrieval and knowledge base applications can reasonably expect to extract useful information.",Results/Conclusion
+The performance given in the first row is (like all previously given performance values) the function-tagger's performance on the correctlylabelled constituents output by our parser.,Results/Conclusion
+"For comparison, we also give its performance when run directly on the original treebank parse; since the parser's accuracy is about 89%, working directly with the treebank means our statistics are over roughly 12% more constituents.",Results/Conclusion
+This second version does slightly better.,Results/Conclusion
+"The main reason that tagging does worse on the parsed version is that although the constituent itself may be correctly bracketed and labelled, its exterior conditioning information can still be incorrect.",Results/Conclusion
+"An example of this that actually occurred in the development corpus (section 24 of the treebank) is the 'that' clause in the phrase 'can swallow the premise that the rewards for such ineptitude are six-figure salaries', correctly diagrammed in figure 5.",Results/Conclusion
+"The function tagger gave this SBAR an ADV tag, indicating an unspecified adverbial function.",Results/Conclusion
+"This seems extremely odd, given that its conditioning information (nodes circled in the figure) clearly show that it is part of an NP, and hence probably modifies the preceding NN.",Results/Conclusion
+"Indeed, the statistics give the probability of an ADV tag in this conditioning environment as vanishingly small.",Results/Conclusion
+"However, this was not the conditioning information that the tagger received.",Results/Conclusion
+The parser had instead decided on the (incorrect) parse in figure 6.,Results/Conclusion
+"As such, the tagger's decision makes much more sense, since an SBAR under two VPs whose heads are VB and MD is rather likely to be an ADV.",Results/Conclusion
+"(For instance, the 'although' clause of the sentence 'he can help, although he doesn't want to.' has exactly the conditioning environment given in figure 6, except that its predecessor is a comma; and this SBAR would be correctly tagged ADV.)",Results/Conclusion
+"The SBAR itself is correctly bracketed and labelled, so it still gets counted in the statistics.",Results/Conclusion
+"Happily, this sort of case seems to be relatively rare.",Results/Conclusion
+Another thing that lowers the overall performance somewhat is the existence of error and inconsistency in the treebank tagging.,Results/Conclusion
+"Some tags seem to have been relatively easy for the human treebank taggers, and have few errors.",Results/Conclusion
+"Other tags have explicit caveats that, however welljustified, proved difficult to remember for the taggers—for instance, there are 37 instances of a PP being tagged with LGS (logical subject) in spite of the guidelines specifically saying, '[LGS] attaches to the NP object of by and not to the PP node itself.'",Results/Conclusion
+"(Bies et al., 1995) Each mistagging in the test corpus can cause up to two spurious errors, one in precision and one in recall.",Results/Conclusion
+Still another source of difficulty comes when the guidelines are vague or silent on a specific issue.,Results/Conclusion
+"To return to logical subjects, it is clear that `the loss' is a logical subject in 'The company was hurt by the loss', but what about in 'The company was unperturbed by the loss'?",Results/Conclusion
+"In addition, a number of the function tags are authorised for 'metaphorical use', but what exactly constitutes such a use is somewhat inconsistently marked.",Results/Conclusion
+It is as yet unclear just to what degree these tagging errors in the corpus are affecting our results.,Results/Conclusion
+This work presents a method for assigning function tags to text that has been parsed to the simple label level.,Results/Conclusion
+"Because of the lack of prior research on this task, we are unable to compare our results to those of other researchers; but the results do seem promising.",Results/Conclusion
+"However, a great deal of future work immediately suggests itself: • Although we tested twenty or so feature trees besides the one given in figure 4, the space of possible trees is still rather unexplored.",Results/Conclusion
+A more systematic investigation into the advantages of different feature trees would be useful.,Results/Conclusion
+"• We could add to the feature tree the values of other categories of function tag, or the function tags of various tree-relatives (parent, sibling).",Results/Conclusion
+"• One of the weaknesses of the lexical features is sparse data; whereas the part of speech is too coarse to distinguish 'by John' (LGS) from 'by Monday' (TMP), the lexical information may be too sparse.",Results/Conclusion
+"This could be assisted by clustering the lexical items into useful categories (names, dates, etc.",Results/Conclusion
+"), and adding those categories as an additional feature type.",Results/Conclusion
+"• There is no reason to think that this work could not be integrated directly into the parsing process, particularly if one's parser is already geared partially or entirely towards feature-based statistics; the function tag information could prove quite useful within the parse itself, to rank several parses to find the most plausible.",Results/Conclusion

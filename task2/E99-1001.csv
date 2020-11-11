@@ -1,205 +1,205 @@
 col1,col2
-"It is often claimed that Named Entity recognition systems need extensive gazetteers—lists of names of people, organisations, locations, and other named entities.",{}
-"Indeed, the compilation of such gazetteers is sometimes mentioned as a bottleneck in the design of Named Entity recognition systems.",{}
-We report on a Named Entity recognition system which combines rule-based grammars with statistical (maximum entropy) models.,{}
-"We report on the system's performance with gazetteers of different types and different sizes, using test material from the muc-7 competition.",{}
-"We show that, for the text type and task of this competition, it is sufficient to use relatively small gazetteers of well-known names, rather than large gazetteers of low-frequency names.",{}
-We conclude with observations about the domain independence of the competition and of our experiments.,{}
-Named Entity recognition involves processing a text and identifying certain occurrences of words or expressions as belonging to particular categories of Named Entities (NE).,"{'title': '1 Introduction', 'number': '1'}"
-"NE recognition software serves as an important preprocessing tool for tasks such as information extraction, information retrieval and other text processing applications.","{'title': '1 Introduction', 'number': '1'}"
-What counts as a Named Entity depends on the application that makes use of the annotations.,"{'title': '1 Introduction', 'number': '1'}"
-One such application is document retrieval or automated document forwarding: documents annoted with NE information can be searched more Now also at Harlequin Ltd. (Edinburgh office) accurately than raw text.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, NE annotation allows you to search for all texts that mention the company &quot;Philip Morris&quot;, ignoring documents about a possibly unrelated person by the same name.","{'title': '1 Introduction', 'number': '1'}"
-"Or you can have all documents forwarded to you about a person called &quot;Gates&quot;, without receiving documents about things called gates.","{'title': '1 Introduction', 'number': '1'}"
-In a document collection annotated with Named Entity information you can more easily find documents about Java the programming language without getting documents about Java the country or Java the coffee.,"{'title': '1 Introduction', 'number': '1'}"
-"Most common among marked categories are names of people, organisations and locations as well as temporal and numeric expression.","{'title': '1 Introduction', 'number': '1'}"
-"Here is an example of a text marked up with Named Entity information: <ENAMEX TYPE='PERSON'>Flavel Donne</ENAMEX> is an analyst with <ENAMEX TYPE='ORGANIZATION'>General Trends </ENAMEX>, which has been based in <ENAMEX TYPE='LOCATION'>Little Spring</ENAMEX> since <TIMEX TYPE='DATE'>July 1998</TIMEX>.","{'title': '1 Introduction', 'number': '1'}"
-"In an article on the Named Entity recognition competition (part of muc-6) Sundheim (1995) remarks that &quot;common organization names, first names of people and location names can be handled by recourse to list lookup, although there are drawbacks&quot; (Sundheim 1995: 16).","{'title': '1 Introduction', 'number': '1'}"
-"In fact, participants in that competition from the University of Durham (Morgan et al., 1995) and from SRA (Krupka, 1995) report that gazetteers did not make that much of a difference to their system.","{'title': '1 Introduction', 'number': '1'}"
-"Nevertheless, in a recent article Cucchiarelli et al. (1998) report that one of the bottlenecks in designing NE recognition systems is the limited availability of large gazetteers, particularly gazetteers for different languages (Cucchiarelli et al.","{'title': '1 Introduction', 'number': '1'}"
-1998: 291).,"{'title': '1 Introduction', 'number': '1'}"
-People also use gazetteers of very different sizes.,"{'title': '1 Introduction', 'number': '1'}"
-"The basic gazetteers in the Isoquest system for muc-7 contain 110,000 names, but Krupka and Hausman (1998) show that system performance does not degrade much when the Proceedings of EACL '99 gazetteers are reduced to 25,000 and 9,000 names; conversely, they also show that the addition of an extra 42 entries to the gazetteers improves performance dramatically.","{'title': '1 Introduction', 'number': '1'}"
-"This raises several questions: how important are gazetteers? is it important that they are big? if gazetteers are important but their size isn't, then what are the criteria for building gazetteers?","{'title': '1 Introduction', 'number': '1'}"
-"One might think that Named Entity recognition could be done by using lists of (e.g.) names of people, places and organisations, but that is not the case.","{'title': '1 Introduction', 'number': '1'}"
-"To begin with, the lists would be huge: it is estimated that there are 1.5 million unique surnames just in the U.S.","{'title': '1 Introduction', 'number': '1'}"
-It is not feasible to list all possible surnames in the world in a Named Entity recognition system.,"{'title': '1 Introduction', 'number': '1'}"
-There is a similar problem with company names.,"{'title': '1 Introduction', 'number': '1'}"
-"A list of all current companies worldwide would be huge, if at all available, and would immediately be out of date since new companies are formed all the time.","{'title': '1 Introduction', 'number': '1'}"
-"In addition, company names can occur in variations: a list of company names might contain &quot;The Royal Bank of Scotland plc&quot;, but that company might also be referred to as &quot;The Royal Bank of Scotland&quot;, &quot;The Royal&quot; or &quot;The Royal plc&quot;.","{'title': '1 Introduction', 'number': '1'}"
-These variations would all have to be listed as well.,"{'title': '1 Introduction', 'number': '1'}"
-"Even if it was possible to list all possible organisations and locations and people, there would still be the problem of overlaps between the lists.","{'title': '1 Introduction', 'number': '1'}"
-Names such as Emerson or Washington could be names of people as well as places; Philip Morris could be a person or an organisation.,"{'title': '1 Introduction', 'number': '1'}"
-"In addition, such lists would also contain words like &quot;Hope&quot; and &quot;Lost&quot; (locations) and &quot;Thinking Machines&quot; and &quot;Next&quot; (companies), whereas these words could also occur in contexts where they don't refer to named entities.","{'title': '1 Introduction', 'number': '1'}"
-"Moreover, names of companies can be complex entities, consisting of several words.","{'title': '1 Introduction', 'number': '1'}"
-"Especially where conjunctions are involved, this can create problems.","{'title': '1 Introduction', 'number': '1'}"
-"In &quot;China International Trust and Investment Corp decided to do something&quot;, it's not obvious whether there is a reference here to one company or two.","{'title': '1 Introduction', 'number': '1'}"
-"In the sentence &quot;Mason, Daily and Partners lost their court case&quot; it is clear that &quot;Mason, Daily and Partners&quot; is the name of a company.","{'title': '1 Introduction', 'number': '1'}"
-"In the sentence &quot;Unfortunately, Daily and Partners lost their court case&quot; the name of the company does not include the word &quot;unfortunately&quot;, but it still includes the word &quot;Daily&quot;, which is just as common a word as &quot;unfortunately&quot;.","{'title': '1 Introduction', 'number': '1'}"
-In this paper we report on a Named Entity recognition system which was amongst the highest scoring in the recent MUC-7 Message Understanding Conference/Competition (MUC).,"{'title': '1 Introduction', 'number': '1'}"
-One of the features of our system is that even when it is run without any lists of names of organisations or people it still performs at a level comparable to that of many other MU C-systems.,"{'title': '1 Introduction', 'number': '1'}"
-"We report on experiments which show the difference in performance between the NE system with gazetteers of different sizes for three types of named entities: people, organisations and locations.","{'title': '1 Introduction', 'number': '1'}"
-The muc competition for which we built our system took place in March 1998.,"{'title': '2 The MUC Competition', 'number': '2'}"
-"Prior to the competition, participants received a detailed coding manual which specified what should and should not be marked up, and how the markup should proceed.","{'title': '2 The MUC Competition', 'number': '2'}"
-"They also received a few hundred articles from the New York Times Service, marked up by the organisers according to the rules of the coding manual.","{'title': '2 The MUC Competition', 'number': '2'}"
-"For the competition itself, participants received 100 articles.","{'title': '2 The MUC Competition', 'number': '2'}"
-"They then had 5 days to perform the chosen information extraction tasks (in our case: Named Entity recognition) without human intervention, and markup the text with the Named Entities found.","{'title': '2 The MUC Competition', 'number': '2'}"
-The resulting marked up file then had to be returned to the organisers for scoring.,"{'title': '2 The MUC Competition', 'number': '2'}"
-Scoring of the results is done automatically by the organisers.,"{'title': '2 The MUC Competition', 'number': '2'}"
-The scoring software compares a participant's answer file against a carefully prepared key file; the key file is considered to be the &quot;correctly&quot; annotated file.,"{'title': '2 The MUC Competition', 'number': '2'}"
-"Amongst many other things, the scoring software calculates a system's recall and precision scores: Recall: Number of correct tags in the answer file over total number of tags in the key file.","{'title': '2 The MUC Competition', 'number': '2'}"
-Precision: Number of correct tags in the answer file over total number of tags in the answer file.,"{'title': '2 The MUC Competition', 'number': '2'}"
-Recall and precision are generally accepted ways of measuring system performance in this field.,"{'title': '2 The MUC Competition', 'number': '2'}"
-"For example, suppose you have a text which is 1000 words long, and 20 of these words express a location.","{'title': '2 The MUC Competition', 'number': '2'}"
-Now imagine a system which assigns the LOCATION tag to every single word in the text.,"{'title': '2 The MUC Competition', 'number': '2'}"
-"This system will have tagged correctly all 20 locations, since it tagged everything as LOCATION; its recall score is 20/20, or 100%.","{'title': '2 The MUC Competition', 'number': '2'}"
-"But of the 1000 LOCATION tags it assigned, only those 20 were correct; its precision is therefore only 20/1000, or 2%.","{'title': '2 The MUC Competition', 'number': '2'}"
-We decided first to test to what extent NE recognition can be carried out merely by recourse to list lookup.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-Such a system could be domain and language independent.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-It would need no grammars or even information about tokenization but simply mark up known strings in the text.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Of course, the development and maintenance of the name lists would become more labour intensive.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"(Palmer and Day, 1997) evaluated the performance of such a minimal NE recognition system equipped with name lists derived from muc-6 training texts.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The system was tested on newswire texts for six languages.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"It achieved a recall rate of about 70% for Chinese, Japanese and Portuguese and about 40% for English and French.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The precision of the system was not calculated but can be assumed to be quite high because it would only be affected by cases where a capitalized word occurs in more than one list (e.g.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-&quot;Columbia&quot; could occur in the list of organisations as well as locations) or where a capitalised word occurs in a list but could also be something completely different (e.g.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-&quot;Columbia&quot; occurs in the list of locations but could also be the name of a space shuttle).,"{'title': '3 Finding Named Entities', 'number': '3'}"
-We trained a similar minimal system using the muc- 7 training data (200 articles) and ran it on the test data set (100 articles).,"{'title': '3 Finding Named Entities', 'number': '3'}"
-The corpus we used in our experiments were the training and test corpora for the mUC- 7 evaluation.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"From the training data we collected 1228 person names, 809 names of organizations and 770 names of locations.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The resulting name lists were the only resource used by the minimal NE recognition system.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-It nevertheless achieved relatively high precision (around 90%) and recall in the range 4070%.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-The results are summarised in Figure 1 in the &quot;learned lists&quot; column.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Despite its simplicity, this type of system does presuppose the existence of training texts, and these are not always available.","{'title': '3 Finding Named Entities', 'number': '3'}"
-To cope with the absence of training material we designed and tested another variation of the minimal system.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Instead of collecting lists from training texts we instead collected lists of commonly known entities— we collected a list of 5000 locations (countries and American states with their five biggest cities) from the CIA World Fact Book, a list of 33,000 organization names (companies, banks, associations, universities, etc.) from financial Web sites, and a list of 27,000 famous people from several websites.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The results of this run can be seen in Figure 1 in the &quot;common lists&quot; column.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"In essence, this system's performance was comparable to that of the system using lists from the training set as far as location was concerned; it performed slightly worse on the person category and performed badly on organisations.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"In a final experiment we combined the two gazetteers, the one induced from the training texts with the one acquired from public resources, and achieved some improvement in recall at the expense of precision.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The results of this test run are given in the &quot;combined lists&quot; column in Figure 1.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-We can conclude that the pure list lookup approach performs reasonably well for locations (precision of 90-94%; recall of 75-85%).,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"For the person category and especially for the organization category this approach does not yield good performance: although the precision was not extremely bad (around 75-85%), recall was too low (lower than 50%)—i.e. every second person name or organization failed to be assigned.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"For document retrieval purposes low recall is not necessarily a major problem since it is often sufficient to recognize just one occurrence of each distinctive entity per document, and many of the unassigned person and organization names were just repetitions of their full variants.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"But for many other applications, and for the muc competition, higher recall and precision are necessary.","{'title': '3 Finding Named Entities', 'number': '3'}"
-The system we fielded for muc-7 makes extensive use of what McDonald (1996) calls internal (phrasal) and external (contextual) evidence in named entity recognition.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-The basic philosophy underlying our approach is as follows.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-A string of words like &quot;Adam Kluver&quot; has an internal (phrasal) structure which suggests that this is a person name; but we know that it can also be used as a shortcut for a name of organization (&quot;Adam Kluver Ltd.&quot;) or location (&quot;Adam Kluver Country Park&quot;).,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Looking it up on a list will not necessarily help: the string may not be on a list, may be on more than one list, or may be on the wrong list.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"However, somewhere in the text, there is likely to be some contextual material which makes it clear what type of named entity it is.","{'title': '3 Finding Named Entities', 'number': '3'}"
-Our strategy is to only make a decision once we have identified this bit of contextual information.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"We further assume that, once we have identified contextual material which makes it clear that &quot;Adam Kluver&quot; is (e.g.) the name of a company, then any other mention of &quot;Adam Kluver&quot; in that document is likely to refer to that company.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"If the author at some point in the same text also wants to refer to (e.g.) a person called &quot;Adam Kluver&quot;, s/he will provide some extra context to make this clear, and this context will be picked up in the first step.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"The fact that at first it is only an assumption rather than a certainty that &quot;Adam Kluver&quot; is a company, is represented explicitly, and later processing components try to resolve the uncertainty.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"If no suitable context is found anywhere in the text to decide what sort of Named Entity &quot;Adam Kluver&quot; is, the system can check other resources, e.g. a list of known company names and apply compositional phrasal grammars for different categories.","{'title': '3 Finding Named Entities', 'number': '3'}"
-Such grammars for instance can state that if a sequence of capitalized words ends with the word &quot;Ltd.&quot; it is a name of organization or if a known first name is followed by an unknown capitalized word this is a person name.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"In our muc system, we implemented this approach as a staged combination of a rule-based system with probabilistic partial matching.","{'title': '3 Finding Named Entities', 'number': '3'}"
-We describe each stage in turn.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"In the first step, the system applies sure-fire grammar rules.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"These rules combine internal and external evidence, and only fire when a possible candidate expression is surrounded by a suggestive context.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"Sure-fire rules rely on known corporate designators (Ltd., Inc., etc.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"), person titles (Mr., Dr., Sen.), and definite contexts such as those in Figure 2.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"The sure-fire rules apply after POS tagging and simple semantic tagging, so at this stage words like &quot;former&quot; have already been identified as JJ (adjective), words like &quot;analyst&quot; have been identified as PROF (professions), and words like &quot;brother&quot; as REL (relatives).","{'title': '3 Finding Named Entities', 'number': '3'}"
-At this stage our muc system treats information from the lists as likely rather than definite and always checks if the context is either suggestive or non-contradictive.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"For example, a likely company name with a conjunction (e.g.","{'title': '3 Finding Named Entities', 'number': '3'}"
-&quot;China International Trust and Investment Corp&quot;) is left untagged at this stage if the company is not listed in a list of known companies.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Similarly, the system postpones the markup of unknown organizations whose name starts with a sentence initial common word, as in &quot;Suspended Ceiling Contractors Ltd denied the charge&quot;.","{'title': '3 Finding Named Entities', 'number': '3'}"
-Names of possible locations found in our gazetteer of place names are marked as LOCATION only if they appear with a context that is suggestive of location.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"&quot;Washington&quot;, for example, can just as easily be a surname or the name of an organization.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"Only in a suggestive context, like &quot;in Washington&quot;, will it be marked up as location.","{'title': '3 Finding Named Entities', 'number': '3'}"
-After the sure-fire symbolic transduction the system performs a probabilistic partial match of the identified entities.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"First, the system collects all named entities already identified in the document.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"Proceedings of EACL '99 It then generates all possible partial orders of the composing words preserving their order, and marks them if found elsewhere in the text.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"For instance, if &quot;Adam Kluver Ltd&quot; had already been recognised as an organisation by the sure-fire rule, in this second step any occurrences of &quot;Kluver Ltd&quot;, &quot;Adam Ltd&quot; and &quot;Adam Kluver&quot; are also tagged as possible organizations.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"This assignment, however, is not definite since some of these words (such as &quot;Adam&quot;) could refer to a different entity.","{'title': '3 Finding Named Entities', 'number': '3'}"
-This information goes to a pre-trained maximum entropy model (see Mikheev (1998) for more details on this aproach).,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"This model takes into account contextual information for named entities, such as their position in the sentence, whether they exist in lowercase in general, whether they were used in lowercase elsewhere in the same document, etc.","{'title': '3 Finding Named Entities', 'number': '3'}"
-These features are passed to the model as attributes of the partially matched words.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"If the model provides a positive answer for a partial match, the system makes a definite assignment.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"Once this has been done, the system again applies the grammar rules.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"But this time the rules have much more relaxed contextual constraints and extensively use the information from already existing markup and from the lexicon compiled during processing, e.g. containing partial orders of already identified named entities.","{'title': '3 Finding Named Entities', 'number': '3'}"
-At this stage the system will mark word sequences which look like person names.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"For this it uses a grammar of names: if the first capitalized word occurs in a list of first names and the following word(s) are unknown capitalized words, then this string can be tagged as a PERSON.","{'title': '3 Finding Named Entities', 'number': '3'}"
-Note that it is only at this late stage that a list of names is used.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-At this point we are no longer concerned that a person name can refer to a company.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"If the name grammar had applied earlier in the process, it might erroneously have tagged &quot;Adam Kluver&quot; as a PERSON instead of an ORGANIZATION.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"But at this point in the chain of NE processing, that is not a problem anymore: &quot;Adam Kluver&quot; will by now already have been identified as an ORGANIZATION by the sure-fire rules or during partial matching.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"If it hasn't, then it is likely to be the name of a person.","{'title': '3 Finding Named Entities', 'number': '3'}"
-At this stage the system will also attempt to resolve conjunction problems in names of organisations.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"For example, in &quot;China International Trust and Investment Corp&quot;, the system checks if possible parts of the conjunctions were used in the text on their own and thus are names of different organizations; if not, the system has no reason to assume that more than one company is being talked about.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"In a similar vein, the system resolves the attachment of sentence initial capitalized modifiers, the problem alluded to above with the &quot;Suspended Ceiling Contractors Ltd&quot; example: if the modifier was seen with the organization name elsewhere in the text, then the system has good evidence that the modifier is part of the company name; if the modifier does not occur anywhere else in the text with the company name, it is assumed not to be part of it.","{'title': '3 Finding Named Entities', 'number': '3'}"
-This strategy is also used for expressions like &quot;Murdoch's News Corp&quot;.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"The genitival &quot;Murdoch's&quot; could be part of the name of the organisation, or could be a possessive.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"Further inspection of the text reveals that Rupert Murdoch is referred to in contexts which support a person interpretation; and &quot;News Corp&quot; occurs on its own, without the genitive.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"On the basis of evidence like this, the system decides that the name of the organisation is &quot;News Corp&quot;, and that &quot;Murdoch&quot; should be tagged separately as a person.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"At this stage known organizations and locations from the lists available to the system are marked in the text, again without checking the context in which they occur.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"At this point, the system has exhausted its resources (rules about internal and external evidence for named entities, as well as its gazetteers).","{'title': '3 Finding Named Entities', 'number': '3'}"
-"The system then performs another partial match to annotate names like &quot;White&quot; when &quot;James White&quot; had already been recognised as a person, and to annotate company names like &quot;Hughes&quot; when &quot;Hughes Communications Ltd.&quot; had already been identified as an organisation.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"As in Partial Match 1, this process of partial matching is again followed by a probabilistic assignment supported by the maximum entropy model.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"For example, conjunction resolution makes use of the fact that in this type of text it is more common to have conjunctions of like entities.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"In &quot;he works for X)cx and Yyy&quot;, if there is evidence that Xxx and Yyy are two entities rather than one, then it is more likely that Xx.x and Yyy are two entities of the same type, i.e. both organisations or are both people, rather than a mix of the two.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"This means that, even if only one of the entities in the conjunction has been recognised as definitely of a certain type, the conjunction rule will help decide on the type of the other entity.","{'title': '3 Finding Named Entities', 'number': '3'}"
-One of the texts in the competition contained the string &quot;U7ited States and Russia&quot;.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Because of the typo in &quot;U7ited States&quot;, it wasn't found in a gazetteer.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"But there was internal evidence that it could be a location (the fact that it contained the word &quot;States&quot;); and there was external evidence that it could be a location (the fact that it occurred in a conjunction with &quot;Russia&quot;, a known location).","{'title': '3 Finding Named Entities', 'number': '3'}"
-These two facts in combination meant that the system correctly identified &quot;U7ited States&quot; as a location.,"{'title': '3 Finding Named Entities', 'number': '3'}"
-"Because titles of news wires are in capital letters, they provide little guidance for the recognition of names.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"In the final stage of NE processing, entities in the title are marked up, by matching or partially matching the entities found in the text, and checking against a maximum entropy model trained on document titles.","{'title': '3 Finding Named Entities', 'number': '3'}"
-"For example, in &quot;GENERAL TRENDS ANALYST PREDICTS LITTLE SPRING EXPLOSION&quot; &quot;GENERAL TRENDS&quot; will be tagged as an organization because it partially matches &quot;General Trends Inc&quot; elsewhere in the text, and &quot;LITTLE SPRING&quot; will be tagged as a location because elsewhere in the text there is supporting evidence for this hypothesis.","{'title': '3 Finding Named Entities', 'number': '3'}"
-In the headline,"{'title': '3 Finding Named Entities', 'number': '3'}"
-&quot;Murdoch&quot; is correctly identified as a person because of mentions of Rupert Murdoch elsewhere in the text.,"{'title': '&quot;MURDOCH SATELLITE EXPLODES ON TAKE-OFF&quot;,', 'number': '4'}"
-"Applying a name grammar on this kind of headline without checking external evidence might result in erroneously tagging &quot;MURDOCH SATELLITE&quot; as a person (because &quot;Murdoch&quot; is also a first name, and &quot;Satellite&quot; in this headline starts with a capital letter).","{'title': '&quot;MURDOCH SATELLITE EXPLODES ON TAKE-OFF&quot;,', 'number': '4'}"
-"In the muc competition, our system's combined precision and recall score was 93.39%.","{'title': '4 MUG results', 'number': '5'}"
-"This was the highest score, better in a statistically significant way than the score of the next best system.","{'title': '4 MUG results', 'number': '5'}"
-Scores varied from 93.39% to 69.67%.,"{'title': '4 MUG results', 'number': '5'}"
-"Further details on this can be found in (Mikheev et al., 1998).","{'title': '4 MUG results', 'number': '5'}"
-The table in Figure 3 shows the progress of the performance of the system we fielded for the muc competition through the five stages.,"{'title': '4 MUG results', 'number': '5'}"
-"As one would expect, the sure-fire rules give very high precision (around 96-98%), but very low recall—in other words, they don't find many named entities, but the ones they find are correct.","{'title': '4 MUG results', 'number': '5'}"
-"Subsequent phases of processing add gradually more and more named entities (recall increases from around 40% to around 90%), but on occasion introduce errors (resulting in a slight drop in precision).","{'title': '4 MUG results', 'number': '5'}"
-"Our final score for ORGANISATION, PERSON and LOCATION is given in the bottom line of Figure 3.","{'title': '4 MUG results', 'number': '5'}"
-"Our system fielded for the muc competition made extensive use of gazetteers, containing around 4,900 names of countries and other place names, some 30,000 names of companies and other organisations, and around 10,000 first names of people.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"As explained in the previous section, these lists were used in a judicious way, taking into account other internal and external evidence before making a decision about a named entity.","{'title': '5 The role of gazetteers', 'number': '6'}"
-Only in step 3 is information from the gazetteers used without context-checking.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-It is not immediately obvious from Figure 3 what exactly the impact is of these gazetteers.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"To try and answer this question, we ran our system over 70 articles of the muc competition in different modes; the remaining 30 articles were used to compile a limited gazetteer as described below and after that played no role in the experiments.","{'title': '5 The role of gazetteers', 'number': '6'}"
-Full gazetteers.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"We first ran the system again with the full gazetteers, i.e. the gazetteers used in the official muc system.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"There are minor differences in Recall and Precision compared to the official muc results, due to the fact that we were using a slightly different (smaller) corpus.","{'title': '5 The role of gazetteers', 'number': '6'}"
-No gazetteers.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-We then ran the system without any gazetteers.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"In this mode, the system can still use internal evidence (e.g. indicators such as &quot;Mr&quot; for people or &quot;Ltd&quot; for organisations) as well as external evidence (contexts such as &quot;XXX, the chairman of YYY&quot; as evidence that XXX is a person and YYY an organisation).","{'title': '5 The role of gazetteers', 'number': '6'}"
-"The hypothesis was that names of organisations and names of people should still be handled relatively well by the system, since they have much internal and external evidence, whereas names of locations have fewer reliable contextual clues.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"For example, expressions such as &quot;XXX is based in YYY&quot; is not sure-fire evidence that YYY is a location — it could also be an organisation.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"And since many locations are so well-known, they receive very little extra context (&quot;in China&quot;, &quot;in Paris&quot;, vs &quot;in the small town of Ekeren&quot;).","{'title': '5 The role of gazetteers', 'number': '6'}"
-Some locations.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-We then ran the system with some locational information: about 200 names of countries and continents from www. yahoo. corn!,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"Regional/ and, because muc rules say explicitly that names of planets should be marked up as locations, the names of the 8 planets of our solar system.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"The hypothesis was that even with those reasonably common location names, Named Entity recognition would already dramatically improve.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"This hypothesis was confirmed, as can be seen in Figure 4.","{'title': '5 The role of gazetteers', 'number': '6'}"
-Inspection of the errors confirms that the system makes most mistakes when there is no internal or external evidence to decide what sort of Named Entity is involved.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"For example, in a reference to &quot;a Hamburg hospital&quot;, &quot;Hamburg&quot; no longer gets marked up as a location, because the word occurs nowhere else in the text, and that context is not sufficient to assume it indicates a location (cf. a Community Hospital, a Catholic Hospital, an NHS Hospital, a Trust-Controlled Hospital, etc).","{'title': '5 The role of gazetteers', 'number': '6'}"
-"Similarly, in a reference to &quot;the Bonn government&quot;, &quot;Bonn&quot; is no longer marked up as a location, because of lack of supportive context (cf. the Clinton government, the Labour government, etc).","{'title': '5 The role of gazetteers', 'number': '6'}"
-And in financial newspaper articles NYSE will be used without any indication that this is an organisation (the New York Stock Exchange).,"{'title': '5 The role of gazetteers', 'number': '6'}"
-Limited gazetteers.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"The results so far suggest that the most useful gazetteers are those that contain very common names, names which the authors can expect their audience already to know about, rather than far-fetched examples of little known places or organisations.","{'title': '5 The role of gazetteers', 'number': '6'}"
-This suggests that it should be possible to tune a system to the kinds of Named Entities that occur in its particular genre of text.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"To test this hypothesis, we wanted to know how the system would perform if it started with no gazetteers, started processing texts, then built up gazetteers as it goes along, and then uses these gazetteers on a new set of texts in the same domain.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"We simulated these conditions by taking 30 of the 100 official MUG articles and extracting all the names of people, organisations and locations and using these as the only gazetteers, thereby ensuring that we had extracted Named Entities from articles in the same domain as the test domain.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"Since we wanted to test how easy it was to build gazetteers automatically, we wanted to minimise the amount of processing done on Named Entities already found.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"We decided to only used first names of people, and marked them all as &quot;likely&quot; first names: the fact that &quot;Bill&quot; actually occurs as a first name does not guarantee it will definitely be a first name next time you see it.","{'title': '5 The role of gazetteers', 'number': '6'}"
-"Company names found in the 30 articles were put in the company gazetteer, irrespective of whether they were full company names (e.g.","{'title': '5 The role of gazetteers', 'number': '6'}"
-&quot;MCI Communications Corp&quot; as well as &quot;MCI&quot; and &quot;MCI Communications&quot;).,"{'title': '5 The role of gazetteers', 'number': '6'}"
-Names of locations found in the 30 texts were simply added to the list of 200 location names already used in the previous experiments.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-"The hope was that, despite the little effort involved in building these limited gazetteers, there would be an improved performance of the Named Entity recognition system.","{'title': '5 The role of gazetteers', 'number': '6'}"
-Figure 4 summarises the Precision and Recall results for each of these modes and confirms the hypotheses.,"{'title': '5 The role of gazetteers', 'number': '6'}"
-The hypotheses were correct: without gazetteers the system still scores in the high eighties for names of organisations and people.,"{'title': '6 Discussion', 'number': '7'}"
-Locations come out badly.,"{'title': '6 Discussion', 'number': '7'}"
-But even with a very small number of country names performance for those named entities also goes up into the mideighties.,"{'title': '6 Discussion', 'number': '7'}"
-And simple techniques for extending the gazetteers on the basis of a sample of just 30 articles already makes the system competitive again.,"{'title': '6 Discussion', 'number': '7'}"
-These experiments suggest that the collection of gazetteers need not be a bottleneck: through a judicious use of internal and external evidence relatively small gazetteers are sufficient to give good Precision and Recall.,"{'title': '6 Discussion', 'number': '7'}"
-"In addition, when collecting these gazetteers one can concentrate on the obvious examples of locations and organisations, since these are exactly the ones that will be introduced in texts without much helpful context.","{'title': '6 Discussion', 'number': '7'}"
-"However, our experiments only show the usefulness of gazetteers on a particular type of text, viz. journalistic English with mixed case.","{'title': '6 Discussion', 'number': '7'}"
-"The rules as well as the maximum entropy models make use of internal and external evidence in that type of text when trying to identify named entities, and it is obvious that this system cannot be applied without modification to a different type of text, e.g. scientific articles.","{'title': '6 Discussion', 'number': '7'}"
-Without further formal evaluations with externally supplied evaluation corpora it is difficult to judge how general this text type is.,"{'title': '6 Discussion', 'number': '7'}"
-"It is encouraging to note that Krupka and Hausman (1998) point out that the muc-7 articles which we used in our experiments have less external evidence than do Wall Street Journal articles, which suggests that on Wall Street Journal articles our system might perform even better than on muc-7 articles.","{'title': '6 Discussion', 'number': '7'}"
-"The work reported in this paper was supported in part by grant GR/L21952 (Text Tokenisation Tool) from the Engineering and Physical Sciences Research Council, UK.","{'title': 'Acknowledgements', 'number': '8'}"
-We would like to thank Steve Finch and Irina Nazarova as well as Colin Matheson and other members of the Language Technology Group for help in building various tools and other resources that were used in the development of the muc system.,"{'title': 'Acknowledgements', 'number': '8'}"
+"It is often claimed that Named Entity recognition systems need extensive gazetteers—lists of names of people, organisations, locations, and other named entities.",Introduction
+"Indeed, the compilation of such gazetteers is sometimes mentioned as a bottleneck in the design of Named Entity recognition systems.",Introduction
+We report on a Named Entity recognition system which combines rule-based grammars with statistical (maximum entropy) models.,Introduction
+"We report on the system's performance with gazetteers of different types and different sizes, using test material from the muc-7 competition.",Introduction
+"We show that, for the text type and task of this competition, it is sufficient to use relatively small gazetteers of well-known names, rather than large gazetteers of low-frequency names.",Introduction
+We conclude with observations about the domain independence of the competition and of our experiments.,Introduction
+Named Entity recognition involves processing a text and identifying certain occurrences of words or expressions as belonging to particular categories of Named Entities (NE).,Experiment/Discussion
+"NE recognition software serves as an important preprocessing tool for tasks such as information extraction, information retrieval and other text processing applications.",Experiment/Discussion
+What counts as a Named Entity depends on the application that makes use of the annotations.,Experiment/Discussion
+One such application is document retrieval or automated document forwarding: documents annoted with NE information can be searched more Now also at Harlequin Ltd. (Edinburgh office) accurately than raw text.,Experiment/Discussion
+"For example, NE annotation allows you to search for all texts that mention the company &quot;Philip Morris&quot;, ignoring documents about a possibly unrelated person by the same name.",Experiment/Discussion
+"Or you can have all documents forwarded to you about a person called &quot;Gates&quot;, without receiving documents about things called gates.",Experiment/Discussion
+In a document collection annotated with Named Entity information you can more easily find documents about Java the programming language without getting documents about Java the country or Java the coffee.,Experiment/Discussion
+"Most common among marked categories are names of people, organisations and locations as well as temporal and numeric expression.",Experiment/Discussion
+"Here is an example of a text marked up with Named Entity information: <ENAMEX TYPE='PERSON'>Flavel Donne</ENAMEX> is an analyst with <ENAMEX TYPE='ORGANIZATION'>General Trends </ENAMEX>, which has been based in <ENAMEX TYPE='LOCATION'>Little Spring</ENAMEX> since <TIMEX TYPE='DATE'>July 1998</TIMEX>.",Experiment/Discussion
+"In an article on the Named Entity recognition competition (part of muc-6) Sundheim (1995) remarks that &quot;common organization names, first names of people and location names can be handled by recourse to list lookup, although there are drawbacks&quot; (Sundheim 1995: 16).",Experiment/Discussion
+"In fact, participants in that competition from the University of Durham (Morgan et al., 1995) and from SRA (Krupka, 1995) report that gazetteers did not make that much of a difference to their system.",Experiment/Discussion
+"Nevertheless, in a recent article Cucchiarelli et al. (1998) report that one of the bottlenecks in designing NE recognition systems is the limited availability of large gazetteers, particularly gazetteers for different languages (Cucchiarelli et al.",Experiment/Discussion
+1998: 291).,Experiment/Discussion
+People also use gazetteers of very different sizes.,Experiment/Discussion
+"The basic gazetteers in the Isoquest system for muc-7 contain 110,000 names, but Krupka and Hausman (1998) show that system performance does not degrade much when the Proceedings of EACL '99 gazetteers are reduced to 25,000 and 9,000 names; conversely, they also show that the addition of an extra 42 entries to the gazetteers improves performance dramatically.",Experiment/Discussion
+"This raises several questions: how important are gazetteers? is it important that they are big? if gazetteers are important but their size isn't, then what are the criteria for building gazetteers?",Experiment/Discussion
+"One might think that Named Entity recognition could be done by using lists of (e.g.) names of people, places and organisations, but that is not the case.",Experiment/Discussion
+"To begin with, the lists would be huge: it is estimated that there are 1.5 million unique surnames just in the U.S.",Experiment/Discussion
+It is not feasible to list all possible surnames in the world in a Named Entity recognition system.,Experiment/Discussion
+There is a similar problem with company names.,Experiment/Discussion
+"A list of all current companies worldwide would be huge, if at all available, and would immediately be out of date since new companies are formed all the time.",Experiment/Discussion
+"In addition, company names can occur in variations: a list of company names might contain &quot;The Royal Bank of Scotland plc&quot;, but that company might also be referred to as &quot;The Royal Bank of Scotland&quot;, &quot;The Royal&quot; or &quot;The Royal plc&quot;.",Experiment/Discussion
+These variations would all have to be listed as well.,Experiment/Discussion
+"Even if it was possible to list all possible organisations and locations and people, there would still be the problem of overlaps between the lists.",Experiment/Discussion
+Names such as Emerson or Washington could be names of people as well as places; Philip Morris could be a person or an organisation.,Experiment/Discussion
+"In addition, such lists would also contain words like &quot;Hope&quot; and &quot;Lost&quot; (locations) and &quot;Thinking Machines&quot; and &quot;Next&quot; (companies), whereas these words could also occur in contexts where they don't refer to named entities.",Experiment/Discussion
+"Moreover, names of companies can be complex entities, consisting of several words.",Experiment/Discussion
+"Especially where conjunctions are involved, this can create problems.",Experiment/Discussion
+"In &quot;China International Trust and Investment Corp decided to do something&quot;, it's not obvious whether there is a reference here to one company or two.",Experiment/Discussion
+"In the sentence &quot;Mason, Daily and Partners lost their court case&quot; it is clear that &quot;Mason, Daily and Partners&quot; is the name of a company.",Experiment/Discussion
+"In the sentence &quot;Unfortunately, Daily and Partners lost their court case&quot; the name of the company does not include the word &quot;unfortunately&quot;, but it still includes the word &quot;Daily&quot;, which is just as common a word as &quot;unfortunately&quot;.",Experiment/Discussion
+In this paper we report on a Named Entity recognition system which was amongst the highest scoring in the recent MUC-7 Message Understanding Conference/Competition (MUC).,Experiment/Discussion
+One of the features of our system is that even when it is run without any lists of names of organisations or people it still performs at a level comparable to that of many other MU C-systems.,Experiment/Discussion
+"We report on experiments which show the difference in performance between the NE system with gazetteers of different sizes for three types of named entities: people, organisations and locations.",Experiment/Discussion
+The muc competition for which we built our system took place in March 1998.,Experiment/Discussion
+"Prior to the competition, participants received a detailed coding manual which specified what should and should not be marked up, and how the markup should proceed.",Experiment/Discussion
+"They also received a few hundred articles from the New York Times Service, marked up by the organisers according to the rules of the coding manual.",Experiment/Discussion
+"For the competition itself, participants received 100 articles.",Experiment/Discussion
+"They then had 5 days to perform the chosen information extraction tasks (in our case: Named Entity recognition) without human intervention, and markup the text with the Named Entities found.",Experiment/Discussion
+The resulting marked up file then had to be returned to the organisers for scoring.,Experiment/Discussion
+Scoring of the results is done automatically by the organisers.,Experiment/Discussion
+The scoring software compares a participant's answer file against a carefully prepared key file; the key file is considered to be the &quot;correctly&quot; annotated file.,Experiment/Discussion
+"Amongst many other things, the scoring software calculates a system's recall and precision scores: Recall: Number of correct tags in the answer file over total number of tags in the key file.",Experiment/Discussion
+Precision: Number of correct tags in the answer file over total number of tags in the answer file.,Experiment/Discussion
+Recall and precision are generally accepted ways of measuring system performance in this field.,Experiment/Discussion
+"For example, suppose you have a text which is 1000 words long, and 20 of these words express a location.",Experiment/Discussion
+Now imagine a system which assigns the LOCATION tag to every single word in the text.,Experiment/Discussion
+"This system will have tagged correctly all 20 locations, since it tagged everything as LOCATION; its recall score is 20/20, or 100%.",Experiment/Discussion
+"But of the 1000 LOCATION tags it assigned, only those 20 were correct; its precision is therefore only 20/1000, or 2%.",Experiment/Discussion
+We decided first to test to what extent NE recognition can be carried out merely by recourse to list lookup.,Experiment/Discussion
+Such a system could be domain and language independent.,Experiment/Discussion
+It would need no grammars or even information about tokenization but simply mark up known strings in the text.,Experiment/Discussion
+"Of course, the development and maintenance of the name lists would become more labour intensive.",Experiment/Discussion
+"(Palmer and Day, 1997) evaluated the performance of such a minimal NE recognition system equipped with name lists derived from muc-6 training texts.",Experiment/Discussion
+The system was tested on newswire texts for six languages.,Experiment/Discussion
+"It achieved a recall rate of about 70% for Chinese, Japanese and Portuguese and about 40% for English and French.",Experiment/Discussion
+The precision of the system was not calculated but can be assumed to be quite high because it would only be affected by cases where a capitalized word occurs in more than one list (e.g.,Experiment/Discussion
+&quot;Columbia&quot; could occur in the list of organisations as well as locations) or where a capitalised word occurs in a list but could also be something completely different (e.g.,Experiment/Discussion
+&quot;Columbia&quot; occurs in the list of locations but could also be the name of a space shuttle).,Experiment/Discussion
+We trained a similar minimal system using the muc- 7 training data (200 articles) and ran it on the test data set (100 articles).,Experiment/Discussion
+The corpus we used in our experiments were the training and test corpora for the mUC- 7 evaluation.,Experiment/Discussion
+"From the training data we collected 1228 person names, 809 names of organizations and 770 names of locations.",Experiment/Discussion
+The resulting name lists were the only resource used by the minimal NE recognition system.,Experiment/Discussion
+It nevertheless achieved relatively high precision (around 90%) and recall in the range 4070%.,Experiment/Discussion
+The results are summarised in Figure 1 in the &quot;learned lists&quot; column.,Experiment/Discussion
+"Despite its simplicity, this type of system does presuppose the existence of training texts, and these are not always available.",Experiment/Discussion
+To cope with the absence of training material we designed and tested another variation of the minimal system.,Experiment/Discussion
+"Instead of collecting lists from training texts we instead collected lists of commonly known entities— we collected a list of 5000 locations (countries and American states with their five biggest cities) from the CIA World Fact Book, a list of 33,000 organization names (companies, banks, associations, universities, etc.) from financial Web sites, and a list of 27,000 famous people from several websites.",Experiment/Discussion
+The results of this run can be seen in Figure 1 in the &quot;common lists&quot; column.,Experiment/Discussion
+"In essence, this system's performance was comparable to that of the system using lists from the training set as far as location was concerned; it performed slightly worse on the person category and performed badly on organisations.",Experiment/Discussion
+"In a final experiment we combined the two gazetteers, the one induced from the training texts with the one acquired from public resources, and achieved some improvement in recall at the expense of precision.",Experiment/Discussion
+The results of this test run are given in the &quot;combined lists&quot; column in Figure 1.,Experiment/Discussion
+We can conclude that the pure list lookup approach performs reasonably well for locations (precision of 90-94%; recall of 75-85%).,Experiment/Discussion
+"For the person category and especially for the organization category this approach does not yield good performance: although the precision was not extremely bad (around 75-85%), recall was too low (lower than 50%)—i.e. every second person name or organization failed to be assigned.",Experiment/Discussion
+"For document retrieval purposes low recall is not necessarily a major problem since it is often sufficient to recognize just one occurrence of each distinctive entity per document, and many of the unassigned person and organization names were just repetitions of their full variants.",Experiment/Discussion
+"But for many other applications, and for the muc competition, higher recall and precision are necessary.",Experiment/Discussion
+The system we fielded for muc-7 makes extensive use of what McDonald (1996) calls internal (phrasal) and external (contextual) evidence in named entity recognition.,Experiment/Discussion
+The basic philosophy underlying our approach is as follows.,Experiment/Discussion
+A string of words like &quot;Adam Kluver&quot; has an internal (phrasal) structure which suggests that this is a person name; but we know that it can also be used as a shortcut for a name of organization (&quot;Adam Kluver Ltd.&quot;) or location (&quot;Adam Kluver Country Park&quot;).,Experiment/Discussion
+"Looking it up on a list will not necessarily help: the string may not be on a list, may be on more than one list, or may be on the wrong list.",Experiment/Discussion
+"However, somewhere in the text, there is likely to be some contextual material which makes it clear what type of named entity it is.",Experiment/Discussion
+Our strategy is to only make a decision once we have identified this bit of contextual information.,Experiment/Discussion
+"We further assume that, once we have identified contextual material which makes it clear that &quot;Adam Kluver&quot; is (e.g.) the name of a company, then any other mention of &quot;Adam Kluver&quot; in that document is likely to refer to that company.",Experiment/Discussion
+"If the author at some point in the same text also wants to refer to (e.g.) a person called &quot;Adam Kluver&quot;, s/he will provide some extra context to make this clear, and this context will be picked up in the first step.",Experiment/Discussion
+"The fact that at first it is only an assumption rather than a certainty that &quot;Adam Kluver&quot; is a company, is represented explicitly, and later processing components try to resolve the uncertainty.",Experiment/Discussion
+"If no suitable context is found anywhere in the text to decide what sort of Named Entity &quot;Adam Kluver&quot; is, the system can check other resources, e.g. a list of known company names and apply compositional phrasal grammars for different categories.",Experiment/Discussion
+Such grammars for instance can state that if a sequence of capitalized words ends with the word &quot;Ltd.&quot; it is a name of organization or if a known first name is followed by an unknown capitalized word this is a person name.,Experiment/Discussion
+"In our muc system, we implemented this approach as a staged combination of a rule-based system with probabilistic partial matching.",Experiment/Discussion
+We describe each stage in turn.,Experiment/Discussion
+"In the first step, the system applies sure-fire grammar rules.",Experiment/Discussion
+"These rules combine internal and external evidence, and only fire when a possible candidate expression is surrounded by a suggestive context.",Experiment/Discussion
+"Sure-fire rules rely on known corporate designators (Ltd., Inc., etc.",Experiment/Discussion
+"), person titles (Mr., Dr., Sen.), and definite contexts such as those in Figure 2.",Experiment/Discussion
+"The sure-fire rules apply after POS tagging and simple semantic tagging, so at this stage words like &quot;former&quot; have already been identified as JJ (adjective), words like &quot;analyst&quot; have been identified as PROF (professions), and words like &quot;brother&quot; as REL (relatives).",Experiment/Discussion
+At this stage our muc system treats information from the lists as likely rather than definite and always checks if the context is either suggestive or non-contradictive.,Experiment/Discussion
+"For example, a likely company name with a conjunction (e.g.",Experiment/Discussion
+&quot;China International Trust and Investment Corp&quot;) is left untagged at this stage if the company is not listed in a list of known companies.,Experiment/Discussion
+"Similarly, the system postpones the markup of unknown organizations whose name starts with a sentence initial common word, as in &quot;Suspended Ceiling Contractors Ltd denied the charge&quot;.",Experiment/Discussion
+Names of possible locations found in our gazetteer of place names are marked as LOCATION only if they appear with a context that is suggestive of location.,Experiment/Discussion
+"&quot;Washington&quot;, for example, can just as easily be a surname or the name of an organization.",Experiment/Discussion
+"Only in a suggestive context, like &quot;in Washington&quot;, will it be marked up as location.",Experiment/Discussion
+After the sure-fire symbolic transduction the system performs a probabilistic partial match of the identified entities.,Experiment/Discussion
+"First, the system collects all named entities already identified in the document.",Experiment/Discussion
+"Proceedings of EACL '99 It then generates all possible partial orders of the composing words preserving their order, and marks them if found elsewhere in the text.",Experiment/Discussion
+"For instance, if &quot;Adam Kluver Ltd&quot; had already been recognised as an organisation by the sure-fire rule, in this second step any occurrences of &quot;Kluver Ltd&quot;, &quot;Adam Ltd&quot; and &quot;Adam Kluver&quot; are also tagged as possible organizations.",Experiment/Discussion
+"This assignment, however, is not definite since some of these words (such as &quot;Adam&quot;) could refer to a different entity.",Experiment/Discussion
+This information goes to a pre-trained maximum entropy model (see Mikheev (1998) for more details on this aproach).,Experiment/Discussion
+"This model takes into account contextual information for named entities, such as their position in the sentence, whether they exist in lowercase in general, whether they were used in lowercase elsewhere in the same document, etc.",Experiment/Discussion
+These features are passed to the model as attributes of the partially matched words.,Experiment/Discussion
+"If the model provides a positive answer for a partial match, the system makes a definite assignment.",Experiment/Discussion
+"Once this has been done, the system again applies the grammar rules.",Experiment/Discussion
+"But this time the rules have much more relaxed contextual constraints and extensively use the information from already existing markup and from the lexicon compiled during processing, e.g. containing partial orders of already identified named entities.",Experiment/Discussion
+At this stage the system will mark word sequences which look like person names.,Experiment/Discussion
+"For this it uses a grammar of names: if the first capitalized word occurs in a list of first names and the following word(s) are unknown capitalized words, then this string can be tagged as a PERSON.",Experiment/Discussion
+Note that it is only at this late stage that a list of names is used.,Experiment/Discussion
+At this point we are no longer concerned that a person name can refer to a company.,Experiment/Discussion
+"If the name grammar had applied earlier in the process, it might erroneously have tagged &quot;Adam Kluver&quot; as a PERSON instead of an ORGANIZATION.",Experiment/Discussion
+"But at this point in the chain of NE processing, that is not a problem anymore: &quot;Adam Kluver&quot; will by now already have been identified as an ORGANIZATION by the sure-fire rules or during partial matching.",Experiment/Discussion
+"If it hasn't, then it is likely to be the name of a person.",Experiment/Discussion
+At this stage the system will also attempt to resolve conjunction problems in names of organisations.,Experiment/Discussion
+"For example, in &quot;China International Trust and Investment Corp&quot;, the system checks if possible parts of the conjunctions were used in the text on their own and thus are names of different organizations; if not, the system has no reason to assume that more than one company is being talked about.",Experiment/Discussion
+"In a similar vein, the system resolves the attachment of sentence initial capitalized modifiers, the problem alluded to above with the &quot;Suspended Ceiling Contractors Ltd&quot; example: if the modifier was seen with the organization name elsewhere in the text, then the system has good evidence that the modifier is part of the company name; if the modifier does not occur anywhere else in the text with the company name, it is assumed not to be part of it.",Experiment/Discussion
+This strategy is also used for expressions like &quot;Murdoch's News Corp&quot;.,Experiment/Discussion
+"The genitival &quot;Murdoch's&quot; could be part of the name of the organisation, or could be a possessive.",Experiment/Discussion
+"Further inspection of the text reveals that Rupert Murdoch is referred to in contexts which support a person interpretation; and &quot;News Corp&quot; occurs on its own, without the genitive.",Experiment/Discussion
+"On the basis of evidence like this, the system decides that the name of the organisation is &quot;News Corp&quot;, and that &quot;Murdoch&quot; should be tagged separately as a person.",Experiment/Discussion
+"At this stage known organizations and locations from the lists available to the system are marked in the text, again without checking the context in which they occur.",Experiment/Discussion
+"At this point, the system has exhausted its resources (rules about internal and external evidence for named entities, as well as its gazetteers).",Experiment/Discussion
+"The system then performs another partial match to annotate names like &quot;White&quot; when &quot;James White&quot; had already been recognised as a person, and to annotate company names like &quot;Hughes&quot; when &quot;Hughes Communications Ltd.&quot; had already been identified as an organisation.",Experiment/Discussion
+"As in Partial Match 1, this process of partial matching is again followed by a probabilistic assignment supported by the maximum entropy model.",Experiment/Discussion
+"For example, conjunction resolution makes use of the fact that in this type of text it is more common to have conjunctions of like entities.",Experiment/Discussion
+"In &quot;he works for X)cx and Yyy&quot;, if there is evidence that Xxx and Yyy are two entities rather than one, then it is more likely that Xx.x and Yyy are two entities of the same type, i.e. both organisations or are both people, rather than a mix of the two.",Experiment/Discussion
+"This means that, even if only one of the entities in the conjunction has been recognised as definitely of a certain type, the conjunction rule will help decide on the type of the other entity.",Experiment/Discussion
+One of the texts in the competition contained the string &quot;U7ited States and Russia&quot;.,Experiment/Discussion
+"Because of the typo in &quot;U7ited States&quot;, it wasn't found in a gazetteer.",Experiment/Discussion
+"But there was internal evidence that it could be a location (the fact that it contained the word &quot;States&quot;); and there was external evidence that it could be a location (the fact that it occurred in a conjunction with &quot;Russia&quot;, a known location).",Experiment/Discussion
+These two facts in combination meant that the system correctly identified &quot;U7ited States&quot; as a location.,Experiment/Discussion
+"Because titles of news wires are in capital letters, they provide little guidance for the recognition of names.",Experiment/Discussion
+"In the final stage of NE processing, entities in the title are marked up, by matching or partially matching the entities found in the text, and checking against a maximum entropy model trained on document titles.",Experiment/Discussion
+"For example, in &quot;GENERAL TRENDS ANALYST PREDICTS LITTLE SPRING EXPLOSION&quot; &quot;GENERAL TRENDS&quot; will be tagged as an organization because it partially matches &quot;General Trends Inc&quot; elsewhere in the text, and &quot;LITTLE SPRING&quot; will be tagged as a location because elsewhere in the text there is supporting evidence for this hypothesis.",Experiment/Discussion
+In the headline,Experiment/Discussion
+&quot;Murdoch&quot; is correctly identified as a person because of mentions of Rupert Murdoch elsewhere in the text.,Experiment/Discussion
+"Applying a name grammar on this kind of headline without checking external evidence might result in erroneously tagging &quot;MURDOCH SATELLITE&quot; as a person (because &quot;Murdoch&quot; is also a first name, and &quot;Satellite&quot; in this headline starts with a capital letter).",Experiment/Discussion
+"In the muc competition, our system's combined precision and recall score was 93.39%.",Experiment/Discussion
+"This was the highest score, better in a statistically significant way than the score of the next best system.",Experiment/Discussion
+Scores varied from 93.39% to 69.67%.,Experiment/Discussion
+"Further details on this can be found in (Mikheev et al., 1998).",Experiment/Discussion
+The table in Figure 3 shows the progress of the performance of the system we fielded for the muc competition through the five stages.,Experiment/Discussion
+"As one would expect, the sure-fire rules give very high precision (around 96-98%), but very low recall—in other words, they don't find many named entities, but the ones they find are correct.",Experiment/Discussion
+"Subsequent phases of processing add gradually more and more named entities (recall increases from around 40% to around 90%), but on occasion introduce errors (resulting in a slight drop in precision).",Experiment/Discussion
+"Our final score for ORGANISATION, PERSON and LOCATION is given in the bottom line of Figure 3.",Experiment/Discussion
+"Our system fielded for the muc competition made extensive use of gazetteers, containing around 4,900 names of countries and other place names, some 30,000 names of companies and other organisations, and around 10,000 first names of people.",Experiment/Discussion
+"As explained in the previous section, these lists were used in a judicious way, taking into account other internal and external evidence before making a decision about a named entity.",Experiment/Discussion
+Only in step 3 is information from the gazetteers used without context-checking.,Experiment/Discussion
+It is not immediately obvious from Figure 3 what exactly the impact is of these gazetteers.,Experiment/Discussion
+"To try and answer this question, we ran our system over 70 articles of the muc competition in different modes; the remaining 30 articles were used to compile a limited gazetteer as described below and after that played no role in the experiments.",Experiment/Discussion
+Full gazetteers.,Experiment/Discussion
+"We first ran the system again with the full gazetteers, i.e. the gazetteers used in the official muc system.",Experiment/Discussion
+"There are minor differences in Recall and Precision compared to the official muc results, due to the fact that we were using a slightly different (smaller) corpus.",Experiment/Discussion
+No gazetteers.,Experiment/Discussion
+We then ran the system without any gazetteers.,Experiment/Discussion
+"In this mode, the system can still use internal evidence (e.g. indicators such as &quot;Mr&quot; for people or &quot;Ltd&quot; for organisations) as well as external evidence (contexts such as &quot;XXX, the chairman of YYY&quot; as evidence that XXX is a person and YYY an organisation).",Experiment/Discussion
+"The hypothesis was that names of organisations and names of people should still be handled relatively well by the system, since they have much internal and external evidence, whereas names of locations have fewer reliable contextual clues.",Experiment/Discussion
+"For example, expressions such as &quot;XXX is based in YYY&quot; is not sure-fire evidence that YYY is a location — it could also be an organisation.",Experiment/Discussion
+"And since many locations are so well-known, they receive very little extra context (&quot;in China&quot;, &quot;in Paris&quot;, vs &quot;in the small town of Ekeren&quot;).",Experiment/Discussion
+Some locations.,Experiment/Discussion
+We then ran the system with some locational information: about 200 names of countries and continents from www. yahoo. corn!,Experiment/Discussion
+"Regional/ and, because muc rules say explicitly that names of planets should be marked up as locations, the names of the 8 planets of our solar system.",Experiment/Discussion
+"The hypothesis was that even with those reasonably common location names, Named Entity recognition would already dramatically improve.",Experiment/Discussion
+"This hypothesis was confirmed, as can be seen in Figure 4.",Experiment/Discussion
+Inspection of the errors confirms that the system makes most mistakes when there is no internal or external evidence to decide what sort of Named Entity is involved.,Experiment/Discussion
+"For example, in a reference to &quot;a Hamburg hospital&quot;, &quot;Hamburg&quot; no longer gets marked up as a location, because the word occurs nowhere else in the text, and that context is not sufficient to assume it indicates a location (cf. a Community Hospital, a Catholic Hospital, an NHS Hospital, a Trust-Controlled Hospital, etc).",Experiment/Discussion
+"Similarly, in a reference to &quot;the Bonn government&quot;, &quot;Bonn&quot; is no longer marked up as a location, because of lack of supportive context (cf. the Clinton government, the Labour government, etc).",Experiment/Discussion
+And in financial newspaper articles NYSE will be used without any indication that this is an organisation (the New York Stock Exchange).,Experiment/Discussion
+Limited gazetteers.,Experiment/Discussion
+"The results so far suggest that the most useful gazetteers are those that contain very common names, names which the authors can expect their audience already to know about, rather than far-fetched examples of little known places or organisations.",Experiment/Discussion
+This suggests that it should be possible to tune a system to the kinds of Named Entities that occur in its particular genre of text.,Experiment/Discussion
+"To test this hypothesis, we wanted to know how the system would perform if it started with no gazetteers, started processing texts, then built up gazetteers as it goes along, and then uses these gazetteers on a new set of texts in the same domain.",Experiment/Discussion
+"We simulated these conditions by taking 30 of the 100 official MUG articles and extracting all the names of people, organisations and locations and using these as the only gazetteers, thereby ensuring that we had extracted Named Entities from articles in the same domain as the test domain.",Experiment/Discussion
+"Since we wanted to test how easy it was to build gazetteers automatically, we wanted to minimise the amount of processing done on Named Entities already found.",Experiment/Discussion
+"We decided to only used first names of people, and marked them all as &quot;likely&quot; first names: the fact that &quot;Bill&quot; actually occurs as a first name does not guarantee it will definitely be a first name next time you see it.",Experiment/Discussion
+"Company names found in the 30 articles were put in the company gazetteer, irrespective of whether they were full company names (e.g.",Experiment/Discussion
+&quot;MCI Communications Corp&quot; as well as &quot;MCI&quot; and &quot;MCI Communications&quot;).,Experiment/Discussion
+Names of locations found in the 30 texts were simply added to the list of 200 location names already used in the previous experiments.,Experiment/Discussion
+"The hope was that, despite the little effort involved in building these limited gazetteers, there would be an improved performance of the Named Entity recognition system.",Experiment/Discussion
+Figure 4 summarises the Precision and Recall results for each of these modes and confirms the hypotheses.,Experiment/Discussion
+The hypotheses were correct: without gazetteers the system still scores in the high eighties for names of organisations and people.,Results/Conclusion
+Locations come out badly.,Results/Conclusion
+But even with a very small number of country names performance for those named entities also goes up into the mideighties.,Results/Conclusion
+And simple techniques for extending the gazetteers on the basis of a sample of just 30 articles already makes the system competitive again.,Results/Conclusion
+These experiments suggest that the collection of gazetteers need not be a bottleneck: through a judicious use of internal and external evidence relatively small gazetteers are sufficient to give good Precision and Recall.,Results/Conclusion
+"In addition, when collecting these gazetteers one can concentrate on the obvious examples of locations and organisations, since these are exactly the ones that will be introduced in texts without much helpful context.",Results/Conclusion
+"However, our experiments only show the usefulness of gazetteers on a particular type of text, viz. journalistic English with mixed case.",Results/Conclusion
+"The rules as well as the maximum entropy models make use of internal and external evidence in that type of text when trying to identify named entities, and it is obvious that this system cannot be applied without modification to a different type of text, e.g. scientific articles.",Results/Conclusion
+Without further formal evaluations with externally supplied evaluation corpora it is difficult to judge how general this text type is.,Results/Conclusion
+"It is encouraging to note that Krupka and Hausman (1998) point out that the muc-7 articles which we used in our experiments have less external evidence than do Wall Street Journal articles, which suggests that on Wall Street Journal articles our system might perform even better than on muc-7 articles.",Results/Conclusion
+"The work reported in this paper was supported in part by grant GR/L21952 (Text Tokenisation Tool) from the Engineering and Physical Sciences Research Council, UK.",Results/Conclusion
+We would like to thank Steve Finch and Irina Nazarova as well as Colin Matheson and other members of the Language Technology Group for help in building various tools and other resources that were used in the development of the muc system.,Results/Conclusion

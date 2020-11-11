@@ -1,207 +1,207 @@
 col1,col2
-"In addition to information, text con tains attitudinal, and more specifically, emotional content.",{}
-"This paper exploresthe text-based emotion prediction prob lem empirically, using supervised machinelearning with the SNoW learning architecture.",{}
-"The goal is to classify the emotional affinity of sentences in the narra tive domain of children?s fairy tales, forsubsequent usage in appropriate expressive rendering of text-to-speech synthe sis.",{}
-"Initial experiments on a preliminarydata set of 22 fairy tales show encourag ing results over a na??ve baseline and BOW approach for classification of emotional versus non-emotional contents, with some dependency on parameter tuning.",{}
-"We also discuss results for a tripartite model which covers emotional valence, as well as feature set alernations.",{}
-"In addition, we present plans for a more cognitively soundsequential model, taking into considera tion a larger set of basic emotions.",{}
-"Text does not only communicate informative con tents, but also attitudinal information, includingemotional states.","{'title': 'Introduction', 'number': '1'}"
-The following reports on an em pirical study of text-based emotion prediction.,"{'title': 'Introduction', 'number': '1'}"
-"Section 2 gives a brief overview of the intendedapplication area, whereas section 3 summarizes re lated work.","{'title': 'Introduction', 'number': '1'}"
-"Next, section 4 explains the empirical study, including the machine learning model, thecorpus, the feature set, parameter tuning, etc. Section 5 presents experimental results from two classi fication tasks and feature set modifications.","{'title': 'Introduction', 'number': '1'}"
-"Section 6 describes the agenda for refining the model, before presenting concluding remarks in 7.","{'title': 'Introduction', 'number': '1'}"
-Narrative text is often especially prone to having emotional contents.,"{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"In the literary genre of fairy tales, emotions such as HAPPINESS and ANGER and related cognitive states, e.g. LOVE or HATE, becomeintegral parts of the story plot, and thus are of particular importance.","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"Moreover, the story teller read ing the story interprets emotions in order to orally convey the story in a fashion which makes the story come alive and catches the listeners?","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-attention.,"{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"In speech, speakers effectively express emotions by modifying prosody, including pitch, intensity, and durational cues in the speech signal.","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"Thus, inorder to make text-to-speech synthesis sound as natural and engaging as possible, it is important to con vey the emotional stance in the text.","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"However, thisimplies first having identified the appropriate emo tional meaning of the corresponding text passage.","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"Thus, an application for emotional text-to-speech synthesis has to solve two basic problems.","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"First,what emotion or emotions most appropriately de scribe a certain text passage, and second, given a text passage and a specified emotional mark-up, how to render the prosodic contour in order to convey the emotional content, (Cahn, 1990).","{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-The text-based emotion prediction task (TEP) addresses the first of these two problems.,"{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-579,"{'title': 'Application area: Text-to-speech. ', 'number': '2'}"
-"For a complete general overview of the field of affective computing, see (Picard, 1997).","{'title': 'Previous work. ', 'number': '3'}"
-"(Liu, Lieberman and Selker, 2003) is a rare study in textbased inference of sentence-level emotional affin ity.","{'title': 'Previous work. ', 'number': '3'}"
-"The authors adopt the notion of basic emotions, cf.","{'title': 'Previous work. ', 'number': '3'}"
-"(Ekman, 1993), and use six emotion categories: ANGER, DISGUST, FEAR, HAPPINESS, SADNESS, SURPRISE.","{'title': 'Previous work. ', 'number': '3'}"
-"They critique statistical NLP for being unsuccessful at the small sentence level, and insteaduse a database of common-sense knowledge and create affect models which are combined to form a rep resentation of the emotional affinity of a sentence.","{'title': 'Previous work. ', 'number': '3'}"
-"At its core, the approach remains dependent on anemotion lexicon and hand-crafted rules for conceptual polarity.","{'title': 'Previous work. ', 'number': '3'}"
-"In order to be effective, emotion recog nition must go beyond such resources; the authors note themselves that lexical affinity is fragile.","{'title': 'Previous work. ', 'number': '3'}"
-The method was tested on 20 users?,"{'title': 'Previous work. ', 'number': '3'}"
-"preferences for an email-client, based on user-composed text emails describing short but colorful events.","{'title': 'Previous work. ', 'number': '3'}"
-"While the users preferred the emotional client, this evaluation does not reveal emotion classification accuracy, nor how well the model generalizes on a large data set.","{'title': 'Previous work. ', 'number': '3'}"
-"Whereas work on emotion classification fromthe point of view of natural speech and human computer dialogues is fairly extensive, e.g.","{'title': 'Previous work. ', 'number': '3'}"
-"(Scherer,2003), (Litman and Forbes-Riley, 2004), this appears not to be the case for text-to-speech synthe sis (TTS).","{'title': 'Previous work. ', 'number': '3'}"
-"A short study by (Sugimoto et al, 2004) addresses sentence-level emotion recognition forJapanese TTS.","{'title': 'Previous work. ', 'number': '3'}"
-Their model uses a composition as sumption: the emotion of a sentence is a function of the emotional affinity of the words in the sentence.,"{'title': 'Previous work. ', 'number': '3'}"
-They obtain emotional judgements of 73 adjectives and a set of sentences from 15 human subjects andcompute words?,"{'title': 'Previous work. ', 'number': '3'}"
-"emotional strength based on the ra tio of times a word or a sentence was judged to fall into a particular emotion bucket, given the number of human subjects.","{'title': 'Previous work. ', 'number': '3'}"
-"Additionally, they conducted aninteractive experiment concerning the acoustic ren dering of emotion, using manual tuning of prosodicparameters for Japanese sentences.","{'title': 'Previous work. ', 'number': '3'}"
-"While the au thors actually address the two fundamental problems of emotional TTS, their approach is impractical and most likely cannot scale up for a real corpus.","{'title': 'Previous work. ', 'number': '3'}"
-"Again, while lexical items with clear emotional meaning,such as happy or sad, matter, emotion classifica tion probably needs to consider additional inferencemechanisms.","{'title': 'Previous work. ', 'number': '3'}"
-"Moreover, a na??ve compositional ap proach to emotion recognition is risky due to simplelinguistic facts, such as context-dependent seman tics, domination of words with multiple meanings, and emotional negation.Many NLP problems address attitudinal mean ing distinctions in text, e.g. detecting subjective opinion documents or expressions, e.g.","{'title': 'Previous work. ', 'number': '3'}"
-"(Wiebe et al, 2004), measuring strength of subjective clauses (Wilson, Wiebe and Hwa, 2004), determining word polarity (Hatzivassiloglou and McKeown, 1997) or texts?","{'title': 'Previous work. ', 'number': '3'}"
-"attitudinal valence, e.g.","{'title': 'Previous work. ', 'number': '3'}"
-"(Turney, 2002), (Bai, Padman and Airoldi, 2004), (Beineke, Hastie and Vaithyanathan, 2003), (Mullen and Collier, 2003), (Pang and Lee, 2003).","{'title': 'Previous work. ', 'number': '3'}"
-"Here, it suffices to say that the targets, the domain, and the intended application differ; our goal is to classify emotional text passagesin children?s stories, and eventually use this information for rendering expressive child-directed sto rytelling in a text-to-speech application.","{'title': 'Previous work. ', 'number': '3'}"
-"This can be useful, e.g. in therapeutic education of children with communication disorders (van Santen et al, 2003).","{'title': 'Previous work. ', 'number': '3'}"
-"This part covers the experimental study with a formal problem definition, computational implementa tion, data, features, and a note on parameter tuning.","{'title': 'Empirical study. ', 'number': '4'}"
-4.1 Machine learning model.,"{'title': 'Empirical study. ', 'number': '4'}"
-Determining emotion of a linguistic unit can be cast as a multi-class classification problem.,"{'title': 'Empirical study. ', 'number': '4'}"
-"Forthe flat case, let T denote the text, and s an em bedded linguistic unit, such as a sentence, where s ? T . Let k be the number of emotion classes E = {em1, em2, .., emk}, where em1 denotes the special case of neutrality, or absence of emotion.","{'title': 'Empirical study. ', 'number': '4'}"
-"The goal is to determine a mapping function f : s ? emi, such that we obtain an ordered labeled pair (s, emi).","{'title': 'Empirical study. ', 'number': '4'}"
-"The mapping is based on F = {f1, f2, .., fn}, where F contains the features derived from the text.","{'title': 'Empirical study. ', 'number': '4'}"
-"Furthermore, if multiple emotion classes can characterize s, then given E?","{'title': 'Empirical study. ', 'number': '4'}"
-"E, the target of the mapping function becomes the ordered pair (s,E?).Finally, as further discussed in section 6, the hierarchical case of label assignment requires a sequen 580tial model that further defines levels of coarse ver sus fine-grained classifiers, as done by (Li and Roth, 2002) for the question classification problem.","{'title': 'Empirical study. ', 'number': '4'}"
-4.2 Implementation.,"{'title': 'Empirical study. ', 'number': '4'}"
-"Whereas our goal is to predict finer emotional mean ing distinctions according to emotional categories in speech; in this study, we focus on the basic task of recognizing emotional passages and on determining their valence (i.e. positive versus negative) becausewe currently do not have enough training data to ex plore finer-grained distinctions.","{'title': 'Empirical study. ', 'number': '4'}"
-"The goal here is to get a good understanding of the nature of the TEP problem and explore features which may be useful.We explore two cases of flat classification, using a variation of the Winnow update rule implemented in the SNoW learning architecture (Carl son et al, 1999),1 which learns a linear classifierin feature space, and has been successful in sev eral NLP applications, e.g. semantic role labeling (Koomen, Punyakanok, Roth and Yih, 2005).","{'title': 'Empirical study. ', 'number': '4'}"
-"In the first case, the set of emotion classes E consists of EMOTIONAL versus non-emotional or NEUTRAL, i.e. E = {N,E}.","{'title': 'Empirical study. ', 'number': '4'}"
-"In the second case, E has been incremented with emotional distinctions accordingto the valence, i.e. E = {N,PE,NE}.","{'title': 'Empirical study. ', 'number': '4'}"
-"Experi ments used 10-fold cross-validation, with 90% train and 10% test data.2 4.3 Data.","{'title': 'Empirical study. ', 'number': '4'}"
-"The goal of our current data annotation project is to annotate a corpus of approximately 185 children stories, including Grimms?, H.C. Andersen?s and B.Potter?s stories.","{'title': 'Empirical study. ', 'number': '4'}"
-"So far, the annotation process pro ceeds as follows: annotators work in pairs on the same stories.","{'title': 'Empirical study. ', 'number': '4'}"
-They have been trained separately andwork independently in order to avoid any annota tion bias and get a true understanding of the task difficulty.,"{'title': 'Empirical study. ', 'number': '4'}"
-"Each annotator marks the sentence levelwith one of eight primary emotions, see table 1, re flecting an extended set of basic emotions (Ekman, 1993).","{'title': 'Empirical study. ', 'number': '4'}"
-"In order to make the annotation process more focused, emotion is annotated from the point of view of the text, i.e. the feeler in the sentence.","{'title': 'Empirical study. ', 'number': '4'}"
-"While the primary emotions are targets, the sentences are also 1Available from http://l2r.cs.uiuc.edu/?cogcomp/2Experiments were also run for Perceptron, however the re sults are not included.","{'title': 'Empirical study. ', 'number': '4'}"
-"Overall, Perceptron performed worse.","{'title': 'Empirical study. ', 'number': '4'}"
-"marked for other affective contents, i.e. background mood, secondary emotions via intensity, feeler, andtextual cues.","{'title': 'Empirical study. ', 'number': '4'}"
-"Disagreements in annotations are re solved by a second pass of tie-breaking by the first author, who chooses one of the competing labels.","{'title': 'Empirical study. ', 'number': '4'}"
-"Eventually, the completed annotations will be made available.","{'title': 'Empirical study. ', 'number': '4'}"
-"Table 1: Basic emotions used in annotation Abbreviation Emotion class A ANGRY D DISGUSTED F FEARFUL H HAPPY Sa SAD Su+ POSITIVELY SURPRISED Su- NEGATIVELY SURPRISEDEmotion annotation is hard; interannotator agreement currently range at ? = .24 ? .51, with the ra tio of observed annotation overlap ranging between45-64%, depending on annotator pair and stories as signed.","{'title': 'Empirical study. ', 'number': '4'}"
-"This is expected, given the subjective natureof the annotation task.","{'title': 'Empirical study. ', 'number': '4'}"
-"The lack of a clear defini tion for emotion vs. non-emotion is acknowledgedacross the emotion literature, and contributes to dy namic and shifting annotation targets.","{'title': 'Empirical study. ', 'number': '4'}"
-"Indeed, acommon source of confusion is NEUTRAL, i.e. de ciding whether or not a sentence is emotional or non-emotional.","{'title': 'Empirical study. ', 'number': '4'}"
-"Emotion perception also depends on which character?s point-of-view the annotator takes,and on extratextual factors such as annotator?s per sonality or mood.","{'title': 'Empirical study. ', 'number': '4'}"
-"It is possible that by focusing more on the training of annotator pairs, particularlyon joint training, agreement might improve.","{'title': 'Empirical study. ', 'number': '4'}"
-"However, that would also result in a bias, which is prob ably not preferable to actual perception.","{'title': 'Empirical study. ', 'number': '4'}"
-"Moreover,what agreement levels are needed for successful ex pressive TTS remains an empirical question.The current data set consisted of a preliminary an notated and tie-broken data set of 1580 sentence, or 22 Grimms?","{'title': 'Empirical study. ', 'number': '4'}"
-tales.,"{'title': 'Empirical study. ', 'number': '4'}"
-The label distribution is in table.,"{'title': 'Empirical study. ', 'number': '4'}"
-2.,"{'title': 'Empirical study. ', 'number': '4'}"
-NEUTRAL was most frequent with 59.94%..,"{'title': 'Empirical study. ', 'number': '4'}"
-Table 2: Percent of annotated labels A D F H 12.34% 0.89% 7.03% 6.77%N SA SU+ SU.,"{'title': 'Empirical study. ', 'number': '4'}"
-"59.94% 7.34% 2.59% 3.10% 581 Table 3: % EMOTIONAL vs. NEUTRAL examples E N 40.06% 59.94% Table 4: % POSITIVE vs. NEGATIVE vs. NEUTRAL PE NE N 9.87% 30.19% 59.94% Next, for the purpose of this study, all emotionalclasses, i.e. A, D, F, H, SA, SU+, SU-, were com bined into one emotional superclass E for the firstexperiment, as shown in table 3.","{'title': 'Empirical study. ', 'number': '4'}"
-"For the second experiment, we used two emotional classes, i.e. pos itive versus negative emotions; PE={H, SU+} and NE={A, D, F, SA, SU-}, as seen in table 4.","{'title': 'Empirical study. ', 'number': '4'}"
-4.4 Feature set.,"{'title': 'Empirical study. ', 'number': '4'}"
-The feature extraction was written in python.,"{'title': 'Empirical study. ', 'number': '4'}"
-"SNoW only requires active features as input, which resulted in a typical feature vector size of around 30 features.The features are listed below.","{'title': 'Empirical study. ', 'number': '4'}"
-"They were imple mented as boolean values, with continuous valuesrepresented by ranges.","{'title': 'Empirical study. ', 'number': '4'}"
-"The ranges generally over lapped, in order to get more generalization coverage.","{'title': 'Empirical study. ', 'number': '4'}"
-1.,"{'title': 'Empirical study. ', 'number': '4'}"
-First sentence in story.,"{'title': 'Empirical study. ', 'number': '4'}"
-2.,"{'title': 'Empirical study. ', 'number': '4'}"
-Conjunctions of selected features (see below).,"{'title': 'Empirical study. ', 'number': '4'}"
-3.,"{'title': 'Empirical study. ', 'number': '4'}"
-Direct speech (i.e. whole quote) in sentence.,"{'title': 'Empirical study. ', 'number': '4'}"
-4.,"{'title': 'Empirical study. ', 'number': '4'}"
-Thematic story type (3 top and 15 sub-types).,"{'title': 'Empirical study. ', 'number': '4'}"
-7.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Sentence length in words (0-1, 2-3, 4-8, 9-15,.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"16-25, 26-35, >35) 8.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Ranges of story progress (5-100%, 15-100%,.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"80-100%, 90-100%) 9.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Percent of JJ, N, V, RB (0%, 1-100%, 50-.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"100%, 80-100%) 10.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"V count in sentence, excluding participles (0-1, 0-3, 0-5, 0-7, 0-9, > 9) 11.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Positive and negative word counts ( ? 1, ? 2,.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"3, ? 4, ? 5, ? 6) 12.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-WordNet emotion words.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-13.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Interjections and affective words.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-14.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Content BOW: N, V, JJ, RB words by POS.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Feature conjunctions covered pairings of counts of positive and negative words with range of story progress or interjections, respectively.Feature groups 1, 3, 5, 6, 7, 8, 9, 10 and 14 are extracted automatically from the sentences in the sto ries; with the SNoW POS-tagger used for features 9, 10, and 14.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Group 10 reflects how many verbs are active in a sentence.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Together with the quotation and punctuation, verb domination intends to capture the assumption that emotion is often accompanied by increased action and interaction.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Feature group 4 is based on Finish scholar Antti Aarne?s classesof folk-tale types according to their informative the matic contents (Aarne, 1964).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"The current tales have 3 top story types (ANIMAL TALES, ORDINARY FOLK-TALES, and JOKES AND ANECDOTES), and 15 subtypes (e.g. supernatural helpers is a subtype of the ORDINARY FOLK-TALE).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"This feature intends to provide an idea about the story?s general affectivepersonality (Picard, 1997), whereas the feature re flecting the story progress is hoped to capture that some emotions may be more prevalent in certain sections of the story (e.g. the happy end).For semantic tasks, words are obviously impor tant.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"In addition to considering ?content words?, we also explored specific word lists.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Group 11 uses 2 lists of 1636 positive and 2008 negative words, obtained from (Di Cicco et al, online).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Group 12 uses lexical lists extracted from WordNet (Fellbaum, 1998), on the basis of the primary emotion wordsin their adjectival and nominal forms.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"For the adjectives, Py-WordNet?s (Steele et al, 2004) SIMI LAR feature was used to retrieve similar items ofthe primary emotion adjectives, exploring one addi tional level in the hierarchy (i.e. similar items of all senses of all words in the synset).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"For the nouns andany identical verbal homonyms, synonyms and hy ponyms were extracted manually.3 Feature group 13used a short list of 22 interjections collected manu ally by browsing educational ESL sites, whereas theaffective word list of 771 words consisted of a combination of the non-neutral words from (Johnson Laird and Oatley, 1989) and (Siegle, online).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Only a subset of these lexical lists actually occurred.4 3Multi-words were transformed to hyphenated form.4At this point, neither stems and bigrams nor a list of ono matopoeic words contribute to accuracy.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Intermediate resource processing inserted some feature noise.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"582 The above feature set is henceforth referred to as all features, whereas content BOW is just group 14.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"The content BOW is a more interesting baseline than the na??ve one, P(Neutral), i.e. always assigning the most likely NEUTRAL category.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Lastly, emotions blend and transform (Liu, Lieberman and Selker,2003).","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Thus, emotion and background mood of im mediately adjacent sentences, i.e. the sequencing, seems important.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"At this point, it is not implemented automatically.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Instead, it was extracted from themanual emotion and mood annotations.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"If sequenc ing seemed important, an automatic method using sequential target activation could be added next.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-4.5 Parameter tuning.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"The Winnow parameters that were tuned included promotional ?, demotional ?, activation threshold?, initial weights ?, and the regularization parame ter, S, which implements a margin between positive and negative examples.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Given the currently fairlylimited data, results from 2 alternative tuning meth ods, applied to all features, are reported.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"For the condition called sep-tune-eval, 50% of the sentences were randomly selected and set aside to be used for the parameter tuningprocess only.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Of this subset, 10% were subsequently randomly chosen as test set with the remaining 90% used for training during the automatic tuning process, which covered 4356 different parameter combinations.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Resulting pa rameters were: ? = 1.1, ? = 0.5, ? = 5, ? = 1.0, S = 0.5.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-The remaining half of the data was used for training and testing in the 10-fold cross-validation evaluation.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"(Also, note the slight change for P(Neutral) in table 5, due to randomly splitting the data.)","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Given that the data set is currently small, for the condition named same-tune-eval, tuning was performed automatically on all data using a slightly smaller set of combinations, and thenmanually adjusted against the 10-fold cross validation process.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Resulting parameters were: ? = 1.2, ? = 0.9, ? = 4, ? = 1, S = 0.5.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-All data was used for evaluation.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Emotion classification was sensitive to the selected tuning data.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Generally, a smaller tuning set resultedin pejorative parameter settings.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"The random selec tion could make a difference, but was not explored.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-5 Results and discussion.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"This section first presents the results from experiments with the two different confusion sets de scribed above, as well as feature experimentation.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-5.1 Classification results.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Average accuracy from 10-fold cross validation forthe first experiment, i.e. classifying sentences as either NEUTRAL or EMOTIONAL, are included in ta ble 5 and figure 1 for the two tuning conditions on the main feature sets and baselines.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"As expected, Table 5: Mean classification accuracy: N vs. E, 2 conditions same-tune-eval sep-tune-eval P(Neutral) 59.94 60.05 Content BOW 61.01 58.30 All features except BOW 64.68 63.45 All features 68.99 63.31 All features + sequencing 69.37 62.94 degree of success reflects parameter settings, bothfor content BOW and all features.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Nevertheless, un der these circumstances, performance above a na??vebaseline and a BOW approach is obtained.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"More over, sequencing shows potential for contributing in one case.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"However, observations also point to three issues: first, the current data set appears tobe too small.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Second, the data is not easily separa ble.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"This comes as no surprise, given the subjectivenature of the task, and the rather low interannota tor agreement, reported above.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Moreover, despite the schematic narrative plots of children?s stories, tales still differ in their overall affective orientation, which increases data complexity.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Third and finally, the EMOTION class is combined by basic emotion labels, rather than an original annotated label.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-More detailed averaged results from 10-fold cross-validation are included in table 6 using all features and the separated tuning and evaluationdata condition sep-tune-eval.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"With these parame ters, approximately 3% improvement in accuracy over the na??ve baseline P(Neutral) was recorded, and 5% over the content BOW, which obviously did poorly with these parameters.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Moreover, precision is 583 0 10 20 30 40 50 60 70 same-tune-eval sep-tune-eval Tuning sets % Accuracy P(Neutral) Content BOWAll features except BOW All featuresAll features + sequencing Figure 1: Accuracy under different conditions (in %) Table 6: Classifying N vs. E (all features, sep-tune-eval) Measure N E Averaged accuracy 0.63 0.63 Averaged error 0.37 0.37 Averaged precision 0.66 0.56 Averaged recall 0.75 0.42 Averaged F-score 0.70 0.47 higher than recall for the combined EMOTION class.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"In comparison, with the same-tune-eval procedure, the accuracy improved by approximately 9% over P(Neutral) and by 8% over content BOW.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"In the second experiment, the emotion category was split into two classes: emotions with positiveversus negative valence.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"The results in terms of precision, recall, and F-score are included in table 7, us ing all features and the sep-tune-eval condition.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Thedecrease in performance for the emotion classes mir rors the smaller amounts of data available for each class.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"As noted in section 4.3, only 9.87% of the sentences were annotated with a positive emotion,and the results for this class are worse.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Thus, perfor mance seems likely to improve as more annotated story data becomes available; at this point, we are experimenting with merely around 12% of the total texts targeted by the data annotation project.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-5.2 Feature experiments.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Emotions are poorly understood, and it is espe cially unclear which features may be important for their recognition from text.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Thus, we experimented Table 7: N, PE, and NE (all features, sep-tune-eval) N NE PE Averaged precision 0.64 0.45 0.13 Averaged recall 0.75 0.27 0.19 Averaged F-score 0.69 0.32 0.13 Table 8: Feature group members Word lists interj., WordNet, affective lists, pos/neg Syntactic length ranges, % POS, V-count ranges Story-related % story-progress, 1st sent., story type Orthographic punctuation, upper-case words, quote Conjunctions Conjunctions with pos/neg Content BOW Words (N,V,Adj, Adv) with different feature configurations.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Starting with all features, again using 10-fold cross-validation forthe separated tuning-evaluation condition sep-tuneeval, one additional feature group was removed un til none remained.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-The feature groups are listed intable 8.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-Figure 2 on the next page shows the accuracy at each step of the cumulative subtraction process.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"While some feature groups, e.g. syntactic, ap peared less important, the removal order mattered;e.g. if syntactic features were removed first, accuracy decreased.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-This fact also illustrated that fea tures work together; removing any group degraded performance because features interact and there isno true independence.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-It was observed that features?,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-contributions were sensitive to parameter tun ing.,"{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-"Clearly, further work on developing features which fit the TEP problem is needed.","{'title': 'Special punctuation (! and ?). ', 'number': '5'}"
-This was a ?first pass?,"{'title': 'Refining the model. ', 'number': '6'}"
-of addressing TEP for TTS.,"{'title': 'Refining the model. ', 'number': '6'}"
-"At this point, the annotation project is still on-going, and we only had a fairly small data set to draw on.Nevertheless, results indicate that our learning ap proach benefits emotion recognition.","{'title': 'Refining the model. ', 'number': '6'}"
-"For example, the following instances, also labeled with the same valence by both annotators, were correctly classifiedboth in the binary (N vs. E) and the tripartite polar ity task (N, NE, PE), given the separated tuning and evaluation data condition, and using all features: (1a) E/NE: Then he offered the dwarfs money, and prayed and besought them to let him take her away; but they said, ?We will not part with her for all the gold in the world.?","{'title': 'Refining the model. ', 'number': '6'}"
-"584 Cumulative removal of feature groups 61.81 63.31 62.57 57.95 58.30 58.93 59.56 55 60 65 All features - Word lists - Syntactic - Story-related - Orthographic - Conjunctions - Content words % A ccur acy All features P(Neutral) BOW Figure 2: Averaged effect of feature group removal, using sep-tune-eval (1b) N: And so the little girl really did grow up; her skin was as white as snow, her cheeks as rosy as the blood, and her hair as black as ebony; and she was called Snowdrop.","{'title': 'Refining the model. ', 'number': '6'}"
-"(2a) E/NE: ?Ah,?","{'title': 'Refining the model. ', 'number': '6'}"
-"she answered, ?have I not reason to weep?","{'title': 'Refining the model. ', 'number': '6'}"
-"(2b) N: Nevertheless, he wished to try him first, and took a stone in his hand and squeezed it together so that water dropped out of it.","{'title': 'Refining the model. ', 'number': '6'}"
-"Cases (1a) and (1b) are from the well-known FOLK TALE Snowdrop, also called Snow White.","{'title': 'Refining the model. ', 'number': '6'}"
-"(1a)and (1b) are also correctly classified by the sim ple content BOW approach, although our approach has higher prediction confidence for E/NE (1a); it also considers, e.g. direct speech, a fairly high verb count, advanced story progress, connotative wordsand conjunctions thereof with story progress fea tures, all of which the BOW misses.","{'title': 'Refining the model. ', 'number': '6'}"
-"In addition, thesimple content BOW approach makes incorrect pre dictions at both the bipartite and tripartite levels forexamples (2a) and (2b) from the JOKES AND ANEC DOTES stories Clever Hans and The Valiant LittleTailor, while our classifier captures the affective dif ferences by considering, e.g. distinctions in verbcount, interjection, POS, sentence length, connota tions, story subtype, and conjunctions.","{'title': 'Refining the model. ', 'number': '6'}"
-"Next, we intend to use a larger data set to conduct a more complete study to establish mature findings.We also plan to explore finer emotional meaning dis tinctions, by using a hierarchical sequential modelwhich better corresponds to different levels of cognitive difficulty in emotional categorization by humans, and to classify the full set of basic level emo tional categories discussed in section 4.3.","{'title': 'Refining the model. ', 'number': '6'}"
-"Sequential modeling of simple classifiers has been successfully employed to question classification, for example by (Li and Roth, 2002).","{'title': 'Refining the model. ', 'number': '6'}"
-"In addition, we are working on refining and improving the feature set, and given more data, tuning can be improved on a sufficiently large development set.","{'title': 'Refining the model. ', 'number': '6'}"
-The three subcorpora in the annotation project can reveal how authorship affects emotion perception and classification.,"{'title': 'Refining the model. ', 'number': '6'}"
-"Moreover, arousal appears to be an important dimension for emotional prosody (Scherer, 2003), especially in storytelling (Alm and Sproat, 2005).Thus, we are planning on exploring degrees of emotional intensity in a learning scenario, i.e. a prob lem similar to measuring strength of opinion clauses (Wilson, Wiebe and Hwa, 2004).","{'title': 'Refining the model. ', 'number': '6'}"
-"Finally, emotions are not discrete objects; rather they have transitional nature, and blend and overlap along the temporal dimension.","{'title': 'Refining the model. ', 'number': '6'}"
-"For example, (Liu,Lieberman and Selker, 2003) include parallel estimations of emotional activity, and include smooth 585 ing techniques such as interpolation and decay to capture sequential and interactive emotional activity.","{'title': 'Refining the model. ', 'number': '6'}"
-Observations from tales indicate that some emotions are more likely to be prolonged than others.,"{'title': 'Refining the model. ', 'number': '6'}"
-"This paper has discussed an empirical study of thetext-based emotion prediction problem in the domain of children?s fairy tales, with child-directed ex pressive text-to-speech synthesis as goal.","{'title': 'Conclusion. ', 'number': '7'}"
-"Besidesreporting on encouraging results in a first set of com putational experiments using supervised machine learning, we have set forth a research agenda for tackling the TEP problem more comprehensively.","{'title': 'Conclusion. ', 'number': '7'}"
-"We are grateful to the annotators, in particular A. Rasmussen and S. Siddiqui.","{'title': 'Acknowledgments. ', 'number': '8'}"
-We also thank two anonymous reviewers for comments.,"{'title': 'Acknowledgments. ', 'number': '8'}"
-"This work was funded by NSF under award ITR-#0205731, and NS ITR IIS-0428472.","{'title': 'Acknowledgments. ', 'number': '8'}"
-The annotation is supported byUIUC?s Research Board.,"{'title': 'Acknowledgments. ', 'number': '8'}"
-The authors take sole re sponsibility for the work.,"{'title': 'Acknowledgments. ', 'number': '8'}"
+"In addition to information, text con tains attitudinal, and more specifically, emotional content.",Introduction
+"This paper exploresthe text-based emotion prediction prob lem empirically, using supervised machinelearning with the SNoW learning architecture.",Introduction
+"The goal is to classify the emotional affinity of sentences in the narra tive domain of children?s fairy tales, forsubsequent usage in appropriate expressive rendering of text-to-speech synthe sis.",Introduction
+"Initial experiments on a preliminarydata set of 22 fairy tales show encourag ing results over a na??ve baseline and BOW approach for classification of emotional versus non-emotional contents, with some dependency on parameter tuning.",Introduction
+"We also discuss results for a tripartite model which covers emotional valence, as well as feature set alernations.",Introduction
+"In addition, we present plans for a more cognitively soundsequential model, taking into considera tion a larger set of basic emotions.",Introduction
+"Text does not only communicate informative con tents, but also attitudinal information, includingemotional states.",Experiment/Discussion
+The following reports on an em pirical study of text-based emotion prediction.,Experiment/Discussion
+"Section 2 gives a brief overview of the intendedapplication area, whereas section 3 summarizes re lated work.",Experiment/Discussion
+"Next, section 4 explains the empirical study, including the machine learning model, thecorpus, the feature set, parameter tuning, etc. Section 5 presents experimental results from two classi fication tasks and feature set modifications.",Experiment/Discussion
+"Section 6 describes the agenda for refining the model, before presenting concluding remarks in 7.",Experiment/Discussion
+Narrative text is often especially prone to having emotional contents.,Experiment/Discussion
+"In the literary genre of fairy tales, emotions such as HAPPINESS and ANGER and related cognitive states, e.g. LOVE or HATE, becomeintegral parts of the story plot, and thus are of particular importance.",Experiment/Discussion
+"Moreover, the story teller read ing the story interprets emotions in order to orally convey the story in a fashion which makes the story come alive and catches the listeners?",Experiment/Discussion
+attention.,Experiment/Discussion
+"In speech, speakers effectively express emotions by modifying prosody, including pitch, intensity, and durational cues in the speech signal.",Experiment/Discussion
+"Thus, inorder to make text-to-speech synthesis sound as natural and engaging as possible, it is important to con vey the emotional stance in the text.",Experiment/Discussion
+"However, thisimplies first having identified the appropriate emo tional meaning of the corresponding text passage.",Experiment/Discussion
+"Thus, an application for emotional text-to-speech synthesis has to solve two basic problems.",Experiment/Discussion
+"First,what emotion or emotions most appropriately de scribe a certain text passage, and second, given a text passage and a specified emotional mark-up, how to render the prosodic contour in order to convey the emotional content, (Cahn, 1990).",Experiment/Discussion
+The text-based emotion prediction task (TEP) addresses the first of these two problems.,Experiment/Discussion
+579,Experiment/Discussion
+"For a complete general overview of the field of affective computing, see (Picard, 1997).",Experiment/Discussion
+"(Liu, Lieberman and Selker, 2003) is a rare study in textbased inference of sentence-level emotional affin ity.",Experiment/Discussion
+"The authors adopt the notion of basic emotions, cf.",Experiment/Discussion
+"(Ekman, 1993), and use six emotion categories: ANGER, DISGUST, FEAR, HAPPINESS, SADNESS, SURPRISE.",Experiment/Discussion
+"They critique statistical NLP for being unsuccessful at the small sentence level, and insteaduse a database of common-sense knowledge and create affect models which are combined to form a rep resentation of the emotional affinity of a sentence.",Experiment/Discussion
+"At its core, the approach remains dependent on anemotion lexicon and hand-crafted rules for conceptual polarity.",Experiment/Discussion
+"In order to be effective, emotion recog nition must go beyond such resources; the authors note themselves that lexical affinity is fragile.",Experiment/Discussion
+The method was tested on 20 users?,Experiment/Discussion
+"preferences for an email-client, based on user-composed text emails describing short but colorful events.",Experiment/Discussion
+"While the users preferred the emotional client, this evaluation does not reveal emotion classification accuracy, nor how well the model generalizes on a large data set.",Experiment/Discussion
+"Whereas work on emotion classification fromthe point of view of natural speech and human computer dialogues is fairly extensive, e.g.",Experiment/Discussion
+"(Scherer,2003), (Litman and Forbes-Riley, 2004), this appears not to be the case for text-to-speech synthe sis (TTS).",Experiment/Discussion
+"A short study by (Sugimoto et al, 2004) addresses sentence-level emotion recognition forJapanese TTS.",Experiment/Discussion
+Their model uses a composition as sumption: the emotion of a sentence is a function of the emotional affinity of the words in the sentence.,Experiment/Discussion
+They obtain emotional judgements of 73 adjectives and a set of sentences from 15 human subjects andcompute words?,Experiment/Discussion
+"emotional strength based on the ra tio of times a word or a sentence was judged to fall into a particular emotion bucket, given the number of human subjects.",Experiment/Discussion
+"Additionally, they conducted aninteractive experiment concerning the acoustic ren dering of emotion, using manual tuning of prosodicparameters for Japanese sentences.",Experiment/Discussion
+"While the au thors actually address the two fundamental problems of emotional TTS, their approach is impractical and most likely cannot scale up for a real corpus.",Experiment/Discussion
+"Again, while lexical items with clear emotional meaning,such as happy or sad, matter, emotion classifica tion probably needs to consider additional inferencemechanisms.",Experiment/Discussion
+"Moreover, a na??ve compositional ap proach to emotion recognition is risky due to simplelinguistic facts, such as context-dependent seman tics, domination of words with multiple meanings, and emotional negation.Many NLP problems address attitudinal mean ing distinctions in text, e.g. detecting subjective opinion documents or expressions, e.g.",Experiment/Discussion
+"(Wiebe et al, 2004), measuring strength of subjective clauses (Wilson, Wiebe and Hwa, 2004), determining word polarity (Hatzivassiloglou and McKeown, 1997) or texts?",Experiment/Discussion
+"attitudinal valence, e.g.",Experiment/Discussion
+"(Turney, 2002), (Bai, Padman and Airoldi, 2004), (Beineke, Hastie and Vaithyanathan, 2003), (Mullen and Collier, 2003), (Pang and Lee, 2003).",Experiment/Discussion
+"Here, it suffices to say that the targets, the domain, and the intended application differ; our goal is to classify emotional text passagesin children?s stories, and eventually use this information for rendering expressive child-directed sto rytelling in a text-to-speech application.",Experiment/Discussion
+"This can be useful, e.g. in therapeutic education of children with communication disorders (van Santen et al, 2003).",Experiment/Discussion
+"This part covers the experimental study with a formal problem definition, computational implementa tion, data, features, and a note on parameter tuning.",Experiment/Discussion
+4.1 Machine learning model.,Experiment/Discussion
+Determining emotion of a linguistic unit can be cast as a multi-class classification problem.,Experiment/Discussion
+"Forthe flat case, let T denote the text, and s an em bedded linguistic unit, such as a sentence, where s ? T . Let k be the number of emotion classes E = {em1, em2, .., emk}, where em1 denotes the special case of neutrality, or absence of emotion.",Experiment/Discussion
+"The goal is to determine a mapping function f : s ? emi, such that we obtain an ordered labeled pair (s, emi).",Experiment/Discussion
+"The mapping is based on F = {f1, f2, .., fn}, where F contains the features derived from the text.",Experiment/Discussion
+"Furthermore, if multiple emotion classes can characterize s, then given E?",Experiment/Discussion
+"E, the target of the mapping function becomes the ordered pair (s,E?).Finally, as further discussed in section 6, the hierarchical case of label assignment requires a sequen 580tial model that further defines levels of coarse ver sus fine-grained classifiers, as done by (Li and Roth, 2002) for the question classification problem.",Experiment/Discussion
+4.2 Implementation.,Experiment/Discussion
+"Whereas our goal is to predict finer emotional mean ing distinctions according to emotional categories in speech; in this study, we focus on the basic task of recognizing emotional passages and on determining their valence (i.e. positive versus negative) becausewe currently do not have enough training data to ex plore finer-grained distinctions.",Experiment/Discussion
+"The goal here is to get a good understanding of the nature of the TEP problem and explore features which may be useful.We explore two cases of flat classification, using a variation of the Winnow update rule implemented in the SNoW learning architecture (Carl son et al, 1999),1 which learns a linear classifierin feature space, and has been successful in sev eral NLP applications, e.g. semantic role labeling (Koomen, Punyakanok, Roth and Yih, 2005).",Experiment/Discussion
+"In the first case, the set of emotion classes E consists of EMOTIONAL versus non-emotional or NEUTRAL, i.e. E = {N,E}.",Experiment/Discussion
+"In the second case, E has been incremented with emotional distinctions accordingto the valence, i.e. E = {N,PE,NE}.",Experiment/Discussion
+"Experi ments used 10-fold cross-validation, with 90% train and 10% test data.2 4.3 Data.",Experiment/Discussion
+"The goal of our current data annotation project is to annotate a corpus of approximately 185 children stories, including Grimms?, H.C. Andersen?s and B.Potter?s stories.",Experiment/Discussion
+"So far, the annotation process pro ceeds as follows: annotators work in pairs on the same stories.",Experiment/Discussion
+They have been trained separately andwork independently in order to avoid any annota tion bias and get a true understanding of the task difficulty.,Experiment/Discussion
+"Each annotator marks the sentence levelwith one of eight primary emotions, see table 1, re flecting an extended set of basic emotions (Ekman, 1993).",Experiment/Discussion
+"In order to make the annotation process more focused, emotion is annotated from the point of view of the text, i.e. the feeler in the sentence.",Experiment/Discussion
+"While the primary emotions are targets, the sentences are also 1Available from http://l2r.cs.uiuc.edu/?cogcomp/2Experiments were also run for Perceptron, however the re sults are not included.",Experiment/Discussion
+"Overall, Perceptron performed worse.",Experiment/Discussion
+"marked for other affective contents, i.e. background mood, secondary emotions via intensity, feeler, andtextual cues.",Experiment/Discussion
+"Disagreements in annotations are re solved by a second pass of tie-breaking by the first author, who chooses one of the competing labels.",Experiment/Discussion
+"Eventually, the completed annotations will be made available.",Experiment/Discussion
+"Table 1: Basic emotions used in annotation Abbreviation Emotion class A ANGRY D DISGUSTED F FEARFUL H HAPPY Sa SAD Su+ POSITIVELY SURPRISED Su- NEGATIVELY SURPRISEDEmotion annotation is hard; interannotator agreement currently range at ? = .24 ? .51, with the ra tio of observed annotation overlap ranging between45-64%, depending on annotator pair and stories as signed.",Experiment/Discussion
+"This is expected, given the subjective natureof the annotation task.",Experiment/Discussion
+"The lack of a clear defini tion for emotion vs. non-emotion is acknowledgedacross the emotion literature, and contributes to dy namic and shifting annotation targets.",Experiment/Discussion
+"Indeed, acommon source of confusion is NEUTRAL, i.e. de ciding whether or not a sentence is emotional or non-emotional.",Experiment/Discussion
+"Emotion perception also depends on which character?s point-of-view the annotator takes,and on extratextual factors such as annotator?s per sonality or mood.",Experiment/Discussion
+"It is possible that by focusing more on the training of annotator pairs, particularlyon joint training, agreement might improve.",Experiment/Discussion
+"However, that would also result in a bias, which is prob ably not preferable to actual perception.",Experiment/Discussion
+"Moreover,what agreement levels are needed for successful ex pressive TTS remains an empirical question.The current data set consisted of a preliminary an notated and tie-broken data set of 1580 sentence, or 22 Grimms?",Experiment/Discussion
+tales.,Experiment/Discussion
+The label distribution is in table.,Experiment/Discussion
+2.,Experiment/Discussion
+NEUTRAL was most frequent with 59.94%..,Experiment/Discussion
+Table 2: Percent of annotated labels A D F H 12.34% 0.89% 7.03% 6.77%N SA SU+ SU.,Experiment/Discussion
+"59.94% 7.34% 2.59% 3.10% 581 Table 3: % EMOTIONAL vs. NEUTRAL examples E N 40.06% 59.94% Table 4: % POSITIVE vs. NEGATIVE vs. NEUTRAL PE NE N 9.87% 30.19% 59.94% Next, for the purpose of this study, all emotionalclasses, i.e. A, D, F, H, SA, SU+, SU-, were com bined into one emotional superclass E for the firstexperiment, as shown in table 3.",Experiment/Discussion
+"For the second experiment, we used two emotional classes, i.e. pos itive versus negative emotions; PE={H, SU+} and NE={A, D, F, SA, SU-}, as seen in table 4.",Experiment/Discussion
+4.4 Feature set.,Experiment/Discussion
+The feature extraction was written in python.,Experiment/Discussion
+"SNoW only requires active features as input, which resulted in a typical feature vector size of around 30 features.The features are listed below.",Experiment/Discussion
+"They were imple mented as boolean values, with continuous valuesrepresented by ranges.",Experiment/Discussion
+"The ranges generally over lapped, in order to get more generalization coverage.",Experiment/Discussion
+1.,Experiment/Discussion
+First sentence in story.,Experiment/Discussion
+2.,Experiment/Discussion
+Conjunctions of selected features (see below).,Experiment/Discussion
+3.,Experiment/Discussion
+Direct speech (i.e. whole quote) in sentence.,Experiment/Discussion
+4.,Experiment/Discussion
+Thematic story type (3 top and 15 sub-types).,Experiment/Discussion
+7.,Experiment/Discussion
+"Sentence length in words (0-1, 2-3, 4-8, 9-15,.",Experiment/Discussion
+"16-25, 26-35, >35) 8.",Experiment/Discussion
+"Ranges of story progress (5-100%, 15-100%,.",Experiment/Discussion
+"80-100%, 90-100%) 9.",Experiment/Discussion
+"Percent of JJ, N, V, RB (0%, 1-100%, 50-.",Experiment/Discussion
+"100%, 80-100%) 10.",Experiment/Discussion
+"V count in sentence, excluding participles (0-1, 0-3, 0-5, 0-7, 0-9, > 9) 11.",Experiment/Discussion
+"Positive and negative word counts ( ? 1, ? 2,.",Experiment/Discussion
+"3, ? 4, ? 5, ? 6) 12.",Experiment/Discussion
+WordNet emotion words.,Experiment/Discussion
+13.,Experiment/Discussion
+Interjections and affective words.,Experiment/Discussion
+14.,Experiment/Discussion
+"Content BOW: N, V, JJ, RB words by POS.",Experiment/Discussion
+"Feature conjunctions covered pairings of counts of positive and negative words with range of story progress or interjections, respectively.Feature groups 1, 3, 5, 6, 7, 8, 9, 10 and 14 are extracted automatically from the sentences in the sto ries; with the SNoW POS-tagger used for features 9, 10, and 14.",Experiment/Discussion
+Group 10 reflects how many verbs are active in a sentence.,Experiment/Discussion
+"Together with the quotation and punctuation, verb domination intends to capture the assumption that emotion is often accompanied by increased action and interaction.",Experiment/Discussion
+"Feature group 4 is based on Finish scholar Antti Aarne?s classesof folk-tale types according to their informative the matic contents (Aarne, 1964).",Experiment/Discussion
+"The current tales have 3 top story types (ANIMAL TALES, ORDINARY FOLK-TALES, and JOKES AND ANECDOTES), and 15 subtypes (e.g. supernatural helpers is a subtype of the ORDINARY FOLK-TALE).",Experiment/Discussion
+"This feature intends to provide an idea about the story?s general affectivepersonality (Picard, 1997), whereas the feature re flecting the story progress is hoped to capture that some emotions may be more prevalent in certain sections of the story (e.g. the happy end).For semantic tasks, words are obviously impor tant.",Experiment/Discussion
+"In addition to considering ?content words?, we also explored specific word lists.",Experiment/Discussion
+"Group 11 uses 2 lists of 1636 positive and 2008 negative words, obtained from (Di Cicco et al, online).",Experiment/Discussion
+"Group 12 uses lexical lists extracted from WordNet (Fellbaum, 1998), on the basis of the primary emotion wordsin their adjectival and nominal forms.",Experiment/Discussion
+"For the adjectives, Py-WordNet?s (Steele et al, 2004) SIMI LAR feature was used to retrieve similar items ofthe primary emotion adjectives, exploring one addi tional level in the hierarchy (i.e. similar items of all senses of all words in the synset).",Experiment/Discussion
+"For the nouns andany identical verbal homonyms, synonyms and hy ponyms were extracted manually.3 Feature group 13used a short list of 22 interjections collected manu ally by browsing educational ESL sites, whereas theaffective word list of 771 words consisted of a combination of the non-neutral words from (Johnson Laird and Oatley, 1989) and (Siegle, online).",Experiment/Discussion
+"Only a subset of these lexical lists actually occurred.4 3Multi-words were transformed to hyphenated form.4At this point, neither stems and bigrams nor a list of ono matopoeic words contribute to accuracy.",Experiment/Discussion
+Intermediate resource processing inserted some feature noise.,Experiment/Discussion
+"582 The above feature set is henceforth referred to as all features, whereas content BOW is just group 14.",Experiment/Discussion
+"The content BOW is a more interesting baseline than the na??ve one, P(Neutral), i.e. always assigning the most likely NEUTRAL category.",Experiment/Discussion
+"Lastly, emotions blend and transform (Liu, Lieberman and Selker,2003).",Experiment/Discussion
+"Thus, emotion and background mood of im mediately adjacent sentences, i.e. the sequencing, seems important.",Experiment/Discussion
+"At this point, it is not implemented automatically.",Experiment/Discussion
+"Instead, it was extracted from themanual emotion and mood annotations.",Experiment/Discussion
+"If sequenc ing seemed important, an automatic method using sequential target activation could be added next.",Experiment/Discussion
+4.5 Parameter tuning.,Experiment/Discussion
+"The Winnow parameters that were tuned included promotional ?, demotional ?, activation threshold?, initial weights ?, and the regularization parame ter, S, which implements a margin between positive and negative examples.",Experiment/Discussion
+"Given the currently fairlylimited data, results from 2 alternative tuning meth ods, applied to all features, are reported.",Experiment/Discussion
+"For the condition called sep-tune-eval, 50% of the sentences were randomly selected and set aside to be used for the parameter tuningprocess only.",Experiment/Discussion
+"Of this subset, 10% were subsequently randomly chosen as test set with the remaining 90% used for training during the automatic tuning process, which covered 4356 different parameter combinations.",Experiment/Discussion
+"Resulting pa rameters were: ? = 1.1, ? = 0.5, ? = 5, ? = 1.0, S = 0.5.",Experiment/Discussion
+The remaining half of the data was used for training and testing in the 10-fold cross-validation evaluation.,Experiment/Discussion
+"(Also, note the slight change for P(Neutral) in table 5, due to randomly splitting the data.)",Experiment/Discussion
+"Given that the data set is currently small, for the condition named same-tune-eval, tuning was performed automatically on all data using a slightly smaller set of combinations, and thenmanually adjusted against the 10-fold cross validation process.",Experiment/Discussion
+"Resulting parameters were: ? = 1.2, ? = 0.9, ? = 4, ? = 1, S = 0.5.",Experiment/Discussion
+All data was used for evaluation.,Experiment/Discussion
+Emotion classification was sensitive to the selected tuning data.,Experiment/Discussion
+"Generally, a smaller tuning set resultedin pejorative parameter settings.",Experiment/Discussion
+"The random selec tion could make a difference, but was not explored.",Experiment/Discussion
+5 Results and discussion.,Experiment/Discussion
+"This section first presents the results from experiments with the two different confusion sets de scribed above, as well as feature experimentation.",Experiment/Discussion
+5.1 Classification results.,Experiment/Discussion
+"Average accuracy from 10-fold cross validation forthe first experiment, i.e. classifying sentences as either NEUTRAL or EMOTIONAL, are included in ta ble 5 and figure 1 for the two tuning conditions on the main feature sets and baselines.",Experiment/Discussion
+"As expected, Table 5: Mean classification accuracy: N vs. E, 2 conditions same-tune-eval sep-tune-eval P(Neutral) 59.94 60.05 Content BOW 61.01 58.30 All features except BOW 64.68 63.45 All features 68.99 63.31 All features + sequencing 69.37 62.94 degree of success reflects parameter settings, bothfor content BOW and all features.",Experiment/Discussion
+"Nevertheless, un der these circumstances, performance above a na??vebaseline and a BOW approach is obtained.",Experiment/Discussion
+"More over, sequencing shows potential for contributing in one case.",Experiment/Discussion
+"However, observations also point to three issues: first, the current data set appears tobe too small.",Experiment/Discussion
+"Second, the data is not easily separa ble.",Experiment/Discussion
+"This comes as no surprise, given the subjectivenature of the task, and the rather low interannota tor agreement, reported above.",Experiment/Discussion
+"Moreover, despite the schematic narrative plots of children?s stories, tales still differ in their overall affective orientation, which increases data complexity.",Experiment/Discussion
+"Third and finally, the EMOTION class is combined by basic emotion labels, rather than an original annotated label.",Experiment/Discussion
+More detailed averaged results from 10-fold cross-validation are included in table 6 using all features and the separated tuning and evaluationdata condition sep-tune-eval.,Experiment/Discussion
+"With these parame ters, approximately 3% improvement in accuracy over the na??ve baseline P(Neutral) was recorded, and 5% over the content BOW, which obviously did poorly with these parameters.",Experiment/Discussion
+"Moreover, precision is 583 0 10 20 30 40 50 60 70 same-tune-eval sep-tune-eval Tuning sets % Accuracy P(Neutral) Content BOWAll features except BOW All featuresAll features + sequencing Figure 1: Accuracy under different conditions (in %) Table 6: Classifying N vs. E (all features, sep-tune-eval) Measure N E Averaged accuracy 0.63 0.63 Averaged error 0.37 0.37 Averaged precision 0.66 0.56 Averaged recall 0.75 0.42 Averaged F-score 0.70 0.47 higher than recall for the combined EMOTION class.",Experiment/Discussion
+"In comparison, with the same-tune-eval procedure, the accuracy improved by approximately 9% over P(Neutral) and by 8% over content BOW.",Experiment/Discussion
+"In the second experiment, the emotion category was split into two classes: emotions with positiveversus negative valence.",Experiment/Discussion
+"The results in terms of precision, recall, and F-score are included in table 7, us ing all features and the sep-tune-eval condition.",Experiment/Discussion
+Thedecrease in performance for the emotion classes mir rors the smaller amounts of data available for each class.,Experiment/Discussion
+"As noted in section 4.3, only 9.87% of the sentences were annotated with a positive emotion,and the results for this class are worse.",Experiment/Discussion
+"Thus, perfor mance seems likely to improve as more annotated story data becomes available; at this point, we are experimenting with merely around 12% of the total texts targeted by the data annotation project.",Experiment/Discussion
+5.2 Feature experiments.,Experiment/Discussion
+"Emotions are poorly understood, and it is espe cially unclear which features may be important for their recognition from text.",Experiment/Discussion
+"Thus, we experimented Table 7: N, PE, and NE (all features, sep-tune-eval) N NE PE Averaged precision 0.64 0.45 0.13 Averaged recall 0.75 0.27 0.19 Averaged F-score 0.69 0.32 0.13 Table 8: Feature group members Word lists interj., WordNet, affective lists, pos/neg Syntactic length ranges, % POS, V-count ranges Story-related % story-progress, 1st sent., story type Orthographic punctuation, upper-case words, quote Conjunctions Conjunctions with pos/neg Content BOW Words (N,V,Adj, Adv) with different feature configurations.",Experiment/Discussion
+"Starting with all features, again using 10-fold cross-validation forthe separated tuning-evaluation condition sep-tuneeval, one additional feature group was removed un til none remained.",Experiment/Discussion
+The feature groups are listed intable 8.,Experiment/Discussion
+Figure 2 on the next page shows the accuracy at each step of the cumulative subtraction process.,Experiment/Discussion
+"While some feature groups, e.g. syntactic, ap peared less important, the removal order mattered;e.g. if syntactic features were removed first, accuracy decreased.",Experiment/Discussion
+This fact also illustrated that fea tures work together; removing any group degraded performance because features interact and there isno true independence.,Experiment/Discussion
+It was observed that features?,Experiment/Discussion
+contributions were sensitive to parameter tun ing.,Experiment/Discussion
+"Clearly, further work on developing features which fit the TEP problem is needed.",Experiment/Discussion
+This was a ?first pass?,Experiment/Discussion
+of addressing TEP for TTS.,Experiment/Discussion
+"At this point, the annotation project is still on-going, and we only had a fairly small data set to draw on.Nevertheless, results indicate that our learning ap proach benefits emotion recognition.",Experiment/Discussion
+"For example, the following instances, also labeled with the same valence by both annotators, were correctly classifiedboth in the binary (N vs. E) and the tripartite polar ity task (N, NE, PE), given the separated tuning and evaluation data condition, and using all features: (1a) E/NE: Then he offered the dwarfs money, and prayed and besought them to let him take her away; but they said, ?We will not part with her for all the gold in the world.?",Experiment/Discussion
+"584 Cumulative removal of feature groups 61.81 63.31 62.57 57.95 58.30 58.93 59.56 55 60 65 All features - Word lists - Syntactic - Story-related - Orthographic - Conjunctions - Content words % A ccur acy All features P(Neutral) BOW Figure 2: Averaged effect of feature group removal, using sep-tune-eval (1b) N: And so the little girl really did grow up; her skin was as white as snow, her cheeks as rosy as the blood, and her hair as black as ebony; and she was called Snowdrop.",Experiment/Discussion
+"(2a) E/NE: ?Ah,?",Experiment/Discussion
+"she answered, ?have I not reason to weep?",Experiment/Discussion
+"(2b) N: Nevertheless, he wished to try him first, and took a stone in his hand and squeezed it together so that water dropped out of it.",Experiment/Discussion
+"Cases (1a) and (1b) are from the well-known FOLK TALE Snowdrop, also called Snow White.",Experiment/Discussion
+"(1a)and (1b) are also correctly classified by the sim ple content BOW approach, although our approach has higher prediction confidence for E/NE (1a); it also considers, e.g. direct speech, a fairly high verb count, advanced story progress, connotative wordsand conjunctions thereof with story progress fea tures, all of which the BOW misses.",Experiment/Discussion
+"In addition, thesimple content BOW approach makes incorrect pre dictions at both the bipartite and tripartite levels forexamples (2a) and (2b) from the JOKES AND ANEC DOTES stories Clever Hans and The Valiant LittleTailor, while our classifier captures the affective dif ferences by considering, e.g. distinctions in verbcount, interjection, POS, sentence length, connota tions, story subtype, and conjunctions.",Experiment/Discussion
+"Next, we intend to use a larger data set to conduct a more complete study to establish mature findings.We also plan to explore finer emotional meaning dis tinctions, by using a hierarchical sequential modelwhich better corresponds to different levels of cognitive difficulty in emotional categorization by humans, and to classify the full set of basic level emo tional categories discussed in section 4.3.",Experiment/Discussion
+"Sequential modeling of simple classifiers has been successfully employed to question classification, for example by (Li and Roth, 2002).",Experiment/Discussion
+"In addition, we are working on refining and improving the feature set, and given more data, tuning can be improved on a sufficiently large development set.",Experiment/Discussion
+The three subcorpora in the annotation project can reveal how authorship affects emotion perception and classification.,Experiment/Discussion
+"Moreover, arousal appears to be an important dimension for emotional prosody (Scherer, 2003), especially in storytelling (Alm and Sproat, 2005).Thus, we are planning on exploring degrees of emotional intensity in a learning scenario, i.e. a prob lem similar to measuring strength of opinion clauses (Wilson, Wiebe and Hwa, 2004).",Experiment/Discussion
+"Finally, emotions are not discrete objects; rather they have transitional nature, and blend and overlap along the temporal dimension.",Experiment/Discussion
+"For example, (Liu,Lieberman and Selker, 2003) include parallel estimations of emotional activity, and include smooth 585 ing techniques such as interpolation and decay to capture sequential and interactive emotional activity.",Experiment/Discussion
+Observations from tales indicate that some emotions are more likely to be prolonged than others.,Experiment/Discussion
+"This paper has discussed an empirical study of thetext-based emotion prediction problem in the domain of children?s fairy tales, with child-directed ex pressive text-to-speech synthesis as goal.",Results/Conclusion
+"Besidesreporting on encouraging results in a first set of com putational experiments using supervised machine learning, we have set forth a research agenda for tackling the TEP problem more comprehensively.",Results/Conclusion
+"We are grateful to the annotators, in particular A. Rasmussen and S. Siddiqui.",Results/Conclusion
+We also thank two anonymous reviewers for comments.,Results/Conclusion
+"This work was funded by NSF under award ITR-#0205731, and NS ITR IIS-0428472.",Results/Conclusion
+The annotation is supported byUIUC?s Research Board.,Results/Conclusion
+The authors take sole re sponsibility for the work.,Results/Conclusion

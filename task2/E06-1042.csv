@@ -1,206 +1,206 @@
 col1,col2
-"In this paper we present TroFi (Trope Finder), a system for automatically classifying literal and nonliteral usages of verbs through nearly unsupervised word-sense disambiguation and clustering techniques.",{}
-TroFi uses sentential context instead of selectional constraint violations or paths in semantic hierarchies.,{}
-It also uses literal and nonliteral seed sets acquired and cleaned without human supervision in order to bootstrap learning.,{}
-"We adapt a word-sense disambiguation algorithm to our task and augment it with multiple seed set learners, a voting schema, and additional features like SuperTags and extrasentential context.",{}
-Detailed experiments on hand-annotated data show that our enhanced algorithm outperforms the baseline by 24.4%.,{}
-"Using the TroFi algorithm, we also build the TroFi Example Base, an extensible resource of annotated literal/nonliteral examples which is freely available to the NLP research community.",{}
-"In this paper, we propose TroFi (Trope Finder), a nearly unsupervised clustering method for separating literal and nonliteral usages of verbs.","{'title': '1 Introduction', 'number': '1'}"
-"For example, given the target verb “pour”, we would expect TroFi to cluster the sentence “Custom demands that cognac be poured from a freshly opened bottle” as literal, and the sentence “Salsa and rap music pour out of the windows” as nonliteral, which, indeed, it does.","{'title': '1 Introduction', 'number': '1'}"
-We call our method nearly unsupervised.,"{'title': '1 Introduction', 'number': '1'}"
-See Section 3.1 for why we use this terminology.,"{'title': '1 Introduction', 'number': '1'}"
-"We reduce the problem of nonliteral language recognition to one of word-sense disambiguation by redefining literal and nonliteral as two different senses of the same word, and we adapt an existing similarity-based word-sense disambiguation method to the task of separating usages of verbs into literal and nonliteral clusters.","{'title': '1 Introduction', 'number': '1'}"
-This paper focuses on the algorithmic enhancements necessary to facilitate this transformation from word-sense disambiguation to nonliteral language recognition.,"{'title': '1 Introduction', 'number': '1'}"
-The output of TroFi is an expandable example base of literal/nonliteral clusters which is freely available to the research community.,"{'title': '1 Introduction', 'number': '1'}"
-"Many systems that use NLP methods – such as dialogue systems, paraphrasing and summarization, language generation, information extraction, machine translation, etc.","{'title': '1 Introduction', 'number': '1'}"
-– would benefit from being able to recognize nonliteral language.,"{'title': '1 Introduction', 'number': '1'}"
-Consider an example based on a similar example from an automated medical claims processing system.,"{'title': '1 Introduction', 'number': '1'}"
-We must determine that the sentence “she hit the ceiling” is meant literally before it can be marked up as an ACCIDENT claim.,"{'title': '1 Introduction', 'number': '1'}"
-Note that the typical use of “hit the ceiling” stored in a list of idioms cannot help us.,"{'title': '1 Introduction', 'number': '1'}"
-"Only using the context, “She broke her thumb while she was cheering for the Patriots and, in her excitement, she hit the ceiling,” can we decide.","{'title': '1 Introduction', 'number': '1'}"
-We further motivate the usefulness of the ability to recognize literal vs. nonliteral usages using an example from the Recognizing Textual Entailment (RTE-1) challenge of 2005.,"{'title': '1 Introduction', 'number': '1'}"
-(This is just an example; we do not compute entailments.),"{'title': '1 Introduction', 'number': '1'}"
-"In the challenge data, Pair 1959 was: Kerry hit Bush hard on his conduct on the war in Iraq.","{'title': '1 Introduction', 'number': '1'}"
-→ Kerry shot Bush.,"{'title': '1 Introduction', 'number': '1'}"
-The objective was to report FALSE since the second statement in this case is not entailed from the first one.,"{'title': '1 Introduction', 'number': '1'}"
-"In order to do this, it is crucial to know that “hit” is being used nonliterally in the first sentence.","{'title': '1 Introduction', 'number': '1'}"
-"Ideally, we would like to look at TroFi as a first step towards an unsupervised, scalable, widely applicable approach to nonliteral language processing that works on real-world data from any domain in any language.","{'title': '1 Introduction', 'number': '1'}"
-The foundations of TroFi lie in a rich collection of metaphor and metonymy processing systems: everything from hand-coded rule-based systems to statistical systems trained on large corpora.,"{'title': '2 Previous Work', 'number': '2'}"
-"Rule-based systems – some using a type of interlingua (Russell, 1976); others using complicated networks and hierarchies often referred to as metaphor maps (e.g.","{'title': '2 Previous Work', 'number': '2'}"
-"(Fass, 1997; Martin, 1990; Martin, 1992) – must be largely hand-coded and generally work well on an enumerable set of metaphors or in limited domains.","{'title': '2 Previous Work', 'number': '2'}"
-Dictionarybased systems use existing machine-readable dictionaries and path lengths between words as one of their primary sources for metaphor processing information (e.g.,"{'title': '2 Previous Work', 'number': '2'}"
-"(Dolan, 1995)).","{'title': '2 Previous Work', 'number': '2'}"
-"Corpus-based systems primarily extract or learn the necessary metaphor-processing information from large corpora, thus avoiding the need for manual annotation or metaphor-map construction.","{'title': '2 Previous Work', 'number': '2'}"
-"Examples of such systems can be found in (Murata et. al., 2000; Nissim & Markert, 2003; Mason, 2004).","{'title': '2 Previous Work', 'number': '2'}"
-The work on supervised metonymy resolution by Nissim & Markert and the work on conceptual metaphors by Mason come closest to what we are trying to do with TroFi.,"{'title': '2 Previous Work', 'number': '2'}"
-"Nissim & Markert (2003) approach metonymy resolution with machine learning methods, “which [exploit] the similarity between examples of conventional metonymy” ((Nissim & Markert, 2003), p. 56).","{'title': '2 Previous Work', 'number': '2'}"
-They see metonymy resolution as a classification problem between the literal use of a word and a number of pre-defined metonymy types.,"{'title': '2 Previous Work', 'number': '2'}"
-They use similarities between possibly metonymic words (PMWs) and known metonymies as well as context similarities to classify the PMWs.,"{'title': '2 Previous Work', 'number': '2'}"
-"The main difference between the Nissim & Markert algorithm and the TroFi algorithm – besides the fact that Nissim & Markert deal with specific types of metonymy and not a generalized category of nonliteral language – is that Nissim & Markert use a supervised machine learning algorithm, as opposed to the primarily unsupervised algorithm used by TroFi.","{'title': '2 Previous Work', 'number': '2'}"
-"Mason (2004) presents CorMet, “a corpusbased system for discovering metaphorical mappings between concepts” ((Mason, 2004), p. 23).","{'title': '2 Previous Work', 'number': '2'}"
-His system finds the selectional restrictions of given verbs in particular domains by statistical means.,"{'title': '2 Previous Work', 'number': '2'}"
-It then finds metaphorical mappings between domains based on these selectional preferences.,"{'title': '2 Previous Work', 'number': '2'}"
-"By finding semantic differences between the selectional preferences, it can “articulate the higher-order structure of conceptual metaphors” ((Mason, 2004), p. 24), finding mappings like LIQUID→MONEY.","{'title': '2 Previous Work', 'number': '2'}"
-"Like CorMet, TroFi uses contextual evidence taken from a large corpus and also uses WordNet as a primary knowledge source, but unlike CorMet, TroFi does not use selectional preferences.","{'title': '2 Previous Work', 'number': '2'}"
-"Metaphor processing has even been approached with connectionist systems storing world-knowledge as probabilistic dependencies (Narayanan, 1999).","{'title': '2 Previous Work', 'number': '2'}"
-TroFi is not a metaphor processing system.,"{'title': '3 TroFi', 'number': '3'}"
-It does not claim to interpret metonymy and it will not tell you what a given idiom means.,"{'title': '3 TroFi', 'number': '3'}"
-"Rather, TroFi attempts to separate literal usages of verbs from nonliteral ones.","{'title': '3 TroFi', 'number': '3'}"
-For the purposes of this paper we will take the simplified view that literal is anything that falls within accepted selectional restrictions (“he was forced to eat his spinach” vs. “he was forced to eat his words”) or our knowledge of the world (“the sponge absorbed the water” vs. “the company absorbed the loss”).,"{'title': '3 TroFi', 'number': '3'}"
-"Nonliteral is then anything that is “not literal”, including most tropes, such as metaphors, idioms, as well phrasal verbs and other anomalous expressions that cannot really be seen as literal.","{'title': '3 TroFi', 'number': '3'}"
-"In terms of metonymy, TroFi may cluster a verb used in a metonymic expression such as “I read Keats” as nonliteral, but we make no strong claims about this.","{'title': '3 TroFi', 'number': '3'}"
-"The TroFi algorithm requires a target set (called original set in (Karov & Edelman, 1998)) – the set of sentences containing the verbs to be classified into literal or nonliteral – and the seed sets: the literal feedback set and the nonliteral feedback set.","{'title': '3 TroFi', 'number': '3'}"
-"These sets contain feature lists consisting of the stemmed nouns and verbs in a sentence, with target or seed words and frequent words removed.","{'title': '3 TroFi', 'number': '3'}"
-"The frequent word list (374 words) consists of the 332 most frequent words in the British National Corpus plus contractions, single letters, and numbers from 0-10.","{'title': '3 TroFi', 'number': '3'}"
-"The target set is built using the ’88-’89 Wall Street Journal Corpus (WSJ) tagged using the (Ratnaparkhi, 1996) tagger and the (Bangalore & Joshi, 1999) SuperTagger; the feedback sets are built using WSJ sentences conAlgorithm 1 KE-train: (Karov & Edelman, 1998) algorithm adapted to literal/nonliteral classification taining seed words extracted from WordNet and the databases of known metaphors, idioms, and expressions (DoKMIE), namely Wayne Magnuson English Idioms Sayings & Slang and George Lakoff’s Conceptual Metaphor List, as well as example sentences from these sources.","{'title': '3 TroFi', 'number': '3'}"
-(See Section 4 for the sizes of the target and feedback sets.),"{'title': '3 TroFi', 'number': '3'}"
-One may ask why we need TroFi if we have databases like the DoKMIE.,"{'title': '3 TroFi', 'number': '3'}"
-The reason is that the DoKMIE are unlikely to list all possible instances of nonliteral language and because knowing that an expression can be used nonliterally does not mean that you can tell when it is being used nonliterally.,"{'title': '3 TroFi', 'number': '3'}"
-"The target verbs may not, and typically do not, appear in the feedback sets.","{'title': '3 TroFi', 'number': '3'}"
-"In addition, the feedback sets are noisy and not annotated by any human, which is why we call TroFi unsupervised.","{'title': '3 TroFi', 'number': '3'}"
-"When we use WordNet as a source of example sentences, or of seed words for pulling sentences out of the WSJ, for building the literal feedback set, we cannot tell if the WordNet synsets, or the collected feature sets, are actually literal.","{'title': '3 TroFi', 'number': '3'}"
-We provide some automatic methods in Section 3.3 to ensure that the feedback set feature sets that will harm us in the clustering phase are removed.,"{'title': '3 TroFi', 'number': '3'}"
-"As a sideeffect, we may fill out sparse nonliteral sets.","{'title': '3 TroFi', 'number': '3'}"
-In the next section we look at the Core TroFi algorithm and its use of the above data sources.,"{'title': '3 TroFi', 'number': '3'}"
-"Since we are attempting to reduce the problem of literal/nonliteral recognition to one of word-sense disambiguation, TroFi makes use of an existing similarity-based word-sense disambiguation algorithm developed by (Karov & Edelman, 1998), henceforth KE.","{'title': '3 TroFi', 'number': '3'}"
-The KE algorithm is based on the principle of attraction: similarities are calculated between sentences containing the word we wish to disambiguate (the target word) and collections of seed sentences (feedback sets) (see also Section 3.1).,"{'title': '3 TroFi', 'number': '3'}"
-A target set sentence is considered to be attracted to the feedback set containing the sentence to which it shows the highest similarity.,"{'title': '3 TroFi', 'number': '3'}"
-Two sentences are similar if they contain similar words and two words are similar if they are contained in similar sentences.,"{'title': '3 TroFi', 'number': '3'}"
-The resulting transitive similarity allows us to defeat the knowledge acquisition bottleneck – i.e. the low likelihood of finding all possible usages of a word in a single corpus.,"{'title': '3 TroFi', 'number': '3'}"
-"Note that the KE algorithm concentrates on similarities in the way sentences use the target literal or nonliteral word, not on similarities in the meanings of the sentences themselves.","{'title': '3 TroFi', 'number': '3'}"
-Algorithms 1 and 2 summarize the basic TroFi version of the KE algorithm.,"{'title': '3 TroFi', 'number': '3'}"
-"Note that p(w, s) is the unigram probability of word w in sentence s, normalized by the total number of words in s. In practice, initializing s-simI0 in line (2) of Algorithm 1 to 0 and then updating it from w-simo means that each target sentence is still maximally similar to itself, but we also discover additional similarities between target sentences.","{'title': '3 TroFi', 'number': '3'}"
-We further enhance the algorithm by using Sum of Similarities.,"{'title': '3 TroFi', 'number': '3'}"
-"To implement this, in Algorithm 2 we change line (2) into: Esy s-simL(sx, sy) > Esy s-simN(sx, sy) Although it is appropriate for fine-grained tasks like word-sense disambiguation to use the single highest similarity score in order to minimize noise, summing across all the similarities of a target set sentence to the feedback set sentences is more appropriate for literal/nonliteral clustering, where the usages could be spread across numerous sentences in the feedback sets.","{'title': '3 TroFi', 'number': '3'}"
-We make another modification to Algorithm 2 by checking that the maximum sentence similarity in line (2) is above a certain threshold for classification.,"{'title': '3 TroFi', 'number': '3'}"
-"If the similarity is above this threshold, we label a target-word sentence as literal or nonliteral.","{'title': '3 TroFi', 'number': '3'}"
-"Before continuing, let us look at an example.","{'title': '3 TroFi', 'number': '3'}"
-The features are shown in bold.,"{'title': '3 TroFi', 'number': '3'}"
-"N2 This idea is risky, but it looks like the director of the institute has comprehended the basic principles behind it.","{'title': '3 TroFi', 'number': '3'}"
-N3 Mrs. Fipps is having trouble comprehending the legal straits of the institute.,"{'title': '3 TroFi', 'number': '3'}"
-N4 She had a hand in his fully comprehending the quandary.,"{'title': '3 TroFi', 'number': '3'}"
-The target set consists of sentences from the corpus containing the target word.,"{'title': '3 TroFi', 'number': '3'}"
-The feedback sets contain sentences from the corpus containing synonyms of the target word found in WordNet (literal feedback set) and the DoKMIE (nonliteral feedback set).,"{'title': '3 TroFi', 'number': '3'}"
-The feedback sets also contain example sentences provided in the target-word entries of these datasets.,"{'title': '3 TroFi', 'number': '3'}"
-TroFi attempts to cluster the target set sentences into literal and nonliteral by attracting them to the corresponding feature sets using Algorithms 1 & 2.,"{'title': '3 TroFi', 'number': '3'}"
-"Using the basic KE algorithm, target sentence 2 is correctly attracted to the nonliteral set, and sentences 1 and 3 are equally attracted to both sets.","{'title': '3 TroFi', 'number': '3'}"
-"When we apply our sum of similarities enhancement, sentence 1 is correctly attracted to the literal set, but sentence 3 is now incorrectly attracted to the literal set too.","{'title': '3 TroFi', 'number': '3'}"
-"In the following sections we describe some enhancements – Learners & Voting, SuperTags, and Context – that try to solve the problem of incorrect attractions.","{'title': '3 TroFi', 'number': '3'}"
-In this section we describe how we clean up the feedback sets to improve the performance of the Core algorithm.,"{'title': '3 TroFi', 'number': '3'}"
-We also introduce the notion of Learners & Voting.,"{'title': '3 TroFi', 'number': '3'}"
-Recall that neither the raw data nor the collected feedback sets are manually annotated for training purposes.,"{'title': '3 TroFi', 'number': '3'}"
-"Since, in addition, the feedback sets are collected automatically, they are very noisy.","{'title': '3 TroFi', 'number': '3'}"
-"For instance, in the example in Section 3.2, the literal feedback set sentence L3 contains an idiom which was provided as an example sentence in WordNet as a synonym for “grasp”.","{'title': '3 TroFi', 'number': '3'}"
-"In N4, we have the side-effect feature “hand”, which unfortunately overlaps with the feature “hand” that we might hope to find in the literal set (e.g.","{'title': '3 TroFi', 'number': '3'}"
-“grasp his hand”).,"{'title': '3 TroFi', 'number': '3'}"
-"In order to remove sources of false attraction like these, we introduce the notion of scrubbing.","{'title': '3 TroFi', 'number': '3'}"
-Scrubbing is founded on a few basic principles.,"{'title': '3 TroFi', 'number': '3'}"
-The first is that the contents of the DoKMIE come from (third-party) human annotations and are thus trusted.,"{'title': '3 TroFi', 'number': '3'}"
-Consequently we take them as primary and use them to scrub the WordNet synsets.,"{'title': '3 TroFi', 'number': '3'}"
-"The second is that phrasal and expression verbs, for example “throw away”, are often indicative of nonliteral uses of verbs – i.e. they are not the sum of their parts – so they can be used for scrubbing.","{'title': '3 TroFi', 'number': '3'}"
-"The third is that content words appearing in both feedback sets – for example “the wind is blowing” vs. “the winds of war are blowing” for the target word “blow” – will lead to impure feedback sets, a situation we want to avoid.","{'title': '3 TroFi', 'number': '3'}"
-"The fourth is that our scrubbing action can take a number of different forms: we can choose to scrub just a word, a whole synset, or even an entire feature set.","{'title': '3 TroFi', 'number': '3'}"
-"In addition, we can either move the offending item to the opposite feedback set or remove it altogether.","{'title': '3 TroFi', 'number': '3'}"
-Moving synsets or feature sets can add valuable content to one feedback set while removing noise from the other.,"{'title': '3 TroFi', 'number': '3'}"
-"However, it can also cause unforeseen contamination.","{'title': '3 TroFi', 'number': '3'}"
-We experimented with a number of these options to produce a whole complement of feedback set learners for classifying the target sentences.,"{'title': '3 TroFi', 'number': '3'}"
-Ideally this will allow the different learners to correct each other.,"{'title': '3 TroFi', 'number': '3'}"
-"For Learner A, we use phrasal/expression verbs and overlap as indicators to select whole WordNet synsets for moving over to the nonliteral feedback set.","{'title': '3 TroFi', 'number': '3'}"
-"In our example, this causes L1-L3 to be moved to the nonliteral set.","{'title': '3 TroFi', 'number': '3'}"
-"For Learner B, we use phrasal/expression verbs and overlap as indicators to remove problematic synsets.","{'title': '3 TroFi', 'number': '3'}"
-Thus we avoid accidentally contaminating the nonliteral set.,"{'title': '3 TroFi', 'number': '3'}"
-"However, we do end up throwing away information that could have been used to pad out sparse nonliteral sets.","{'title': '3 TroFi', 'number': '3'}"
-"In our example, this causes L1-L3 to be dropped.","{'title': '3 TroFi', 'number': '3'}"
-"For Learner C, we remove feature sets from the final literal and nonliteral feedback sets based on overlapping words.","{'title': '3 TroFi', 'number': '3'}"
-"In our example, this causes L2 and N4 to be dropped.","{'title': '3 TroFi', 'number': '3'}"
-Learner D is the baseline – no scrubbing.,"{'title': '3 TroFi', 'number': '3'}"
-We simply use the basic algorithm.,"{'title': '3 TroFi', 'number': '3'}"
-Each learner has benefits and shortcomings.,"{'title': '3 TroFi', 'number': '3'}"
-"In order to maximize the former and minimize the latter, instead of choosing the single most successful learner, we introduce a voting system.","{'title': '3 TroFi', 'number': '3'}"
-"We use a simple majority-rules algorithm, with the strongest learners weighted more heavily.","{'title': '3 TroFi', 'number': '3'}"
-"In our experiments we double the weights of Learners A and D. In our example, this results in sentence 3 now being correctly attracted to the nonliteral set.","{'title': '3 TroFi', 'number': '3'}"
-"Even before voting, we attempt to improve the correctness of initial attractions through the use of SuperTags, which allows us to add internal structure information to the bag-of-words feature lists.","{'title': '3 TroFi', 'number': '3'}"
-"SuperTags (Bangalore & Joshi, 1999) encode a great deal of syntactic information in a single tag (each tag is an elementary tree from the XTAG English Tree Adjoining Grammar).","{'title': '3 TroFi', 'number': '3'}"
-"In addition to a word’s part of speech, they also encode information about its location in a syntactic tree – i.e. we learn something about the surrounding words as well.","{'title': '3 TroFi', 'number': '3'}"
-"We devised a SuperTag trigram composed of the SuperTag of the target word and the following two words and their SuperTags if they contain nouns, prepositions, particles, or adverbs.","{'title': '3 TroFi', 'number': '3'}"
-This is helpful in cases where the same set of features can be used as part of both literal and nonliteral expressions.,"{'title': '3 TroFi', 'number': '3'}"
-"For example, turning “It’s hard to kick a habit like drinking” into “habit drink kick/B nx0Vpls1 habit/A NXN,” results in a higher attraction to sentences about “kicking habits” than to sentences like “She has a habit of kicking me when she’s been drinking.” Note that the creation of Learners A and B changes if SuperTags are used.","{'title': '3 TroFi', 'number': '3'}"
-"In the original version, we only move or remove synsets based on phrasal/expression verbs and overlapping words.","{'title': '3 TroFi', 'number': '3'}"
-"If SuperTags are used, we also move or remove feature sets whose SuperTag trigram indicates phrasal verbs (verb-particle expressions).","{'title': '3 TroFi', 'number': '3'}"
-A final enhancement involves extending the context to help with disambiguation.,"{'title': '3 TroFi', 'number': '3'}"
-"Sometimes critical disambiguation features are contained not in the sentence with the target word, but in an adjacent sentence.","{'title': '3 TroFi', 'number': '3'}"
-"To add context, we simply group the sentence containing the target word with a specified number of surrounding sentences and turn the whole group into a single feature set.","{'title': '3 TroFi', 'number': '3'}"
-TroFi was evaluated on the 25 target words listed in Table 1.,"{'title': '4 Results', 'number': '4'}"
-The target sets contain from 1 to 115 manually annotated sentences for each verb.,"{'title': '4 Results', 'number': '4'}"
-The first round of annotations was done by the first annotator.,"{'title': '4 Results', 'number': '4'}"
-The second annotator was given no instructions besides a few examples of literal and nonliteral usage (not covering all target verbs).,"{'title': '4 Results', 'number': '4'}"
-The authors of this paper were the annotators.,"{'title': '4 Results', 'number': '4'}"
-Our inter-annotator agreement on the annotations used as test data in the experiments in this paper is quite high. n (Cohen) and n (S&C) on a random sample of 200 annotated examples annotated by two different annotators was found to be 0.77.,"{'title': '4 Results', 'number': '4'}"
-"As per ((Di Eugenio & Glass, 2004), cf. refs therein), the standard assessment for n values is that tentative conclusions on agreement exists when .67 ≤ n < .8, and a definite conclusion on agreement exists when n ≥ .8.","{'title': '4 Results', 'number': '4'}"
-"In the case of a larger scale annotation effort, having the person leading the effort provide one or two examples of literal and nonliteral usages for each target verb to each annotator would almost certainly improve inter-annotator agreement.","{'title': '4 Results', 'number': '4'}"
-"Table 1 lists the total number of target sentences, plus the manually evaluated literal and nonliteral counts, for each target word.","{'title': '4 Results', 'number': '4'}"
-It also provides the feedback set sizes for each target word.,"{'title': '4 Results', 'number': '4'}"
-The totals across all words are given at the bottom of the table.,"{'title': '4 Results', 'number': '4'}"
-The algorithms were evaluated based on how accurately they clustered the hand-annotated sentences.,"{'title': '4 Results', 'number': '4'}"
-"Sentences that were attracted to neither cluster or were equally attracted to both were put in the opposite set from their label, making a failure to cluster a sentence an incorrect clustering.","{'title': '4 Results', 'number': '4'}"
-"Evaluation results were recorded as recall, precision, and f-score values.","{'title': '4 Results', 'number': '4'}"
-Literal recall is defined as (correct literals in literal cluster /total correct literals).,"{'title': '4 Results', 'number': '4'}"
-Literal precision is defined as (correct literals in literal cluster / size of literal cluster).,"{'title': '4 Results', 'number': '4'}"
-"If there are no literals, literal recall is 100%; literal precision is 100% if there are no nonliterals in the literal cluster and 0% otherwise.","{'title': '4 Results', 'number': '4'}"
-The f-score is defined as (2 · precision · recall) / (precision + recall).,"{'title': '4 Results', 'number': '4'}"
-Nonliteral precision and recall are defined similarly.,"{'title': '4 Results', 'number': '4'}"
-Average precision is the average of literal and nonliteral precision; similarly for average recall.,"{'title': '4 Results', 'number': '4'}"
-"For overall performance, we take the f-score of average precision and average recall.","{'title': '4 Results', 'number': '4'}"
-We calculated two baselines for each word.,"{'title': '4 Results', 'number': '4'}"
-The first was a simple majority-rules baseline.,"{'title': '4 Results', 'number': '4'}"
-"Due to the imbalance of literal and nonliteral examples, this baseline ranges from 60.9% to 66.7% with an average of 63.6%.","{'title': '4 Results', 'number': '4'}"
-"Keep in mind though that using this baseline, the f-score for the nonliteral set will always be 0%.","{'title': '4 Results', 'number': '4'}"
-We come back to this point at the end of this section.,"{'title': '4 Results', 'number': '4'}"
-We calculated a second baseline using a simple attraction algorithm.,"{'title': '4 Results', 'number': '4'}"
-Each target set sentence is attracted to the feedback set containing the sentence with which it has the most words in common.,"{'title': '4 Results', 'number': '4'}"
-This corresponds well to the basic highest similarity TroFi algorithm.,"{'title': '4 Results', 'number': '4'}"
-"Sentences attracted to neither, or equally to both, sets are put in the opposite cluster to where they belong.","{'title': '4 Results', 'number': '4'}"
-"Since this baseline actually attempts to distinguish between literal and nonliteral and uses all the data used by the TroFi algorithm, it is the one we will refer to in our discussion below.","{'title': '4 Results', 'number': '4'}"
-Experiments were conducted to first find the results of the core algorithm and then determine the effects of each enhancement.,"{'title': '4 Results', 'number': '4'}"
-The results are shown in Figure 1.,"{'title': '4 Results', 'number': '4'}"
-The last column in the graph shows the average across all the target verbs.,"{'title': '4 Results', 'number': '4'}"
-"On average, the basic TroFi algorithm (KE) gives a 7.6% improvement over the baseline, with some words, like “lend” and “touch”, having higher results due to transitivity of similarity.","{'title': '4 Results', 'number': '4'}"
-"For our sum of similarities enhancement, all the individual target word results except for “examine” sit above the baseline.","{'title': '4 Results', 'number': '4'}"
-"The dip is due to the fact that while TroFi can generate some beneficial similarities between words related by context, it can also generate some detrimental ones.","{'title': '4 Results', 'number': '4'}"
-"When we use sum of similarities, it is possible for the transitively discovered indirect similarities between a target nonliteral sentence and all the sentences in a feedback set to add up to more than a single direct similarity between the target sentence and a single feedback set sentence.","{'title': '4 Results', 'number': '4'}"
-"This is not possible with highest similarity because a single sentence would have to show a higher similarity to the target sentence than that produced by sharing an identical word, which is unlikely since transitively discovered similarities generally do not add up to 1.","{'title': '4 Results', 'number': '4'}"
-"So, although highest similarity occasionally produces better results than using sum of similarities, on average we can expect to get better results with the latter.","{'title': '4 Results', 'number': '4'}"
-"In this experiment alone, we get an average f-score of 46.3% for the sum of similarities results – a 9.4% improvement over the high similarity results (36.9%) and a 16.9% improvement over the baseline (29.4%).","{'title': '4 Results', 'number': '4'}"
-"In comparing the individual results of all our learners, we found that the results for Learners A and D (46.7% and 46.3%) eclipsed Learners B and C by just over 2.5%.","{'title': '4 Results', 'number': '4'}"
-"Using majority-rules voting with Learners A and D doubled, we were able to obtain an average f-score of 48.4%, showing that voting does to an extent balance out the learners’ varying results on different words.","{'title': '4 Results', 'number': '4'}"
-The addition of SuperTags caused improvements in some words like “drag” and “stick”.,"{'title': '4 Results', 'number': '4'}"
-"The overall gain was only 0.5%, likely due to an overgeneration of similarities.","{'title': '4 Results', 'number': '4'}"
-Future work may identify ways to use SuperTags more effectively.,"{'title': '4 Results', 'number': '4'}"
-The use of additional context was responsible for our second largest leap in performance after sum of similarities.,"{'title': '4 Results', 'number': '4'}"
-"We gained 4.9%, bringing us to an average f-score of 53.8%.","{'title': '4 Results', 'number': '4'}"
-"Worth noting is that the target words exhibiting the most significant improvement, “drown” and “grasp”, had some of the smallest target and feedback set feature sets, supporting the theory that adding cogent features may improve performance.","{'title': '4 Results', 'number': '4'}"
-"With an average of 53.8%, all words but one lie well above our simple-attraction baseline, and some even achieve much higher results than the majority-rules baseline.","{'title': '4 Results', 'number': '4'}"
-"Note also that, using this latter baseline, TroFi boosts the nonliteral f-score from 0% to 42.3%.","{'title': '4 Results', 'number': '4'}"
-In this section we discuss the TroFi Example Base.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"First, we examine iterative augmentation.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-Then we discuss the structure and contents of the example base and the potential for expansion.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"After an initial run for a particular target word, we have the cluster results plus a record of the feedback sets augmented with the newly clustered sentences.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-"Each feedback set sentence is saved with a classifier weight, with newly clustered sentences receiving a weight of 1.0.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-Subsequent runs may be done to augment the initial clusters.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"For these runs, we use the classifiers from our initial run as feedback sets.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-New sentences for clustering are treated like a regular target set.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-Running TroFi produces new clusters and re-weighted classifiers augmented with newly clustered sentences.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-There can be as many runs as desired; hence iterative augmentation.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"We used the iterative augmentation process to build a small example base consisting of the target words from Table 1, as well as another 25 words drawn from the examples of scholars whose work was reviewed in Section 2.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-"It is important to note that in building the example base, we used TroFi with an Active Learning component (see (Birke, 2005)) which improved our average f-score from 53.8% to 64.9% on the original 25 target words.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-An excerpt from the example base is shown in Figure 2.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"Each entry includes an ID number and a Nonliteral, Literal, or Unannotated tag.","{'title': '5 The TroFi Example Base', 'number': '5'}"
-Annotations are from testing or from active learning during example-base construction.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-The TroFi Example Base is available at http://www.cs.sfu.ca/˜anoop/students/jbirke/.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-Further unsupervised expansion of the existing clusters as well as the production of additional clusters is a possibility.,"{'title': '5 The TroFi Example Base', 'number': '5'}"
-"In this paper we presented TroFi, a system for separating literal and nonliteral usages of verbs through statistical word-sense disambiguation and clustering techniques.","{'title': '6 Conclusion', 'number': '6'}"
-"We suggest that TroFi is applicable to all sorts of nonliteral language, and that, although it is currently focused on English verbs, it could be adapted to other parts of speech and other languages.","{'title': '6 Conclusion', 'number': '6'}"
-"We adapted an existing word-sense disambiguation algorithm to literal/nonliteral clustering through the redefinition of literal and nonliteral as word senses, the alteration of the similarity scores used, and the addition of learners and voting, SuperTags, and additional context.","{'title': '6 Conclusion', 'number': '6'}"
-"For all our models and algorithms, we carried out detailed experiments on hand-annotated data, both to fully evaluate the system and to arrive at an optimal configuration.","{'title': '6 Conclusion', 'number': '6'}"
-"Through our enhancements we were able to produce results that are, on average, 16.9% higher than the core algorithm and 24.4% higher than the baseline.","{'title': '6 Conclusion', 'number': '6'}"
-"Finally, we used our optimal configuration of TroFi, together with active learning and iterative augmentation, to build the TroFi Example Base, a publicly available, expandable resource of literal/nonliteral usage clusters that we hope will be useful not only for future research in the field of nonliteral language processing, but also as training data for other statistical NLP tasks.","{'title': '6 Conclusion', 'number': '6'}"
+"In this paper we present TroFi (Trope Finder), a system for automatically classifying literal and nonliteral usages of verbs through nearly unsupervised word-sense disambiguation and clustering techniques.",Introduction
+TroFi uses sentential context instead of selectional constraint violations or paths in semantic hierarchies.,Introduction
+It also uses literal and nonliteral seed sets acquired and cleaned without human supervision in order to bootstrap learning.,Introduction
+"We adapt a word-sense disambiguation algorithm to our task and augment it with multiple seed set learners, a voting schema, and additional features like SuperTags and extrasentential context.",Introduction
+Detailed experiments on hand-annotated data show that our enhanced algorithm outperforms the baseline by 24.4%.,Introduction
+"Using the TroFi algorithm, we also build the TroFi Example Base, an extensible resource of annotated literal/nonliteral examples which is freely available to the NLP research community.",Introduction
+"In this paper, we propose TroFi (Trope Finder), a nearly unsupervised clustering method for separating literal and nonliteral usages of verbs.",Experiment/Discussion
+"For example, given the target verb “pour”, we would expect TroFi to cluster the sentence “Custom demands that cognac be poured from a freshly opened bottle” as literal, and the sentence “Salsa and rap music pour out of the windows” as nonliteral, which, indeed, it does.",Experiment/Discussion
+We call our method nearly unsupervised.,Experiment/Discussion
+See Section 3.1 for why we use this terminology.,Experiment/Discussion
+"We reduce the problem of nonliteral language recognition to one of word-sense disambiguation by redefining literal and nonliteral as two different senses of the same word, and we adapt an existing similarity-based word-sense disambiguation method to the task of separating usages of verbs into literal and nonliteral clusters.",Experiment/Discussion
+This paper focuses on the algorithmic enhancements necessary to facilitate this transformation from word-sense disambiguation to nonliteral language recognition.,Experiment/Discussion
+The output of TroFi is an expandable example base of literal/nonliteral clusters which is freely available to the research community.,Experiment/Discussion
+"Many systems that use NLP methods – such as dialogue systems, paraphrasing and summarization, language generation, information extraction, machine translation, etc.",Experiment/Discussion
+– would benefit from being able to recognize nonliteral language.,Experiment/Discussion
+Consider an example based on a similar example from an automated medical claims processing system.,Experiment/Discussion
+We must determine that the sentence “she hit the ceiling” is meant literally before it can be marked up as an ACCIDENT claim.,Experiment/Discussion
+Note that the typical use of “hit the ceiling” stored in a list of idioms cannot help us.,Experiment/Discussion
+"Only using the context, “She broke her thumb while she was cheering for the Patriots and, in her excitement, she hit the ceiling,” can we decide.",Experiment/Discussion
+We further motivate the usefulness of the ability to recognize literal vs. nonliteral usages using an example from the Recognizing Textual Entailment (RTE-1) challenge of 2005.,Experiment/Discussion
+(This is just an example; we do not compute entailments.),Experiment/Discussion
+"In the challenge data, Pair 1959 was: Kerry hit Bush hard on his conduct on the war in Iraq.",Experiment/Discussion
+→ Kerry shot Bush.,Experiment/Discussion
+The objective was to report FALSE since the second statement in this case is not entailed from the first one.,Experiment/Discussion
+"In order to do this, it is crucial to know that “hit” is being used nonliterally in the first sentence.",Experiment/Discussion
+"Ideally, we would like to look at TroFi as a first step towards an unsupervised, scalable, widely applicable approach to nonliteral language processing that works on real-world data from any domain in any language.",Experiment/Discussion
+The foundations of TroFi lie in a rich collection of metaphor and metonymy processing systems: everything from hand-coded rule-based systems to statistical systems trained on large corpora.,Experiment/Discussion
+"Rule-based systems – some using a type of interlingua (Russell, 1976); others using complicated networks and hierarchies often referred to as metaphor maps (e.g.",Experiment/Discussion
+"(Fass, 1997; Martin, 1990; Martin, 1992) – must be largely hand-coded and generally work well on an enumerable set of metaphors or in limited domains.",Experiment/Discussion
+Dictionarybased systems use existing machine-readable dictionaries and path lengths between words as one of their primary sources for metaphor processing information (e.g.,Experiment/Discussion
+"(Dolan, 1995)).",Experiment/Discussion
+"Corpus-based systems primarily extract or learn the necessary metaphor-processing information from large corpora, thus avoiding the need for manual annotation or metaphor-map construction.",Experiment/Discussion
+"Examples of such systems can be found in (Murata et. al., 2000; Nissim & Markert, 2003; Mason, 2004).",Experiment/Discussion
+The work on supervised metonymy resolution by Nissim & Markert and the work on conceptual metaphors by Mason come closest to what we are trying to do with TroFi.,Experiment/Discussion
+"Nissim & Markert (2003) approach metonymy resolution with machine learning methods, “which [exploit] the similarity between examples of conventional metonymy” ((Nissim & Markert, 2003), p. 56).",Experiment/Discussion
+They see metonymy resolution as a classification problem between the literal use of a word and a number of pre-defined metonymy types.,Experiment/Discussion
+They use similarities between possibly metonymic words (PMWs) and known metonymies as well as context similarities to classify the PMWs.,Experiment/Discussion
+"The main difference between the Nissim & Markert algorithm and the TroFi algorithm – besides the fact that Nissim & Markert deal with specific types of metonymy and not a generalized category of nonliteral language – is that Nissim & Markert use a supervised machine learning algorithm, as opposed to the primarily unsupervised algorithm used by TroFi.",Experiment/Discussion
+"Mason (2004) presents CorMet, “a corpusbased system for discovering metaphorical mappings between concepts” ((Mason, 2004), p. 23).",Experiment/Discussion
+His system finds the selectional restrictions of given verbs in particular domains by statistical means.,Experiment/Discussion
+It then finds metaphorical mappings between domains based on these selectional preferences.,Experiment/Discussion
+"By finding semantic differences between the selectional preferences, it can “articulate the higher-order structure of conceptual metaphors” ((Mason, 2004), p. 24), finding mappings like LIQUID→MONEY.",Experiment/Discussion
+"Like CorMet, TroFi uses contextual evidence taken from a large corpus and also uses WordNet as a primary knowledge source, but unlike CorMet, TroFi does not use selectional preferences.",Experiment/Discussion
+"Metaphor processing has even been approached with connectionist systems storing world-knowledge as probabilistic dependencies (Narayanan, 1999).",Experiment/Discussion
+TroFi is not a metaphor processing system.,Experiment/Discussion
+It does not claim to interpret metonymy and it will not tell you what a given idiom means.,Experiment/Discussion
+"Rather, TroFi attempts to separate literal usages of verbs from nonliteral ones.",Experiment/Discussion
+For the purposes of this paper we will take the simplified view that literal is anything that falls within accepted selectional restrictions (“he was forced to eat his spinach” vs. “he was forced to eat his words”) or our knowledge of the world (“the sponge absorbed the water” vs. “the company absorbed the loss”).,Experiment/Discussion
+"Nonliteral is then anything that is “not literal”, including most tropes, such as metaphors, idioms, as well phrasal verbs and other anomalous expressions that cannot really be seen as literal.",Experiment/Discussion
+"In terms of metonymy, TroFi may cluster a verb used in a metonymic expression such as “I read Keats” as nonliteral, but we make no strong claims about this.",Experiment/Discussion
+"The TroFi algorithm requires a target set (called original set in (Karov & Edelman, 1998)) – the set of sentences containing the verbs to be classified into literal or nonliteral – and the seed sets: the literal feedback set and the nonliteral feedback set.",Experiment/Discussion
+"These sets contain feature lists consisting of the stemmed nouns and verbs in a sentence, with target or seed words and frequent words removed.",Experiment/Discussion
+"The frequent word list (374 words) consists of the 332 most frequent words in the British National Corpus plus contractions, single letters, and numbers from 0-10.",Experiment/Discussion
+"The target set is built using the ’88-’89 Wall Street Journal Corpus (WSJ) tagged using the (Ratnaparkhi, 1996) tagger and the (Bangalore & Joshi, 1999) SuperTagger; the feedback sets are built using WSJ sentences conAlgorithm 1 KE-train: (Karov & Edelman, 1998) algorithm adapted to literal/nonliteral classification taining seed words extracted from WordNet and the databases of known metaphors, idioms, and expressions (DoKMIE), namely Wayne Magnuson English Idioms Sayings & Slang and George Lakoff’s Conceptual Metaphor List, as well as example sentences from these sources.",Experiment/Discussion
+(See Section 4 for the sizes of the target and feedback sets.),Experiment/Discussion
+One may ask why we need TroFi if we have databases like the DoKMIE.,Experiment/Discussion
+The reason is that the DoKMIE are unlikely to list all possible instances of nonliteral language and because knowing that an expression can be used nonliterally does not mean that you can tell when it is being used nonliterally.,Experiment/Discussion
+"The target verbs may not, and typically do not, appear in the feedback sets.",Experiment/Discussion
+"In addition, the feedback sets are noisy and not annotated by any human, which is why we call TroFi unsupervised.",Experiment/Discussion
+"When we use WordNet as a source of example sentences, or of seed words for pulling sentences out of the WSJ, for building the literal feedback set, we cannot tell if the WordNet synsets, or the collected feature sets, are actually literal.",Experiment/Discussion
+We provide some automatic methods in Section 3.3 to ensure that the feedback set feature sets that will harm us in the clustering phase are removed.,Experiment/Discussion
+"As a sideeffect, we may fill out sparse nonliteral sets.",Experiment/Discussion
+In the next section we look at the Core TroFi algorithm and its use of the above data sources.,Experiment/Discussion
+"Since we are attempting to reduce the problem of literal/nonliteral recognition to one of word-sense disambiguation, TroFi makes use of an existing similarity-based word-sense disambiguation algorithm developed by (Karov & Edelman, 1998), henceforth KE.",Experiment/Discussion
+The KE algorithm is based on the principle of attraction: similarities are calculated between sentences containing the word we wish to disambiguate (the target word) and collections of seed sentences (feedback sets) (see also Section 3.1).,Experiment/Discussion
+A target set sentence is considered to be attracted to the feedback set containing the sentence to which it shows the highest similarity.,Experiment/Discussion
+Two sentences are similar if they contain similar words and two words are similar if they are contained in similar sentences.,Experiment/Discussion
+The resulting transitive similarity allows us to defeat the knowledge acquisition bottleneck – i.e. the low likelihood of finding all possible usages of a word in a single corpus.,Experiment/Discussion
+"Note that the KE algorithm concentrates on similarities in the way sentences use the target literal or nonliteral word, not on similarities in the meanings of the sentences themselves.",Experiment/Discussion
+Algorithms 1 and 2 summarize the basic TroFi version of the KE algorithm.,Experiment/Discussion
+"Note that p(w, s) is the unigram probability of word w in sentence s, normalized by the total number of words in s. In practice, initializing s-simI0 in line (2) of Algorithm 1 to 0 and then updating it from w-simo means that each target sentence is still maximally similar to itself, but we also discover additional similarities between target sentences.",Experiment/Discussion
+We further enhance the algorithm by using Sum of Similarities.,Experiment/Discussion
+"To implement this, in Algorithm 2 we change line (2) into: Esy s-simL(sx, sy) > Esy s-simN(sx, sy) Although it is appropriate for fine-grained tasks like word-sense disambiguation to use the single highest similarity score in order to minimize noise, summing across all the similarities of a target set sentence to the feedback set sentences is more appropriate for literal/nonliteral clustering, where the usages could be spread across numerous sentences in the feedback sets.",Experiment/Discussion
+We make another modification to Algorithm 2 by checking that the maximum sentence similarity in line (2) is above a certain threshold for classification.,Experiment/Discussion
+"If the similarity is above this threshold, we label a target-word sentence as literal or nonliteral.",Experiment/Discussion
+"Before continuing, let us look at an example.",Experiment/Discussion
+The features are shown in bold.,Experiment/Discussion
+"N2 This idea is risky, but it looks like the director of the institute has comprehended the basic principles behind it.",Experiment/Discussion
+N3 Mrs. Fipps is having trouble comprehending the legal straits of the institute.,Experiment/Discussion
+N4 She had a hand in his fully comprehending the quandary.,Experiment/Discussion
+The target set consists of sentences from the corpus containing the target word.,Experiment/Discussion
+The feedback sets contain sentences from the corpus containing synonyms of the target word found in WordNet (literal feedback set) and the DoKMIE (nonliteral feedback set).,Experiment/Discussion
+The feedback sets also contain example sentences provided in the target-word entries of these datasets.,Experiment/Discussion
+TroFi attempts to cluster the target set sentences into literal and nonliteral by attracting them to the corresponding feature sets using Algorithms 1 & 2.,Experiment/Discussion
+"Using the basic KE algorithm, target sentence 2 is correctly attracted to the nonliteral set, and sentences 1 and 3 are equally attracted to both sets.",Experiment/Discussion
+"When we apply our sum of similarities enhancement, sentence 1 is correctly attracted to the literal set, but sentence 3 is now incorrectly attracted to the literal set too.",Experiment/Discussion
+"In the following sections we describe some enhancements – Learners & Voting, SuperTags, and Context – that try to solve the problem of incorrect attractions.",Experiment/Discussion
+In this section we describe how we clean up the feedback sets to improve the performance of the Core algorithm.,Experiment/Discussion
+We also introduce the notion of Learners & Voting.,Experiment/Discussion
+Recall that neither the raw data nor the collected feedback sets are manually annotated for training purposes.,Experiment/Discussion
+"Since, in addition, the feedback sets are collected automatically, they are very noisy.",Experiment/Discussion
+"For instance, in the example in Section 3.2, the literal feedback set sentence L3 contains an idiom which was provided as an example sentence in WordNet as a synonym for “grasp”.",Experiment/Discussion
+"In N4, we have the side-effect feature “hand”, which unfortunately overlaps with the feature “hand” that we might hope to find in the literal set (e.g.",Experiment/Discussion
+“grasp his hand”).,Experiment/Discussion
+"In order to remove sources of false attraction like these, we introduce the notion of scrubbing.",Experiment/Discussion
+Scrubbing is founded on a few basic principles.,Experiment/Discussion
+The first is that the contents of the DoKMIE come from (third-party) human annotations and are thus trusted.,Experiment/Discussion
+Consequently we take them as primary and use them to scrub the WordNet synsets.,Experiment/Discussion
+"The second is that phrasal and expression verbs, for example “throw away”, are often indicative of nonliteral uses of verbs – i.e. they are not the sum of their parts – so they can be used for scrubbing.",Experiment/Discussion
+"The third is that content words appearing in both feedback sets – for example “the wind is blowing” vs. “the winds of war are blowing” for the target word “blow” – will lead to impure feedback sets, a situation we want to avoid.",Experiment/Discussion
+"The fourth is that our scrubbing action can take a number of different forms: we can choose to scrub just a word, a whole synset, or even an entire feature set.",Experiment/Discussion
+"In addition, we can either move the offending item to the opposite feedback set or remove it altogether.",Experiment/Discussion
+Moving synsets or feature sets can add valuable content to one feedback set while removing noise from the other.,Experiment/Discussion
+"However, it can also cause unforeseen contamination.",Experiment/Discussion
+We experimented with a number of these options to produce a whole complement of feedback set learners for classifying the target sentences.,Experiment/Discussion
+Ideally this will allow the different learners to correct each other.,Experiment/Discussion
+"For Learner A, we use phrasal/expression verbs and overlap as indicators to select whole WordNet synsets for moving over to the nonliteral feedback set.",Experiment/Discussion
+"In our example, this causes L1-L3 to be moved to the nonliteral set.",Experiment/Discussion
+"For Learner B, we use phrasal/expression verbs and overlap as indicators to remove problematic synsets.",Experiment/Discussion
+Thus we avoid accidentally contaminating the nonliteral set.,Experiment/Discussion
+"However, we do end up throwing away information that could have been used to pad out sparse nonliteral sets.",Experiment/Discussion
+"In our example, this causes L1-L3 to be dropped.",Experiment/Discussion
+"For Learner C, we remove feature sets from the final literal and nonliteral feedback sets based on overlapping words.",Experiment/Discussion
+"In our example, this causes L2 and N4 to be dropped.",Experiment/Discussion
+Learner D is the baseline – no scrubbing.,Experiment/Discussion
+We simply use the basic algorithm.,Experiment/Discussion
+Each learner has benefits and shortcomings.,Experiment/Discussion
+"In order to maximize the former and minimize the latter, instead of choosing the single most successful learner, we introduce a voting system.",Experiment/Discussion
+"We use a simple majority-rules algorithm, with the strongest learners weighted more heavily.",Experiment/Discussion
+"In our experiments we double the weights of Learners A and D. In our example, this results in sentence 3 now being correctly attracted to the nonliteral set.",Experiment/Discussion
+"Even before voting, we attempt to improve the correctness of initial attractions through the use of SuperTags, which allows us to add internal structure information to the bag-of-words feature lists.",Experiment/Discussion
+"SuperTags (Bangalore & Joshi, 1999) encode a great deal of syntactic information in a single tag (each tag is an elementary tree from the XTAG English Tree Adjoining Grammar).",Experiment/Discussion
+"In addition to a word’s part of speech, they also encode information about its location in a syntactic tree – i.e. we learn something about the surrounding words as well.",Experiment/Discussion
+"We devised a SuperTag trigram composed of the SuperTag of the target word and the following two words and their SuperTags if they contain nouns, prepositions, particles, or adverbs.",Experiment/Discussion
+This is helpful in cases where the same set of features can be used as part of both literal and nonliteral expressions.,Experiment/Discussion
+"For example, turning “It’s hard to kick a habit like drinking” into “habit drink kick/B nx0Vpls1 habit/A NXN,” results in a higher attraction to sentences about “kicking habits” than to sentences like “She has a habit of kicking me when she’s been drinking.” Note that the creation of Learners A and B changes if SuperTags are used.",Experiment/Discussion
+"In the original version, we only move or remove synsets based on phrasal/expression verbs and overlapping words.",Experiment/Discussion
+"If SuperTags are used, we also move or remove feature sets whose SuperTag trigram indicates phrasal verbs (verb-particle expressions).",Experiment/Discussion
+A final enhancement involves extending the context to help with disambiguation.,Experiment/Discussion
+"Sometimes critical disambiguation features are contained not in the sentence with the target word, but in an adjacent sentence.",Experiment/Discussion
+"To add context, we simply group the sentence containing the target word with a specified number of surrounding sentences and turn the whole group into a single feature set.",Experiment/Discussion
+TroFi was evaluated on the 25 target words listed in Table 1.,Experiment/Discussion
+The target sets contain from 1 to 115 manually annotated sentences for each verb.,Experiment/Discussion
+The first round of annotations was done by the first annotator.,Experiment/Discussion
+The second annotator was given no instructions besides a few examples of literal and nonliteral usage (not covering all target verbs).,Experiment/Discussion
+The authors of this paper were the annotators.,Experiment/Discussion
+Our inter-annotator agreement on the annotations used as test data in the experiments in this paper is quite high. n (Cohen) and n (S&C) on a random sample of 200 annotated examples annotated by two different annotators was found to be 0.77.,Experiment/Discussion
+"As per ((Di Eugenio & Glass, 2004), cf. refs therein), the standard assessment for n values is that tentative conclusions on agreement exists when .67 ≤ n < .8, and a definite conclusion on agreement exists when n ≥ .8.",Experiment/Discussion
+"In the case of a larger scale annotation effort, having the person leading the effort provide one or two examples of literal and nonliteral usages for each target verb to each annotator would almost certainly improve inter-annotator agreement.",Experiment/Discussion
+"Table 1 lists the total number of target sentences, plus the manually evaluated literal and nonliteral counts, for each target word.",Experiment/Discussion
+It also provides the feedback set sizes for each target word.,Experiment/Discussion
+The totals across all words are given at the bottom of the table.,Experiment/Discussion
+The algorithms were evaluated based on how accurately they clustered the hand-annotated sentences.,Experiment/Discussion
+"Sentences that were attracted to neither cluster or were equally attracted to both were put in the opposite set from their label, making a failure to cluster a sentence an incorrect clustering.",Experiment/Discussion
+"Evaluation results were recorded as recall, precision, and f-score values.",Experiment/Discussion
+Literal recall is defined as (correct literals in literal cluster /total correct literals).,Experiment/Discussion
+Literal precision is defined as (correct literals in literal cluster / size of literal cluster).,Experiment/Discussion
+"If there are no literals, literal recall is 100%; literal precision is 100% if there are no nonliterals in the literal cluster and 0% otherwise.",Experiment/Discussion
+The f-score is defined as (2 · precision · recall) / (precision + recall).,Experiment/Discussion
+Nonliteral precision and recall are defined similarly.,Experiment/Discussion
+Average precision is the average of literal and nonliteral precision; similarly for average recall.,Experiment/Discussion
+"For overall performance, we take the f-score of average precision and average recall.",Experiment/Discussion
+We calculated two baselines for each word.,Experiment/Discussion
+The first was a simple majority-rules baseline.,Experiment/Discussion
+"Due to the imbalance of literal and nonliteral examples, this baseline ranges from 60.9% to 66.7% with an average of 63.6%.",Experiment/Discussion
+"Keep in mind though that using this baseline, the f-score for the nonliteral set will always be 0%.",Experiment/Discussion
+We come back to this point at the end of this section.,Experiment/Discussion
+We calculated a second baseline using a simple attraction algorithm.,Experiment/Discussion
+Each target set sentence is attracted to the feedback set containing the sentence with which it has the most words in common.,Experiment/Discussion
+This corresponds well to the basic highest similarity TroFi algorithm.,Experiment/Discussion
+"Sentences attracted to neither, or equally to both, sets are put in the opposite cluster to where they belong.",Experiment/Discussion
+"Since this baseline actually attempts to distinguish between literal and nonliteral and uses all the data used by the TroFi algorithm, it is the one we will refer to in our discussion below.",Experiment/Discussion
+Experiments were conducted to first find the results of the core algorithm and then determine the effects of each enhancement.,Experiment/Discussion
+The results are shown in Figure 1.,Experiment/Discussion
+The last column in the graph shows the average across all the target verbs.,Experiment/Discussion
+"On average, the basic TroFi algorithm (KE) gives a 7.6% improvement over the baseline, with some words, like “lend” and “touch”, having higher results due to transitivity of similarity.",Experiment/Discussion
+"For our sum of similarities enhancement, all the individual target word results except for “examine” sit above the baseline.",Experiment/Discussion
+"The dip is due to the fact that while TroFi can generate some beneficial similarities between words related by context, it can also generate some detrimental ones.",Experiment/Discussion
+"When we use sum of similarities, it is possible for the transitively discovered indirect similarities between a target nonliteral sentence and all the sentences in a feedback set to add up to more than a single direct similarity between the target sentence and a single feedback set sentence.",Experiment/Discussion
+"This is not possible with highest similarity because a single sentence would have to show a higher similarity to the target sentence than that produced by sharing an identical word, which is unlikely since transitively discovered similarities generally do not add up to 1.",Experiment/Discussion
+"So, although highest similarity occasionally produces better results than using sum of similarities, on average we can expect to get better results with the latter.",Experiment/Discussion
+"In this experiment alone, we get an average f-score of 46.3% for the sum of similarities results – a 9.4% improvement over the high similarity results (36.9%) and a 16.9% improvement over the baseline (29.4%).",Experiment/Discussion
+"In comparing the individual results of all our learners, we found that the results for Learners A and D (46.7% and 46.3%) eclipsed Learners B and C by just over 2.5%.",Experiment/Discussion
+"Using majority-rules voting with Learners A and D doubled, we were able to obtain an average f-score of 48.4%, showing that voting does to an extent balance out the learners’ varying results on different words.",Experiment/Discussion
+The addition of SuperTags caused improvements in some words like “drag” and “stick”.,Experiment/Discussion
+"The overall gain was only 0.5%, likely due to an overgeneration of similarities.",Experiment/Discussion
+Future work may identify ways to use SuperTags more effectively.,Experiment/Discussion
+The use of additional context was responsible for our second largest leap in performance after sum of similarities.,Experiment/Discussion
+"We gained 4.9%, bringing us to an average f-score of 53.8%.",Experiment/Discussion
+"Worth noting is that the target words exhibiting the most significant improvement, “drown” and “grasp”, had some of the smallest target and feedback set feature sets, supporting the theory that adding cogent features may improve performance.",Experiment/Discussion
+"With an average of 53.8%, all words but one lie well above our simple-attraction baseline, and some even achieve much higher results than the majority-rules baseline.",Experiment/Discussion
+"Note also that, using this latter baseline, TroFi boosts the nonliteral f-score from 0% to 42.3%.",Experiment/Discussion
+In this section we discuss the TroFi Example Base.,Results/Conclusion
+"First, we examine iterative augmentation.",Results/Conclusion
+Then we discuss the structure and contents of the example base and the potential for expansion.,Results/Conclusion
+"After an initial run for a particular target word, we have the cluster results plus a record of the feedback sets augmented with the newly clustered sentences.",Results/Conclusion
+"Each feedback set sentence is saved with a classifier weight, with newly clustered sentences receiving a weight of 1.0.",Results/Conclusion
+Subsequent runs may be done to augment the initial clusters.,Results/Conclusion
+"For these runs, we use the classifiers from our initial run as feedback sets.",Results/Conclusion
+New sentences for clustering are treated like a regular target set.,Results/Conclusion
+Running TroFi produces new clusters and re-weighted classifiers augmented with newly clustered sentences.,Results/Conclusion
+There can be as many runs as desired; hence iterative augmentation.,Results/Conclusion
+"We used the iterative augmentation process to build a small example base consisting of the target words from Table 1, as well as another 25 words drawn from the examples of scholars whose work was reviewed in Section 2.",Results/Conclusion
+"It is important to note that in building the example base, we used TroFi with an Active Learning component (see (Birke, 2005)) which improved our average f-score from 53.8% to 64.9% on the original 25 target words.",Results/Conclusion
+An excerpt from the example base is shown in Figure 2.,Results/Conclusion
+"Each entry includes an ID number and a Nonliteral, Literal, or Unannotated tag.",Results/Conclusion
+Annotations are from testing or from active learning during example-base construction.,Results/Conclusion
+The TroFi Example Base is available at http://www.cs.sfu.ca/˜anoop/students/jbirke/.,Results/Conclusion
+Further unsupervised expansion of the existing clusters as well as the production of additional clusters is a possibility.,Results/Conclusion
+"In this paper we presented TroFi, a system for separating literal and nonliteral usages of verbs through statistical word-sense disambiguation and clustering techniques.",Results/Conclusion
+"We suggest that TroFi is applicable to all sorts of nonliteral language, and that, although it is currently focused on English verbs, it could be adapted to other parts of speech and other languages.",Results/Conclusion
+"We adapted an existing word-sense disambiguation algorithm to literal/nonliteral clustering through the redefinition of literal and nonliteral as word senses, the alteration of the similarity scores used, and the addition of learners and voting, SuperTags, and additional context.",Results/Conclusion
+"For all our models and algorithms, we carried out detailed experiments on hand-annotated data, both to fully evaluate the system and to arrive at an optimal configuration.",Results/Conclusion
+"Through our enhancements we were able to produce results that are, on average, 16.9% higher than the core algorithm and 24.4% higher than the baseline.",Results/Conclusion
+"Finally, we used our optimal configuration of TroFi, together with active learning and iterative augmentation, to build the TroFi Example Base, a publicly available, expandable resource of literal/nonliteral usage clusters that we hope will be useful not only for future research in the field of nonliteral language processing, but also as training data for other statistical NLP tasks.",Results/Conclusion

@@ -1,123 +1,123 @@
 col1,col2
-"semantic lexicons semiautomatically could be a great time saver, relative to creating them by hand.",{}
-"In this paper, we present an algorithm for extracting potential entries for a category from an on-line corpus, based upon a small set of exemplars.",{}
-Our algorithm finds more correct terms and fewer incorrect ones than previous work in this area.,{}
-"Additionally, the entries that are generated potentially provide broader coverage of the category than would occur to an individual coding them by hand.",{}
-"Our algorithm finds many terms not included within Wordnet (many more than previous algorithms), and could be viewed as an &quot;enhancer&quot; of existing broad-coverage resources.",{}
-Semantic lexicons play an important role in many natural language processing tasks.,"{'title': '1 Introduction', 'number': '1'}"
-"Effective lexicons must often include many domainspecific terms, so that available broad coverage resources, such as Wordnet (Miller, 1990), are inadequate.","{'title': '1 Introduction', 'number': '1'}"
-"For example, both Escort and Chinook are (among other things) types of vehicles (a car and a helicopter, respectively), but neither are cited as so in Wordnet.","{'title': '1 Introduction', 'number': '1'}"
-"Manually building domain-specific lexicons can be a costly, time-consuming affair.","{'title': '1 Introduction', 'number': '1'}"
-"Utilizing existing resources, such as on-line corpora, to aid in this task could improve performance both by decreasing the time to construct the lexicon and by improving its quality.","{'title': '1 Introduction', 'number': '1'}"
-"Extracting semantic information from word co-occurrence statistics has been effective, particularly for sense disambiguation (Schiitze, 1992; Gale et al., 1992; Yarowsky, 1995).","{'title': '1 Introduction', 'number': '1'}"
-"In Riloff and Shepherd (1997), noun co-occurrence statistics were used to indicate nominal category membership, for the purpose of aiding in the construction of semantic lexicons.","{'title': '1 Introduction', 'number': '1'}"
-"Generically, their algorithm can be outlined as follows: Our algorithm uses roughly this same generic structure, but achieves notably superior results, by changing the specifics of: what counts as co-occurrence; which figures of merit to use for new seed word selection and final ranking; the method of initial seed word selection; and how to manage compound nouns.","{'title': '1 Introduction', 'number': '1'}"
-In sections 2-5 we will cover each of these topics in turn.,"{'title': '1 Introduction', 'number': '1'}"
-"We will also present some experimental results from two corpora, and discuss criteria for judging the quality of the output.","{'title': '1 Introduction', 'number': '1'}"
-The first question that must be answered in investigating this task is why one would expect it to work at all.,"{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-Why would one expect that members of the same semantic category would co-occur in discourse?,"{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"In the word sense disambiguation task, no such claim is made: words can serve their disambiguating purpose regardless of part-of-speech or semantic characteristics.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"In motivating their investigations, Riloff and Shepherd (henceforth R&S) cited several very specific noun constructions in which cooccurrence between nouns of the same semantic class would be expected, including conjunctions (cars and trucks), lists (planes, trains, and automobiles), appositives (the plane, a twin-engined Cessna) and noun compounds (pickup truck).","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-Our algorithm focuses exclusively on these constructions.,"{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"Because the relationship between nouns in a compound is quite different than that between nouns in the other constructions, the algorithm consists of two separate components: one to deal with conjunctions, lists, and appositives; and the other to deal with noun compounds.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-All compound nouns in the former constructions are represented by the head of the compound.,"{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"We made the simplifying assumptions that a compound noun is a string of consecutive nouns (or, in certain cases, adjectives - see discussion below), and that the head of the compound is the rightmost noun.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"To identify conjunctions, lists, and appositives, we first parsed the corpus, using an efficient statistical parser (Charniak et al., 1998), trained on the Penn Wall Street Journal Treebank (Marcus et al., 1993).","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-We defined cooccurrence in these constructions using the standard definitions of dominance and precedence.,"{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"The relation is stipulated to be transitive, so that all head nouns in a list co-occur with each other (e.g. in the phrase planes, trains, and automobiles all three nouns are counted as co-occuring with each other).","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"Two head nouns co-occur in this algorithm if they meet the following four conditions: In contrast, R&S counted the closest noun to the left and the closest noun to the right of a head noun as co-occuring with it.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"Consider the following sentence from the MUC-4 (1992) corpus: &quot;A cargo aircraft may drop bombs and a truck may be equipped with artillery for war.&quot; In their algorithm, both cargo and bombs would be counted as co-occuring with aircraft.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"In our algorithm, co-occurrence is only counted within a noun phrase, between head nouns that are separated by a comma or conjunction.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-"If the sentence had read: &quot;A cargo aircraft, fighter plane, or combat helicopter ...&quot;, then aircraft, plane, and helicopter would all have counted as co-occuring with each other in our algorithm.","{'title': '2 Noun Co-Occurrence', 'number': '2'}"
-R&S used the same figure of merit both for selecting new seed words and for ranking words in the final output.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-Their figure of merit was simply the ratio of the times the noun coocurs with a noun in the seed list to the total frequency of the noun in the corpus.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"This statistic favors low frequency nouns, and thus necessitates the inclusion of a minimum occurrence cutoff.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-They stipulated that no word occuring fewer than six times in the corpus would be considered by the algorithm.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"This cutoff has two effects: it reduces the noise associated with the multitude of low frequency words, and it removes from consideration a fairly large number of certainly valid category members.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"Ideally, one would like to reduce the noise without reducing the number of valid nouns.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-Our statistics allow for the inclusion of rare occcurances.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"Note that this is particularly important given our algorithm, since we have restricted the relevant occurrences to a specific type of structure; even relatively common nouns may not occur in the corpus more than a handful of times in such a context.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"The two figures of merit that we employ, one to select and one to produce a final rank, use the following two counts for each noun: To select new seed words, we take the ratio of count 1 to count 2 for the noun in question.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"This is similar to the figure of merit used in R&S, and also tends to promote low frequency nouns.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"For the final ranking, we chose the log likelihood statistic outlined in Dunning (1993), which is based upon the co-occurrence counts of all nouns (see Dunning for details).","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-This statistic essentially measures how surprising the given pattern of co-occurrence would be if the distributions were completely random.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"For instance, suppose that two words occur forty times each, and they co-occur twenty times in a millionword corpus.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-This would be more surprising for two completely random distributions than if they had each occurred twice and had always co-occurred.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-A simple probability does not capture this fact.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"The rationale for using two different statistics for this task is that each is well suited for its particular role, and not particularly well suited to the other.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-We have already mentioned that the simple ratio is ill suited to dealing with infrequent occurrences.,"{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"It is thus a poor candidate for ranking the final output, if that list includes words of as few as one occurrence in the corpus.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"The log likelihood statistic, we found, is poorly suited to selecting new seed words in an iterative algorithm of this sort, because it promotes high frequency nouns, which can then overly influence selections in future iterations, if they are selected as seed words.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"We termed this phenomenon infection, and found that it can be so strong as to kill the further progress of a category.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"For example, if we are processing the category vehicle and the word artillery is selected as a seed word, a whole set of weapons that cooccur with artillery can now be selected in future iterations.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"If one of those weapons occurs frequently enough, the scores for the words that it co-occurs with may exceed those of any vehicles, and this effect may be strong enough that no vehicles are selected in any future iteration.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"In addition, because it promotes high frequency terms, such a statistic tends to have the same effect as a minimum occurrence cutoff, i.e. few if any low frequency words get added.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"A simple probability is a much more conservative statistic, insofar as it selects far fewer words with the potential for infection, it limits the extent of any infection that does occur, and it includes rare words.","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-"Our motto in using this statistic for selection is, &quot;First do no harm.&quot;","{'title': '3 Statistics for selecting and ranking', 'number': '3'}"
-The simple ratio used to select new seed words will tend not to select higher frequency words in the category.,"{'title': '4 Seed word selection', 'number': '4'}"
-The solution to this problem is to make the initial seed word selection from among the most frequent head nouns in the corpus.,"{'title': '4 Seed word selection', 'number': '4'}"
-"This is a sensible approach in any case, since it provides the broadest coverage of category occurrences, from which to select additional likely category members.","{'title': '4 Seed word selection', 'number': '4'}"
-"In a task that can suffer from sparse data, this is quite important.","{'title': '4 Seed word selection', 'number': '4'}"
-"We printed a list of the most common nouns in the corpus (the top 200 to 500), and selected category members by scanning through this list.","{'title': '4 Seed word selection', 'number': '4'}"
-"Another option would be to use head nouns identified in Wordnet, which, as a set, should include the most common members of the category in question.","{'title': '4 Seed word selection', 'number': '4'}"
-"In general, however, the strength of an algorithm of this sort is in identifying infrequent or specialized terms.","{'title': '4 Seed word selection', 'number': '4'}"
-Table 1 shows the seed words that were used for some of the categories tested.,"{'title': '4 Seed word selection', 'number': '4'}"
-The relationship between the nouns in a compound noun is very different from that in the other constructions we are considering.,"{'title': '5 Compound Nouns', 'number': '5'}"
-The non-head nouns in a compound noun may or may not be legitimate members of the category.,"{'title': '5 Compound Nouns', 'number': '5'}"
-"For instance, either pickup truck or pickup is a legitimate vehicle, whereas cargo plane is legitimate, but cargo is not.","{'title': '5 Compound Nouns', 'number': '5'}"
-"For this reason, co-occurrence within noun compounds is not considered in the iterative portions of our algorithm.","{'title': '5 Compound Nouns', 'number': '5'}"
-"Instead, all noun compounds with a head that is included in our final ranked list, are evaluated for inclusion in a second list.","{'title': '5 Compound Nouns', 'number': '5'}"
-The method for evaluating whether or not to include a noun compound in the second list is intended to exclude constructions such as government plane and include constructions such as fighter plane.,"{'title': '5 Compound Nouns', 'number': '5'}"
-"Simply put, the former does not correspond to a type of vehicle in the same way that the latter does.","{'title': '5 Compound Nouns', 'number': '5'}"
-"We made the simplifying assumption that the higher the probability of the head given the non-head noun, the better the construction for our purposes.","{'title': '5 Compound Nouns', 'number': '5'}"
-"For instance, if the noun government is found in a noun compound, how likely is the head of that compound to be plane?","{'title': '5 Compound Nouns', 'number': '5'}"
-How does this compare to the noun fighter?,"{'title': '5 Compound Nouns', 'number': '5'}"
-"For this purpose, we take two counts for each ,noun in the compound: For each non-head noun in the compound, we evaluate whether or not to omit it in the output.","{'title': '5 Compound Nouns', 'number': '5'}"
-"If all of them are omitted, or if the resulting compound has already been output, the entry is skipped.","{'title': '5 Compound Nouns', 'number': '5'}"
-"Each noun is evaluated as follows: First, the head of that noun is determined.","{'title': '5 Compound Nouns', 'number': '5'}"
-"To get a sense of what is meant here, consider the following compound: nuclear-powered aircraft carrier.","{'title': '5 Compound Nouns', 'number': '5'}"
-"In evaluating the word nuclearpowered, it is unclear if this word is attached to aircraft or to carrier.","{'title': '5 Compound Nouns', 'number': '5'}"
-"While we know that the head of the entire compound is carrier, in order to properly evaluate the word in question, we must determine which of the words following it is its head.","{'title': '5 Compound Nouns', 'number': '5'}"
-"This is done, in the spirit of the Dependency Model of Lauer (1995), by selecting the noun to its right in the compound with the highest probability of occuring with the word in question when occurring in a noun compound.","{'title': '5 Compound Nouns', 'number': '5'}"
-"(In the case that two nouns have the same probability, the rightmost noun is chosen.)","{'title': '5 Compound Nouns', 'number': '5'}"
-"Once the head of the word is determined, the ratio of count 1 (with the head noun chosen) to count 2 is compared to an empirically set cutoff.","{'title': '5 Compound Nouns', 'number': '5'}"
-"If it falls below that cutoff, it is omitted.","{'title': '5 Compound Nouns', 'number': '5'}"
-"If it does not fall below the cutoff, then it is kept (provided its head noun is not later omitted).","{'title': '5 Compound Nouns', 'number': '5'}"
-The input to the algorithm is a parsed corpus and a set of initial seed words for the desired category.,"{'title': '6 Outline of the algorithm', 'number': '6'}"
-"Nouns are matched with their plurals in the corpus, and a single representation is settled upon for both, e.g. car(s).","{'title': '6 Outline of the algorithm', 'number': '6'}"
-Co-Occurrence bigrams are collected for head nouns according to the notion of co-occurrence outlined above.,"{'title': '6 Outline of the algorithm', 'number': '6'}"
-The algorithm then proceeds as follows:,"{'title': '6 Outline of the algorithm', 'number': '6'}"
-"We ran our algorithm against both the MUC-4 corpus and the Wall Street Journal (WSJ) corpus for a variety of categories, beginning with the categories of vehicle and weapon, both included in the five categories that Rk,S investigated in their paper.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"Other categories that we investigated were crimes, people, commercial sites, states (as in static states of affairs), and machines.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-This last category was run because of the sparse data for the category weapon in the Wall Street Journal.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"It represents roughly the same kind of category as weapon, namely technological artifacts.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"It, in turn, produced sparse results with the MUC-4 corpus.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Tables 3 and 4 show the top results on both the head noun and the compound noun lists generated for the categories we tested.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-R&S evaluated terms for the degree to which they are related to the category.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"In contrast, we counted valid only those entries that are clear members of the category.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Related words (e.g. crash for the category vehicle) did not count.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-A valid instance was: (1) novel (i.e. not in the original seed set); (2) unique (i.e. not a spelling variation or pluralization of a previously encountered entry); and (3) a proper class within the category (i.e. not an individual instance or a class based upon an incidental feature).,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"As an illustration of this last condition, neither Galileo Probe nor gray plane is a valid entry, the former because it denotes an individual and the latter because it is a class of planes based upon an incidental feature (color).","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"In the interests of generating as many valid entries as possible, we allowed for the inclusion in noun compounds of words tagged as adjectives or cardinality words.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-In certain occasions (e.g. four-wheel drive truck or nuclear bomb) this is necessary to avoid losing key parts of the compound.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"Most common adjectives are dropped in our compound noun analysis, since they occur with a wide variety of heads.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-We determined three ways to evaluate the output of the algorithm for usefulness.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-The first is the ratio of valid entries to total entries produced.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-R&S reported a ratio of .17 valid to total entries for both the vehicle and weapon categories (see table 2).,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"On the same corpus, our algorithm yielded a ratio of .329 valid to total entries for the category vehicle, and .36 for the category weapon.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-This can be seen in the slope of the graphs in figure 1.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Tables 2 and 5 give the relevant data for the categories that we investigated.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"In general, the ratio of valid to total entries fell between .2 and .4, even in the cases that the output was relatively small.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-A second way to evaluate the algorithm is by the total number of valid entries produced.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"As can be seen from the numbers reported in table 2, our algorithm generated from 2.4 to nearly 3 times as many valid terms for the two contrasting categories from the MUC corpus than the algorithm of R&S.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Even more valid terms were generated for appropriate categories using the Wall Street Journal.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Another way to evaluate the algorithm is with the number of valid entries produced that are not in Wordnet.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-Table 2 presents these numbers for the categories vehicle and weapon.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"Whereas the R&S algorithm produced just 11 terms not already present in Wordnet for the two categories combined, our algorithm produced 106, or over 3 for every 5 valid terms produced.","{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-It is for this reason that we are billing our algorithm as something that could enhance existing broadcoverage resources with domain-specific lexical information.,"{'title': '7 Empirical Results and Discussion', 'number': '7'}"
-"We have outlined an algorithm in this paper that, as it stands, could significantly speed up the task of building a semantic lexicon.","{'title': '8 Conclusion', 'number': '8'}"
-"We have also examined in detail the reasons why it works, and have shown it to work well for multiple corpora and multiple categories.","{'title': '8 Conclusion', 'number': '8'}"
-"The algorithm generates many words not included in broad coverage resources, such as Wordnet, and could be thought of as a Wordnet &quot;enhancer&quot; for domain-specific applications.","{'title': '8 Conclusion', 'number': '8'}"
-"More generally, the relative success of the algorithm demonstrates the potential benefit of narrowing corpus input to specific kinds of constructions, despite the danger of compounding sparse data problems.","{'title': '8 Conclusion', 'number': '8'}"
-"To this end, parsing is invaluable.","{'title': '8 Conclusion', 'number': '8'}"
-Thanks to Mark Johnson for insightful discussion and to Julie Sedivy for helpful comments.,"{'title': '9 Acknowledgements', 'number': '9'}"
+"semantic lexicons semiautomatically could be a great time saver, relative to creating them by hand.",Introduction
+"In this paper, we present an algorithm for extracting potential entries for a category from an on-line corpus, based upon a small set of exemplars.",Introduction
+Our algorithm finds more correct terms and fewer incorrect ones than previous work in this area.,Introduction
+"Additionally, the entries that are generated potentially provide broader coverage of the category than would occur to an individual coding them by hand.",Introduction
+"Our algorithm finds many terms not included within Wordnet (many more than previous algorithms), and could be viewed as an &quot;enhancer&quot; of existing broad-coverage resources.",Introduction
+Semantic lexicons play an important role in many natural language processing tasks.,Experiment/Discussion
+"Effective lexicons must often include many domainspecific terms, so that available broad coverage resources, such as Wordnet (Miller, 1990), are inadequate.",Experiment/Discussion
+"For example, both Escort and Chinook are (among other things) types of vehicles (a car and a helicopter, respectively), but neither are cited as so in Wordnet.",Experiment/Discussion
+"Manually building domain-specific lexicons can be a costly, time-consuming affair.",Experiment/Discussion
+"Utilizing existing resources, such as on-line corpora, to aid in this task could improve performance both by decreasing the time to construct the lexicon and by improving its quality.",Experiment/Discussion
+"Extracting semantic information from word co-occurrence statistics has been effective, particularly for sense disambiguation (Schiitze, 1992; Gale et al., 1992; Yarowsky, 1995).",Experiment/Discussion
+"In Riloff and Shepherd (1997), noun co-occurrence statistics were used to indicate nominal category membership, for the purpose of aiding in the construction of semantic lexicons.",Experiment/Discussion
+"Generically, their algorithm can be outlined as follows: Our algorithm uses roughly this same generic structure, but achieves notably superior results, by changing the specifics of: what counts as co-occurrence; which figures of merit to use for new seed word selection and final ranking; the method of initial seed word selection; and how to manage compound nouns.",Experiment/Discussion
+In sections 2-5 we will cover each of these topics in turn.,Experiment/Discussion
+"We will also present some experimental results from two corpora, and discuss criteria for judging the quality of the output.",Experiment/Discussion
+The first question that must be answered in investigating this task is why one would expect it to work at all.,Experiment/Discussion
+Why would one expect that members of the same semantic category would co-occur in discourse?,Experiment/Discussion
+"In the word sense disambiguation task, no such claim is made: words can serve their disambiguating purpose regardless of part-of-speech or semantic characteristics.",Experiment/Discussion
+"In motivating their investigations, Riloff and Shepherd (henceforth R&S) cited several very specific noun constructions in which cooccurrence between nouns of the same semantic class would be expected, including conjunctions (cars and trucks), lists (planes, trains, and automobiles), appositives (the plane, a twin-engined Cessna) and noun compounds (pickup truck).",Experiment/Discussion
+Our algorithm focuses exclusively on these constructions.,Experiment/Discussion
+"Because the relationship between nouns in a compound is quite different than that between nouns in the other constructions, the algorithm consists of two separate components: one to deal with conjunctions, lists, and appositives; and the other to deal with noun compounds.",Experiment/Discussion
+All compound nouns in the former constructions are represented by the head of the compound.,Experiment/Discussion
+"We made the simplifying assumptions that a compound noun is a string of consecutive nouns (or, in certain cases, adjectives - see discussion below), and that the head of the compound is the rightmost noun.",Experiment/Discussion
+"To identify conjunctions, lists, and appositives, we first parsed the corpus, using an efficient statistical parser (Charniak et al., 1998), trained on the Penn Wall Street Journal Treebank (Marcus et al., 1993).",Experiment/Discussion
+We defined cooccurrence in these constructions using the standard definitions of dominance and precedence.,Experiment/Discussion
+"The relation is stipulated to be transitive, so that all head nouns in a list co-occur with each other (e.g. in the phrase planes, trains, and automobiles all three nouns are counted as co-occuring with each other).",Experiment/Discussion
+"Two head nouns co-occur in this algorithm if they meet the following four conditions: In contrast, R&S counted the closest noun to the left and the closest noun to the right of a head noun as co-occuring with it.",Experiment/Discussion
+"Consider the following sentence from the MUC-4 (1992) corpus: &quot;A cargo aircraft may drop bombs and a truck may be equipped with artillery for war.&quot; In their algorithm, both cargo and bombs would be counted as co-occuring with aircraft.",Experiment/Discussion
+"In our algorithm, co-occurrence is only counted within a noun phrase, between head nouns that are separated by a comma or conjunction.",Experiment/Discussion
+"If the sentence had read: &quot;A cargo aircraft, fighter plane, or combat helicopter ...&quot;, then aircraft, plane, and helicopter would all have counted as co-occuring with each other in our algorithm.",Experiment/Discussion
+R&S used the same figure of merit both for selecting new seed words and for ranking words in the final output.,Experiment/Discussion
+Their figure of merit was simply the ratio of the times the noun coocurs with a noun in the seed list to the total frequency of the noun in the corpus.,Experiment/Discussion
+"This statistic favors low frequency nouns, and thus necessitates the inclusion of a minimum occurrence cutoff.",Experiment/Discussion
+They stipulated that no word occuring fewer than six times in the corpus would be considered by the algorithm.,Experiment/Discussion
+"This cutoff has two effects: it reduces the noise associated with the multitude of low frequency words, and it removes from consideration a fairly large number of certainly valid category members.",Experiment/Discussion
+"Ideally, one would like to reduce the noise without reducing the number of valid nouns.",Experiment/Discussion
+Our statistics allow for the inclusion of rare occcurances.,Experiment/Discussion
+"Note that this is particularly important given our algorithm, since we have restricted the relevant occurrences to a specific type of structure; even relatively common nouns may not occur in the corpus more than a handful of times in such a context.",Experiment/Discussion
+"The two figures of merit that we employ, one to select and one to produce a final rank, use the following two counts for each noun: To select new seed words, we take the ratio of count 1 to count 2 for the noun in question.",Experiment/Discussion
+"This is similar to the figure of merit used in R&S, and also tends to promote low frequency nouns.",Experiment/Discussion
+"For the final ranking, we chose the log likelihood statistic outlined in Dunning (1993), which is based upon the co-occurrence counts of all nouns (see Dunning for details).",Experiment/Discussion
+This statistic essentially measures how surprising the given pattern of co-occurrence would be if the distributions were completely random.,Experiment/Discussion
+"For instance, suppose that two words occur forty times each, and they co-occur twenty times in a millionword corpus.",Experiment/Discussion
+This would be more surprising for two completely random distributions than if they had each occurred twice and had always co-occurred.,Experiment/Discussion
+A simple probability does not capture this fact.,Experiment/Discussion
+"The rationale for using two different statistics for this task is that each is well suited for its particular role, and not particularly well suited to the other.",Experiment/Discussion
+We have already mentioned that the simple ratio is ill suited to dealing with infrequent occurrences.,Experiment/Discussion
+"It is thus a poor candidate for ranking the final output, if that list includes words of as few as one occurrence in the corpus.",Experiment/Discussion
+"The log likelihood statistic, we found, is poorly suited to selecting new seed words in an iterative algorithm of this sort, because it promotes high frequency nouns, which can then overly influence selections in future iterations, if they are selected as seed words.",Experiment/Discussion
+"We termed this phenomenon infection, and found that it can be so strong as to kill the further progress of a category.",Experiment/Discussion
+"For example, if we are processing the category vehicle and the word artillery is selected as a seed word, a whole set of weapons that cooccur with artillery can now be selected in future iterations.",Experiment/Discussion
+"If one of those weapons occurs frequently enough, the scores for the words that it co-occurs with may exceed those of any vehicles, and this effect may be strong enough that no vehicles are selected in any future iteration.",Experiment/Discussion
+"In addition, because it promotes high frequency terms, such a statistic tends to have the same effect as a minimum occurrence cutoff, i.e. few if any low frequency words get added.",Experiment/Discussion
+"A simple probability is a much more conservative statistic, insofar as it selects far fewer words with the potential for infection, it limits the extent of any infection that does occur, and it includes rare words.",Experiment/Discussion
+"Our motto in using this statistic for selection is, &quot;First do no harm.&quot;",Experiment/Discussion
+The simple ratio used to select new seed words will tend not to select higher frequency words in the category.,Experiment/Discussion
+The solution to this problem is to make the initial seed word selection from among the most frequent head nouns in the corpus.,Experiment/Discussion
+"This is a sensible approach in any case, since it provides the broadest coverage of category occurrences, from which to select additional likely category members.",Experiment/Discussion
+"In a task that can suffer from sparse data, this is quite important.",Experiment/Discussion
+"We printed a list of the most common nouns in the corpus (the top 200 to 500), and selected category members by scanning through this list.",Experiment/Discussion
+"Another option would be to use head nouns identified in Wordnet, which, as a set, should include the most common members of the category in question.",Experiment/Discussion
+"In general, however, the strength of an algorithm of this sort is in identifying infrequent or specialized terms.",Experiment/Discussion
+Table 1 shows the seed words that were used for some of the categories tested.,Experiment/Discussion
+The relationship between the nouns in a compound noun is very different from that in the other constructions we are considering.,Experiment/Discussion
+The non-head nouns in a compound noun may or may not be legitimate members of the category.,Experiment/Discussion
+"For instance, either pickup truck or pickup is a legitimate vehicle, whereas cargo plane is legitimate, but cargo is not.",Experiment/Discussion
+"For this reason, co-occurrence within noun compounds is not considered in the iterative portions of our algorithm.",Experiment/Discussion
+"Instead, all noun compounds with a head that is included in our final ranked list, are evaluated for inclusion in a second list.",Experiment/Discussion
+The method for evaluating whether or not to include a noun compound in the second list is intended to exclude constructions such as government plane and include constructions such as fighter plane.,Experiment/Discussion
+"Simply put, the former does not correspond to a type of vehicle in the same way that the latter does.",Experiment/Discussion
+"We made the simplifying assumption that the higher the probability of the head given the non-head noun, the better the construction for our purposes.",Experiment/Discussion
+"For instance, if the noun government is found in a noun compound, how likely is the head of that compound to be plane?",Experiment/Discussion
+How does this compare to the noun fighter?,Experiment/Discussion
+"For this purpose, we take two counts for each ,noun in the compound: For each non-head noun in the compound, we evaluate whether or not to omit it in the output.",Experiment/Discussion
+"If all of them are omitted, or if the resulting compound has already been output, the entry is skipped.",Experiment/Discussion
+"Each noun is evaluated as follows: First, the head of that noun is determined.",Experiment/Discussion
+"To get a sense of what is meant here, consider the following compound: nuclear-powered aircraft carrier.",Experiment/Discussion
+"In evaluating the word nuclearpowered, it is unclear if this word is attached to aircraft or to carrier.",Experiment/Discussion
+"While we know that the head of the entire compound is carrier, in order to properly evaluate the word in question, we must determine which of the words following it is its head.",Experiment/Discussion
+"This is done, in the spirit of the Dependency Model of Lauer (1995), by selecting the noun to its right in the compound with the highest probability of occuring with the word in question when occurring in a noun compound.",Experiment/Discussion
+"(In the case that two nouns have the same probability, the rightmost noun is chosen.)",Experiment/Discussion
+"Once the head of the word is determined, the ratio of count 1 (with the head noun chosen) to count 2 is compared to an empirically set cutoff.",Experiment/Discussion
+"If it falls below that cutoff, it is omitted.",Experiment/Discussion
+"If it does not fall below the cutoff, then it is kept (provided its head noun is not later omitted).",Experiment/Discussion
+The input to the algorithm is a parsed corpus and a set of initial seed words for the desired category.,Experiment/Discussion
+"Nouns are matched with their plurals in the corpus, and a single representation is settled upon for both, e.g. car(s).",Experiment/Discussion
+Co-Occurrence bigrams are collected for head nouns according to the notion of co-occurrence outlined above.,Experiment/Discussion
+The algorithm then proceeds as follows:,Experiment/Discussion
+"We ran our algorithm against both the MUC-4 corpus and the Wall Street Journal (WSJ) corpus for a variety of categories, beginning with the categories of vehicle and weapon, both included in the five categories that Rk,S investigated in their paper.",Experiment/Discussion
+"Other categories that we investigated were crimes, people, commercial sites, states (as in static states of affairs), and machines.",Experiment/Discussion
+This last category was run because of the sparse data for the category weapon in the Wall Street Journal.,Experiment/Discussion
+"It represents roughly the same kind of category as weapon, namely technological artifacts.",Experiment/Discussion
+"It, in turn, produced sparse results with the MUC-4 corpus.",Experiment/Discussion
+Tables 3 and 4 show the top results on both the head noun and the compound noun lists generated for the categories we tested.,Experiment/Discussion
+R&S evaluated terms for the degree to which they are related to the category.,Experiment/Discussion
+"In contrast, we counted valid only those entries that are clear members of the category.",Experiment/Discussion
+Related words (e.g. crash for the category vehicle) did not count.,Experiment/Discussion
+A valid instance was: (1) novel (i.e. not in the original seed set); (2) unique (i.e. not a spelling variation or pluralization of a previously encountered entry); and (3) a proper class within the category (i.e. not an individual instance or a class based upon an incidental feature).,Experiment/Discussion
+"As an illustration of this last condition, neither Galileo Probe nor gray plane is a valid entry, the former because it denotes an individual and the latter because it is a class of planes based upon an incidental feature (color).",Experiment/Discussion
+"In the interests of generating as many valid entries as possible, we allowed for the inclusion in noun compounds of words tagged as adjectives or cardinality words.",Experiment/Discussion
+In certain occasions (e.g. four-wheel drive truck or nuclear bomb) this is necessary to avoid losing key parts of the compound.,Experiment/Discussion
+"Most common adjectives are dropped in our compound noun analysis, since they occur with a wide variety of heads.",Experiment/Discussion
+We determined three ways to evaluate the output of the algorithm for usefulness.,Experiment/Discussion
+The first is the ratio of valid entries to total entries produced.,Experiment/Discussion
+R&S reported a ratio of .17 valid to total entries for both the vehicle and weapon categories (see table 2).,Experiment/Discussion
+"On the same corpus, our algorithm yielded a ratio of .329 valid to total entries for the category vehicle, and .36 for the category weapon.",Experiment/Discussion
+This can be seen in the slope of the graphs in figure 1.,Experiment/Discussion
+Tables 2 and 5 give the relevant data for the categories that we investigated.,Experiment/Discussion
+"In general, the ratio of valid to total entries fell between .2 and .4, even in the cases that the output was relatively small.",Experiment/Discussion
+A second way to evaluate the algorithm is by the total number of valid entries produced.,Experiment/Discussion
+"As can be seen from the numbers reported in table 2, our algorithm generated from 2.4 to nearly 3 times as many valid terms for the two contrasting categories from the MUC corpus than the algorithm of R&S.",Experiment/Discussion
+Even more valid terms were generated for appropriate categories using the Wall Street Journal.,Experiment/Discussion
+Another way to evaluate the algorithm is with the number of valid entries produced that are not in Wordnet.,Experiment/Discussion
+Table 2 presents these numbers for the categories vehicle and weapon.,Experiment/Discussion
+"Whereas the R&S algorithm produced just 11 terms not already present in Wordnet for the two categories combined, our algorithm produced 106, or over 3 for every 5 valid terms produced.",Experiment/Discussion
+It is for this reason that we are billing our algorithm as something that could enhance existing broadcoverage resources with domain-specific lexical information.,Experiment/Discussion
+"We have outlined an algorithm in this paper that, as it stands, could significantly speed up the task of building a semantic lexicon.",Results/Conclusion
+"We have also examined in detail the reasons why it works, and have shown it to work well for multiple corpora and multiple categories.",Results/Conclusion
+"The algorithm generates many words not included in broad coverage resources, such as Wordnet, and could be thought of as a Wordnet &quot;enhancer&quot; for domain-specific applications.",Results/Conclusion
+"More generally, the relative success of the algorithm demonstrates the potential benefit of narrowing corpus input to specific kinds of constructions, despite the danger of compounding sparse data problems.",Results/Conclusion
+"To this end, parsing is invaluable.",Results/Conclusion
+Thanks to Mark Johnson for insightful discussion and to Julie Sedivy for helpful comments.,Results/Conclusion

@@ -1,194 +1,194 @@
 col1,col2
-The rapid growth of geotagged social media raises new computational possibilities for investigating geographic linguistic variation.,{}
-"In this paper, we present a multi-level generative model that reasons jointly about latent topics and geographical regions.",{}
-"High-level topics such as “sports” or “entertainment” are rendered differently in each geographic region, revealing topic-specific regional distinctions.",{}
-"Applied to a new dataset of geotagged microblogs, our model recovers coherent topics and their regional variants, while identifying geographic areas of linguistic consistency.",{}
-"The model also enables prediction of an author’s geographic location from raw text, outperforming both text regression and supervised topic models.",{}
-Sociolinguistics and dialectology study how language varies across social and regional contexts.,"{'title': '1 Introduction', 'number': '1'}"
-"Quantitative research in these fields generally proceeds by counting the frequency of a handful of previously-identified linguistic variables: pairs of phonological, lexical, or morphosyntactic features that are semantically equivalent, but whose frequency depends on social, geographical, or other factors (Paolillo, 2002; Chambers, 2009).","{'title': '1 Introduction', 'number': '1'}"
-"It is left to the experimenter to determine which variables will be considered, and there is no obvious procedure for drawing inferences from the distribution of multiple variables.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present a method for identifying geographically-aligned lexical variation directly from raw text.","{'title': '1 Introduction', 'number': '1'}"
-Our approach takes the form of a probabilistic graphical model capable of identifying both geographically-salient terms and coherent linguistic communities.,"{'title': '1 Introduction', 'number': '1'}"
-"One challenge in the study of lexical variation is that term frequencies are influenced by a variety of factors, such as the topic of discourse.","{'title': '1 Introduction', 'number': '1'}"
-We address this issue by adding latent variables that allow us to model topical variation explicitly.,"{'title': '1 Introduction', 'number': '1'}"
-"We hypothesize that geography and topic interact, as “pure” topical lexical distributions are corrupted by geographical factors; for example, a sports-related topic will be rendered differently in New York and California.","{'title': '1 Introduction', 'number': '1'}"
-"Each author is imbued with a latent “region” indicator, which both selects the regional variant of each topic, and generates the author’s observed geographical location.","{'title': '1 Introduction', 'number': '1'}"
-The regional corruption of topics is modeled through a cascade of logistic normal priors—a general modeling approach which we call cascading topic models.,"{'title': '1 Introduction', 'number': '1'}"
-"The resulting system has multiple capabilities, including: (i) analyzing lexical variation by both topic and geography; (ii) segmenting geographical space into coherent linguistic communities; (iii) predicting author location based on text alone.","{'title': '1 Introduction', 'number': '1'}"
-This research is only possible due to the rapid growth of social media.,"{'title': '1 Introduction', 'number': '1'}"
-"Our dataset is derived from the microblogging website Twitter,1 which permits users to post short messages to the public.","{'title': '1 Introduction', 'number': '1'}"
-"Many users of Twitter also supply exact geographical coordinates from GPS-enabled devices (e.g., mobile phones),2 yielding geotagged text data.","{'title': '1 Introduction', 'number': '1'}"
-"Text in computer-mediated communication is often more vernacular (Tagliamonte and Denis, 2008), and as such it is more likely to reveal the influence of geographic factors than text written in a more formal genre, such as news text (Labov, 1966).","{'title': '1 Introduction', 'number': '1'}"
-We evaluate our approach both qualitatively and quantitatively.,"{'title': '1 Introduction', 'number': '1'}"
-"We investigate the topics and regions that the model obtains, showing both common-sense results (place names and sports teams are grouped appropriately), as well as less-obvious insights about slang.","{'title': '1 Introduction', 'number': '1'}"
-"Quantitatively, we apply our model to predict the location of unlabeled authors, using text alone.","{'title': '1 Introduction', 'number': '1'}"
-"On this task, our model outperforms several alternatives, including both discriminative text regression and related latent-variable approaches.","{'title': '1 Introduction', 'number': '1'}"
-"The main dataset in this research is gathered from the microblog website Twitter, via its official API.","{'title': '2 Data', 'number': '2'}"
-"We use an archive of messages collected over the first week of March 2010 from the “Gardenhose” sample stream,3 which then consisted of 15% of all public messages, totaling millions per day.","{'title': '2 Data', 'number': '2'}"
-"We aggressively filter this stream, using only messages that are tagged with physical (latitude, longitude) coordinate pairs from a mobile client, and whose authors wrote at least 20 messages over this period.","{'title': '2 Data', 'number': '2'}"
-"We also filter to include only authors who follow fewer than 1,000 other people, and have fewer than 1,000 followers.","{'title': '2 Data', 'number': '2'}"
-"Kwak et al. (2010) find dramatic shifts in behavior among users with social graph connectivity outside of that range; such users may be marketers, celebrities with professional publicists, news media sources, etc.","{'title': '2 Data', 'number': '2'}"
-We also remove messages containing URLs to eliminate bots posting information such as advertising or weather conditions.,"{'title': '2 Data', 'number': '2'}"
-"For interpretability, we restrict our attention to authors inside a bounding box around the contiguous U.S. states, yielding a final sample of about 9,500 users and 380,000 messages, totaling 4.7 million word tokens.","{'title': '2 Data', 'number': '2'}"
-"We have made this dataset available online.4 Informal text from mobile phones is challenging to tokenize; we adapt a publicly available tokenizer5 originally developed for Twitter (O’Connor et al., 2010), which preserves emoticons and blocks of punctuation and other symbols as tokens.","{'title': '2 Data', 'number': '2'}"
-"For each user’s Twitter feed, we combine all messages into a single “document.” We remove word types that appear in fewer than 40 feeds, yielding a vocabulary of 5,216 words.","{'title': '2 Data', 'number': '2'}"
-"Of these, 1,332 do not appear in the English, French, or Spanish dictionaries of the spell-checking program aspell.","{'title': '2 Data', 'number': '2'}"
-"Every message is tagged with a location, but most messages from a single individual tend to come from nearby locations (as they go about their day); for modeling purposes we use only a single geographic location for each author, simply taking the location of the first message in the sample.","{'title': '2 Data', 'number': '2'}"
-"The authors in our dataset are fairly heavy Twitter users, posting an average of 40 messages per day (although we see only 15% of this total).","{'title': '2 Data', 'number': '2'}"
-"We have little information about their demographics, though from the text it seems likely that this user set skews towards teens and young adults.","{'title': '2 Data', 'number': '2'}"
-The dataset covers each of the 48 contiguous United States and the District of Columbia.,"{'title': '2 Data', 'number': '2'}"
-We develop a model that incorporates two sources of lexical variation: topic and geographical region.,"{'title': '3 Model', 'number': '3'}"
-"We treat the text and geographic locations as outputs from a generative process that incorporates both topics and regions as latent variables.6 During inference, we seek to recover the topics and regions that best explain the observed data.","{'title': '3 Model', 'number': '3'}"
-"At the base level of model are “pure” topics (such as “sports”, “weather”, or “slang”); these topics are rendered differently in each region.","{'title': '3 Model', 'number': '3'}"
-We call this general modeling approach a cascading topic model; we describe it first in general terms before moving to the specific application to geographical variation.,"{'title': '3 Model', 'number': '3'}"
-Cascading topic models generate text from a chain of random variables.,"{'title': '3 Model', 'number': '3'}"
-"Each element in the chain defines a distribution over words, and acts as the mean of the distribution over the subsequent element in the chain.","{'title': '3 Model', 'number': '3'}"
-"Thus, each element in the chain can be thought of as introducing some additional corruption.","{'title': '3 Model', 'number': '3'}"
-All words are drawn from the final distribution in the chain.,"{'title': '3 Model', 'number': '3'}"
-"At the beginning of the chain are the priors, followed by unadulerated base topics, which may then be corrupted by other factors (such as geography or time).","{'title': '3 Model', 'number': '3'}"
-"For example, consider a base “food” topic that emphasizes words like dinner and delicious; the corrupted “food-California” topic would place weight on these words, but might place extra emphasis on other words like sprouts.","{'title': '3 Model', 'number': '3'}"
-"The path through the cascade is determined by a set of indexing variables, which may be hidden or observed.","{'title': '3 Model', 'number': '3'}"
-"As in standard latent Dirichlet allocation (Blei et al., 2003), the base topics are selected by a per-token hidden variable z.","{'title': '3 Model', 'number': '3'}"
-"In the geographical topic model, the next level corresponds to regions, which are selected by a per-author latent variable r. Formally, we draw each level of the cascade from a normal distribution centered on the previous level; the final multinomial distribution over words is obtained by exponentiating and normalizing.","{'title': '3 Model', 'number': '3'}"
-"To ensure tractable inference, we assume that all covariance matrices are uniform diagonal, i.e., aI with a > 0; this means we do not model interactions between words.","{'title': '3 Model', 'number': '3'}"
-The application of cascading topic models to geographical variation is straightforward.,"{'title': '3 Model', 'number': '3'}"
-Each document corresponds to the entire Twitter feed of a given author during the time period covered by our corpus.,"{'title': '3 Model', 'number': '3'}"
-"For each author, the latent variable r corresponds to the geographical region of the author, which is not observed.","{'title': '3 Model', 'number': '3'}"
-"As described above, r selects a corrupted version of each topic: the kth basic topic has mean µk, with uniform diagonal covariance U2k; for region j, we can draw the regionallycorrupted topic from the normal distribution, ηjk ∼ N(µk, U2kI).","{'title': '3 Model', 'number': '3'}"
-"Because η is normally-distributed, it lies not in the simplex but in ][8W.","{'title': '3 Model', 'number': '3'}"
-We deterministically compute multinomial parameters β by exponentiating and normalizing: βjk = exp(ηjk)/ Ei exp(�(i) jk ).,"{'title': '3 Model', 'number': '3'}"
-"This normalization could introduce identifiability problems, as there are multiple settings for η that maximize P(w|η) (Blei and Lafferty, 2006a).","{'title': '3 Model', 'number': '3'}"
-"However, this difficulty is obviated by the priors: given µ and U2, there is only a single η that maximizes P(w|η)P(η|µ, U2); similarly, only a single µ maximizes P(η|µ)P(µ|a, b2).","{'title': '3 Model', 'number': '3'}"
-"The observed latitude and longitude, denoted y, are normally distributed and conditioned on the region, with mean νr and precision matrix Ar indexed by the region r. The region index r is itself drawn from a single shared multinomial ϑ.","{'title': '3 Model', 'number': '3'}"
-The model is shown as a plate diagram in Figure 1.,"{'title': '3 Model', 'number': '3'}"
-"Given a vocabulary size W, the generative story is as follows: – Draw the base topic from a normal distribution with uniform diagonal covariance: µk ∼ N(a, b2I), – Draw the regional variance from a Gamma distribution: U2k ∼(c, d).","{'title': '3 Model', 'number': '3'}"
-"– Generate regional variants: for each region j < J, ∗ Draw the region-topic ηjk from a normal distribution with uniform diagonal covariance: ηjk ∼ N(µk, U2kI).","{'title': '3 Model', 'number': '3'}"
-∗ Convert ηjk into a multinomial distribution over words by exponentiating and normalizing: where the denominator sums over the vocabulary.,"{'title': '3 Model', 'number': '3'}"
-We apply mean-field variational inference: a fullyfactored variational distribution Q is chosen to minimize the Kullback-Leibler divergence from the true distribution.,"{'title': '4 Inference', 'number': '4'}"
-"Mean-field variational inference with conjugate priors is described in detail elsewhere (Bishop, 2006; Wainwright and Jordan, 2008); we restrict our focus to the issues that are unique to the geographic topic model.","{'title': '4 Inference', 'number': '4'}"
-"We place variational distributions over all latent variables of interest: θ, z, r, ϑ, η, µ, σ2, ν, and Λ, updating each of these distributions in turn, until convergence.","{'title': '4 Inference', 'number': '4'}"
-"The variational distributions over θ and ϑ are Dirichlet, and have closed form updates: each can be set to the sum of the expected counts, plus a term from the prior (Blei et al., 2003).","{'title': '4 Inference', 'number': '4'}"
-"The variational distributions q(z) and q(r) are categorical, and can be set proportional to the expected joint likelihood—to set q(z) we marginalize over r, and vice versa.7 The updates for the multivariate Gaussian spatial parameters ν and Λ are described by Penny (2001).","{'title': '4 Inference', 'number': '4'}"
-"The variational region-topic distribution ηjk is normal, with uniform diagonal covariance for tractability.","{'title': '4 Inference', 'number': '4'}"
-Throughout we will write hxi to indicate the expectation of x under the variational distribution Q.,"{'title': '4 Inference', 'number': '4'}"
-"Thus, the vector mean of the distribution q(ηjk) is written hηjki, while the variance (uniform across i) of q(η) is written V(ηjk).","{'title': '4 Inference', 'number': '4'}"
-"To update the mean parameter hηjki, we maximize the contribution to the variational bound L from the relevant terms: 7Thanks to the naive mean field assumption, we can marginalize over z by first decomposing across all Nd words and then summing over q(z). with the first term representing the likelihood of the observed words (recall that β is computed deterministically from η) and the second term corresponding to the prior.","{'title': '4 Inference', 'number': '4'}"
-"The likelihood term requires the expectation hlog βi, but this is somewhat complicated by the normalizer EWi exp(η(i)), which sums over all terms in the vocabulary.","{'title': '4 Inference', 'number': '4'}"
-"As in previous work on logistic normal topic models, we use a Taylor approximation for this term (Blei and Lafferty, 2006a).","{'title': '4 Inference', 'number': '4'}"
-"The prior on η is normal, so the contribution from the second term of the objective (Equation 1) is jk − µki))2i.","{'title': '4 Inference', 'number': '4'}"
-"We introduce the following notation for expected counts: N(i, j, k) indicates the expected count of term i in region j and topic k, and N(j, k) = Ei N(i, j, k).","{'title': '4 Inference', 'number': '4'}"
-"After some calculus, we can write the gradient ∂L/∂hη((i)) (2) which has an intuitive interpretation.","{'title': '4 Inference', 'number': '4'}"
-"The first two terms represent the difference in expected counts for term i under the variational distributions q(z, r) and q(z, r,β): this difference goes to zero when β(i) jk perfectly matches N(i, j, k)/N(j, k).","{'title': '4 Inference', 'number': '4'}"
-"The third term penalizesη(i) jkfor deviating from its prior µ(i) k , but this penalty is proportional to the expected inverse variance hσ�2 k i.","{'title': '4 Inference', 'number': '4'}"
-We apply gradient ascent to maximize the objective L. A similar set of calculations gives the gradient for the variance of η; these are described in an forthcoming appendix.,"{'title': '4 Inference', 'number': '4'}"
-"The base topic parameters are µk and σ2k; in the variational distribution, q(µk) is normally distributed and q(σ2k) is Gamma distributed.","{'title': '4 Inference', 'number': '4'}"
-Note that µk and σ2k affect only the regional word distributions 7 jk.,"{'title': '4 Inference', 'number': '4'}"
-"An advantage of the logistic normal is that the variational parameters over µk are available in closed form, where J indicates the number of regions.","{'title': '4 Inference', 'number': '4'}"
-The expectation of the base topic µ incorporates the prior and the average of the generated region-topics— these two components are weighted respectively by the expected variance of the region-topics (σ2k) and the prior topical variance b2.,"{'title': '4 Inference', 'number': '4'}"
-The posterior variance V(µ) is a harmonic combination of the prior variance b2 and the expected variance of the region topics.,"{'title': '4 Inference', 'number': '4'}"
-The variational distribution over the region-topic variance σ2k has Gamma parameters.,"{'title': '4 Inference', 'number': '4'}"
-"These parameters cannot be updated in closed form, so gradient optimization is again required.","{'title': '4 Inference', 'number': '4'}"
-"The derivation of these updates is more involved, and is left for a forthcoming appendix.","{'title': '4 Inference', 'number': '4'}"
-"Variational scheduling and initialization are important aspects of any hierarchical generative model, and are often under-discussed.","{'title': '5 Implementation', 'number': '5'}"
-"In our implementation, the variational updates are scheduled as follows: given expected counts, we iteratively update the variational parameters on the region-topics 77 and the base topics µ, until convergence.","{'title': '5 Implementation', 'number': '5'}"
-"We then update the geographical parameters v and A, as well as the distribution over regions 0.","{'title': '5 Implementation', 'number': '5'}"
-"Finally, for each document we iteratively update the variational parameters over 0, z, and r until convergence, obtaining expected counts that are used in the next iteration of updates for the topics and their regional variants.","{'title': '5 Implementation', 'number': '5'}"
-We iterate an outer loop over the entire set of updates until convergence.,"{'title': '5 Implementation', 'number': '5'}"
-We initialize the model in a piecewise fashion.,"{'title': '5 Implementation', 'number': '5'}"
-"First we train a Dirichlet process mixture model on the locations y, using variational inference on the truncated stick-breaking approximation (Blei and Jordan, 2006).","{'title': '5 Implementation', 'number': '5'}"
-"This automatically selects the number of regions J, and gives a distribution over each region indicator rd from geographical information alone.","{'title': '5 Implementation', 'number': '5'}"
-We then run standard latent Dirichlet allocation to obtain estimates of z for each token (ignoring the locations).,"{'title': '5 Implementation', 'number': '5'}"
-"From this initialization we can compute the first set of expected counts, which are used to obtain initial estimates of all parameters needed to begin variational inference in the full model.","{'title': '5 Implementation', 'number': '5'}"
-"The prior a is the expected mean of each topic µ; for each term i, we set a(i) = log N(i) − log N, where N(i) is the total count of i in the corpus and N = Ei N(i).","{'title': '5 Implementation', 'number': '5'}"
-"The variance prior b2 is set to 1, and the prior on σ2 is the Gamma distribution 9(2, 200), encouraging minimal deviation from the base topics.","{'title': '5 Implementation', 'number': '5'}"
-"The symmetric Dirichlet prior on 0 is set to 12, and the symmetric Dirichlet parameter on ϑ is updated from weak hyperpriors (Minka, 2003).","{'title': '5 Implementation', 'number': '5'}"
-"Finally, the geographical model takes priors that are linked to the data: for each region, the mean is very weakly encouraged to be near the overall mean, and the covariance prior is set by the average covariance of clusters obtained by running K-means.","{'title': '5 Implementation', 'number': '5'}"
-"For a quantitative evaluation of the estimated relationship between text and geography, we assess our model’s ability to predict the geographic location of unlabeled authors based on their text alone.8 This task may also be practically relevant as a step toward applications for recommending local businesses or social connections.","{'title': '6 Evaluation', 'number': '6'}"
-"A randomly-chosen 60% of authors are used for training, 20% for development, and the remaining 20% for final evaluation.","{'title': '6 Evaluation', 'number': '6'}"
-We compare several approaches for predicting author location; we divide these into latent variable generative models and discriminative approaches.,"{'title': '6 Evaluation', 'number': '6'}"
-"8Alternatively, one might evaluate the attributed regional memberships of the words themselves.","{'title': '6 Evaluation', 'number': '6'}"
-"While the Dictionary of American Regional English (Cassidy and Hall, 1985) attempts a comprehensive list of all regionally-affiliated terms, it is based on interviews conducted from 1965-1970, and the final volume (covering Si–Z) is not yet complete.","{'title': '6 Evaluation', 'number': '6'}"
-"Geographic Topic Model This is the full version of our system, as described in this paper.","{'title': '6 Evaluation', 'number': '6'}"
-"To predict the unseen location yd, we iterate until convergence on the variational updates for the hidden topics zd, the topic proportions 9d, and the region rd.","{'title': '6 Evaluation', 'number': '6'}"
-"From rd, the location can be estimated as yd = �J argmaxy j p(y|vj, Aj)q(rd = j).","{'title': '6 Evaluation', 'number': '6'}"
-The development set is used to tune the number of topics and to select the best of multiple random initializations.,"{'title': '6 Evaluation', 'number': '6'}"
-Mixture of Unigrams A core premise of our approach is that modeling topical variation will improve our ability to understand geographical variation.,"{'title': '6 Evaluation', 'number': '6'}"
-"We test this idea by fixing K = 1, running our system with only a single topic.","{'title': '6 Evaluation', 'number': '6'}"
-"This is equivalent to a Bayesian mixture of unigrams in which each author is assigned a single, regional unigram language model that generates all of his or her text.","{'title': '6 Evaluation', 'number': '6'}"
-The development set is used to select the best of multiple random initializations.,"{'title': '6 Evaluation', 'number': '6'}"
-"Supervised Latent Dirichlet Allocation In a more subtle version of the mixture-of-unigrams model, we model each author as an admixture of regions.","{'title': '6 Evaluation', 'number': '6'}"
-"Thus, the latent variable attached to each author is no longer an index, but rather a vector on the simplex.","{'title': '6 Evaluation', 'number': '6'}"
-"This model is equivalent to supervised latent Dirichlet allocation (Blei and McAuliffe, 2007): each topic is associated with equivariant Gaussian distributions over the latitude and longitude, and these topics must explain both the text and the observed geographical locations.","{'title': '6 Evaluation', 'number': '6'}"
-"For unlabeled authors, we estimate latitude and longitude by estimating the topic proportions and then applying the learned geographical distributions.","{'title': '6 Evaluation', 'number': '6'}"
-"This is a linear prediction f(2d; a) = (�zTd alat, 2Td alon) for an author’s topic proportions zd and topicgeography weights a E R2K.","{'title': '6 Evaluation', 'number': '6'}"
-Text Regression We perform linear regression to discriminatively learn the relationship between words and locations.,"{'title': '6 Evaluation', 'number': '6'}"
-"Using term frequency features xd for each author, we predict locations with wordgeography weights a E R2W: f(xd; a) = (xTd alat, Weights are trained to minimize the sum of squared Euclidean distances, subject to L1 regularization: The minimization problem decouples into two separate latitude and longitude models, which we fit using the glmnet elastic net regularized regression package (Friedman et al., 2010), which obtained good results on other text-based prediction tasks (Joshi et al., 2010).","{'title': '6 Evaluation', 'number': '6'}"
-Regularization parameters were tuned on the development set.,"{'title': '6 Evaluation', 'number': '6'}"
-The L1 penalty outperformed L2 and mixtures of L1 and L2.,"{'title': '6 Evaluation', 'number': '6'}"
-"Note that for both word-level linear regression here, and the topic-level linear regression in SLDA, the choice of squared Euclidean distance dovetails with our use of spatial Gaussian likelihoods in the geographic topic models, since optimizing a is equivalent to maximum likelihood estimation under the assumption that locations are drawn from equivariant circular Gaussians centered around each f(xd; a) linear prediction.","{'title': '6 Evaluation', 'number': '6'}"
-"We experimented with decorrelating the location dimensions by projecting yd into the principal component space, but this did not help text regression.","{'title': '6 Evaluation', 'number': '6'}"
-K-Nearest Neighbors Linear regression is a poor model for the multimodal density of human populations.,"{'title': '6 Evaluation', 'number': '6'}"
-"As an alternative baseline, we applied supervised K-nearest neighbors to predict the location yd as the average of the positions of the K most similar authors in the training set.","{'title': '6 Evaluation', 'number': '6'}"
-We computed termfrequency inverse-document frequency features and applied cosine similarity over their first 30 principal components to find the neighbors.,"{'title': '6 Evaluation', 'number': '6'}"
-"The choices of principal components, IDF weighting, and neighborhood size K = 20 were tuned on the development set.","{'title': '6 Evaluation', 'number': '6'}"
-"Our principle error metrics are the mean and median distance between the predicted and true location in kilometers.9 Because the distance error may be difficult to interpret, we also report accuracy of classification by state and by region of the United States.","{'title': '6 Evaluation', 'number': '6'}"
-"Our data includes the 48 contiguous states plus the District of Columbia; the U.S. Census Bureau divides these states into four regions: West, Midwest, Northeast, and South.10 Note that while major population centers straddle several state lines, most region boundaries are far from the largest cities, resulting in a clearer analysis.","{'title': '6 Evaluation', 'number': '6'}"
-"As shown in Table 1, the geographic topic model achieves the strongest performance on all metrics.","{'title': '6 Evaluation', 'number': '6'}"
-All differences in performance between systems are statistically significant (p < .01) using the Wilcoxon-Mann-Whitney test for regression error and the k2 test for classification accuracy.,"{'title': '6 Evaluation', 'number': '6'}"
-Figure 2 shows how performance changes as the number of topics varies.,"{'title': '6 Evaluation', 'number': '6'}"
-"Note that the geographic topic model and the mixture of unigrams use identical code and parametrization – the only difference is that the geographic topic model accounts for topical variation, while the mixture of unigrams sets K = 1.","{'title': '6 Evaluation', 'number': '6'}"
-These results validate our basic premise that it is important to model the interaction between topical and geographical variation.,"{'title': '6 Evaluation', 'number': '6'}"
-Text regression and supervised LDA perform especially poorly on the classification metric.,"{'title': '6 Evaluation', 'number': '6'}"
-"Both methods make predictions that are averaged across Earth’s surface requires computing or approximating the great circle distance – we use the Haversine formula (Sinnott, 1984).","{'title': '6 Evaluation', 'number': '6'}"
-"For the continental U.S., the relationship between degrees and kilometers is nearly linear, but extending the model to a continental scale would require a more sophisticated approach. each word in the document: in text regression, each word is directly multiplied by a feature weight; in supervised LDA the word is associated with a latent topic first, and then multiplied by a weight.","{'title': '6 Evaluation', 'number': '6'}"
-"For these models, all words exert an influence on the predicted location, so uninformative words will draw the prediction towards the center of the map.","{'title': '6 Evaluation', 'number': '6'}"
-This yields reasonable distance errors but poor classification accuracy.,"{'title': '6 Evaluation', 'number': '6'}"
-"We had hoped that K-nearest neighbors would be a better fit for this metric, but its performance is poor at all values of K. Of course it is always possible to optimize classification accuracy directly, but such an approach would be incapable of predicting the exact geographical location, which is the focus of our evaluation (given that the desired geographical partition is unknown).","{'title': '6 Evaluation', 'number': '6'}"
-Note that the geographic topic model is also not trained to optimize classification accuracy.,"{'title': '6 Evaluation', 'number': '6'}"
-Our model permits analysis of geographical variation in the context of topics that help to clarify the significance of geographically-salient terms.,"{'title': '7 Analysis', 'number': '7'}"
-"Table 2 shows a subset of the results of one randomlyinitialized run, including five hand-chosen topics (of 50 total) and five regions (of 13, as chosen automatically during initialization).","{'title': '7 Analysis', 'number': '7'}"
-Terms were selected by log-odds comparison.,"{'title': '7 Analysis', 'number': '7'}"
-For the base topics we show the ten strongest terms in each topic as compared to the background word distribution.,"{'title': '7 Analysis', 'number': '7'}"
-"For the regional variants, we show terms that are strong both regionally and topically: specifically, we select terms that are in the top 100 compared to both the background distribution and to the base topic.","{'title': '7 Analysis', 'number': '7'}"
-The names for the topics and regions were chosen by the authors.,"{'title': '7 Analysis', 'number': '7'}"
-"Nearly all of the terms in column 1 (“basketball”) refer to sports teams, athletes, and place names— encouragingly, terms tend to appear in the regions where their referents reside.","{'title': '7 Analysis', 'number': '7'}"
-"Column 2 contains several proper nouns, mostly referring to popular music figures (including PEARL from the band Pearl Jam).11 Columns 3–5 are more conversational.","{'title': '7 Analysis', 'number': '7'}"
-"Spanish-language terms (papi, pues, nada, ese) tend to appear in regions with large Spanish-speaking populations—it is also telling that these terms appear in topics with emoticons and slang abbreviations, which may transcend linguistic barriers.","{'title': '7 Analysis', 'number': '7'}"
-"Other terms refer to people or subjects that may be especially relevant in certain regions: tacos appears in the southern California region and cab in the New York region; TUPAC refers to a rap musician from Los Angeles, and WIZ refers to a rap musician from Pittsburgh, not far from the center of the “Lake Erie” region.","{'title': '7 Analysis', 'number': '7'}"
-"A large number of slang terms are found to have strong regional biases, suggesting that slang may depend on geography more than standard English does.","{'title': '7 Analysis', 'number': '7'}"
-"The terms af and hella display especially strong regional affinities, appearing in the regional variants of multiple topics (see Table 3 for definitions).","{'title': '7 Analysis', 'number': '7'}"
-Northern and Southern California use variant spellings koo and coo to express the same meaning.,"{'title': '7 Analysis', 'number': '7'}"
-"11This analysis is from an earlier version of our dataset that contained some Twitterbots, including one from a Boston-area radio station.","{'title': '7 Analysis', 'number': '7'}"
-"The bots were purged for the evaluation in Section 6, though the numerical results are nearly identical. term definition term definition af as fuck (very) jk just kidding coo cool jp just playing (kiddl download ding) fasho for sure koo cool gna going to lol laugh out loud hella very nm nothing much hr hour od overdone (very) iam I am omw on my way ima I’m going to smh shake my head imm I’m suttin something iono I don’t know wassup what’s up lames lame (not cool) wyd what are you dopeople ing?","{'title': '7 Analysis', 'number': '7'}"
-"While research in perceptual dialectology does confirm the link of hella to Northern California (Bucholtz et al., 2007), we caution that our findings are merely suggestive, and a more rigorous analysis must be undertaken before making definitive statements about the regional membership of individual terms.","{'title': '7 Analysis', 'number': '7'}"
-We view the geographic topic model as an exploratory tool that may be used to facilitate such investigations.,"{'title': '7 Analysis', 'number': '7'}"
-Figure 3 shows the regional clustering on the training set obtained by one run of the model.,"{'title': '7 Analysis', 'number': '7'}"
-"Each point represents an author, and the ellipses represent the bivariate Gaussians for each region.","{'title': '7 Analysis', 'number': '7'}"
-"There are nine compact regions for major metropolitan areas, two slightly larger regions that encompass Florida and the area around Lake Erie, and two large regions that partition the country roughly into north and south.","{'title': '7 Analysis', 'number': '7'}"
-"The relationship between language and geography has been a topic of interest to linguists since the nineteenth century (Johnstone, 2010).","{'title': '8 Related Work', 'number': '8'}"
-"An early work of particular relevance is Kurath’s Word Geography of the Eastern United States (1949), in which he conducted interviews and then mapped the occurrence of equivalent word pairs such as stoop and porch.","{'title': '8 Related Work', 'number': '8'}"
-"The essence of this approach—identifying variable pairs and measuring their frequencies— remains a dominant methodology in both dialectology (Labov et al., 2006) and sociolinguistics (Tagliamonte, 2006).","{'title': '8 Related Work', 'number': '8'}"
-"Within this paradigm, computational techniques are often applied to post hoc analysis: logistic regression (Sankoff et al., 2005) and mixed-effects models (Johnson, 2009) are used to measure the contribution of individual variables, while hierarchical clustering and multidimensional scaling enable aggregated inference across multiple variables (Nerbonne, 2009).","{'title': '8 Related Work', 'number': '8'}"
-"However, in all such work it is assumed that the relevant linguistic variables have already been identified—a timeconsuming process involving considerable linguistic expertise.","{'title': '8 Related Work', 'number': '8'}"
-"We view our work as complementary to this tradition: we work directly from raw text, identifying both the relevant features and coherent linguistic communities.","{'title': '8 Related Work', 'number': '8'}"
-"An active recent literature concerns geotagged information on the web, such as search queries (Backstrom et al., 2008) and tagged images (Crandall et al., 2009).","{'title': '8 Related Work', 'number': '8'}"
-"This research identifies the geographic distribution of individual queries and tags, but does not attempt to induce any structural organization of either the text or geographical space, which is the focus of our research.","{'title': '8 Related Work', 'number': '8'}"
-"More relevant is the work of Mei et al. (2006), in which the distribution over latent topics in blog posts is conditioned on the geographical location of the author.","{'title': '8 Related Work', 'number': '8'}"
-"This is somewhat similar to the supervised LDA model that we consider, but their approach assumes that a partitioning of geographical space into regions is already given.","{'title': '8 Related Work', 'number': '8'}"
-"Methodologically, our cascading topic model is designed to capture multiple dimensions of variability: topics and geography.","{'title': '8 Related Work', 'number': '8'}"
-"Mei et al. (2007) include sentiment as a second dimension in a topic model, using a switching variable so that individual word tokens may be selected from either the topic or the sentiment.","{'title': '8 Related Work', 'number': '8'}"
-"However, our hypothesis is that individual word tokens reflect both the topic and the geographical aspect.","{'title': '8 Related Work', 'number': '8'}"
-"Sharing this intuition, Paul and Girju (2010) build topic-aspect models for the cross product of topics and aspects.","{'title': '8 Related Work', 'number': '8'}"
-"They do not impose any regularity across multiple aspects of the same topic, so this approach may not scale when the number of aspects is large (they consider only two aspects).","{'title': '8 Related Work', 'number': '8'}"
-"We address this issue using cascading distributions; when the observed data for a given regiontopic pair is low, the model falls back to the base topic.","{'title': '8 Related Work', 'number': '8'}"
-"The use of cascading logistic normal distributions in topic models follows earlier work on dynamic topic models (Blei and Lafferty, 2006b; Xing, 2005).","{'title': '8 Related Work', 'number': '8'}"
-"This paper presents a model that jointly identifies words with high regional affinity, geographicallycoherent linguistic regions, and the relationship between regional and topic variation.","{'title': '9 Conclusion', 'number': '9'}"
-The key modeling assumption is that regions and topics interact to shape observed lexical frequencies.,"{'title': '9 Conclusion', 'number': '9'}"
-We validate this assumption on a prediction task in which our model outperforms strong alternatives that do not distinguish regional and topical variation.,"{'title': '9 Conclusion', 'number': '9'}"
-We see this work as a first step towards a unsupervised methodology for modeling linguistic variation using raw text.,"{'title': '9 Conclusion', 'number': '9'}"
-"Indeed, in a study of morphosyntactic variation, Szmrecsanyi (2010) finds that by the most generous measure, geographical factors account for only 33% of the observed variation.","{'title': '9 Conclusion', 'number': '9'}"
-"Our analysis might well improve if non-geographical factors were considered, including age, race, gender, income and whether a location is urban or rural.","{'title': '9 Conclusion', 'number': '9'}"
-"In some regions, estimates of many of these factors may be obtained by cross-referencing geography with demographic data.","{'title': '9 Conclusion', 'number': '9'}"
-We hope to explore this possibility in future work.,"{'title': '9 Conclusion', 'number': '9'}"
-"We would like to thank Amr Ahmed, Jonathan Chang, Shay Cohen, William Cohen, Ross Curtis, Miro Dud´ık, Scott Kiesling, Seyoung Kim, and the anonymous reviewers.","{'title': 'Acknowledgments', 'number': '10'}"
-"This research was enabled by Google’s support of the Worldly Knowledge project at CMU, AFOSR FA9550010247, ONR N0001140910758, NSF CAREER DBI-0546594, NSF IIS-0713379, and an Alfred P. Sloan Fellowship.","{'title': 'Acknowledgments', 'number': '10'}"
+The rapid growth of geotagged social media raises new computational possibilities for investigating geographic linguistic variation.,Introduction
+"In this paper, we present a multi-level generative model that reasons jointly about latent topics and geographical regions.",Introduction
+"High-level topics such as “sports” or “entertainment” are rendered differently in each geographic region, revealing topic-specific regional distinctions.",Introduction
+"Applied to a new dataset of geotagged microblogs, our model recovers coherent topics and their regional variants, while identifying geographic areas of linguistic consistency.",Introduction
+"The model also enables prediction of an author’s geographic location from raw text, outperforming both text regression and supervised topic models.",Introduction
+Sociolinguistics and dialectology study how language varies across social and regional contexts.,Experiment/Discussion
+"Quantitative research in these fields generally proceeds by counting the frequency of a handful of previously-identified linguistic variables: pairs of phonological, lexical, or morphosyntactic features that are semantically equivalent, but whose frequency depends on social, geographical, or other factors (Paolillo, 2002; Chambers, 2009).",Experiment/Discussion
+"It is left to the experimenter to determine which variables will be considered, and there is no obvious procedure for drawing inferences from the distribution of multiple variables.",Experiment/Discussion
+"In this paper, we present a method for identifying geographically-aligned lexical variation directly from raw text.",Experiment/Discussion
+Our approach takes the form of a probabilistic graphical model capable of identifying both geographically-salient terms and coherent linguistic communities.,Experiment/Discussion
+"One challenge in the study of lexical variation is that term frequencies are influenced by a variety of factors, such as the topic of discourse.",Experiment/Discussion
+We address this issue by adding latent variables that allow us to model topical variation explicitly.,Experiment/Discussion
+"We hypothesize that geography and topic interact, as “pure” topical lexical distributions are corrupted by geographical factors; for example, a sports-related topic will be rendered differently in New York and California.",Experiment/Discussion
+"Each author is imbued with a latent “region” indicator, which both selects the regional variant of each topic, and generates the author’s observed geographical location.",Experiment/Discussion
+The regional corruption of topics is modeled through a cascade of logistic normal priors—a general modeling approach which we call cascading topic models.,Experiment/Discussion
+"The resulting system has multiple capabilities, including: (i) analyzing lexical variation by both topic and geography; (ii) segmenting geographical space into coherent linguistic communities; (iii) predicting author location based on text alone.",Experiment/Discussion
+This research is only possible due to the rapid growth of social media.,Experiment/Discussion
+"Our dataset is derived from the microblogging website Twitter,1 which permits users to post short messages to the public.",Experiment/Discussion
+"Many users of Twitter also supply exact geographical coordinates from GPS-enabled devices (e.g., mobile phones),2 yielding geotagged text data.",Experiment/Discussion
+"Text in computer-mediated communication is often more vernacular (Tagliamonte and Denis, 2008), and as such it is more likely to reveal the influence of geographic factors than text written in a more formal genre, such as news text (Labov, 1966).",Experiment/Discussion
+We evaluate our approach both qualitatively and quantitatively.,Experiment/Discussion
+"We investigate the topics and regions that the model obtains, showing both common-sense results (place names and sports teams are grouped appropriately), as well as less-obvious insights about slang.",Experiment/Discussion
+"Quantitatively, we apply our model to predict the location of unlabeled authors, using text alone.",Experiment/Discussion
+"On this task, our model outperforms several alternatives, including both discriminative text regression and related latent-variable approaches.",Experiment/Discussion
+"The main dataset in this research is gathered from the microblog website Twitter, via its official API.",Experiment/Discussion
+"We use an archive of messages collected over the first week of March 2010 from the “Gardenhose” sample stream,3 which then consisted of 15% of all public messages, totaling millions per day.",Experiment/Discussion
+"We aggressively filter this stream, using only messages that are tagged with physical (latitude, longitude) coordinate pairs from a mobile client, and whose authors wrote at least 20 messages over this period.",Experiment/Discussion
+"We also filter to include only authors who follow fewer than 1,000 other people, and have fewer than 1,000 followers.",Experiment/Discussion
+"Kwak et al. (2010) find dramatic shifts in behavior among users with social graph connectivity outside of that range; such users may be marketers, celebrities with professional publicists, news media sources, etc.",Experiment/Discussion
+We also remove messages containing URLs to eliminate bots posting information such as advertising or weather conditions.,Experiment/Discussion
+"For interpretability, we restrict our attention to authors inside a bounding box around the contiguous U.S. states, yielding a final sample of about 9,500 users and 380,000 messages, totaling 4.7 million word tokens.",Experiment/Discussion
+"We have made this dataset available online.4 Informal text from mobile phones is challenging to tokenize; we adapt a publicly available tokenizer5 originally developed for Twitter (O’Connor et al., 2010), which preserves emoticons and blocks of punctuation and other symbols as tokens.",Experiment/Discussion
+"For each user’s Twitter feed, we combine all messages into a single “document.” We remove word types that appear in fewer than 40 feeds, yielding a vocabulary of 5,216 words.",Experiment/Discussion
+"Of these, 1,332 do not appear in the English, French, or Spanish dictionaries of the spell-checking program aspell.",Experiment/Discussion
+"Every message is tagged with a location, but most messages from a single individual tend to come from nearby locations (as they go about their day); for modeling purposes we use only a single geographic location for each author, simply taking the location of the first message in the sample.",Experiment/Discussion
+"The authors in our dataset are fairly heavy Twitter users, posting an average of 40 messages per day (although we see only 15% of this total).",Experiment/Discussion
+"We have little information about their demographics, though from the text it seems likely that this user set skews towards teens and young adults.",Experiment/Discussion
+The dataset covers each of the 48 contiguous United States and the District of Columbia.,Experiment/Discussion
+We develop a model that incorporates two sources of lexical variation: topic and geographical region.,Experiment/Discussion
+"We treat the text and geographic locations as outputs from a generative process that incorporates both topics and regions as latent variables.6 During inference, we seek to recover the topics and regions that best explain the observed data.",Experiment/Discussion
+"At the base level of model are “pure” topics (such as “sports”, “weather”, or “slang”); these topics are rendered differently in each region.",Experiment/Discussion
+We call this general modeling approach a cascading topic model; we describe it first in general terms before moving to the specific application to geographical variation.,Experiment/Discussion
+Cascading topic models generate text from a chain of random variables.,Experiment/Discussion
+"Each element in the chain defines a distribution over words, and acts as the mean of the distribution over the subsequent element in the chain.",Experiment/Discussion
+"Thus, each element in the chain can be thought of as introducing some additional corruption.",Experiment/Discussion
+All words are drawn from the final distribution in the chain.,Experiment/Discussion
+"At the beginning of the chain are the priors, followed by unadulerated base topics, which may then be corrupted by other factors (such as geography or time).",Experiment/Discussion
+"For example, consider a base “food” topic that emphasizes words like dinner and delicious; the corrupted “food-California” topic would place weight on these words, but might place extra emphasis on other words like sprouts.",Experiment/Discussion
+"The path through the cascade is determined by a set of indexing variables, which may be hidden or observed.",Experiment/Discussion
+"As in standard latent Dirichlet allocation (Blei et al., 2003), the base topics are selected by a per-token hidden variable z.",Experiment/Discussion
+"In the geographical topic model, the next level corresponds to regions, which are selected by a per-author latent variable r. Formally, we draw each level of the cascade from a normal distribution centered on the previous level; the final multinomial distribution over words is obtained by exponentiating and normalizing.",Experiment/Discussion
+"To ensure tractable inference, we assume that all covariance matrices are uniform diagonal, i.e., aI with a > 0; this means we do not model interactions between words.",Experiment/Discussion
+The application of cascading topic models to geographical variation is straightforward.,Experiment/Discussion
+Each document corresponds to the entire Twitter feed of a given author during the time period covered by our corpus.,Experiment/Discussion
+"For each author, the latent variable r corresponds to the geographical region of the author, which is not observed.",Experiment/Discussion
+"As described above, r selects a corrupted version of each topic: the kth basic topic has mean µk, with uniform diagonal covariance U2k; for region j, we can draw the regionallycorrupted topic from the normal distribution, ηjk ∼ N(µk, U2kI).",Experiment/Discussion
+"Because η is normally-distributed, it lies not in the simplex but in ][8W.",Experiment/Discussion
+We deterministically compute multinomial parameters β by exponentiating and normalizing: βjk = exp(ηjk)/ Ei exp(�(i) jk ).,Experiment/Discussion
+"This normalization could introduce identifiability problems, as there are multiple settings for η that maximize P(w|η) (Blei and Lafferty, 2006a).",Experiment/Discussion
+"However, this difficulty is obviated by the priors: given µ and U2, there is only a single η that maximizes P(w|η)P(η|µ, U2); similarly, only a single µ maximizes P(η|µ)P(µ|a, b2).",Experiment/Discussion
+"The observed latitude and longitude, denoted y, are normally distributed and conditioned on the region, with mean νr and precision matrix Ar indexed by the region r. The region index r is itself drawn from a single shared multinomial ϑ.",Experiment/Discussion
+The model is shown as a plate diagram in Figure 1.,Experiment/Discussion
+"Given a vocabulary size W, the generative story is as follows: – Draw the base topic from a normal distribution with uniform diagonal covariance: µk ∼ N(a, b2I), – Draw the regional variance from a Gamma distribution: U2k ∼(c, d).",Experiment/Discussion
+"– Generate regional variants: for each region j < J, ∗ Draw the region-topic ηjk from a normal distribution with uniform diagonal covariance: ηjk ∼ N(µk, U2kI).",Experiment/Discussion
+∗ Convert ηjk into a multinomial distribution over words by exponentiating and normalizing: where the denominator sums over the vocabulary.,Experiment/Discussion
+We apply mean-field variational inference: a fullyfactored variational distribution Q is chosen to minimize the Kullback-Leibler divergence from the true distribution.,Experiment/Discussion
+"Mean-field variational inference with conjugate priors is described in detail elsewhere (Bishop, 2006; Wainwright and Jordan, 2008); we restrict our focus to the issues that are unique to the geographic topic model.",Experiment/Discussion
+"We place variational distributions over all latent variables of interest: θ, z, r, ϑ, η, µ, σ2, ν, and Λ, updating each of these distributions in turn, until convergence.",Experiment/Discussion
+"The variational distributions over θ and ϑ are Dirichlet, and have closed form updates: each can be set to the sum of the expected counts, plus a term from the prior (Blei et al., 2003).",Experiment/Discussion
+"The variational distributions q(z) and q(r) are categorical, and can be set proportional to the expected joint likelihood—to set q(z) we marginalize over r, and vice versa.7 The updates for the multivariate Gaussian spatial parameters ν and Λ are described by Penny (2001).",Experiment/Discussion
+"The variational region-topic distribution ηjk is normal, with uniform diagonal covariance for tractability.",Experiment/Discussion
+Throughout we will write hxi to indicate the expectation of x under the variational distribution Q.,Experiment/Discussion
+"Thus, the vector mean of the distribution q(ηjk) is written hηjki, while the variance (uniform across i) of q(η) is written V(ηjk).",Experiment/Discussion
+"To update the mean parameter hηjki, we maximize the contribution to the variational bound L from the relevant terms: 7Thanks to the naive mean field assumption, we can marginalize over z by first decomposing across all Nd words and then summing over q(z). with the first term representing the likelihood of the observed words (recall that β is computed deterministically from η) and the second term corresponding to the prior.",Experiment/Discussion
+"The likelihood term requires the expectation hlog βi, but this is somewhat complicated by the normalizer EWi exp(η(i)), which sums over all terms in the vocabulary.",Experiment/Discussion
+"As in previous work on logistic normal topic models, we use a Taylor approximation for this term (Blei and Lafferty, 2006a).",Experiment/Discussion
+"The prior on η is normal, so the contribution from the second term of the objective (Equation 1) is jk − µki))2i.",Experiment/Discussion
+"We introduce the following notation for expected counts: N(i, j, k) indicates the expected count of term i in region j and topic k, and N(j, k) = Ei N(i, j, k).",Experiment/Discussion
+"After some calculus, we can write the gradient ∂L/∂hη((i)) (2) which has an intuitive interpretation.",Experiment/Discussion
+"The first two terms represent the difference in expected counts for term i under the variational distributions q(z, r) and q(z, r,β): this difference goes to zero when β(i) jk perfectly matches N(i, j, k)/N(j, k).",Experiment/Discussion
+"The third term penalizesη(i) jkfor deviating from its prior µ(i) k , but this penalty is proportional to the expected inverse variance hσ�2 k i.",Experiment/Discussion
+We apply gradient ascent to maximize the objective L. A similar set of calculations gives the gradient for the variance of η; these are described in an forthcoming appendix.,Experiment/Discussion
+"The base topic parameters are µk and σ2k; in the variational distribution, q(µk) is normally distributed and q(σ2k) is Gamma distributed.",Experiment/Discussion
+Note that µk and σ2k affect only the regional word distributions 7 jk.,Experiment/Discussion
+"An advantage of the logistic normal is that the variational parameters over µk are available in closed form, where J indicates the number of regions.",Experiment/Discussion
+The expectation of the base topic µ incorporates the prior and the average of the generated region-topics— these two components are weighted respectively by the expected variance of the region-topics (σ2k) and the prior topical variance b2.,Experiment/Discussion
+The posterior variance V(µ) is a harmonic combination of the prior variance b2 and the expected variance of the region topics.,Experiment/Discussion
+The variational distribution over the region-topic variance σ2k has Gamma parameters.,Experiment/Discussion
+"These parameters cannot be updated in closed form, so gradient optimization is again required.",Experiment/Discussion
+"The derivation of these updates is more involved, and is left for a forthcoming appendix.",Experiment/Discussion
+"Variational scheduling and initialization are important aspects of any hierarchical generative model, and are often under-discussed.",Experiment/Discussion
+"In our implementation, the variational updates are scheduled as follows: given expected counts, we iteratively update the variational parameters on the region-topics 77 and the base topics µ, until convergence.",Experiment/Discussion
+"We then update the geographical parameters v and A, as well as the distribution over regions 0.",Experiment/Discussion
+"Finally, for each document we iteratively update the variational parameters over 0, z, and r until convergence, obtaining expected counts that are used in the next iteration of updates for the topics and their regional variants.",Experiment/Discussion
+We iterate an outer loop over the entire set of updates until convergence.,Experiment/Discussion
+We initialize the model in a piecewise fashion.,Experiment/Discussion
+"First we train a Dirichlet process mixture model on the locations y, using variational inference on the truncated stick-breaking approximation (Blei and Jordan, 2006).",Experiment/Discussion
+"This automatically selects the number of regions J, and gives a distribution over each region indicator rd from geographical information alone.",Experiment/Discussion
+We then run standard latent Dirichlet allocation to obtain estimates of z for each token (ignoring the locations).,Experiment/Discussion
+"From this initialization we can compute the first set of expected counts, which are used to obtain initial estimates of all parameters needed to begin variational inference in the full model.",Experiment/Discussion
+"The prior a is the expected mean of each topic µ; for each term i, we set a(i) = log N(i) − log N, where N(i) is the total count of i in the corpus and N = Ei N(i).",Experiment/Discussion
+"The variance prior b2 is set to 1, and the prior on σ2 is the Gamma distribution 9(2, 200), encouraging minimal deviation from the base topics.",Experiment/Discussion
+"The symmetric Dirichlet prior on 0 is set to 12, and the symmetric Dirichlet parameter on ϑ is updated from weak hyperpriors (Minka, 2003).",Experiment/Discussion
+"Finally, the geographical model takes priors that are linked to the data: for each region, the mean is very weakly encouraged to be near the overall mean, and the covariance prior is set by the average covariance of clusters obtained by running K-means.",Experiment/Discussion
+"For a quantitative evaluation of the estimated relationship between text and geography, we assess our model’s ability to predict the geographic location of unlabeled authors based on their text alone.8 This task may also be practically relevant as a step toward applications for recommending local businesses or social connections.",Experiment/Discussion
+"A randomly-chosen 60% of authors are used for training, 20% for development, and the remaining 20% for final evaluation.",Experiment/Discussion
+We compare several approaches for predicting author location; we divide these into latent variable generative models and discriminative approaches.,Experiment/Discussion
+"8Alternatively, one might evaluate the attributed regional memberships of the words themselves.",Experiment/Discussion
+"While the Dictionary of American Regional English (Cassidy and Hall, 1985) attempts a comprehensive list of all regionally-affiliated terms, it is based on interviews conducted from 1965-1970, and the final volume (covering Si–Z) is not yet complete.",Experiment/Discussion
+"Geographic Topic Model This is the full version of our system, as described in this paper.",Experiment/Discussion
+"To predict the unseen location yd, we iterate until convergence on the variational updates for the hidden topics zd, the topic proportions 9d, and the region rd.",Experiment/Discussion
+"From rd, the location can be estimated as yd = �J argmaxy j p(y|vj, Aj)q(rd = j).",Experiment/Discussion
+The development set is used to tune the number of topics and to select the best of multiple random initializations.,Experiment/Discussion
+Mixture of Unigrams A core premise of our approach is that modeling topical variation will improve our ability to understand geographical variation.,Experiment/Discussion
+"We test this idea by fixing K = 1, running our system with only a single topic.",Experiment/Discussion
+"This is equivalent to a Bayesian mixture of unigrams in which each author is assigned a single, regional unigram language model that generates all of his or her text.",Experiment/Discussion
+The development set is used to select the best of multiple random initializations.,Experiment/Discussion
+"Supervised Latent Dirichlet Allocation In a more subtle version of the mixture-of-unigrams model, we model each author as an admixture of regions.",Experiment/Discussion
+"Thus, the latent variable attached to each author is no longer an index, but rather a vector on the simplex.",Experiment/Discussion
+"This model is equivalent to supervised latent Dirichlet allocation (Blei and McAuliffe, 2007): each topic is associated with equivariant Gaussian distributions over the latitude and longitude, and these topics must explain both the text and the observed geographical locations.",Experiment/Discussion
+"For unlabeled authors, we estimate latitude and longitude by estimating the topic proportions and then applying the learned geographical distributions.",Experiment/Discussion
+"This is a linear prediction f(2d; a) = (�zTd alat, 2Td alon) for an author’s topic proportions zd and topicgeography weights a E R2K.",Experiment/Discussion
+Text Regression We perform linear regression to discriminatively learn the relationship between words and locations.,Experiment/Discussion
+"Using term frequency features xd for each author, we predict locations with wordgeography weights a E R2W: f(xd; a) = (xTd alat, Weights are trained to minimize the sum of squared Euclidean distances, subject to L1 regularization: The minimization problem decouples into two separate latitude and longitude models, which we fit using the glmnet elastic net regularized regression package (Friedman et al., 2010), which obtained good results on other text-based prediction tasks (Joshi et al., 2010).",Experiment/Discussion
+Regularization parameters were tuned on the development set.,Experiment/Discussion
+The L1 penalty outperformed L2 and mixtures of L1 and L2.,Experiment/Discussion
+"Note that for both word-level linear regression here, and the topic-level linear regression in SLDA, the choice of squared Euclidean distance dovetails with our use of spatial Gaussian likelihoods in the geographic topic models, since optimizing a is equivalent to maximum likelihood estimation under the assumption that locations are drawn from equivariant circular Gaussians centered around each f(xd; a) linear prediction.",Experiment/Discussion
+"We experimented with decorrelating the location dimensions by projecting yd into the principal component space, but this did not help text regression.",Experiment/Discussion
+K-Nearest Neighbors Linear regression is a poor model for the multimodal density of human populations.,Experiment/Discussion
+"As an alternative baseline, we applied supervised K-nearest neighbors to predict the location yd as the average of the positions of the K most similar authors in the training set.",Experiment/Discussion
+We computed termfrequency inverse-document frequency features and applied cosine similarity over their first 30 principal components to find the neighbors.,Experiment/Discussion
+"The choices of principal components, IDF weighting, and neighborhood size K = 20 were tuned on the development set.",Experiment/Discussion
+"Our principle error metrics are the mean and median distance between the predicted and true location in kilometers.9 Because the distance error may be difficult to interpret, we also report accuracy of classification by state and by region of the United States.",Experiment/Discussion
+"Our data includes the 48 contiguous states plus the District of Columbia; the U.S. Census Bureau divides these states into four regions: West, Midwest, Northeast, and South.10 Note that while major population centers straddle several state lines, most region boundaries are far from the largest cities, resulting in a clearer analysis.",Experiment/Discussion
+"As shown in Table 1, the geographic topic model achieves the strongest performance on all metrics.",Experiment/Discussion
+All differences in performance between systems are statistically significant (p < .01) using the Wilcoxon-Mann-Whitney test for regression error and the k2 test for classification accuracy.,Experiment/Discussion
+Figure 2 shows how performance changes as the number of topics varies.,Experiment/Discussion
+"Note that the geographic topic model and the mixture of unigrams use identical code and parametrization – the only difference is that the geographic topic model accounts for topical variation, while the mixture of unigrams sets K = 1.",Experiment/Discussion
+These results validate our basic premise that it is important to model the interaction between topical and geographical variation.,Experiment/Discussion
+Text regression and supervised LDA perform especially poorly on the classification metric.,Experiment/Discussion
+"Both methods make predictions that are averaged across Earth’s surface requires computing or approximating the great circle distance – we use the Haversine formula (Sinnott, 1984).",Experiment/Discussion
+"For the continental U.S., the relationship between degrees and kilometers is nearly linear, but extending the model to a continental scale would require a more sophisticated approach. each word in the document: in text regression, each word is directly multiplied by a feature weight; in supervised LDA the word is associated with a latent topic first, and then multiplied by a weight.",Experiment/Discussion
+"For these models, all words exert an influence on the predicted location, so uninformative words will draw the prediction towards the center of the map.",Experiment/Discussion
+This yields reasonable distance errors but poor classification accuracy.,Experiment/Discussion
+"We had hoped that K-nearest neighbors would be a better fit for this metric, but its performance is poor at all values of K. Of course it is always possible to optimize classification accuracy directly, but such an approach would be incapable of predicting the exact geographical location, which is the focus of our evaluation (given that the desired geographical partition is unknown).",Experiment/Discussion
+Note that the geographic topic model is also not trained to optimize classification accuracy.,Experiment/Discussion
+Our model permits analysis of geographical variation in the context of topics that help to clarify the significance of geographically-salient terms.,Experiment/Discussion
+"Table 2 shows a subset of the results of one randomlyinitialized run, including five hand-chosen topics (of 50 total) and five regions (of 13, as chosen automatically during initialization).",Experiment/Discussion
+Terms were selected by log-odds comparison.,Experiment/Discussion
+For the base topics we show the ten strongest terms in each topic as compared to the background word distribution.,Experiment/Discussion
+"For the regional variants, we show terms that are strong both regionally and topically: specifically, we select terms that are in the top 100 compared to both the background distribution and to the base topic.",Experiment/Discussion
+The names for the topics and regions were chosen by the authors.,Experiment/Discussion
+"Nearly all of the terms in column 1 (“basketball”) refer to sports teams, athletes, and place names— encouragingly, terms tend to appear in the regions where their referents reside.",Experiment/Discussion
+"Column 2 contains several proper nouns, mostly referring to popular music figures (including PEARL from the band Pearl Jam).11 Columns 3–5 are more conversational.",Experiment/Discussion
+"Spanish-language terms (papi, pues, nada, ese) tend to appear in regions with large Spanish-speaking populations—it is also telling that these terms appear in topics with emoticons and slang abbreviations, which may transcend linguistic barriers.",Experiment/Discussion
+"Other terms refer to people or subjects that may be especially relevant in certain regions: tacos appears in the southern California region and cab in the New York region; TUPAC refers to a rap musician from Los Angeles, and WIZ refers to a rap musician from Pittsburgh, not far from the center of the “Lake Erie” region.",Experiment/Discussion
+"A large number of slang terms are found to have strong regional biases, suggesting that slang may depend on geography more than standard English does.",Experiment/Discussion
+"The terms af and hella display especially strong regional affinities, appearing in the regional variants of multiple topics (see Table 3 for definitions).",Experiment/Discussion
+Northern and Southern California use variant spellings koo and coo to express the same meaning.,Experiment/Discussion
+"11This analysis is from an earlier version of our dataset that contained some Twitterbots, including one from a Boston-area radio station.",Experiment/Discussion
+"The bots were purged for the evaluation in Section 6, though the numerical results are nearly identical. term definition term definition af as fuck (very) jk just kidding coo cool jp just playing (kiddl download ding) fasho for sure koo cool gna going to lol laugh out loud hella very nm nothing much hr hour od overdone (very) iam I am omw on my way ima I’m going to smh shake my head imm I’m suttin something iono I don’t know wassup what’s up lames lame (not cool) wyd what are you dopeople ing?",Experiment/Discussion
+"While research in perceptual dialectology does confirm the link of hella to Northern California (Bucholtz et al., 2007), we caution that our findings are merely suggestive, and a more rigorous analysis must be undertaken before making definitive statements about the regional membership of individual terms.",Experiment/Discussion
+We view the geographic topic model as an exploratory tool that may be used to facilitate such investigations.,Experiment/Discussion
+Figure 3 shows the regional clustering on the training set obtained by one run of the model.,Experiment/Discussion
+"Each point represents an author, and the ellipses represent the bivariate Gaussians for each region.",Experiment/Discussion
+"There are nine compact regions for major metropolitan areas, two slightly larger regions that encompass Florida and the area around Lake Erie, and two large regions that partition the country roughly into north and south.",Experiment/Discussion
+"The relationship between language and geography has been a topic of interest to linguists since the nineteenth century (Johnstone, 2010).",Experiment/Discussion
+"An early work of particular relevance is Kurath’s Word Geography of the Eastern United States (1949), in which he conducted interviews and then mapped the occurrence of equivalent word pairs such as stoop and porch.",Experiment/Discussion
+"The essence of this approach—identifying variable pairs and measuring their frequencies— remains a dominant methodology in both dialectology (Labov et al., 2006) and sociolinguistics (Tagliamonte, 2006).",Experiment/Discussion
+"Within this paradigm, computational techniques are often applied to post hoc analysis: logistic regression (Sankoff et al., 2005) and mixed-effects models (Johnson, 2009) are used to measure the contribution of individual variables, while hierarchical clustering and multidimensional scaling enable aggregated inference across multiple variables (Nerbonne, 2009).",Experiment/Discussion
+"However, in all such work it is assumed that the relevant linguistic variables have already been identified—a timeconsuming process involving considerable linguistic expertise.",Experiment/Discussion
+"We view our work as complementary to this tradition: we work directly from raw text, identifying both the relevant features and coherent linguistic communities.",Experiment/Discussion
+"An active recent literature concerns geotagged information on the web, such as search queries (Backstrom et al., 2008) and tagged images (Crandall et al., 2009).",Experiment/Discussion
+"This research identifies the geographic distribution of individual queries and tags, but does not attempt to induce any structural organization of either the text or geographical space, which is the focus of our research.",Experiment/Discussion
+"More relevant is the work of Mei et al. (2006), in which the distribution over latent topics in blog posts is conditioned on the geographical location of the author.",Experiment/Discussion
+"This is somewhat similar to the supervised LDA model that we consider, but their approach assumes that a partitioning of geographical space into regions is already given.",Experiment/Discussion
+"Methodologically, our cascading topic model is designed to capture multiple dimensions of variability: topics and geography.",Experiment/Discussion
+"Mei et al. (2007) include sentiment as a second dimension in a topic model, using a switching variable so that individual word tokens may be selected from either the topic or the sentiment.",Experiment/Discussion
+"However, our hypothesis is that individual word tokens reflect both the topic and the geographical aspect.",Experiment/Discussion
+"Sharing this intuition, Paul and Girju (2010) build topic-aspect models for the cross product of topics and aspects.",Experiment/Discussion
+"They do not impose any regularity across multiple aspects of the same topic, so this approach may not scale when the number of aspects is large (they consider only two aspects).",Experiment/Discussion
+"We address this issue using cascading distributions; when the observed data for a given regiontopic pair is low, the model falls back to the base topic.",Experiment/Discussion
+"The use of cascading logistic normal distributions in topic models follows earlier work on dynamic topic models (Blei and Lafferty, 2006b; Xing, 2005).",Experiment/Discussion
+"This paper presents a model that jointly identifies words with high regional affinity, geographicallycoherent linguistic regions, and the relationship between regional and topic variation.",Results/Conclusion
+The key modeling assumption is that regions and topics interact to shape observed lexical frequencies.,Results/Conclusion
+We validate this assumption on a prediction task in which our model outperforms strong alternatives that do not distinguish regional and topical variation.,Results/Conclusion
+We see this work as a first step towards a unsupervised methodology for modeling linguistic variation using raw text.,Results/Conclusion
+"Indeed, in a study of morphosyntactic variation, Szmrecsanyi (2010) finds that by the most generous measure, geographical factors account for only 33% of the observed variation.",Results/Conclusion
+"Our analysis might well improve if non-geographical factors were considered, including age, race, gender, income and whether a location is urban or rural.",Results/Conclusion
+"In some regions, estimates of many of these factors may be obtained by cross-referencing geography with demographic data.",Results/Conclusion
+We hope to explore this possibility in future work.,Results/Conclusion
+"We would like to thank Amr Ahmed, Jonathan Chang, Shay Cohen, William Cohen, Ross Curtis, Miro Dud´ık, Scott Kiesling, Seyoung Kim, and the anonymous reviewers.",Results/Conclusion
+"This research was enabled by Google’s support of the Worldly Knowledge project at CMU, AFOSR FA9550010247, ONR N0001140910758, NSF CAREER DBI-0546594, NSF IIS-0713379, and an Alfred P. Sloan Fellowship.",Results/Conclusion

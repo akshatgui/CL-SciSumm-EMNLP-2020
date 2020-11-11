@@ -1,186 +1,186 @@
 col1,col2
-We explore the use of Support Vector Machines (SVMs) for biomedical named entity recognition.,{}
-"To make the SVM training with the available largest corpus – the GENIA corpus – tractable, we propose to split the non-entity class into sub-classes, using part-of-speech information.",{}
-"In addition, we explore new features such as word cache and the states of an HMM trained by unsupervised learning.",{}
-Experiments on the GENIA corpus show that our class splitting technique not only enables the training with the GENIA corpus but also improves the accuracy.,{}
-The proposed new features also contribute to improve the accuracy.,{}
-We compare our SVMbased recognition system with a system using Maximum Entropy tagging method.,{}
-Application of natural language processing (NLP) is now a key research topic in bioinformatics.,"{'title': '1 Introduction', 'number': '1'}"
-"Since it is practically impossible for a researcher to grasp all of the huge amount of knowledge provided in the form of natural language, e.g., journal papers, there is a strong demand for biomedical information extraction (IE), which extracts knowledge automatically from biomedical papers using NLP techniques (Ohta et al., 1997; Proux et al., 2000; Yakushiji et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-"The process called named entity recognition, which finds entities that fill the information slots, e.g., proteins, DNAs, RNAs, cells etc., in the biomedical context, is an important building block in such biomedical IE systems.","{'title': '1 Introduction', 'number': '1'}"
-"Conceptually, named entity recognition consists of two tasks: identification, which finds the region of a named entity in a text, and classification, which determines the semantic class of that named entity.","{'title': '1 Introduction', 'number': '1'}"
-The following illustrates biomedical named entity recognition.,"{'title': '1 Introduction', 'number': '1'}"
-"“Thus, CIITAPROTEZN not only activates the expression of class II genesDNA but recruits another B cell-specific coactivator to increase transcriptional activity of class II promotersDNA in Machine learning approach has been applied to biomedical named entity recognition (Nobata et al., 1999; Collier et al., 2000; Yamada et al., 2000; Shimpuku, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"However, no work has achieved sufficient recognition accuracy.","{'title': '1 Introduction', 'number': '1'}"
-One reason is the lack of annotated corpora for training as is often the case of a new domain.,"{'title': '1 Introduction', 'number': '1'}"
-Nobata et al. (1999) and Collier et al.,"{'title': '1 Introduction', 'number': '1'}"
-"(2000) trained their model with only 100 annotated paper abstracts from the MEDLINE database (National Library of Medicine, 1999), and Yamada et al. (2000) used only 77 annotated paper abstracts.","{'title': '1 Introduction', 'number': '1'}"
-"In addition, it is difficult to compare the techniques used in each study because they used a closed and different corpus.","{'title': '1 Introduction', 'number': '1'}"
-"To overcome such a situation, the GENIA corpus (Ohta et al., 2002) has been developed, and at this time it is the largest biomedical annotated corpus available to public, containing 670 annotated abstracts of the MEDLINE database.","{'title': '1 Introduction', 'number': '1'}"
-"Another reason for low accuracies is that biomedical named entities are essentially hard to recognize using standard feature sets compared with the named entities in newswire articles (Nobata et al., 2000).","{'title': '1 Introduction', 'number': '1'}"
-"Thus, we need to employ powerful machine learning techniques which can incorporate various and complex features in a consistent way.","{'title': '1 Introduction', 'number': '1'}"
-"Support Vector Machines (SVMs) (Vapnik, 1995) and Maximum Entropy (ME) method (Berger et al., 1996) are powerful learning methods that satisfy such requirements, and are applied successfully to other NLP tasks (Kudo and Matsumoto, 2000; Nakagawa et al., 2001; Ratnaparkhi, 1996).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we apply Support Vector Machines to biomedical named entity recognition and train them with the GENIA corpus.","{'title': '1 Introduction', 'number': '1'}"
-We formulate the named entity recognition as the classification of each word with context to one of the classes that represent region and named entity’s semantic class.,"{'title': '1 Introduction', 'number': '1'}"
-"Although there is a previous work that applied SVMs to biomedical named entity task in this formulation (Yamada et al., 2000), their method to construct a classifier using SVMs, one-vs-rest, fails to train a classifier with entire GENIA corpus, since the cost of SVM training is super-linear to the size of training samples.","{'title': '1 Introduction', 'number': '1'}"
-"Even with a more feasible method, pairwise (Kreßel, 1998), which is employed in (Kudo and Matsumoto, 2000), we cannot train a classifier in a reasonable time, because we have a large number of samples that belong to the non-entity class in this formulation.","{'title': '1 Introduction', 'number': '1'}"
-"To solve this problem, we propose to split the non-entity class to several sub-classes, using part-ofspeech information.","{'title': '1 Introduction', 'number': '1'}"
-We show that this technique not only enables the training feasible but also improves the accuracy.,"{'title': '1 Introduction', 'number': '1'}"
-"In addition, we explore new features such as word cache and the states of an unsupervised HMM for named entity recognition using SVMs.","{'title': '1 Introduction', 'number': '1'}"
-"In the experiments, we show the effect of using these features and compare the overall performance of our SVMbased recognition system with a system using the Maximum Entropy method, which is an alternative to the SVM method.","{'title': '1 Introduction', 'number': '1'}"
-The GENIA corpus is an annotated corpus of paper abstracts taken from the MEDLINE database.,"{'title': '2 The GENIA Corpus', 'number': '2'}"
-"Currently, 670 abstracts are annotated with named entity tags by biomedical experts and made available to public (Ver.","{'title': '2 The GENIA Corpus', 'number': '2'}"
-"1.1).1 These 670 abstracts are a subset of more than 5,000 abstracts obtained by the query “human AND blood cell AND transcription factor“ to the MEDLINE database.","{'title': '2 The GENIA Corpus', 'number': '2'}"
-Table 1 shows basic statistics of the GENIA corpus.,"{'title': '2 The GENIA Corpus', 'number': '2'}"
-"Since the GENIA corpus is intended to be extensive, there exist 24 distinct named entity classes in the corpus.2 Our task is to find a named entity region in a paper abstract and correctly select its class out of these 24 classes.","{'title': '2 The GENIA Corpus', 'number': '2'}"
-"This number of classes is relatively large compared with other corpora used in previous studies, and compared with the named entity task for newswire articles.","{'title': '2 The GENIA Corpus', 'number': '2'}"
-"This indicates that the task with the GENIA corpus is hard, apart from the difficulty of the biomedical domain itself.","{'title': '2 The GENIA Corpus', 'number': '2'}"
-We formulate the named entity task as the classification of each word with context to one of the classes that represent region information and named entity’s semantic class.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Several representations to encode region information are proposed and examined (Ramshaw and Marcus, 1995; Uchimoto et al., 2000; Kudo and Matsumoto, 2001).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In this paper, we employ the simplest BIO representation, which is also used in (Yamada et al., 2000).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-We modify this representation in Section 5.1 in order to accelerate the SVM training.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In the BIO representation, the region information is represented as the class prefixes “B-” and “I-”, and a class “O”.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"B- means that the current word is at the beginning of a named entity, I- means that the current word is in a named entity (but not at the beginning), and O means the word is not in a named entity.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"For each named entity class C, class B-C and I-C are produced.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Therefore, if we have N named entity classes, the BIO representation yields 2N + 1 classes, which will be the targets of a classifier.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"For instance, the following corresponds to the annotation “Number of glucocorticoid receptorsPROTEIN in Support Vector Machines (SVMs) (Cortes and Vapnik, 1995) are powerful methods for learning a classifier, which have been applied successfully to many NLP tasks such as base phrase chunking (Kudo and Matsumoto, 2000) and part-of-speech tagging (Nakagawa et al., 2001).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-The SVM constructs a binary classifier that outputs +1 or −1 given a sample vector x E Rn.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-The decision is based on the separating hyperplane as follows.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"The class for an input x, c(x), is determined by seeing which side of the space separated by the hyperplane, w · x + b = 0, the input lies on.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Given a set of labeled training samples {(y1, x1), ··· , (yL, xL)}, xi ∈ Rn, yi ∈ {+1, −1}, the SVM training tries to find the optimal hyperplane, i.e., the hyperplane with the maximum margin.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-Margin is defined as the distance between the hyperplane and the training samples nearest to the hyperplane.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-Maximizing the margin insists that these nearest samples (support vectors) exist on both sides of the separating hyperplane and the hyperplane lies exactly at the midpoint of these support vectors.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-This margin maximization tightly relates to the fine generalization power of SVMs.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Assuming that |w·xi+b |= 1 at the support vectors without loss of generality, the SVM training can be formulated as the following optimization problem.3 The solution of this problem is known to be written as follows, using only support vectors and weights for them.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In the SVM learning, we can use a function k(xi, xj) called a kernel function instead of the inner product in the above equation.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Introducing a kernel function means mapping an original input x using (D(x), s.t.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"(D(xi)·(D(xj) = k(xi, xj) to another, usually a higher dimensional, feature space.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-We construct the optimal hyperplane in that space.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"By using kernel functions, we can construct a non-linear separating surface in the original feature space.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Fortunately, such non-linear training does not increase the computational cost if the calculation of the kernel function is as cheap as the inner product.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"A polynomial function defined as (sxi · xj + r)d is popular in applications of SVMs to NLPs (Kudo and Matsumoto, 2000; Yamada et al., 2000; Kudo and Matsumoto, 2001), because it has an intuitively sound interpretation that each dimension of the mapped space is a 3For many real-world problems where the samples may be inseparable, we allow the constraints are broken with some penalty.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In the experiments, we use so-called 1-norm soft margin formulation described as: subject to yi(w · xi + b) ≥ 1 − ei, i = 1, · · · , L, ei ≥ 0, i = 1,··· , L. (weighted) conjunction of d features in the original sample.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"As described above, the standard SVM learning constructs a binary classifier.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"To make a named entity recognition system based on the BIO representation, we require a multi-class classifier.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Among several methods for constructing a multi-class SVM (Hsu and Lin, 2002), we use a pairwise method proposed by Kre13el (1998) instead of the one-vs-rest method used in (Yamada et al., 2000), and extend the BIO representation to enable the training with the entire GENIA corpus.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-Here we describe the one-vs-rest method and the pairwise method to show the necessity of our extension.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-Both one-vs-rest and pairwise methods construct a multi-class classifier by combining many binary SVMs.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In the following explanation, K denotes the number of the target classes. one-vs-rest Construct K binary SVMs, each of which determines whether the sample should be classified as class i or as the other classes.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"The output is the class with the maximum f(x) in Equation 1. pairwise Construct K(K − 1)/2 binary SVMs, each of which determines whether the sample should be classified as class i or as class j.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Each binary SVM has one vote, and the output is the class with the maximum votes.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Because the SVM training is a quadratic optimization program, its cost is super-linear to the size of the training samples even with the tailored techniques such as SMO (Platt, 1998) and kernel evaluation caching (Joachims, 1998).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Let L be the number of the training samples, then the one-vs-rest method takes time in K × OSVM(L).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"The BIO formulation produces one training sample per word, and the training with the GENIA corpus involves over 100,000 training samples as can be seen from Table 1.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"Therefore, it is apparent that the one-vsrest method is impractical with the GENIA corpus.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"On the other hand, if target classes are equally distributed, the pairwise method will take time in K(K− 1)/2 × OS VM(2L/K).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"This method is worthwhile because each training is much faster, though it requires the training of (K − 1)/2 times more classifiers.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"It is also reported that the pairwise method achieves higher accuracy than other methods in some benchmarks (Kre13el, 1998; Hsu and Lin, 2002).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-An input x to an SVM classifier is a feature representation of the word to be classified and its context.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"We use a bit-vector representation, each dimension of which indicates whether the input matches with 4 Named Entity Recognition Using ME a certain feature.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-The following illustrates the well- Model used features for the named entity recognition task.,"{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"The Maximum Entropy method, with which we compare our SVM-based method, defines the probability that the class is c given an input vector x as follows. where Z(x) is a normalization constant, and fi(c, x) is a feature function.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"A feature function is defined in the same way as the features in the SVM learning, except that it includes c in it like f(c, x) = (c is the jth class) ∧ wi,k(x).","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"If x contains previously assigned classes, then the most probable searched by using the Viterbi-type algorithm.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"We use the maximum entropy tagging method described in (Kazama et al., 2001) for the experiments, which is a variant of (Ratnaparkhi, 1996) modified to use HMM state features.","{'title': '3 Named Entity Recognition Using SVMs', 'number': '3'}"
-"In the above definitions, k is a relative word position from the word to be classified.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"A negative value represents a preceding word’s position, and a positive value represents a following word’s position.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-Note that we assume that the classification proceeds left to right as can be seen in the definition of the preceding class feature.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"For the SVM classification, we does not use a dynamic argmax-type classification such as the Viterbi algorithm, since it is difficult to define a good comparable value for the confidence of a prediction such as probability.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-The consequences of this limitation will be discussed with the experimental results.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-Features usually form a group with some variables such as the position unspecified.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"In this paper, we instantiate all features, i.e., instantiate for all i, for a group and a position.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Then, it is convenient to denote a set of features for a group g and a position k as gk (e.g., wk and posk).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Using this notation, we write a feature set as {w−1, w0, pre−1, pre0, pc−1}.4 This feature description derives the following input vector.5 In Section 3.3, we described that if target classes are equally distributed, the pairwise method will reduce the training cost.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"In our case, however, we have a very unbalanced class distribution with a large number of samples belonging to the class “O” (see Table 1).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"This leads to the same situation with the one-vsrest method, i.e., if LO is the number of the samples belonging to the class “O”, then the most dominant part of the training takes time in K × OSVM(LO).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-One solution to this unbalanced class distribution problem is to split the class “O” into several subclasses effectively.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-This will reduce the training cost for the same reason that the pairwise method works.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"In this paper, we propose to split the non-entity class according to part-of-speech (POS) information of the word.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"That is, given a part-of-speech tag set POS, we produce new |POS |classes, “Op” p ∈ POS.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Since we use a POS tagger that outputs 45 Penn Treebank’s POS tags in this paper, we have new 45 sub-classes which correspond to nonentity regions such as “O-NNS” (plural nouns), “OJJ” (adjectives), and “O-DT” (determiners).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Splitting by POS information seems useful for improving the system accuracy as well, because in the named entity recognition we must discriminate between nouns in named entities and nouns in ordinal noun phrases.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"In the experiments, we show this class splitting technique not only enables the feasible training but also improves the accuracy.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"In addition to the standard features, we explore word cache feature and HMM state feature, mainly to solve the data sparseness problem.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Although the GENIA corpus is the largest annotated corpus for the biomedical domain, it is still small compared with other linguistic annotated corpora such as the Penn Treebank.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Thus, the data sparseness problem is severe, and must be treated carefully.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Usually, the data sparseness is prevented by using more general features that apply to a broader set of instances (e.g., disjunctions).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"While polynomial kernels in the SVM learning can effectively generate feature conjunctions, kernel functions that can effectively generate feature disjunctions are not known.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Thus, we should explicitly add dimensions for such general features.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-The word cache feature is defined as the disjunction of several word features as: We intend that the word cache feature captures the similarities of the patterns with a common key word such as follows.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"We use a left word cache defined as lwck,i � wc{_k,···,0},i, and a right word cache defined as rwck,i - wc{1,···,k},i for patterns like (a) and (b) in the above example respectively.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-Kazama et al. (2001) proposed to use as features the Viterbi state sequence of a hidden Markov model (HMM) to prevent the data sparseness problem in the maximum entropy tagging model.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-An HMM is trained with a large number of unannotated texts by using an unsupervised learning method.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Because the number of states of the HMM is usually made smaller than |V|, the Viterbi states give smoothed but maximally informative representations of word patterns tuned for the domain, from which the raw texts are taken.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"The HMM feature is defined in the same way as the word feature as follows. hmmk,i = { 1 if the Viterbi state for Wk is the ith state in the HMM’s states W 0 otherwise (HMMfeature) In the experiments, we train an HMM using raw MEDLINE abstracts in the GENIA corpus, and show that the HMM state feature can improve the accuracy.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Towards practical named entity recognition using SVMs, we have tackled the following implementation issues.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-It would be impossible to carry out the experiments in a reasonable time without such efforts.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Parallel Training: The training of pairwise SVMs has trivial parallelism, i.e., each SVM can be trained separately.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Since computers with two or more CPUs are not expensive these days, parallelization is very practical solution to accelerate the training of pairwise SVMs.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Fast Winner Finding: Although the pairwise method reduces the cost of training, it greatly increases the number of classifications needed to determine the class of one sample.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"For example, for our experiments using the GENIA corpus, the BIO representation with class splitting yields more than 4,000 classification pairs.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Fortunately, we can stop classifications when a class gets K —1 votes and this stopping greatly saves classification time (Kreßel, 1998).","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Moreover, we can stop classifications when the current votes of a class is greater than the others’ possible votes.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"Support Vector Caching: In the pairwise method, though we have a large number of classifiers, each classifier shares some support vectors with other classifiers.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"By storing the bodies of all support vectors together and letting each classifier have only the weights, we can greatly reduce the size of the classifier.","{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-The sharing of support vectors also can be exploited to accelerate the classification by caching the value of the kernel function between a support vector and a classifiee sample.,"{'title': '5 Tuning of SVMs for Biomedical NE Task', 'number': '4'}"
-"To conduct experiments, we divided 670 abstracts of the GENIA corpus (Ver.","{'title': '6 Experiments', 'number': '5'}"
-"1.1) into the training part (590 abstracts; 4,487 sentences; 133,915 words) and the test part (80 abstracts; 622 sentences; 18,211 words).6 Texts are tokenized by using Penn Treebank’s tokenizer.","{'title': '6 Experiments', 'number': '5'}"
-"An HMM for the HMM state features was trained with raw abstracts of the GENIA corpus (39,116 sentences).7 The number of states is 160.","{'title': '6 Experiments', 'number': '5'}"
-"The vocabulary for the word feature is constructed by taking the most frequent 10,000 words from the above raw abstracts, the prefix/suffix/prefix list by taking the most frequent 10,000 prefixes/suffixes/substrings.8 The performance is measured by precision, recall, and F-score, which are the standard measures for the named entity recognition.","{'title': '6 Experiments', 'number': '5'}"
-Systems based on the BIO representation may produce an inconsistent class sequence such as “O B-DNA I-RNA O”.,"{'title': '6 Experiments', 'number': '5'}"
-We interpret such outputs as follows: once a named entity starts with “B-C” then we interpret that the named entity with class “C” ends only when we see another “B-” or “O-” tag.,"{'title': '6 Experiments', 'number': '5'}"
-"We have implemented SMO algorithm (Platt, 1998) and techniques described in (Joachims, 1998) for soft margin SVMs in C++ programming language, and implemented support codes for pairwise classification and parallel training in Java programming language.","{'title': '6 Experiments', 'number': '5'}"
-"To obtain POS information required for features and class splitting, we used an English POS tagger described in (Kazama et al., 2001).","{'title': '6 Experiments', 'number': '5'}"
-"First, we show the effect of the class splitting described in Section 5.1.","{'title': '6 Experiments', 'number': '5'}"
-"Varying the size of training data, we compared the change in the training time and the accuracy with and without the class splitting.","{'title': '6 Experiments', 'number': '5'}"
-"We used a feature set {hw, pre, suf, sub, posi[−2,···,2],pc[−2,−1]} and the inner product kernel.9 The training time was measured on a machine with four 700MHz PentiumIIIs and 16GB RAM.","{'title': '6 Experiments', 'number': '5'}"
-Table 2 shows the results of the experiments.,"{'title': '6 Experiments', 'number': '5'}"
-Figure 1 shows the results graphically.,"{'title': '6 Experiments', 'number': '5'}"
-"We can see that without splitting we soon suffer from super-linearity of the SVM training, while with splitting we can handle the training with over 100,000 samples in a reasonable time.","{'title': '6 Experiments', 'number': '5'}"
-"It is very important that the splitting technique does not sacrifice the accuracy for speed, rather improves the accuracy.","{'title': '6 Experiments', 'number': '5'}"
-"In this experiment, we see the effect of the word cache feature and the HMM state feature described in Section 3.4.","{'title': '6 Experiments', 'number': '5'}"
-The effect is assessed by the accuracy gain observed by adding each feature set to a base feature set and the accuracy degradation observed by subtracting it from a (complete) base set.,"{'title': '6 Experiments', 'number': '5'}"
-"The first column (A) in Table 3 shows an adding case where the base feature set is {w[−2,···,2]}.","{'title': '6 Experiments', 'number': '5'}"
-"The columns (B) and (C) show subtracting cases where the base feature set is {hw, pre, suf, sub, pos, hmmi[−k,··· ,k], lwck, rwck, pc[−2,−1]} with k = 2 and k = 3 respectively.","{'title': '6 Experiments', 'number': '5'}"
-The kernel function is the inner product.,"{'title': '6 Experiments', 'number': '5'}"
-We can see that word cache and HMM state features surely improve the recognition accuracy.,"{'title': '6 Experiments', 'number': '5'}"
-"In the table, we also included the accuracy change for other standard features.","{'title': '6 Experiments', 'number': '5'}"
-Preceeding classes and suffixes are definitely helpful.,"{'title': '6 Experiments', 'number': '5'}"
-"On the other hand, the substring feature is not effective in our setting.","{'title': '6 Experiments', 'number': '5'}"
-"Although the effects of part-of-speech tags and prefixes are not so definite, it can be said that they are practically effective since they show positive effects in the case of the maximum performance.","{'title': '6 Experiments', 'number': '5'}"
-"In this set of experiments, we compare our SVM-based system with a named entity recognition system based on the Maximum Entropy method.","{'title': '6 Experiments', 'number': '5'}"
-"For the SVM system, we used the feature set {hw, pre, suf, pos, hmmi[−3,··· ,3], lwc3, rwc3, pc[−2,−1]}, which is shown to be the best in the previous experiment.","{'title': '6 Experiments', 'number': '5'}"
-"The compared system is a maximum entropy tagging model described in (Kazama et al., 2001).","{'title': '6 Experiments', 'number': '5'}"
-"Though it supports several character type features such as number and hyphen and some conjunctive features such as word n-gram, we do not use these features to compare the performance under as close a condition as possible.","{'title': '6 Experiments', 'number': '5'}"
-"The feature set used in the maximum entropy system is expressed as {hw,pre,suf,pos,hmmi[−2,···,2], pc[−2,−1]}.10 Both systems use the BIO representation with splitting.","{'title': '6 Experiments', 'number': '5'}"
-Table 4 shows the accuracies of both systems.,"{'title': '6 Experiments', 'number': '5'}"
-"For the SVM system, we show the results with the inner product kernel and several polynomial kernels.","{'title': '6 Experiments', 'number': '5'}"
-"The row “All (id)” shows the accuracy from the view10When the width becomes [−3,··· , 3], the accuracy degrades (53.72 to 51.73 in F-score). point of the identification task, which only finds the named entity regions.","{'title': '6 Experiments', 'number': '5'}"
-The accuracies for several major entity classes are also shown.,"{'title': '6 Experiments', 'number': '5'}"
-The SVM system with the 2-dimensional polynomial kernel achieves the highest accuracy.,"{'title': '6 Experiments', 'number': '5'}"
-"This comparison may be unfair since a polynomial kernel has the effect of using conjunctive features, while the ME system does not use such conjunctive features.","{'title': '6 Experiments', 'number': '5'}"
-"Nevertheless, the facts: we can introduce the polynomial kernel very easily; there are very few parameters to be tuned;11 we could achieve the higher accuracy; show an advantage of the SVM system.","{'title': '6 Experiments', 'number': '5'}"
-It will be interesting to discuss why the SVM systems with the inner product kernel (and the polynomial kernel with d = 1) are outperformed by the ME system.,"{'title': '6 Experiments', 'number': '5'}"
-We here discuss two possible reasons.,"{'title': '6 Experiments', 'number': '5'}"
-"The first is that the SVM system does not use a dynamic decision such as the Viterbi algorithm, while the ME system uses it.","{'title': '6 Experiments', 'number': '5'}"
-"To see this, we degrade the ME system so that it predicts the classes deterministically without using the Viterbi algorithm.","{'title': '6 Experiments', 'number': '5'}"
-We found that this system only marks 51.54 in F-score.,"{'title': '6 Experiments', 'number': '5'}"
-"Thus, it can be said that a dynamic decision is important for this named entity task.","{'title': '6 Experiments', 'number': '5'}"
-"However, although a method to convert the outputs of a binary SVM to probabilistic values is proposed (Platt, 1999), the way to obtain meaningful probabilistic values needed in Viterbitype algorithms from the outputs of a multi-class SVM is unknown.","{'title': '6 Experiments', 'number': '5'}"
-Solving this problem is certainly a part of the future work.,"{'title': '6 Experiments', 'number': '5'}"
-"The second possible reason is that the SVM system in this paper does not use any cut-off or feature truncation method to remove data noise, while the ME system uses a simple feature cut-off method.12 We observed that the ME system without the cut-off only marks 49.11 in 11C, s, r, and d 12Features that occur less than 10 times are removed.","{'title': '6 Experiments', 'number': '5'}"
-F-score.,"{'title': '6 Experiments', 'number': '5'}"
-"Thus, such a noise reduction method is also important.","{'title': '6 Experiments', 'number': '5'}"
-"However, the cut-off method for the ME method cannot be applied without modification since, as described in Section 3.4, the definition of the features are different in the two approaches.","{'title': '6 Experiments', 'number': '5'}"
-It can be said the features in the ME method is “finer” than those in SVMs.,"{'title': '6 Experiments', 'number': '5'}"
-"In this sense, the ME method allows us more flexible feature selection.","{'title': '6 Experiments', 'number': '5'}"
-This is an advantage of the ME method.,"{'title': '6 Experiments', 'number': '5'}"
-The accuracies achieved by both systems can be said high compared with those of the previous methods if we consider that we have 24 named entity classes.,"{'title': '6 Experiments', 'number': '5'}"
-"However, the accuracies are not sufficient for a practical use.","{'title': '6 Experiments', 'number': '5'}"
-"Though higher accuracy will be achieved with a larger annotated corpus, we should also explore more effective features and find effective feature combination methods to exploit such a large corpus maximally.","{'title': '6 Experiments', 'number': '5'}"
-We have described the use of Support Vector Machines for the biomedical named entity recognition task.,"{'title': '7 Conclusion', 'number': '6'}"
-"To make the training of SVMs with the GENIA corpus practical, we proposed to split the nonentity class by using POS information.","{'title': '7 Conclusion', 'number': '6'}"
-"In addition, we explored the new types of features, word cache and HMM states, to avoid the data sparseness problem.","{'title': '7 Conclusion', 'number': '6'}"
-"In the experiments, we have shown that the class splitting technique not only makes training feasible but also improves the accuracy.","{'title': '7 Conclusion', 'number': '6'}"
-We have also shown that the proposed new features also improve the accuracy and the SVM system with the polynomial kernel function outperforms the ME-based system.,"{'title': '7 Conclusion', 'number': '6'}"
-We would like to thank Dr. Jin-Dong Kim for providing us easy-to-use preprocessed training data.,"{'title': 'Acknowledgements', 'number': '7'}"
+We explore the use of Support Vector Machines (SVMs) for biomedical named entity recognition.,Introduction
+"To make the SVM training with the available largest corpus – the GENIA corpus – tractable, we propose to split the non-entity class into sub-classes, using part-of-speech information.",Introduction
+"In addition, we explore new features such as word cache and the states of an HMM trained by unsupervised learning.",Introduction
+Experiments on the GENIA corpus show that our class splitting technique not only enables the training with the GENIA corpus but also improves the accuracy.,Introduction
+The proposed new features also contribute to improve the accuracy.,Introduction
+We compare our SVMbased recognition system with a system using Maximum Entropy tagging method.,Introduction
+Application of natural language processing (NLP) is now a key research topic in bioinformatics.,Experiment/Discussion
+"Since it is practically impossible for a researcher to grasp all of the huge amount of knowledge provided in the form of natural language, e.g., journal papers, there is a strong demand for biomedical information extraction (IE), which extracts knowledge automatically from biomedical papers using NLP techniques (Ohta et al., 1997; Proux et al., 2000; Yakushiji et al., 2001).",Experiment/Discussion
+"The process called named entity recognition, which finds entities that fill the information slots, e.g., proteins, DNAs, RNAs, cells etc., in the biomedical context, is an important building block in such biomedical IE systems.",Experiment/Discussion
+"Conceptually, named entity recognition consists of two tasks: identification, which finds the region of a named entity in a text, and classification, which determines the semantic class of that named entity.",Experiment/Discussion
+The following illustrates biomedical named entity recognition.,Experiment/Discussion
+"“Thus, CIITAPROTEZN not only activates the expression of class II genesDNA but recruits another B cell-specific coactivator to increase transcriptional activity of class II promotersDNA in Machine learning approach has been applied to biomedical named entity recognition (Nobata et al., 1999; Collier et al., 2000; Yamada et al., 2000; Shimpuku, 2002).",Experiment/Discussion
+"However, no work has achieved sufficient recognition accuracy.",Experiment/Discussion
+One reason is the lack of annotated corpora for training as is often the case of a new domain.,Experiment/Discussion
+Nobata et al. (1999) and Collier et al.,Experiment/Discussion
+"(2000) trained their model with only 100 annotated paper abstracts from the MEDLINE database (National Library of Medicine, 1999), and Yamada et al. (2000) used only 77 annotated paper abstracts.",Experiment/Discussion
+"In addition, it is difficult to compare the techniques used in each study because they used a closed and different corpus.",Experiment/Discussion
+"To overcome such a situation, the GENIA corpus (Ohta et al., 2002) has been developed, and at this time it is the largest biomedical annotated corpus available to public, containing 670 annotated abstracts of the MEDLINE database.",Experiment/Discussion
+"Another reason for low accuracies is that biomedical named entities are essentially hard to recognize using standard feature sets compared with the named entities in newswire articles (Nobata et al., 2000).",Experiment/Discussion
+"Thus, we need to employ powerful machine learning techniques which can incorporate various and complex features in a consistent way.",Experiment/Discussion
+"Support Vector Machines (SVMs) (Vapnik, 1995) and Maximum Entropy (ME) method (Berger et al., 1996) are powerful learning methods that satisfy such requirements, and are applied successfully to other NLP tasks (Kudo and Matsumoto, 2000; Nakagawa et al., 2001; Ratnaparkhi, 1996).",Experiment/Discussion
+"In this paper, we apply Support Vector Machines to biomedical named entity recognition and train them with the GENIA corpus.",Experiment/Discussion
+We formulate the named entity recognition as the classification of each word with context to one of the classes that represent region and named entity’s semantic class.,Experiment/Discussion
+"Although there is a previous work that applied SVMs to biomedical named entity task in this formulation (Yamada et al., 2000), their method to construct a classifier using SVMs, one-vs-rest, fails to train a classifier with entire GENIA corpus, since the cost of SVM training is super-linear to the size of training samples.",Experiment/Discussion
+"Even with a more feasible method, pairwise (Kreßel, 1998), which is employed in (Kudo and Matsumoto, 2000), we cannot train a classifier in a reasonable time, because we have a large number of samples that belong to the non-entity class in this formulation.",Experiment/Discussion
+"To solve this problem, we propose to split the non-entity class to several sub-classes, using part-ofspeech information.",Experiment/Discussion
+We show that this technique not only enables the training feasible but also improves the accuracy.,Experiment/Discussion
+"In addition, we explore new features such as word cache and the states of an unsupervised HMM for named entity recognition using SVMs.",Experiment/Discussion
+"In the experiments, we show the effect of using these features and compare the overall performance of our SVMbased recognition system with a system using the Maximum Entropy method, which is an alternative to the SVM method.",Experiment/Discussion
+The GENIA corpus is an annotated corpus of paper abstracts taken from the MEDLINE database.,Experiment/Discussion
+"Currently, 670 abstracts are annotated with named entity tags by biomedical experts and made available to public (Ver.",Experiment/Discussion
+"1.1).1 These 670 abstracts are a subset of more than 5,000 abstracts obtained by the query “human AND blood cell AND transcription factor“ to the MEDLINE database.",Experiment/Discussion
+Table 1 shows basic statistics of the GENIA corpus.,Experiment/Discussion
+"Since the GENIA corpus is intended to be extensive, there exist 24 distinct named entity classes in the corpus.2 Our task is to find a named entity region in a paper abstract and correctly select its class out of these 24 classes.",Experiment/Discussion
+"This number of classes is relatively large compared with other corpora used in previous studies, and compared with the named entity task for newswire articles.",Experiment/Discussion
+"This indicates that the task with the GENIA corpus is hard, apart from the difficulty of the biomedical domain itself.",Experiment/Discussion
+We formulate the named entity task as the classification of each word with context to one of the classes that represent region information and named entity’s semantic class.,Experiment/Discussion
+"Several representations to encode region information are proposed and examined (Ramshaw and Marcus, 1995; Uchimoto et al., 2000; Kudo and Matsumoto, 2001).",Experiment/Discussion
+"In this paper, we employ the simplest BIO representation, which is also used in (Yamada et al., 2000).",Experiment/Discussion
+We modify this representation in Section 5.1 in order to accelerate the SVM training.,Experiment/Discussion
+"In the BIO representation, the region information is represented as the class prefixes “B-” and “I-”, and a class “O”.",Experiment/Discussion
+"B- means that the current word is at the beginning of a named entity, I- means that the current word is in a named entity (but not at the beginning), and O means the word is not in a named entity.",Experiment/Discussion
+"For each named entity class C, class B-C and I-C are produced.",Experiment/Discussion
+"Therefore, if we have N named entity classes, the BIO representation yields 2N + 1 classes, which will be the targets of a classifier.",Experiment/Discussion
+"For instance, the following corresponds to the annotation “Number of glucocorticoid receptorsPROTEIN in Support Vector Machines (SVMs) (Cortes and Vapnik, 1995) are powerful methods for learning a classifier, which have been applied successfully to many NLP tasks such as base phrase chunking (Kudo and Matsumoto, 2000) and part-of-speech tagging (Nakagawa et al., 2001).",Experiment/Discussion
+The SVM constructs a binary classifier that outputs +1 or −1 given a sample vector x E Rn.,Experiment/Discussion
+The decision is based on the separating hyperplane as follows.,Experiment/Discussion
+"The class for an input x, c(x), is determined by seeing which side of the space separated by the hyperplane, w · x + b = 0, the input lies on.",Experiment/Discussion
+"Given a set of labeled training samples {(y1, x1), ··· , (yL, xL)}, xi ∈ Rn, yi ∈ {+1, −1}, the SVM training tries to find the optimal hyperplane, i.e., the hyperplane with the maximum margin.",Experiment/Discussion
+Margin is defined as the distance between the hyperplane and the training samples nearest to the hyperplane.,Experiment/Discussion
+Maximizing the margin insists that these nearest samples (support vectors) exist on both sides of the separating hyperplane and the hyperplane lies exactly at the midpoint of these support vectors.,Experiment/Discussion
+This margin maximization tightly relates to the fine generalization power of SVMs.,Experiment/Discussion
+"Assuming that |w·xi+b |= 1 at the support vectors without loss of generality, the SVM training can be formulated as the following optimization problem.3 The solution of this problem is known to be written as follows, using only support vectors and weights for them.",Experiment/Discussion
+"In the SVM learning, we can use a function k(xi, xj) called a kernel function instead of the inner product in the above equation.",Experiment/Discussion
+"Introducing a kernel function means mapping an original input x using (D(x), s.t.",Experiment/Discussion
+"(D(xi)·(D(xj) = k(xi, xj) to another, usually a higher dimensional, feature space.",Experiment/Discussion
+We construct the optimal hyperplane in that space.,Experiment/Discussion
+"By using kernel functions, we can construct a non-linear separating surface in the original feature space.",Experiment/Discussion
+"Fortunately, such non-linear training does not increase the computational cost if the calculation of the kernel function is as cheap as the inner product.",Experiment/Discussion
+"A polynomial function defined as (sxi · xj + r)d is popular in applications of SVMs to NLPs (Kudo and Matsumoto, 2000; Yamada et al., 2000; Kudo and Matsumoto, 2001), because it has an intuitively sound interpretation that each dimension of the mapped space is a 3For many real-world problems where the samples may be inseparable, we allow the constraints are broken with some penalty.",Experiment/Discussion
+"In the experiments, we use so-called 1-norm soft margin formulation described as: subject to yi(w · xi + b) ≥ 1 − ei, i = 1, · · · , L, ei ≥ 0, i = 1,··· , L. (weighted) conjunction of d features in the original sample.",Experiment/Discussion
+"As described above, the standard SVM learning constructs a binary classifier.",Experiment/Discussion
+"To make a named entity recognition system based on the BIO representation, we require a multi-class classifier.",Experiment/Discussion
+"Among several methods for constructing a multi-class SVM (Hsu and Lin, 2002), we use a pairwise method proposed by Kre13el (1998) instead of the one-vs-rest method used in (Yamada et al., 2000), and extend the BIO representation to enable the training with the entire GENIA corpus.",Experiment/Discussion
+Here we describe the one-vs-rest method and the pairwise method to show the necessity of our extension.,Experiment/Discussion
+Both one-vs-rest and pairwise methods construct a multi-class classifier by combining many binary SVMs.,Experiment/Discussion
+"In the following explanation, K denotes the number of the target classes. one-vs-rest Construct K binary SVMs, each of which determines whether the sample should be classified as class i or as the other classes.",Experiment/Discussion
+"The output is the class with the maximum f(x) in Equation 1. pairwise Construct K(K − 1)/2 binary SVMs, each of which determines whether the sample should be classified as class i or as class j.",Experiment/Discussion
+"Each binary SVM has one vote, and the output is the class with the maximum votes.",Experiment/Discussion
+"Because the SVM training is a quadratic optimization program, its cost is super-linear to the size of the training samples even with the tailored techniques such as SMO (Platt, 1998) and kernel evaluation caching (Joachims, 1998).",Experiment/Discussion
+"Let L be the number of the training samples, then the one-vs-rest method takes time in K × OSVM(L).",Experiment/Discussion
+"The BIO formulation produces one training sample per word, and the training with the GENIA corpus involves over 100,000 training samples as can be seen from Table 1.",Experiment/Discussion
+"Therefore, it is apparent that the one-vsrest method is impractical with the GENIA corpus.",Experiment/Discussion
+"On the other hand, if target classes are equally distributed, the pairwise method will take time in K(K− 1)/2 × OS VM(2L/K).",Experiment/Discussion
+"This method is worthwhile because each training is much faster, though it requires the training of (K − 1)/2 times more classifiers.",Experiment/Discussion
+"It is also reported that the pairwise method achieves higher accuracy than other methods in some benchmarks (Kre13el, 1998; Hsu and Lin, 2002).",Experiment/Discussion
+An input x to an SVM classifier is a feature representation of the word to be classified and its context.,Experiment/Discussion
+"We use a bit-vector representation, each dimension of which indicates whether the input matches with 4 Named Entity Recognition Using ME a certain feature.",Experiment/Discussion
+The following illustrates the well- Model used features for the named entity recognition task.,Experiment/Discussion
+"The Maximum Entropy method, with which we compare our SVM-based method, defines the probability that the class is c given an input vector x as follows. where Z(x) is a normalization constant, and fi(c, x) is a feature function.",Experiment/Discussion
+"A feature function is defined in the same way as the features in the SVM learning, except that it includes c in it like f(c, x) = (c is the jth class) ∧ wi,k(x).",Experiment/Discussion
+"If x contains previously assigned classes, then the most probable searched by using the Viterbi-type algorithm.",Experiment/Discussion
+"We use the maximum entropy tagging method described in (Kazama et al., 2001) for the experiments, which is a variant of (Ratnaparkhi, 1996) modified to use HMM state features.",Experiment/Discussion
+"In the above definitions, k is a relative word position from the word to be classified.",Experiment/Discussion
+"A negative value represents a preceding word’s position, and a positive value represents a following word’s position.",Experiment/Discussion
+Note that we assume that the classification proceeds left to right as can be seen in the definition of the preceding class feature.,Experiment/Discussion
+"For the SVM classification, we does not use a dynamic argmax-type classification such as the Viterbi algorithm, since it is difficult to define a good comparable value for the confidence of a prediction such as probability.",Experiment/Discussion
+The consequences of this limitation will be discussed with the experimental results.,Experiment/Discussion
+Features usually form a group with some variables such as the position unspecified.,Experiment/Discussion
+"In this paper, we instantiate all features, i.e., instantiate for all i, for a group and a position.",Experiment/Discussion
+"Then, it is convenient to denote a set of features for a group g and a position k as gk (e.g., wk and posk).",Experiment/Discussion
+"Using this notation, we write a feature set as {w−1, w0, pre−1, pre0, pc−1}.4 This feature description derives the following input vector.5 In Section 3.3, we described that if target classes are equally distributed, the pairwise method will reduce the training cost.",Experiment/Discussion
+"In our case, however, we have a very unbalanced class distribution with a large number of samples belonging to the class “O” (see Table 1).",Experiment/Discussion
+"This leads to the same situation with the one-vsrest method, i.e., if LO is the number of the samples belonging to the class “O”, then the most dominant part of the training takes time in K × OSVM(LO).",Experiment/Discussion
+One solution to this unbalanced class distribution problem is to split the class “O” into several subclasses effectively.,Experiment/Discussion
+This will reduce the training cost for the same reason that the pairwise method works.,Experiment/Discussion
+"In this paper, we propose to split the non-entity class according to part-of-speech (POS) information of the word.",Experiment/Discussion
+"That is, given a part-of-speech tag set POS, we produce new |POS |classes, “Op” p ∈ POS.",Experiment/Discussion
+"Since we use a POS tagger that outputs 45 Penn Treebank’s POS tags in this paper, we have new 45 sub-classes which correspond to nonentity regions such as “O-NNS” (plural nouns), “OJJ” (adjectives), and “O-DT” (determiners).",Experiment/Discussion
+"Splitting by POS information seems useful for improving the system accuracy as well, because in the named entity recognition we must discriminate between nouns in named entities and nouns in ordinal noun phrases.",Experiment/Discussion
+"In the experiments, we show this class splitting technique not only enables the feasible training but also improves the accuracy.",Experiment/Discussion
+"In addition to the standard features, we explore word cache feature and HMM state feature, mainly to solve the data sparseness problem.",Experiment/Discussion
+"Although the GENIA corpus is the largest annotated corpus for the biomedical domain, it is still small compared with other linguistic annotated corpora such as the Penn Treebank.",Experiment/Discussion
+"Thus, the data sparseness problem is severe, and must be treated carefully.",Experiment/Discussion
+"Usually, the data sparseness is prevented by using more general features that apply to a broader set of instances (e.g., disjunctions).",Experiment/Discussion
+"While polynomial kernels in the SVM learning can effectively generate feature conjunctions, kernel functions that can effectively generate feature disjunctions are not known.",Experiment/Discussion
+"Thus, we should explicitly add dimensions for such general features.",Experiment/Discussion
+The word cache feature is defined as the disjunction of several word features as: We intend that the word cache feature captures the similarities of the patterns with a common key word such as follows.,Experiment/Discussion
+"We use a left word cache defined as lwck,i � wc{_k,···,0},i, and a right word cache defined as rwck,i - wc{1,···,k},i for patterns like (a) and (b) in the above example respectively.",Experiment/Discussion
+Kazama et al. (2001) proposed to use as features the Viterbi state sequence of a hidden Markov model (HMM) to prevent the data sparseness problem in the maximum entropy tagging model.,Experiment/Discussion
+An HMM is trained with a large number of unannotated texts by using an unsupervised learning method.,Experiment/Discussion
+"Because the number of states of the HMM is usually made smaller than |V|, the Viterbi states give smoothed but maximally informative representations of word patterns tuned for the domain, from which the raw texts are taken.",Experiment/Discussion
+"The HMM feature is defined in the same way as the word feature as follows. hmmk,i = { 1 if the Viterbi state for Wk is the ith state in the HMM’s states W 0 otherwise (HMMfeature) In the experiments, we train an HMM using raw MEDLINE abstracts in the GENIA corpus, and show that the HMM state feature can improve the accuracy.",Experiment/Discussion
+"Towards practical named entity recognition using SVMs, we have tackled the following implementation issues.",Experiment/Discussion
+It would be impossible to carry out the experiments in a reasonable time without such efforts.,Experiment/Discussion
+"Parallel Training: The training of pairwise SVMs has trivial parallelism, i.e., each SVM can be trained separately.",Experiment/Discussion
+"Since computers with two or more CPUs are not expensive these days, parallelization is very practical solution to accelerate the training of pairwise SVMs.",Experiment/Discussion
+"Fast Winner Finding: Although the pairwise method reduces the cost of training, it greatly increases the number of classifications needed to determine the class of one sample.",Experiment/Discussion
+"For example, for our experiments using the GENIA corpus, the BIO representation with class splitting yields more than 4,000 classification pairs.",Experiment/Discussion
+"Fortunately, we can stop classifications when a class gets K —1 votes and this stopping greatly saves classification time (Kreßel, 1998).",Experiment/Discussion
+"Moreover, we can stop classifications when the current votes of a class is greater than the others’ possible votes.",Experiment/Discussion
+"Support Vector Caching: In the pairwise method, though we have a large number of classifiers, each classifier shares some support vectors with other classifiers.",Experiment/Discussion
+"By storing the bodies of all support vectors together and letting each classifier have only the weights, we can greatly reduce the size of the classifier.",Experiment/Discussion
+The sharing of support vectors also can be exploited to accelerate the classification by caching the value of the kernel function between a support vector and a classifiee sample.,Experiment/Discussion
+"To conduct experiments, we divided 670 abstracts of the GENIA corpus (Ver.",Experiment/Discussion
+"1.1) into the training part (590 abstracts; 4,487 sentences; 133,915 words) and the test part (80 abstracts; 622 sentences; 18,211 words).6 Texts are tokenized by using Penn Treebank’s tokenizer.",Experiment/Discussion
+"An HMM for the HMM state features was trained with raw abstracts of the GENIA corpus (39,116 sentences).7 The number of states is 160.",Experiment/Discussion
+"The vocabulary for the word feature is constructed by taking the most frequent 10,000 words from the above raw abstracts, the prefix/suffix/prefix list by taking the most frequent 10,000 prefixes/suffixes/substrings.8 The performance is measured by precision, recall, and F-score, which are the standard measures for the named entity recognition.",Experiment/Discussion
+Systems based on the BIO representation may produce an inconsistent class sequence such as “O B-DNA I-RNA O”.,Experiment/Discussion
+We interpret such outputs as follows: once a named entity starts with “B-C” then we interpret that the named entity with class “C” ends only when we see another “B-” or “O-” tag.,Experiment/Discussion
+"We have implemented SMO algorithm (Platt, 1998) and techniques described in (Joachims, 1998) for soft margin SVMs in C++ programming language, and implemented support codes for pairwise classification and parallel training in Java programming language.",Experiment/Discussion
+"To obtain POS information required for features and class splitting, we used an English POS tagger described in (Kazama et al., 2001).",Experiment/Discussion
+"First, we show the effect of the class splitting described in Section 5.1.",Experiment/Discussion
+"Varying the size of training data, we compared the change in the training time and the accuracy with and without the class splitting.",Experiment/Discussion
+"We used a feature set {hw, pre, suf, sub, posi[−2,···,2],pc[−2,−1]} and the inner product kernel.9 The training time was measured on a machine with four 700MHz PentiumIIIs and 16GB RAM.",Experiment/Discussion
+Table 2 shows the results of the experiments.,Experiment/Discussion
+Figure 1 shows the results graphically.,Experiment/Discussion
+"We can see that without splitting we soon suffer from super-linearity of the SVM training, while with splitting we can handle the training with over 100,000 samples in a reasonable time.",Experiment/Discussion
+"It is very important that the splitting technique does not sacrifice the accuracy for speed, rather improves the accuracy.",Experiment/Discussion
+"In this experiment, we see the effect of the word cache feature and the HMM state feature described in Section 3.4.",Experiment/Discussion
+The effect is assessed by the accuracy gain observed by adding each feature set to a base feature set and the accuracy degradation observed by subtracting it from a (complete) base set.,Experiment/Discussion
+"The first column (A) in Table 3 shows an adding case where the base feature set is {w[−2,···,2]}.",Experiment/Discussion
+"The columns (B) and (C) show subtracting cases where the base feature set is {hw, pre, suf, sub, pos, hmmi[−k,··· ,k], lwck, rwck, pc[−2,−1]} with k = 2 and k = 3 respectively.",Experiment/Discussion
+The kernel function is the inner product.,Experiment/Discussion
+We can see that word cache and HMM state features surely improve the recognition accuracy.,Experiment/Discussion
+"In the table, we also included the accuracy change for other standard features.",Experiment/Discussion
+Preceeding classes and suffixes are definitely helpful.,Experiment/Discussion
+"On the other hand, the substring feature is not effective in our setting.",Experiment/Discussion
+"Although the effects of part-of-speech tags and prefixes are not so definite, it can be said that they are practically effective since they show positive effects in the case of the maximum performance.",Experiment/Discussion
+"In this set of experiments, we compare our SVM-based system with a named entity recognition system based on the Maximum Entropy method.",Experiment/Discussion
+"For the SVM system, we used the feature set {hw, pre, suf, pos, hmmi[−3,··· ,3], lwc3, rwc3, pc[−2,−1]}, which is shown to be the best in the previous experiment.",Experiment/Discussion
+"The compared system is a maximum entropy tagging model described in (Kazama et al., 2001).",Experiment/Discussion
+"Though it supports several character type features such as number and hyphen and some conjunctive features such as word n-gram, we do not use these features to compare the performance under as close a condition as possible.",Experiment/Discussion
+"The feature set used in the maximum entropy system is expressed as {hw,pre,suf,pos,hmmi[−2,···,2], pc[−2,−1]}.10 Both systems use the BIO representation with splitting.",Experiment/Discussion
+Table 4 shows the accuracies of both systems.,Experiment/Discussion
+"For the SVM system, we show the results with the inner product kernel and several polynomial kernels.",Experiment/Discussion
+"The row “All (id)” shows the accuracy from the view10When the width becomes [−3,··· , 3], the accuracy degrades (53.72 to 51.73 in F-score). point of the identification task, which only finds the named entity regions.",Experiment/Discussion
+The accuracies for several major entity classes are also shown.,Experiment/Discussion
+The SVM system with the 2-dimensional polynomial kernel achieves the highest accuracy.,Experiment/Discussion
+"This comparison may be unfair since a polynomial kernel has the effect of using conjunctive features, while the ME system does not use such conjunctive features.",Experiment/Discussion
+"Nevertheless, the facts: we can introduce the polynomial kernel very easily; there are very few parameters to be tuned;11 we could achieve the higher accuracy; show an advantage of the SVM system.",Experiment/Discussion
+It will be interesting to discuss why the SVM systems with the inner product kernel (and the polynomial kernel with d = 1) are outperformed by the ME system.,Experiment/Discussion
+We here discuss two possible reasons.,Experiment/Discussion
+"The first is that the SVM system does not use a dynamic decision such as the Viterbi algorithm, while the ME system uses it.",Experiment/Discussion
+"To see this, we degrade the ME system so that it predicts the classes deterministically without using the Viterbi algorithm.",Experiment/Discussion
+We found that this system only marks 51.54 in F-score.,Experiment/Discussion
+"Thus, it can be said that a dynamic decision is important for this named entity task.",Experiment/Discussion
+"However, although a method to convert the outputs of a binary SVM to probabilistic values is proposed (Platt, 1999), the way to obtain meaningful probabilistic values needed in Viterbitype algorithms from the outputs of a multi-class SVM is unknown.",Experiment/Discussion
+Solving this problem is certainly a part of the future work.,Experiment/Discussion
+"The second possible reason is that the SVM system in this paper does not use any cut-off or feature truncation method to remove data noise, while the ME system uses a simple feature cut-off method.12 We observed that the ME system without the cut-off only marks 49.11 in 11C, s, r, and d 12Features that occur less than 10 times are removed.",Experiment/Discussion
+F-score.,Experiment/Discussion
+"Thus, such a noise reduction method is also important.",Experiment/Discussion
+"However, the cut-off method for the ME method cannot be applied without modification since, as described in Section 3.4, the definition of the features are different in the two approaches.",Experiment/Discussion
+It can be said the features in the ME method is “finer” than those in SVMs.,Experiment/Discussion
+"In this sense, the ME method allows us more flexible feature selection.",Experiment/Discussion
+This is an advantage of the ME method.,Experiment/Discussion
+The accuracies achieved by both systems can be said high compared with those of the previous methods if we consider that we have 24 named entity classes.,Experiment/Discussion
+"However, the accuracies are not sufficient for a practical use.",Experiment/Discussion
+"Though higher accuracy will be achieved with a larger annotated corpus, we should also explore more effective features and find effective feature combination methods to exploit such a large corpus maximally.",Experiment/Discussion
+We have described the use of Support Vector Machines for the biomedical named entity recognition task.,Results/Conclusion
+"To make the training of SVMs with the GENIA corpus practical, we proposed to split the nonentity class by using POS information.",Results/Conclusion
+"In addition, we explored the new types of features, word cache and HMM states, to avoid the data sparseness problem.",Results/Conclusion
+"In the experiments, we have shown that the class splitting technique not only makes training feasible but also improves the accuracy.",Results/Conclusion
+We have also shown that the proposed new features also improve the accuracy and the SVM system with the polynomial kernel function outperforms the ME-based system.,Results/Conclusion
+We would like to thank Dr. Jin-Dong Kim for providing us easy-to-use preprocessed training data.,Results/Conclusion

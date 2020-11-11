@@ -1,194 +1,194 @@
 col1,col2
-"In this paper, we present a reinforcement learning approach for mapping natural language instructions to sequences of executable actions.",{}
-We assume access to a reward function that defines the quality of the executed actions.,{}
-"During training, the learner repeatedly constructs action sequences for a set of documents, executes those actions, and observes the resulting reward.",{}
-We use a policy gradient algorithm to estimate the parameters of a log-linear model for action selection.,{}
-We apply our method to interpret instructions in two domains — Windows troubleshooting guides and game tutorials.,{}
-Our results demonstrate that this method can rival supervised learning techniques while requiring few or no annotated training exam,{}
-"The problem of interpreting instructions written in natural language has been widely studied since the early days of artificial intelligence (Winograd, 1972; Di Eugenio, 1992).","{'title': '1 Introduction', 'number': '1'}"
-Mapping instructions to a sequence of executable actions would enable the automation of tasks that currently require human participation.,"{'title': '1 Introduction', 'number': '1'}"
-Examples include configuring software based on how-to guides and operating simulators using instruction manuals.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present a reinforcement learning framework for inducing mappings from text to actions without the need for annotated training examples.","{'title': '1 Introduction', 'number': '1'}"
-"For concreteness, consider instructions from a Windows troubleshooting guide on deleting temporary folders, shown in Figure 1.","{'title': '1 Introduction', 'number': '1'}"
-We aim to map this text to the corresponding low-level commands and parameters.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, properly interpreting the third instruction requires clicking on a tab, finding the appropriate option in a tree control, and clearing its associated checkbox.","{'title': '1 Introduction', 'number': '1'}"
-"In this and many other applications, the validity of a mapping can be verified by executing the induced actions in the corresponding environment and observing their effects.","{'title': '1 Introduction', 'number': '1'}"
-"For instance, in the example above we can assess whether the goal described in the instructions is achieved, i.e., the folder is deleted.","{'title': '1 Introduction', 'number': '1'}"
-The key idea of our approach is to leverage the validation process as the main source of supervision to guide learning.,"{'title': '1 Introduction', 'number': '1'}"
-"This form of supervision allows us to learn interpretations of natural language instructions when standard supervised techniques are not applicable, due to the lack of human-created annotations.","{'title': '1 Introduction', 'number': '1'}"
-"Reinforcement learning is a natural framework for building models using validation from an environment (Sutton and Barto, 1998).","{'title': '1 Introduction', 'number': '1'}"
-We assume that supervision is provided in the form of a reward function that defines the quality of executed actions.,"{'title': '1 Introduction', 'number': '1'}"
-"During training, the learner repeatedly constructs action sequences for a set of given documents, executes those actions, and observes the resulting reward.","{'title': '1 Introduction', 'number': '1'}"
-The learner’s goal is to estimate a policy — a distribution over actions given instruction text and environment state — that maximizes future expected reward.,"{'title': '1 Introduction', 'number': '1'}"
-"Our policy is modeled in a log-linear fashion, allowing us to incorporate features of both the instruction text and the environment.","{'title': '1 Introduction', 'number': '1'}"
-We employ a policy gradient algorithm to estimate the parameters of this model.,"{'title': '1 Introduction', 'number': '1'}"
-We evaluate our method on two distinct applications: Windows troubleshooting guides and puzzle game tutorials.,"{'title': '1 Introduction', 'number': '1'}"
-The key findings of our experiments are twofold.,"{'title': '1 Introduction', 'number': '1'}"
-"First, models trained only with simple reward signals achieve surprisingly high results, coming within 11% of a fully supervised method in the Windows domain.","{'title': '1 Introduction', 'number': '1'}"
-"Second, augmenting unlabeled documents with even a small fraction of annotated examples greatly reduces this performance gap, to within 4% in that domain.","{'title': '1 Introduction', 'number': '1'}"
-These results indicate the power of learning from this new form of automated supervision.,"{'title': '1 Introduction', 'number': '1'}"
-"Grounded Language Acquisition Our work fits into a broader class of approaches that aim to learn language from a situated context (Mooney, 2008a; Mooney, 2008b; Fleischman and Roy, 2005; Yu and Ballard, 2004; Siskind, 2001; Oates, 2001).","{'title': '2 Related Work', 'number': '2'}"
-"Instances of such approaches include work on inferring the meaning of words from video data (Roy and Pentland, 2002; Barnard and Forsyth, 2001), and interpreting the commentary of a simulated soccer game (Chen and Mooney, 2008).","{'title': '2 Related Work', 'number': '2'}"
-"Most of these approaches assume some form of parallel data, and learn perceptual cooccurrence patterns.","{'title': '2 Related Work', 'number': '2'}"
-"In contrast, our emphasis is on learning language by proactively interacting with an external environment.","{'title': '2 Related Work', 'number': '2'}"
-"Reinforcement Learning for Language Processing Reinforcement learning has been previously applied to the problem of dialogue management (Scheffler and Young, 2002; Roy et al., 2000; Litman et al., 2000; Singh et al., 1999).","{'title': '2 Related Work', 'number': '2'}"
-These systems converse with a human user by taking actions that emit natural language utterances.,"{'title': '2 Related Work', 'number': '2'}"
-The reinforcement learning state space encodes information about the goals of the user and what they say at each time step.,"{'title': '2 Related Work', 'number': '2'}"
-"The learning problem is to find an optimal policy that maps states to actions, through a trial-and-error process of repeated interaction with the user.","{'title': '2 Related Work', 'number': '2'}"
-Reinforcement learning is applied very differently in dialogue systems compared to our setup.,"{'title': '2 Related Work', 'number': '2'}"
-"In some respects, our task is more easily amenable to reinforcement learning.","{'title': '2 Related Work', 'number': '2'}"
-"For instance, we are not interacting with a human user, so the cost of interaction is lower.","{'title': '2 Related Work', 'number': '2'}"
-"However, while the state space can be designed to be relatively small in the dialogue management task, our state space is determined by the underlying environment and is typically quite large.","{'title': '2 Related Work', 'number': '2'}"
-We address this complexity by developing a policy gradient algorithm that learns efficiently while exploring a small subset of the states.,"{'title': '2 Related Work', 'number': '2'}"
-Our task is to learn a mapping between documents and the sequence of actions they express.,"{'title': '3 Problem Formulation', 'number': '3'}"
-Figure 2 shows how one example sentence is mapped to three actions.,"{'title': '3 Problem Formulation', 'number': '3'}"
-"Mapping Text to Actions As input, we are given a document d, comprising a sequence of sentences (u1, ... , ut), where each ui is a sequence of words.","{'title': '3 Problem Formulation', 'number': '3'}"
-"Our goal is to map d to a sequence of actions a� = (a0, ... , a,1).","{'title': '3 Problem Formulation', 'number': '3'}"
-"Actions are predicted and executed sequentially.2 An action a = (c, R, W') encompasses a command c, the command’s parameters R, and the words W' specifying c and R. Elements of R refer to objects available in the environment state, as described below.","{'title': '3 Problem Formulation', 'number': '3'}"
-"Some parameters can also refer to words in document d. Additionally, to account for words that do not describe any actions, c can be a null command.","{'title': '3 Problem Formulation', 'number': '3'}"
-"The Environment The environment state £ specifies the set of objects available for interaction, and their properties.","{'title': '3 Problem Formulation', 'number': '3'}"
-"In Figure 2, £ is shown on the right.","{'title': '3 Problem Formulation', 'number': '3'}"
-"The environment state £ changes in response to the execution of command c with parameters R according to a transition distribution p(£'J£, c, R).","{'title': '3 Problem Formulation', 'number': '3'}"
-This distribution is a priori unknown to the learner.,"{'title': '3 Problem Formulation', 'number': '3'}"
-"As we will see in Section 5, our approach avoids having to directly estimate this distribution.","{'title': '3 Problem Formulation', 'number': '3'}"
-"State To predict actions sequentially, we need to track the state of the document-to-actions mapping over time.","{'title': '3 Problem Formulation', 'number': '3'}"
-"A mapping state s is a tuple (£, d, j, W), where £ refers to the current environment state; j is the index of the sentence currently being interpreted in document d; and W contains words that were mapped by previous actions for the same sentence.","{'title': '3 Problem Formulation', 'number': '3'}"
-The mapping state s is observed after each action.,"{'title': '3 Problem Formulation', 'number': '3'}"
-"The initial mapping state s0 for document d is (£d, d, 0, 0); £d is the unique starting environment state for d. Performing action a in state s = (£, d, j, W) leads to a new state s' according to distribution p(s'|s, a), defined as follows: £ transitions according to p(£'|£, c, R), W is updated with a’s selected words, and j is incremented if all words of the sentence have been mapped.","{'title': '3 Problem Formulation', 'number': '3'}"
-"For the applications we consider in this work, environment state transitions, and consequently mapping state transitions, are deterministic.","{'title': '3 Problem Formulation', 'number': '3'}"
-"Training During training, we are provided with a set D of documents, the ability to sample from the transition distribution, and a reward function r(h).","{'title': '3 Problem Formulation', 'number': '3'}"
-"Here, h = (s0, a0, ... , sn−1, an−1, sn) is a history of states and actions visited while interpreting one document. r(h) outputs a realvalued score that correlates with correct action selection.3 We consider both immediate reward, which is available after each action, and delayed reward, which does not provide feedback until the last action.","{'title': '3 Problem Formulation', 'number': '3'}"
-"For example, task completion is a delayed reward that produces a positive value after the final action only if the task was completed successfully.","{'title': '3 Problem Formulation', 'number': '3'}"
-We will also demonstrate how manually annotated action sequences can be incorporated into the reward.,"{'title': '3 Problem Formulation', 'number': '3'}"
-"The goal of training is to estimate parameters 0 of the action selection distribution p(a|s, 0), called the policy.","{'title': '3 Problem Formulation', 'number': '3'}"
-"Since the reward correlates with action sequence correctness, the 0 that maximizes expected reward will yield the best actions.","{'title': '3 Problem Formulation', 'number': '3'}"
-Our goal is to predict a sequence of actions.,"{'title': '4 A Log-Linear Model for Actions', 'number': '4'}"
-"We construct this sequence by repeatedly choosing an action given the current mapping state, and applying that action to advance to a new state.","{'title': '4 A Log-Linear Model for Actions', 'number': '4'}"
-"Given a state s = (£, d, j, W), the space of possible next actions is defined by enumerating subspans of unused words in the current sentence (i.e., subspans of the jth sentence of d not in W), and the possible commands and parameters in environment state £.4 We model the policy distribution p(a|s; 0) over this action space in a log-linear fashion (Della Pietra et al., 1997; Lafferty et al., 2001), giving us the flexibility to incorporate a diverse range of features.","{'title': '4 A Log-Linear Model for Actions', 'number': '4'}"
-"Under this representation, the policy distribution is: where 0(s, a) E Rn is an n-dimensional feature representation.","{'title': '4 A Log-Linear Model for Actions', 'number': '4'}"
-"During test, actions are selected according to the mode of this distribution.","{'title': '4 A Log-Linear Model for Actions', 'number': '4'}"
-"During training, our goal is to find the optimal policy p(a|s; θ).","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Since reward correlates with correct action selection, a natural objective is to maximize expected future reward — that is, the reward we expect while acting according to that policy from state s. Formally, we maximize the value function: where the history h is the sequence of states and actions encountered while interpreting a single document d E D. This expectation is averaged over all documents in D. The distribution p(h|θ) returns the probability of seeing history h when starting from state s and acting according to a policy with parameters θ.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"This distribution can be decomposed into a product over time steps: Input: A document set D, Feature representation φ, Reward function r(h), Number of iterations T Our reinforcement learning problem is to find the parameters θ that maximize Vθ from equation 2.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Although there is no closed form solution, policy gradient algorithms (Sutton et al., 2000) estimate the parameters θ by performing stochastic gradient ascent.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"The gradient of Vθ is approximated by interacting with the environment, and the resulting reward is used to update the estimate of θ.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-Policy gradient algorithms optimize a non-convex objective and are only guaranteed to find a local optimum.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"However, as we will see, they scale to large state spaces and can perform well in practice.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"To find the parameters θ that maximize the objective, we first compute the derivative of Vθ.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Expanding according to the product rule, we have: where the inner sum is over all time steps t in the current history h. Expanding the inner partial derivative we observe that: which is the derivative of a log-linear distribution.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-Equation 5 is easy to compute directly.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"However, the complete derivative of Vθ in equation 4 is intractable, because computing the expectation would require summing over all possible histories.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Instead, policy gradient algorithms employ stochastic gradient ascent by computing a noisy estimate of the expectation using just a subset of the histories.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Specifically, we draw samples from p(h|θ) by acting in the target environment, and use these samples to approximate the expectation in equation 4.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"In practice, it is often sufficient to sample a single history h for this approximation.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-Algorithm 1 details the complete policy gradient algorithm.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-It performs T iterations over the set of documents D. Step 3 samples a history that maps each document to actions.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"This is done by repeatedly selecting actions according to the current policy, and updating the state by executing the selected actions.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-Steps 4 and 5 compute the empirical gradient and update the parameters θ.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"In many domains, interacting with the environment is expensive.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Therefore, we use two techniques that allow us to take maximum advantage of each environment interaction.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"First, a history h = (s0, a0, ... , sn) contains subsequences (si, ai,... sn) for i = 1 to n − 1, each with its own reward value given by the environment as a side effect of executing h. We apply the update from equation 5 for each subsequence.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Second, for a sampled history h, we can propose alternative histories h' that result in the same commands and parameters with different word spans.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"We can again apply equation 5 for each h', weighted by its probability under the current policy, p(h�|θ) The algorithm we have presented belongs to a family of policy gradient algorithms that have been successfully used for complex tasks such as robot control (Ng et al., 2003).","{'title': '5 Reinforcement Learning', 'number': '5'}"
-Our formulation is unique in how it represents natural language in the reinforcement learning framework.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"We can design a range of reward functions to guide learning, depending on the availability of annotated data and environment feedback.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Consider the case when every training document d E D is annotated with its correct sequence of actions, and state transitions are deterministic.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Given these examples, it is straightforward to construct a reward function that connects policy gradient to maximum likelihood.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Specifically, define a reward function r(h) that returns one when h matches the annotation for the document being analyzed, and zero otherwise.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Policy gradient performs stochastic gradient ascent on the objective from equation 2, performing one update per document.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"For document d, this objective becomes: where hd is the history corresponding to the annotated action sequence.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Thus, with this reward policy gradient is equivalent to stochastic gradient ascent with a maximum likelihood objective.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"At the other extreme, when annotations are completely unavailable, learning is still possible given informative feedback from the environment.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-"Crucially, this feedback only needs to correlate with action sequence quality.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-We detail environment-based reward functions in the next section.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"As our results will show, reward functions built using this kind of feedback can provide strong guidance for learning.","{'title': '5 Reinforcement Learning', 'number': '5'}"
-We will also consider reward functions that combine annotated supervision with environment feedback.,"{'title': '5 Reinforcement Learning', 'number': '5'}"
-"We study two applications of our model: following instructions to perform software tasks, and solving a puzzle game using tutorial guides.","{'title': '6 Applying the Model', 'number': '6'}"
-"On its Help and Support website,5 Microsoft publishes a number of articles describing how to perform tasks and troubleshoot problems in the Windows operating systems.","{'title': '6 Applying the Model', 'number': '6'}"
-Examples of such tasks include installing patches and changing security settings.,"{'title': '6 Applying the Model', 'number': '6'}"
-Figure 1 shows one such article.,"{'title': '6 Applying the Model', 'number': '6'}"
-Our goal is to automatically execute these support articles in the Windows 2000 environment.,"{'title': '6 Applying the Model', 'number': '6'}"
-"Here, the environment state is the set of visible user interface (UI) objects, and object properties such as label, location, and parent window.","{'title': '6 Applying the Model', 'number': '6'}"
-"Possible commands include left-click, right-click, double-click, and type-into, all of which take a UI object as a parameter; type-into additionally requires a parameter for the input text.","{'title': '6 Applying the Model', 'number': '6'}"
-Table 1 lists some of the features we use for this domain.,"{'title': '6 Applying the Model', 'number': '6'}"
-"These features capture various aspects of the action under consideration, the current Windows UI state, and the input instructions.","{'title': '6 Applying the Model', 'number': '6'}"
-"For example, one lexical feature measures the similarity of a word in the sentence to the UI labels of objects in the environment.","{'title': '6 Applying the Model', 'number': '6'}"
-"Environment-specific features, such as whether an object is currently in focus, are useful when selecting the object to manipulate.","{'title': '6 Applying the Model', 'number': '6'}"
-"In total, there are 4,438 features.","{'title': '6 Applying the Model', 'number': '6'}"
-Reward Function Environment feedback can be used as a reward function in this domain.,"{'title': '6 Applying the Model', 'number': '6'}"
-"An obvious reward would be task completion (e.g., whether the stated computer problem was fixed).","{'title': '6 Applying the Model', 'number': '6'}"
-"Unfortunately, verifying task completion is a challenging system issue in its own right.","{'title': '6 Applying the Model', 'number': '6'}"
-"Instead, we rely on a noisy method of checking whether execution can proceed from one sentence to the next: at least one word in each sentence has to correspond to an object in the environment.6 For instance, in the sentence from Figure 2 the word “Run” matches the Run... menu item.","{'title': '6 Applying the Model', 'number': '6'}"
-"If no words in a sentence match a current environment object, then one of the previous sentences was analyzed incorrectly.","{'title': '6 Applying the Model', 'number': '6'}"
-"In this case, we assign the history a reward of -1.","{'title': '6 Applying the Model', 'number': '6'}"
-"This reward is not guaranteed to penalize all incorrect histories, because there may be false positive matches between the sentence and the environment.","{'title': '6 Applying the Model', 'number': '6'}"
-"When at least one word matches, we assign a positive reward that linearly increases with the percentage of words assigned to non-null commands, and linearly decreases with the number of output actions.","{'title': '6 Applying the Model', 'number': '6'}"
-This reward signal encourages analyses that interpret all of the words without producing spurious actions.,"{'title': '6 Applying the Model', 'number': '6'}"
-"Our second application is to a puzzle game called Crossblock, available online as a Flash game.7 Each of 50 puzzles is played on a grid, where some grid positions are filled with squares.","{'title': '6 Applying the Model', 'number': '6'}"
-The object of the game is to clear the grid by drawing vertical or horizontal line segments that remove groups of squares.,"{'title': '6 Applying the Model', 'number': '6'}"
-"Each segment must exactly cross a specific number of squares, ranging from two to seven depending on the puzzle.","{'title': '6 Applying the Model', 'number': '6'}"
-Humans players have found this game challenging and engaging enough to warrant posting textual tutorials.8 A sample puzzle and tutorial are shown in Figure 3.,"{'title': '6 Applying the Model', 'number': '6'}"
-The environment is defined by the state of the grid.,"{'title': '6 Applying the Model', 'number': '6'}"
-"The only command is clear, which takes a parameter specifying the orientation (row or column) and grid location of the line segment to be removed.","{'title': '6 Applying the Model', 'number': '6'}"
-"The challenge in this domain is to segment the text into the phrases describing each action, and then correctly identify the line segments from references such as “the bottom four from the second column from the left.” For this domain, we use two sets of binary features on state-action pairs (s, a).","{'title': '6 Applying the Model', 'number': '6'}"
-"First, for each vocabulary word w, we define a feature that is one if w is the last word of a’s consumed words W'.","{'title': '6 Applying the Model', 'number': '6'}"
-These features help identify the proper text segmentation points between actions.,"{'title': '6 Applying the Model', 'number': '6'}"
-"Second, we introduce features for pairs of vocabulary word w and attributes of action a, e.g., the line orientation and grid locations of the squares that a would remove.","{'title': '6 Applying the Model', 'number': '6'}"
-"This set of features enables us to match words (e.g., “row”) with objects in the environment (e.g., a move that removes a horizontal series of squares).","{'title': '6 Applying the Model', 'number': '6'}"
-"In total, there are 8,094 features.","{'title': '6 Applying the Model', 'number': '6'}"
-"Reward Function For Crossblock it is easy to directly verify task completion, which we use as the basis of our reward function.","{'title': '6 Applying the Model', 'number': '6'}"
-The reward r(h) is -1 if h ends in a state where the puzzle cannot be completed.,"{'title': '6 Applying the Model', 'number': '6'}"
-"For solved puzzles, the reward is a positive value proportional to the percentage of words assigned to non-null commands.","{'title': '6 Applying the Model', 'number': '6'}"
-"Datasets For the Windows domain, our dataset consists of 128 documents, divided into 70 for training, 18 for development, and 40 for test.","{'title': '7 Experimental Setup', 'number': '7'}"
-"In the puzzle game domain, we use 50 tutorials, divided into 40 for training and 10 for test.9 Statistics for the datasets are shown below.","{'title': '7 Experimental Setup', 'number': '7'}"
-The data exhibits certain qualities that make for a challenging learning problem.,"{'title': '7 Experimental Setup', 'number': '7'}"
-"For instance, there are a surprising variety of linguistic constructs — as Figure 4 shows, in the Windows domain even a simple command is expressed in at least six different ways.","{'title': '7 Experimental Setup', 'number': '7'}"
-"Experimental Framework To apply our algorithm to the Windows domain, we use the Win32 application programming interface to simulate human interactions with the user interface, and to gather environment state information.","{'title': '7 Experimental Setup', 'number': '7'}"
-"The operating system environment is hosted within a virtual machine,10 allowing us to rapidly save and reset system state snapshots.","{'title': '7 Experimental Setup', 'number': '7'}"
-"For the puzzle game domain, we replicated the game with an implementation that facilitates automatic play.","{'title': '7 Experimental Setup', 'number': '7'}"
-"As is commonly done in reinforcement learning, we use a softmax temperature parameter to smooth the policy distribution (Sutton and Barto, 1998), set to 0.1 in our experiments.","{'title': '7 Experimental Setup', 'number': '7'}"
-"For Windows, the development set is used to select the best parameters.","{'title': '7 Experimental Setup', 'number': '7'}"
-"For Crossblock, we choose the parameters that produce the highest reward during training.","{'title': '7 Experimental Setup', 'number': '7'}"
-"During evaluation, we use these parameters to predict mappings for the test documents.","{'title': '7 Experimental Setup', 'number': '7'}"
-"Evaluation Metrics For evaluation, we compare the results to manually constructed sequences of actions.","{'title': '7 Experimental Setup', 'number': '7'}"
-"We measure the number of correct actions, sentences, and documents.","{'title': '7 Experimental Setup', 'number': '7'}"
-An action is correct if it matches the annotations in terms of command and parameters.,"{'title': '7 Experimental Setup', 'number': '7'}"
-"A sentence is correct if all of its actions are correctly identified, and analogously for documents.11 Statistical significance is measured with the sign test.","{'title': '7 Experimental Setup', 'number': '7'}"
-"Additionally, we compute a word alignment score to investigate the extent to which the input text is used to construct correct analyses.","{'title': '7 Experimental Setup', 'number': '7'}"
-This score measures the percentage of words that are aligned to the corresponding annotated actions in correctly analyzed documents.,"{'title': '7 Experimental Setup', 'number': '7'}"
-Baselines We consider the following baselines to characterize the performance of our approach. lems like ours are typically addressed using supervised techniques.,"{'title': '7 Experimental Setup', 'number': '7'}"
-"We measure how a standard supervised approach would perform on this task by using a reward signal based on manual annotations of output action sequences, as defined in Section 5.2.","{'title': '7 Experimental Setup', 'number': '7'}"
-"As shown there, policy gradient with this reward is equivalent to stochastic gradient ascent with a maximum likelihood objective. when only a subset of training documents is annotated, and environment reward is used for the remainder.","{'title': '7 Experimental Setup', 'number': '7'}"
-Our method seamlessly combines these two kinds of rewards. sider two naive baselines.,"{'title': '7 Experimental Setup', 'number': '7'}"
-Both scan through each sentence from left to right.,"{'title': '7 Experimental Setup', 'number': '7'}"
-A command c is executed on the object whose name is encountered first in the sentence.,"{'title': '7 Experimental Setup', 'number': '7'}"
-"This command c is either selected randomly, or set to the majority command, which is leftclick.","{'title': '7 Experimental Setup', 'number': '7'}"
-This procedure is repeated until no more words match environment objects.,"{'title': '7 Experimental Setup', 'number': '7'}"
-Table 2 presents evaluation results on the test sets.,"{'title': '8 Results', 'number': '8'}"
-There are several indicators of the difficulty of this task.,"{'title': '8 Results', 'number': '8'}"
-The random and majority baselines’ poor performance in both domains indicates that naive approaches are inadequate for these tasks.,"{'title': '8 Results', 'number': '8'}"
-The performance of the fully supervised approach provides further evidence that the task is challenging.,"{'title': '8 Results', 'number': '8'}"
-"This difficulty can be attributed in part to the large branching factor of possible actions at each step — on average, there are 27.14 choices per action in the Windows domain, and 9.78 in the Crossblock domain.","{'title': '8 Results', 'number': '8'}"
-"In both domains, the learners relying only on environment reward perform well.","{'title': '8 Results', 'number': '8'}"
-"Although the fully supervised approach performs the best, adding just a few annotated training examples to the environment-based learner significantly reduces the performance gap.","{'title': '8 Results', 'number': '8'}"
-Figure 5 shows the overall tradeoff between annotation effort and system performance for the two domains.,"{'title': '8 Results', 'number': '8'}"
-The ability to make this tradeoff is one of the advantages of our approach.,"{'title': '8 Results', 'number': '8'}"
-The figure also shows that augmenting annotated documents with additional environment-reward documents invariably improves performance.,"{'title': '8 Results', 'number': '8'}"
-The word alignment results from Table 2 indicate that the learners are mapping the correct words to actions for documents that are successfully completed.,"{'title': '8 Results', 'number': '8'}"
-"For example, the models that perform best in the Windows domain achieve nearly perfect word alignment scores.","{'title': '8 Results', 'number': '8'}"
-"To further assess the contribution of the instruction text, we train a variant of our model without access to text features.","{'title': '8 Results', 'number': '8'}"
-"This is possible in the game domain, where all of the puzzles share a single goal state that is independent of the instructions.","{'title': '8 Results', 'number': '8'}"
-"This variant solves 34% of the puzzles, suggesting that access to the instructions significantly improves performance.","{'title': '8 Results', 'number': '8'}"
-"In this paper, we presented a reinforcement learning approach for inducing a mapping between instructions and actions.","{'title': '9 Conclusions', 'number': '9'}"
-"This approach is able to use environment-based rewards, such as task completion, to learn to analyze text.","{'title': '9 Conclusions', 'number': '9'}"
-We showed that having access to a suitable reward function can significantly reduce the need for annotations.,"{'title': '9 Conclusions', 'number': '9'}"
-"The authors acknowledge the support of the NSF (CAREER grant IIS-0448168, grant IIS-0835445, grant IIS-0835652, and a Graduate Research Fellowship) and the ONR.","{'title': 'Acknowledgments', 'number': '10'}"
-"Thanks to Michael Collins, Amir Globerson, Tommi Jaakkola, Leslie Pack Kaelbling, Dina Katabi, Martin Rinard, and members of the MIT NLP group for their suggestions and comments.","{'title': 'Acknowledgments', 'number': '10'}"
-"Any opinions, findings, conclusions, or recommendations expressed in this paper are those of the authors, and do not necessarily reflect the views of the funding organizations.","{'title': 'Acknowledgments', 'number': '10'}"
-Jeffrey Mark Siskind.,"{'title': 'Acknowledgments', 'number': '10'}"
-2001.,"{'title': 'Acknowledgments', 'number': '10'}"
-Grounding the lexical semantics of verbs in visual perception using force dynamics and event logic.,"{'title': 'Acknowledgments', 'number': '10'}"
-J. Artif.,"{'title': 'Acknowledgments', 'number': '10'}"
-Intell.,"{'title': 'Acknowledgments', 'number': '10'}"
-Res.,"{'title': 'Acknowledgments', 'number': '10'}"
-"(JAIR), 15:31–90.","{'title': 'Acknowledgments', 'number': '10'}"
+"In this paper, we present a reinforcement learning approach for mapping natural language instructions to sequences of executable actions.",Introduction
+We assume access to a reward function that defines the quality of the executed actions.,Introduction
+"During training, the learner repeatedly constructs action sequences for a set of documents, executes those actions, and observes the resulting reward.",Introduction
+We use a policy gradient algorithm to estimate the parameters of a log-linear model for action selection.,Introduction
+We apply our method to interpret instructions in two domains — Windows troubleshooting guides and game tutorials.,Introduction
+Our results demonstrate that this method can rival supervised learning techniques while requiring few or no annotated training exam,Introduction
+"The problem of interpreting instructions written in natural language has been widely studied since the early days of artificial intelligence (Winograd, 1972; Di Eugenio, 1992).",Experiment/Discussion
+Mapping instructions to a sequence of executable actions would enable the automation of tasks that currently require human participation.,Experiment/Discussion
+Examples include configuring software based on how-to guides and operating simulators using instruction manuals.,Experiment/Discussion
+"In this paper, we present a reinforcement learning framework for inducing mappings from text to actions without the need for annotated training examples.",Experiment/Discussion
+"For concreteness, consider instructions from a Windows troubleshooting guide on deleting temporary folders, shown in Figure 1.",Experiment/Discussion
+We aim to map this text to the corresponding low-level commands and parameters.,Experiment/Discussion
+"For example, properly interpreting the third instruction requires clicking on a tab, finding the appropriate option in a tree control, and clearing its associated checkbox.",Experiment/Discussion
+"In this and many other applications, the validity of a mapping can be verified by executing the induced actions in the corresponding environment and observing their effects.",Experiment/Discussion
+"For instance, in the example above we can assess whether the goal described in the instructions is achieved, i.e., the folder is deleted.",Experiment/Discussion
+The key idea of our approach is to leverage the validation process as the main source of supervision to guide learning.,Experiment/Discussion
+"This form of supervision allows us to learn interpretations of natural language instructions when standard supervised techniques are not applicable, due to the lack of human-created annotations.",Experiment/Discussion
+"Reinforcement learning is a natural framework for building models using validation from an environment (Sutton and Barto, 1998).",Experiment/Discussion
+We assume that supervision is provided in the form of a reward function that defines the quality of executed actions.,Experiment/Discussion
+"During training, the learner repeatedly constructs action sequences for a set of given documents, executes those actions, and observes the resulting reward.",Experiment/Discussion
+The learner’s goal is to estimate a policy — a distribution over actions given instruction text and environment state — that maximizes future expected reward.,Experiment/Discussion
+"Our policy is modeled in a log-linear fashion, allowing us to incorporate features of both the instruction text and the environment.",Experiment/Discussion
+We employ a policy gradient algorithm to estimate the parameters of this model.,Experiment/Discussion
+We evaluate our method on two distinct applications: Windows troubleshooting guides and puzzle game tutorials.,Experiment/Discussion
+The key findings of our experiments are twofold.,Experiment/Discussion
+"First, models trained only with simple reward signals achieve surprisingly high results, coming within 11% of a fully supervised method in the Windows domain.",Experiment/Discussion
+"Second, augmenting unlabeled documents with even a small fraction of annotated examples greatly reduces this performance gap, to within 4% in that domain.",Experiment/Discussion
+These results indicate the power of learning from this new form of automated supervision.,Experiment/Discussion
+"Grounded Language Acquisition Our work fits into a broader class of approaches that aim to learn language from a situated context (Mooney, 2008a; Mooney, 2008b; Fleischman and Roy, 2005; Yu and Ballard, 2004; Siskind, 2001; Oates, 2001).",Experiment/Discussion
+"Instances of such approaches include work on inferring the meaning of words from video data (Roy and Pentland, 2002; Barnard and Forsyth, 2001), and interpreting the commentary of a simulated soccer game (Chen and Mooney, 2008).",Experiment/Discussion
+"Most of these approaches assume some form of parallel data, and learn perceptual cooccurrence patterns.",Experiment/Discussion
+"In contrast, our emphasis is on learning language by proactively interacting with an external environment.",Experiment/Discussion
+"Reinforcement Learning for Language Processing Reinforcement learning has been previously applied to the problem of dialogue management (Scheffler and Young, 2002; Roy et al., 2000; Litman et al., 2000; Singh et al., 1999).",Experiment/Discussion
+These systems converse with a human user by taking actions that emit natural language utterances.,Experiment/Discussion
+The reinforcement learning state space encodes information about the goals of the user and what they say at each time step.,Experiment/Discussion
+"The learning problem is to find an optimal policy that maps states to actions, through a trial-and-error process of repeated interaction with the user.",Experiment/Discussion
+Reinforcement learning is applied very differently in dialogue systems compared to our setup.,Experiment/Discussion
+"In some respects, our task is more easily amenable to reinforcement learning.",Experiment/Discussion
+"For instance, we are not interacting with a human user, so the cost of interaction is lower.",Experiment/Discussion
+"However, while the state space can be designed to be relatively small in the dialogue management task, our state space is determined by the underlying environment and is typically quite large.",Experiment/Discussion
+We address this complexity by developing a policy gradient algorithm that learns efficiently while exploring a small subset of the states.,Experiment/Discussion
+Our task is to learn a mapping between documents and the sequence of actions they express.,Experiment/Discussion
+Figure 2 shows how one example sentence is mapped to three actions.,Experiment/Discussion
+"Mapping Text to Actions As input, we are given a document d, comprising a sequence of sentences (u1, ... , ut), where each ui is a sequence of words.",Experiment/Discussion
+"Our goal is to map d to a sequence of actions a� = (a0, ... , a,1).",Experiment/Discussion
+"Actions are predicted and executed sequentially.2 An action a = (c, R, W') encompasses a command c, the command’s parameters R, and the words W' specifying c and R. Elements of R refer to objects available in the environment state, as described below.",Experiment/Discussion
+"Some parameters can also refer to words in document d. Additionally, to account for words that do not describe any actions, c can be a null command.",Experiment/Discussion
+"The Environment The environment state £ specifies the set of objects available for interaction, and their properties.",Experiment/Discussion
+"In Figure 2, £ is shown on the right.",Experiment/Discussion
+"The environment state £ changes in response to the execution of command c with parameters R according to a transition distribution p(£'J£, c, R).",Experiment/Discussion
+This distribution is a priori unknown to the learner.,Experiment/Discussion
+"As we will see in Section 5, our approach avoids having to directly estimate this distribution.",Experiment/Discussion
+"State To predict actions sequentially, we need to track the state of the document-to-actions mapping over time.",Experiment/Discussion
+"A mapping state s is a tuple (£, d, j, W), where £ refers to the current environment state; j is the index of the sentence currently being interpreted in document d; and W contains words that were mapped by previous actions for the same sentence.",Experiment/Discussion
+The mapping state s is observed after each action.,Experiment/Discussion
+"The initial mapping state s0 for document d is (£d, d, 0, 0); £d is the unique starting environment state for d. Performing action a in state s = (£, d, j, W) leads to a new state s' according to distribution p(s'|s, a), defined as follows: £ transitions according to p(£'|£, c, R), W is updated with a’s selected words, and j is incremented if all words of the sentence have been mapped.",Experiment/Discussion
+"For the applications we consider in this work, environment state transitions, and consequently mapping state transitions, are deterministic.",Experiment/Discussion
+"Training During training, we are provided with a set D of documents, the ability to sample from the transition distribution, and a reward function r(h).",Experiment/Discussion
+"Here, h = (s0, a0, ... , sn−1, an−1, sn) is a history of states and actions visited while interpreting one document. r(h) outputs a realvalued score that correlates with correct action selection.3 We consider both immediate reward, which is available after each action, and delayed reward, which does not provide feedback until the last action.",Experiment/Discussion
+"For example, task completion is a delayed reward that produces a positive value after the final action only if the task was completed successfully.",Experiment/Discussion
+We will also demonstrate how manually annotated action sequences can be incorporated into the reward.,Experiment/Discussion
+"The goal of training is to estimate parameters 0 of the action selection distribution p(a|s, 0), called the policy.",Experiment/Discussion
+"Since the reward correlates with action sequence correctness, the 0 that maximizes expected reward will yield the best actions.",Experiment/Discussion
+Our goal is to predict a sequence of actions.,Experiment/Discussion
+"We construct this sequence by repeatedly choosing an action given the current mapping state, and applying that action to advance to a new state.",Experiment/Discussion
+"Given a state s = (£, d, j, W), the space of possible next actions is defined by enumerating subspans of unused words in the current sentence (i.e., subspans of the jth sentence of d not in W), and the possible commands and parameters in environment state £.4 We model the policy distribution p(a|s; 0) over this action space in a log-linear fashion (Della Pietra et al., 1997; Lafferty et al., 2001), giving us the flexibility to incorporate a diverse range of features.",Experiment/Discussion
+"Under this representation, the policy distribution is: where 0(s, a) E Rn is an n-dimensional feature representation.",Experiment/Discussion
+"During test, actions are selected according to the mode of this distribution.",Experiment/Discussion
+"During training, our goal is to find the optimal policy p(a|s; θ).",Experiment/Discussion
+"Since reward correlates with correct action selection, a natural objective is to maximize expected future reward — that is, the reward we expect while acting according to that policy from state s. Formally, we maximize the value function: where the history h is the sequence of states and actions encountered while interpreting a single document d E D. This expectation is averaged over all documents in D. The distribution p(h|θ) returns the probability of seeing history h when starting from state s and acting according to a policy with parameters θ.",Experiment/Discussion
+"This distribution can be decomposed into a product over time steps: Input: A document set D, Feature representation φ, Reward function r(h), Number of iterations T Our reinforcement learning problem is to find the parameters θ that maximize Vθ from equation 2.",Experiment/Discussion
+"Although there is no closed form solution, policy gradient algorithms (Sutton et al., 2000) estimate the parameters θ by performing stochastic gradient ascent.",Experiment/Discussion
+"The gradient of Vθ is approximated by interacting with the environment, and the resulting reward is used to update the estimate of θ.",Experiment/Discussion
+Policy gradient algorithms optimize a non-convex objective and are only guaranteed to find a local optimum.,Experiment/Discussion
+"However, as we will see, they scale to large state spaces and can perform well in practice.",Experiment/Discussion
+"To find the parameters θ that maximize the objective, we first compute the derivative of Vθ.",Experiment/Discussion
+"Expanding according to the product rule, we have: where the inner sum is over all time steps t in the current history h. Expanding the inner partial derivative we observe that: which is the derivative of a log-linear distribution.",Experiment/Discussion
+Equation 5 is easy to compute directly.,Experiment/Discussion
+"However, the complete derivative of Vθ in equation 4 is intractable, because computing the expectation would require summing over all possible histories.",Experiment/Discussion
+"Instead, policy gradient algorithms employ stochastic gradient ascent by computing a noisy estimate of the expectation using just a subset of the histories.",Experiment/Discussion
+"Specifically, we draw samples from p(h|θ) by acting in the target environment, and use these samples to approximate the expectation in equation 4.",Experiment/Discussion
+"In practice, it is often sufficient to sample a single history h for this approximation.",Experiment/Discussion
+Algorithm 1 details the complete policy gradient algorithm.,Experiment/Discussion
+It performs T iterations over the set of documents D. Step 3 samples a history that maps each document to actions.,Experiment/Discussion
+"This is done by repeatedly selecting actions according to the current policy, and updating the state by executing the selected actions.",Experiment/Discussion
+Steps 4 and 5 compute the empirical gradient and update the parameters θ.,Experiment/Discussion
+"In many domains, interacting with the environment is expensive.",Experiment/Discussion
+"Therefore, we use two techniques that allow us to take maximum advantage of each environment interaction.",Experiment/Discussion
+"First, a history h = (s0, a0, ... , sn) contains subsequences (si, ai,... sn) for i = 1 to n − 1, each with its own reward value given by the environment as a side effect of executing h. We apply the update from equation 5 for each subsequence.",Experiment/Discussion
+"Second, for a sampled history h, we can propose alternative histories h' that result in the same commands and parameters with different word spans.",Experiment/Discussion
+"We can again apply equation 5 for each h', weighted by its probability under the current policy, p(h�|θ) The algorithm we have presented belongs to a family of policy gradient algorithms that have been successfully used for complex tasks such as robot control (Ng et al., 2003).",Experiment/Discussion
+Our formulation is unique in how it represents natural language in the reinforcement learning framework.,Experiment/Discussion
+"We can design a range of reward functions to guide learning, depending on the availability of annotated data and environment feedback.",Experiment/Discussion
+"Consider the case when every training document d E D is annotated with its correct sequence of actions, and state transitions are deterministic.",Experiment/Discussion
+"Given these examples, it is straightforward to construct a reward function that connects policy gradient to maximum likelihood.",Experiment/Discussion
+"Specifically, define a reward function r(h) that returns one when h matches the annotation for the document being analyzed, and zero otherwise.",Experiment/Discussion
+"Policy gradient performs stochastic gradient ascent on the objective from equation 2, performing one update per document.",Experiment/Discussion
+"For document d, this objective becomes: where hd is the history corresponding to the annotated action sequence.",Experiment/Discussion
+"Thus, with this reward policy gradient is equivalent to stochastic gradient ascent with a maximum likelihood objective.",Experiment/Discussion
+"At the other extreme, when annotations are completely unavailable, learning is still possible given informative feedback from the environment.",Experiment/Discussion
+"Crucially, this feedback only needs to correlate with action sequence quality.",Experiment/Discussion
+We detail environment-based reward functions in the next section.,Experiment/Discussion
+"As our results will show, reward functions built using this kind of feedback can provide strong guidance for learning.",Experiment/Discussion
+We will also consider reward functions that combine annotated supervision with environment feedback.,Experiment/Discussion
+"We study two applications of our model: following instructions to perform software tasks, and solving a puzzle game using tutorial guides.",Experiment/Discussion
+"On its Help and Support website,5 Microsoft publishes a number of articles describing how to perform tasks and troubleshoot problems in the Windows operating systems.",Experiment/Discussion
+Examples of such tasks include installing patches and changing security settings.,Experiment/Discussion
+Figure 1 shows one such article.,Experiment/Discussion
+Our goal is to automatically execute these support articles in the Windows 2000 environment.,Experiment/Discussion
+"Here, the environment state is the set of visible user interface (UI) objects, and object properties such as label, location, and parent window.",Experiment/Discussion
+"Possible commands include left-click, right-click, double-click, and type-into, all of which take a UI object as a parameter; type-into additionally requires a parameter for the input text.",Experiment/Discussion
+Table 1 lists some of the features we use for this domain.,Experiment/Discussion
+"These features capture various aspects of the action under consideration, the current Windows UI state, and the input instructions.",Experiment/Discussion
+"For example, one lexical feature measures the similarity of a word in the sentence to the UI labels of objects in the environment.",Experiment/Discussion
+"Environment-specific features, such as whether an object is currently in focus, are useful when selecting the object to manipulate.",Experiment/Discussion
+"In total, there are 4,438 features.",Experiment/Discussion
+Reward Function Environment feedback can be used as a reward function in this domain.,Experiment/Discussion
+"An obvious reward would be task completion (e.g., whether the stated computer problem was fixed).",Experiment/Discussion
+"Unfortunately, verifying task completion is a challenging system issue in its own right.",Experiment/Discussion
+"Instead, we rely on a noisy method of checking whether execution can proceed from one sentence to the next: at least one word in each sentence has to correspond to an object in the environment.6 For instance, in the sentence from Figure 2 the word “Run” matches the Run... menu item.",Experiment/Discussion
+"If no words in a sentence match a current environment object, then one of the previous sentences was analyzed incorrectly.",Experiment/Discussion
+"In this case, we assign the history a reward of -1.",Experiment/Discussion
+"This reward is not guaranteed to penalize all incorrect histories, because there may be false positive matches between the sentence and the environment.",Experiment/Discussion
+"When at least one word matches, we assign a positive reward that linearly increases with the percentage of words assigned to non-null commands, and linearly decreases with the number of output actions.",Experiment/Discussion
+This reward signal encourages analyses that interpret all of the words without producing spurious actions.,Experiment/Discussion
+"Our second application is to a puzzle game called Crossblock, available online as a Flash game.7 Each of 50 puzzles is played on a grid, where some grid positions are filled with squares.",Experiment/Discussion
+The object of the game is to clear the grid by drawing vertical or horizontal line segments that remove groups of squares.,Experiment/Discussion
+"Each segment must exactly cross a specific number of squares, ranging from two to seven depending on the puzzle.",Experiment/Discussion
+Humans players have found this game challenging and engaging enough to warrant posting textual tutorials.8 A sample puzzle and tutorial are shown in Figure 3.,Experiment/Discussion
+The environment is defined by the state of the grid.,Experiment/Discussion
+"The only command is clear, which takes a parameter specifying the orientation (row or column) and grid location of the line segment to be removed.",Experiment/Discussion
+"The challenge in this domain is to segment the text into the phrases describing each action, and then correctly identify the line segments from references such as “the bottom four from the second column from the left.” For this domain, we use two sets of binary features on state-action pairs (s, a).",Experiment/Discussion
+"First, for each vocabulary word w, we define a feature that is one if w is the last word of a’s consumed words W'.",Experiment/Discussion
+These features help identify the proper text segmentation points between actions.,Experiment/Discussion
+"Second, we introduce features for pairs of vocabulary word w and attributes of action a, e.g., the line orientation and grid locations of the squares that a would remove.",Experiment/Discussion
+"This set of features enables us to match words (e.g., “row”) with objects in the environment (e.g., a move that removes a horizontal series of squares).",Experiment/Discussion
+"In total, there are 8,094 features.",Experiment/Discussion
+"Reward Function For Crossblock it is easy to directly verify task completion, which we use as the basis of our reward function.",Experiment/Discussion
+The reward r(h) is -1 if h ends in a state where the puzzle cannot be completed.,Experiment/Discussion
+"For solved puzzles, the reward is a positive value proportional to the percentage of words assigned to non-null commands.",Experiment/Discussion
+"Datasets For the Windows domain, our dataset consists of 128 documents, divided into 70 for training, 18 for development, and 40 for test.",Experiment/Discussion
+"In the puzzle game domain, we use 50 tutorials, divided into 40 for training and 10 for test.9 Statistics for the datasets are shown below.",Experiment/Discussion
+The data exhibits certain qualities that make for a challenging learning problem.,Experiment/Discussion
+"For instance, there are a surprising variety of linguistic constructs — as Figure 4 shows, in the Windows domain even a simple command is expressed in at least six different ways.",Experiment/Discussion
+"Experimental Framework To apply our algorithm to the Windows domain, we use the Win32 application programming interface to simulate human interactions with the user interface, and to gather environment state information.",Experiment/Discussion
+"The operating system environment is hosted within a virtual machine,10 allowing us to rapidly save and reset system state snapshots.",Experiment/Discussion
+"For the puzzle game domain, we replicated the game with an implementation that facilitates automatic play.",Experiment/Discussion
+"As is commonly done in reinforcement learning, we use a softmax temperature parameter to smooth the policy distribution (Sutton and Barto, 1998), set to 0.1 in our experiments.",Experiment/Discussion
+"For Windows, the development set is used to select the best parameters.",Experiment/Discussion
+"For Crossblock, we choose the parameters that produce the highest reward during training.",Experiment/Discussion
+"During evaluation, we use these parameters to predict mappings for the test documents.",Experiment/Discussion
+"Evaluation Metrics For evaluation, we compare the results to manually constructed sequences of actions.",Experiment/Discussion
+"We measure the number of correct actions, sentences, and documents.",Experiment/Discussion
+An action is correct if it matches the annotations in terms of command and parameters.,Experiment/Discussion
+"A sentence is correct if all of its actions are correctly identified, and analogously for documents.11 Statistical significance is measured with the sign test.",Experiment/Discussion
+"Additionally, we compute a word alignment score to investigate the extent to which the input text is used to construct correct analyses.",Experiment/Discussion
+This score measures the percentage of words that are aligned to the corresponding annotated actions in correctly analyzed documents.,Experiment/Discussion
+Baselines We consider the following baselines to characterize the performance of our approach. lems like ours are typically addressed using supervised techniques.,Experiment/Discussion
+"We measure how a standard supervised approach would perform on this task by using a reward signal based on manual annotations of output action sequences, as defined in Section 5.2.",Experiment/Discussion
+"As shown there, policy gradient with this reward is equivalent to stochastic gradient ascent with a maximum likelihood objective. when only a subset of training documents is annotated, and environment reward is used for the remainder.",Experiment/Discussion
+Our method seamlessly combines these two kinds of rewards. sider two naive baselines.,Experiment/Discussion
+Both scan through each sentence from left to right.,Experiment/Discussion
+A command c is executed on the object whose name is encountered first in the sentence.,Experiment/Discussion
+"This command c is either selected randomly, or set to the majority command, which is leftclick.",Experiment/Discussion
+This procedure is repeated until no more words match environment objects.,Experiment/Discussion
+Table 2 presents evaluation results on the test sets.,Experiment/Discussion
+There are several indicators of the difficulty of this task.,Experiment/Discussion
+The random and majority baselines’ poor performance in both domains indicates that naive approaches are inadequate for these tasks.,Experiment/Discussion
+The performance of the fully supervised approach provides further evidence that the task is challenging.,Experiment/Discussion
+"This difficulty can be attributed in part to the large branching factor of possible actions at each step — on average, there are 27.14 choices per action in the Windows domain, and 9.78 in the Crossblock domain.",Experiment/Discussion
+"In both domains, the learners relying only on environment reward perform well.",Experiment/Discussion
+"Although the fully supervised approach performs the best, adding just a few annotated training examples to the environment-based learner significantly reduces the performance gap.",Experiment/Discussion
+Figure 5 shows the overall tradeoff between annotation effort and system performance for the two domains.,Experiment/Discussion
+The ability to make this tradeoff is one of the advantages of our approach.,Experiment/Discussion
+The figure also shows that augmenting annotated documents with additional environment-reward documents invariably improves performance.,Experiment/Discussion
+The word alignment results from Table 2 indicate that the learners are mapping the correct words to actions for documents that are successfully completed.,Experiment/Discussion
+"For example, the models that perform best in the Windows domain achieve nearly perfect word alignment scores.",Experiment/Discussion
+"To further assess the contribution of the instruction text, we train a variant of our model without access to text features.",Experiment/Discussion
+"This is possible in the game domain, where all of the puzzles share a single goal state that is independent of the instructions.",Experiment/Discussion
+"This variant solves 34% of the puzzles, suggesting that access to the instructions significantly improves performance.",Experiment/Discussion
+"In this paper, we presented a reinforcement learning approach for inducing a mapping between instructions and actions.",Results/Conclusion
+"This approach is able to use environment-based rewards, such as task completion, to learn to analyze text.",Results/Conclusion
+We showed that having access to a suitable reward function can significantly reduce the need for annotations.,Results/Conclusion
+"The authors acknowledge the support of the NSF (CAREER grant IIS-0448168, grant IIS-0835445, grant IIS-0835652, and a Graduate Research Fellowship) and the ONR.",Results/Conclusion
+"Thanks to Michael Collins, Amir Globerson, Tommi Jaakkola, Leslie Pack Kaelbling, Dina Katabi, Martin Rinard, and members of the MIT NLP group for their suggestions and comments.",Results/Conclusion
+"Any opinions, findings, conclusions, or recommendations expressed in this paper are those of the authors, and do not necessarily reflect the views of the funding organizations.",Results/Conclusion
+Jeffrey Mark Siskind.,Results/Conclusion
+2001.,Results/Conclusion
+Grounding the lexical semantics of verbs in visual perception using force dynamics and event logic.,Results/Conclusion
+J. Artif.,Results/Conclusion
+Intell.,Results/Conclusion
+Res.,Results/Conclusion
+"(JAIR), 15:31–90.",Results/Conclusion

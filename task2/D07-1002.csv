@@ -1,256 +1,256 @@
 col1,col2
-"Shallow semantic parsing, the automaticidentification and labeling of sentential constituents, has recently received much attention.",{}
-Our work examines whether seman tic role information is beneficial to questionanswering.,{}
-We introduce a general frame work for answer extraction which exploits semantic role annotations in the FrameNetparadigm.,{}
-We view semantic role assignment as an optimization problem in a bipartite graph and answer extraction as an instance of graph matching.,{}
-Experimental results on the TREC datasets demonstrate im provements over state-of-the-art models.,{}
-"Recent years have witnessed significant progress in developing methods for the automatic identificationand labeling of semantic roles conveyed by sentential constituents.1 The success of these methods, often referred to collectively as shallow semantic pars ing (Gildea and Jurafsky, 2002), is largely due to the availability of resources like FrameNet (Fillmore et al., 2003) and PropBank (Palmer et al, 2005), which document the surface realization of semantic roles in real world corpora.","{'title': 'Introduction', 'number': '1'}"
-"More concretely, in the FrameNet paradigm, themeaning of predicates (usually verbs, nouns, or adjectives) is conveyed by frames, schematic repre sentations of situations.","{'title': 'Introduction', 'number': '1'}"
-Semantic roles (or frame1The approaches are too numerous to list; we refer the inter ested reader to Carreras and Ma`rquez (2005) for an overview.elements) are defined for each frame and correspond to salient entities present in the evoked situ ation.,"{'title': 'Introduction', 'number': '1'}"
-Predicates with similar semantics instantiate the same frame and are attested with the same roles.,"{'title': 'Introduction', 'number': '1'}"
-"The FrameNet database lists the surface syntacticrealizations of semantic roles, and provides anno tated example sentences from the British National Corpus.","{'title': 'Introduction', 'number': '1'}"
-"For example, the frame Commerce Sell has three core semantic roles, namely Buyer, Goods, andSeller ? each expressed by an indirect object, a di rect object, and a subject (see sentences (1a)?(1c)).","{'title': 'Introduction', 'number': '1'}"
-"It can also be attested with non-core (peripheral) roles (e.g., Means, Manner, see (1d) and (1e)) thatare more generic and can be instantiated in sev eral frames, besides Commerce Sell.","{'title': 'Introduction', 'number': '1'}"
-"The verbs sell, vend, and retail can evoke this frame, but also the nouns sale and vendor.","{'title': 'Introduction', 'number': '1'}"
-(1) a. [Lee]Seller sold a textbook [to Abby]Buyer.,"{'title': 'Introduction', 'number': '1'}"
-b. [Kim]Seller sold [the sweater]Goods.,"{'title': 'Introduction', 'number': '1'}"
-c. [My company]Seller has sold [more than three million copies]Goods.,"{'title': 'Introduction', 'number': '1'}"
-d. [Abby]Seller sold [the car]Goods [for cash]Means.,"{'title': 'Introduction', 'number': '1'}"
-"e. [He]Seller [reluctanctly]Manner sold [his rock]Goods.By abstracting over surface syntactic configurations, semantic roles offer an important first step to wards deeper text understanding and hold promisefor a range of applications requiring broad cover age semantic processing.","{'title': 'Introduction', 'number': '1'}"
-"Question answering (QA) is often cited as an obvious beneficiary of semantic 12 role labeling (Gildea and Jurafsky, 2002; Palmer et al., 2005; Narayanan and Harabagiu, 2004).","{'title': 'Introduction', 'number': '1'}"
-Faced with the question Q: What year did the U.S. buyAlaska?,"{'title': 'Introduction', 'number': '1'}"
-"and the retrieved sentence S: . . .before Russia sold Alaska to the United States in 1867, a hypo thetical QA system must identify that United States is the Buyer despite the fact that it is attested in one instance as a subject and in another as an object.","{'title': 'Introduction', 'number': '1'}"
-"Once this information is known, isolating the correct answer (i.e., 1867 ) can be relatively straightforward.Although conventional wisdom has it that seman tic role labeling ought to improve answer extraction, surprising little work has been done to this effect (see Section 2 for details) and initial results have been mostly inconclusive or negative (Sun et al, 2005; Kaisser, 2006).","{'title': 'Introduction', 'number': '1'}"
-There are at least two good reasons for these findings.,"{'title': 'Introduction', 'number': '1'}"
-"First, shallow semanticparsers trained on declarative sentences will typically have poor performance on questions and generally on out-of-domain data.","{'title': 'Introduction', 'number': '1'}"
-"Second, existing re sources do not have exhaustive coverage and recallwill be compromised, especially if the question an swering system is expected to retrieve answers fromunrestricted text.","{'title': 'Introduction', 'number': '1'}"
-"Since FrameNet is still under development, its coverage tends to be more of a prob lem in comparison to other semantic role resources such as PropBank.","{'title': 'Introduction', 'number': '1'}"
-In this paper we propose an answer extractionmodel which effectively incorporates FrameNetstyle semantic role information.,"{'title': 'Introduction', 'number': '1'}"
-We present an auto matic method for semantic role assignment which is conceptually simple and does not require extensive feature engineering.,"{'title': 'Introduction', 'number': '1'}"
-A key feature of our approachis the comparison of dependency relation paths at tested in the FrameNet annotations and raw text.,"{'title': 'Introduction', 'number': '1'}"
-We formalize the search for an optimal role assignment as an optimization problem in a bipartite graph.,"{'title': 'Introduction', 'number': '1'}"
-"Thisformalization allows us to find an exact, globally op timal solution.","{'title': 'Introduction', 'number': '1'}"
-The graph-theoretic framework goessome way towards addressing coverage problems related with FrameNet and allows us to formulate an swer extraction as a graph matching problem.,"{'title': 'Introduction', 'number': '1'}"
-As abyproduct of our main investigation we also exam ine the issue of FrameNet coverage and show howmuch it impacts performance in a TREC-style ques tion answering setting.,"{'title': 'Introduction', 'number': '1'}"
-In the following section we provide an overview of existing work on question answering systems that exploit semantic role-based lexical resources.,"{'title': 'Introduction', 'number': '1'}"
-Thenwe define our learning task and introduce our approach to semantic role assignment and answer ex traction in the context of QA.,"{'title': 'Introduction', 'number': '1'}"
-"Next, we present our experimental framework and data.","{'title': 'Introduction', 'number': '1'}"
-We conclude the paper by presenting and discussing our results.,"{'title': 'Introduction', 'number': '1'}"
-Question answering systems have traditionally de pended on a variety of lexical resources to bridge surface differences between questions and potential answers.,"{'title': 'Related Work. ', 'number': '2'}"
-"WordNet (Fellbaum, 1998) is perhaps the most popular resource and has been employed in a variety of QA-related tasks ranging from query expansion, to axiom-based reasoning (Moldovan et al., 2003), passage scoring (Paranjpe et al, 2003), and answer filtering (Leidner et al, 2004).","{'title': 'Related Work. ', 'number': '2'}"
-"Besides WordNet, recent QA systems increasingly rely on syntactic information as a means of abstracting over word order differences and structural alternations (e.g., passive vs. active voice).","{'title': 'Related Work. ', 'number': '2'}"
-"Most syntax-based QA systems (Wu et al, 2005) incorporate some means of comparison between the tree representing the question with the subtree surrounding the answer candidate.","{'title': 'Related Work. ', 'number': '2'}"
-The assumption here is that appropriate answers are more likely to have syntactic relationsin common with their corresponding question.,"{'title': 'Related Work. ', 'number': '2'}"
-"Syntactic structure matching has been applied to passage retrieval (Cui et al, 2005) and answer extrac tion (Shen and Klakow, 2006).","{'title': 'Related Work. ', 'number': '2'}"
-Narayanan and Harabagiu (2004) were the firstto stress the importance of semantic roles in an swering complex questions.,"{'title': 'Related Work. ', 'number': '2'}"
-Their system identifies predicate argument structures by merging semanticrole information from PropBank and FrameNet.,"{'title': 'Related Work. ', 'number': '2'}"
-Expected answers are extracted by performing probabilistic inference over the predicate argument struc tures in conjunction with a domain specific topicmodel.,"{'title': 'Related Work. ', 'number': '2'}"
-Sun et al (2005) incorporate semantic analy sis in their TREC05 QA system.,"{'title': 'Related Work. ', 'number': '2'}"
-"They use ASSERT (Pradhan et al, 2004), a publicly available shallow semantic parser trained on PropBank, to generate predicate-argument structures which subsequently form the basis of comparison between question and answer sentences.","{'title': 'Related Work. ', 'number': '2'}"
-They find that semantic analysis does not boost performance due to the low recall of the semantic parser.,"{'title': 'Related Work. ', 'number': '2'}"
-Kaisser (2006) proposes a 13 SemStruc ac1SemStruc ac2 SemStruc aci SemStruc q Sent.,"{'title': 'Related Work. ', 'number': '2'}"
-Model I Q Model I Model II Answer Figure 1: Architecture of answer extraction question paraphrasing method based on FrameNet.,"{'title': 'Related Work. ', 'number': '2'}"
-Questions are assigned semantic roles by matching their dependency relations with those attested in the FrameNet annotations.,"{'title': 'Related Work. ', 'number': '2'}"
-The assignments are used to create question reformulations which are submitted to Google for answer extraction.,"{'title': 'Related Work. ', 'number': '2'}"
-"The semantic role assignment module is not probabilistic, it relies onstrict matching, and runs into severe coverage prob lems.","{'title': 'Related Work. ', 'number': '2'}"
-"In line with previous work, our method exploitssyntactic information in the form of dependency re lation paths together with FrameNet-like semanticroles to smooth lexical and syntactic divergences be tween question and answer sentences.","{'title': 'Related Work. ', 'number': '2'}"
-"Our approach is less domain dependent and resource intensive than Narayanan and Harabagiu (2004), it solely employs a dependency parser and the FrameNet database.","{'title': 'Related Work. ', 'number': '2'}"
-"In contrast to Kaisser (2006), we model the semanticrole assignment and answer extraction tasks numerically, thereby alleviating the coverage problems en countered previously.","{'title': 'Related Work. ', 'number': '2'}"
-We briefly summarize the architecture of the QA system we are working with before formalizing the mechanics of our FrameNet-based answer extractionmodule.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-"In common with previous work, our over all approach consists of three stages: (a) determiningthe expected answer type of the question, (b) retrieving passages likely to contain answers to the question, and (c) performing a match between the ques tion words and retrieved passages in order to extract the answer.","{'title': 'Problem Formulation. ', 'number': '3'}"
-In this paper we focus on the last stage: question and answer sentences are normalized to aFrameNet-style representation and answers are re trieved by selecting the candidate whose semantic structure is most similar to the question.The architecture of our answer extraction mod ule is shown in Figure 1.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-Semantic structures for questions and sentences are automatically derived using the model described in Section 4 (Model I).,"{'title': 'Problem Formulation. ', 'number': '3'}"
-"Asemantic structure SemStruc = ?p,Set(SRA)?","{'title': 'Problem Formulation. ', 'number': '3'}"
-consists of a predicate p and a set of semantic role assignments Set(SRA).,"{'title': 'Problem Formulation. ', 'number': '3'}"
-p is a word or phrase evoking a frame F of FrameNet.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-"A semantic role assignment SRA is a ternary structure ?w,SR,s?, consist ing of frame element w, its semantic role SR, and score s indicating to what degree SR qualifies as a label for w.For a question q, we generate a semantic struc ture SemStrucq.","{'title': 'Problem Formulation. ', 'number': '3'}"
-"Question words, such as what, who, when, etc., are considered expected answer phrases (EAPs).","{'title': 'Problem Formulation. ', 'number': '3'}"
-We require that EAPs are frame elementsof SemStrucq.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-Likely answer candidates are extracted from answer sentences following some pre processing steps detailed in Section 6.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-"For each candidate ac, we derive its semantic structureSemStrucac and assume that ac is a frame element of SemStrucac.","{'title': 'Problem Formulation. ', 'number': '3'}"
-Question and answer seman tic structures are compared using a model based on graph matching detailed in Section 5 (Model II).,"{'title': 'Problem Formulation. ', 'number': '3'}"
-"We calculate the similarity of all derived pairs ?SemStrucq,SemStrucac?","{'title': 'Problem Formulation. ', 'number': '3'}"
-and select the candidate with the highest value as an answer for the question.,"{'title': 'Problem Formulation. ', 'number': '3'}"
-Our method crucially exploits the annotated sen tences in the FrameNet database together with theoutput of a dependency parser.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Our guiding assumption is that sentences that share dependency rela tions will also share semantic roles as long as they evoke the same or related frames.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"This is motivated by much research in lexical semantics (e.g., Levin (1993)) hypothesizing that the behavior of words,particularly with respect to the expression and interpretation of their arguments, is to a large ex tent determined by their meaning.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-We first describe how predicates are identified and then introduce our model for semantic role labeling.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Predicate Identification Predicate candidates are identified using a simple look-up procedure whichcompares POS-tagged tokens against FrameNet entries.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"For efficiency reasons, we make the simplifying assumption that questions have only one predicate which we select heuristically: (1) verbs are pre 14 ferred to other parts of speech, (2) if there is more than one verb in the question, preference is given to the verb with the highest level of embedding in the dependency tree, (3) if no verbs are present, a nounis chosen.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"For example, in Q: Who beat Floyd Pat terson to take the title away?, beat, take away, and title are identified as predicate candidates and beat is selected the main predicate of the question.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Foranswer sentences, we require that the predicate is ei ther identical or semantically related to the question predicate (see Section 5).","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"In the example given above, the predicate beat evoques a single frame (i.e., Cause harm).","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"However,predicates often have multiple meanings thus evo quing more than one frame.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Knowing which is the appropriate frame for a given predicate impacts the semantic role assignment task; selecting the wrong frame will unavoidably result in erroneous semanticroles.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Rather than disambiguiting polysemous pred icates prior to semantic role assignment, we performthe assignment for each frame evoqued by the pred icate.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Semantic Role Assignment Before describing our approach to semantic role labeling we define dependency relation paths.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"A relation path R is a relation sequence ?r1,r2, ...,rL?, in which rl (l = 1,2, ...,L) is one of predefined dependency relations with suffix of traverse direction.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"An example of arelation path is R = ?sub jU ,ob jD?, where the sub scripts U and D indicate upward and downwardmovement in trees, respectively.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Given an unannotated sentence whose roles we wish to label, we as sume that words or phrases w with a dependency path connecting them to p are frame elements.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Eachframe element is represented by an unlabeled depen dency path Rw which we extract by traversing thedependency tree from w to p. Analogously, we ex tract from the FrameNet annotations all dependencypaths RSR that are labeled with semantic role infor mation and correspond to p. We next measure thecompatibility of labeled and unlabeled paths as fol lows: s(w,SR) = maxRSR?M [sim(Rw,RSR) ?P(RSR)] (2) where M is the set of dependency relation pathsfor SR in FrameNet, sim(Rw,RSR) the similarity be tween paths Rw and RSR weighted by the relative w SRw SR (a) (b) Figure 2: Sample original bipartite graph (a) and its subgraph with edge covers (b).","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"In each graph, the left partition represents frame elements and the right partition semantic roles.frequency of RSR in FrameNet (P(RSR)).","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-We consider both core and non-core semantic roles instan tiated by frames with at least one annotation in FrameNet.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Core roles tend to have more annotations in Framenet and consequently are considered more probable.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"We measure sim(Rw,RSR), by adapting a string kernel to our task.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Our hypothesis is that the more common substrings two dependency paths have, the more similar they are.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-The string kernel we used is similar to Leslie (2002) and defined asthe sum of weighted common dependency relation subsequences between Rw and RSR.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"For efficiency, we consider only unigram and bigram sub sequences.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Subsequences are weighted by a metricakin to t f ? id f which measures the degree of asso ciation between a candidate SR and the dependency relation r present in the subsequence: weightSR(r) = fr ? log ( 1+ Nnr ) (3) where fr is the frequency of r occurring in SR; N is the total number of SRs evoked by a given frame; and nr is the number of SRs containing r. For each frame element we thus generate a set of semantic role assignments Set(SRA).,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-This initialassignment can be usefully represented as a com plete bipartite graph in which each frame element (word or phrase) is connected to the semantic roleslicensed by the predicate and vice versa.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-(see Figure 2a).,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Edges are weighted and represent how com patible the frame elements and semantic roles are (see equation (2)).,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Now, for each frame element w 15 Q: Who discovered prions?S: 1997: Stanley B. Prusiner, United States, discovery of prions, ...","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-SemStruc q p: discover Original SR assignments: Optimized SR assignments: 0.06 Cognizer.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Phenomenon Ground State Evidence EAP prions 0000 0.01 0.1 0.05 0.05 0.02 0.06 Cognizer.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Phenomenon Ground State Evidence EAP prions 0.1 0.05 0.05 0.02 SemStruc ac (ac: Stanley B. Prusiner) p: discovery Original SR assignments: Optimized SR assignments: 0.25 Cognizer.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Phenomenon Topic Evidence ac prions 0.15 0.2 0.16 0.25 Cognizer.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Phenomenon Topic Evidence ac prions 0.15 0.2 0.16 0.120.07 0 0 Figure 3: Semantic structures induced by our model for a question and answer sentence we could simply select the semantic role with the highest score.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"However, this decision procedure is local, i.e., it yields a semantic role assignment foreach frame element independently of all other ele ments.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-We therefore may end up with the same role being assigned to two frame elements or with frameelements having no role at all.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-We remedy this short coming by treating the semantic role assignment as a global optimization problem.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Specifically, we model the interaction between all pairwise labeling decisions as a minimum weight bipartite edge cover problem (Eiter and Mannila,1997; Cormen et al, 1990).","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-An edge cover is a sub graph of a bipartite graph so that each node is linked to at least one node of the other partition.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-This yields a semantic role assignment for all frame elements (see Figure 2b where frame elements and roles areadjacent to an edge).,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Edge covers have been success fully applied in several natural language processing tasks, including machine translation (Taskar et al, 2005) and annotation projection (Pado?","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"and Lapata, 2006).Formally, optimal edge cover assignments are so lutions of following optimization problem: max E is edge cover ?(ndw,ndSR)?E s(nd w,ndSR)(4)where, s(ndw,ndSR) is the compatibility score be tween the frame element node ndw and semantic role node ndSR.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Edge covers can be computed efficiently in cubic time using algorithms for the equivalent linear assignment problem.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Our experiments used Jonker and Volgenant?s (1987) solver.2 Figure 3 shows the semantic role assignments generated by our model for the question Q: Whodiscovered prions?,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"and the candidate answer sen tence S: 1997: Stanley B. Prusiner, United States,discovery of prions.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"Here we identify two predi cates, namely discover and discovery.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-The expectedanswer phrase (EAP) who and the answer candi date Stanley B. Prusiner are assigned the COGNIZERrole.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-Note that frame elements can bear multiple se mantic roles.,"{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-"By inducing a soft labeling we hope to render the matching of questions and answers morerobust, thereby addressing to some extent the cover age problems associated with FrameNet.","{'title': 'Semantic Structure Generation. ', 'number': '4'}"
-We measure the similarity between a question and its candidate answer by matching their predicatesand semantic role assignments.,"{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"Since SRs are framespecific, we prioritize frame matching to SR match ing.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-Two predicates match if they evoke the same frame or one of its hypernyms (or hyponyms).,"{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-Thelatter are expressed by the Inherits From and Is In herited By relations in the frame definitions.,"{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"If the predicates match, we examine whether the assignedsemantic roles match.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"Since we represent SR assignments as graphs with edge covers, we can also for malize SR matching as a graph matching problem.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-The similarity between two graphs is measured as the sum of similarities between their subgraphs.We first decompose a graph into subgraphs consist ing of one frame element node w and a set of SR nodes connected to it.,"{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"The similarity between two subgraphs SubG1, and SubG2 is then formalized as: (5) Sim(SubG1,SubG2) = ? ndSR1 ? SubG1 ndSR2 ? SubG2 ndSR1 = ndSR2 1 |s(ndw,ndSR1 )?","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"s(ndw,ndSR2 )|+1where, ndSR1 and ndSR2 are semantic role nodes con nected to a frame element node ndw in SubG1 and 2The software is available from http://www.magiclogic.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"com/assignment.html . 16 1757[11, 20] 2117[21, 50] 439[51, 100] 40[101, INF) 33800 1175[1, 5]1287[6, 10] Figure 4: Distribution of Numbers of Predicates and annotated sentences; each sub-pie, lists the number of predicates (above) with their corresponding range of annotated sentences (below) SubG2, respectively.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"s(ndw,ndsr1 ) and s(ndw,ndSR2 )are edge weights between two nodes in correspond ing subgraphs (see (2)).","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-"Our intuition here is that the more semantic roles two subgraphs share for a given frame element, the more similar they are and the closer their corresponding edge weights should be.","{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-Edge weights are normalized by dividing by the sum of all edges in a subgraph.,"{'title': 'Semantic Structure Matching. ', 'number': '5'}"
-Data All our experiments were performed on the TREC02?05 factoid questions.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-We excluded NIL questions since TREC doesn?t supply an answer for them.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"We used the FrameNet V1.3 lexical database.It contains 10,195 predicates grouped into 795 se mantic frames and 141,238 annotated sentences.","{'title': 'Experimental Setup. ', 'number': '6'}"
-Figure 4 shows the number of annotated sentences available for different predicates.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"As can be seen,there are 3,380 predicates with no annotated sentences and 1,175 predicates with less than 5 anno tated sentences.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"All FrameNet sentences, questions, and answer sentences were parsed using MiniPar (Lin, 1994), a robust dependency parser.As mentioned in Section 4 we extract depen dency relation paths by traversing the dependency tree from the frame element node to the predicate node.","{'title': 'Experimental Setup. ', 'number': '6'}"
-We used all dependency relations providedby MiniPar (42 in total).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"In order to increase cov erage, we combine all relation paths for predicates that evoke the same frame and are labeled with the same POS tag.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"For example, found and establish are both instances of the frame Intentionally createbut the database does not have any annotated sen tences for found.v. In default of not assigning anyrole labels for found.v, our model employs the rela tion paths for the semantically related establish.v. Preprocessing Here we summarize the steps ofour QA system preceding the assignment of semantic structure and answer extraction.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"For each ques tion, we recognize its expected answer type (e.g., in Q: Which record company is Fred Durst with?","{'title': 'Experimental Setup. ', 'number': '6'}"
-wewould expect the answer to be an ORGANIZATION ).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-Answer types are determined using classi fication rules similar to Li and Roth (2002).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-We alsoreformulate questions into declarative sentences fol lowing the strategy proposed in Brill et al (2002).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-The reformulated sentences are submitted as queries to an IR engine for retrieving sentences with relevant answers.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"Specifically, we use the Lemur Toolkit3, a state-of-the-art language model-driven search engine.","{'title': 'Experimental Setup. ', 'number': '6'}"
-We work only with the 50 top-rankedsentences as this setting performed best in previ ous experiments of our QA system.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"We also add toLemur?s output gold standard sentences, which contain and support an answer for each question.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"Specifically, documents relevant for each question are re trieved from the AQUAINT Corpus4 according to TREC supplied judgments.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"Next, sentences which match both the TREC provided answer pattern and at least one question key word are extracted and their suitability is manually judged by humans.","{'title': 'Experimental Setup. ', 'number': '6'}"
-The set of relevant sentences thus includes at least one sentence with an appropriate answer as well as sentences that do not contain any answer specific information.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"This setup is somewhat idealized, however it allows us toevaluate in more detail our answer extraction mod ule (since when an answer is not found, we know it is the fault of our system).","{'title': 'Experimental Setup. ', 'number': '6'}"
-"Relevant sentences are annotated with their named entities using Lingpipe5, a MUC-based named entity recognizer.","{'title': 'Experimental Setup. ', 'number': '6'}"
-When we successfully classify a question with an expected answer type 3See http://www.lemurproject.org/ for details.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-4This corpus consists of English newswire texts and is used as the main document collection in official TREC evaluations.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"5The software is available from www.alias-i.com/ lingpipe/ 17 (e.g., ORGANIZATION in the example above), we assume that all NPs attested in the set of relevant sentences with the same answer type are candidate answers; in cases where no answer type is found (e.g., as in Q: What are prions made of?","{'title': 'Experimental Setup. ', 'number': '6'}"
-"), all NPs in the relevant answers set are considered candidate answers.","{'title': 'Experimental Setup. ', 'number': '6'}"
-Baseline We compared our answer extractionmethod to a QA system that exploits solely syntac tic information without making use of FrameNet or any other type of role semantic annotations.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"For each question, the baseline identifies key phrases deemed important for answer identification.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"These are verbs, noun phrases, and expected answer phrases (EAPs,see Section 3).","{'title': 'Experimental Setup. ', 'number': '6'}"
-All dependency relation paths con necting a key phrase and an EAP are compared tothose connecting the same key phrases and an answer candidate.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-The similarity of question and an swer paths is computed using a simplified version of the similarity measure6 proposed in Shen and Klakow (2006).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"Our second baseline employs Shalmaneser (Erkand Pado?, 2006), a publicly available shallow se mantic parser7, for the role labeling task instead of the graph-based model presented in Section 4.","{'title': 'Experimental Setup. ', 'number': '6'}"
-Thesoftware is trained on the FrameNet annotated sen tences using a standard feature set (see Carreras and Ma`rquez (2005) for details).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-We use Shalmaneser to parse questions and answer sentences.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-The parser makes hard decisions about the presence or absence of a semantic role.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-"Unfortunately, this prevents usfrom using our method for semantic structure match ing (see Section 5) which assumes a soft labeling.We therefore came up with a simple matching strat egy suitable for the parser?s output.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"For questionand answer sentences matching in their frame as signment, phrases bearing the same semantic role asthe EAP are considered answer candidates.","{'title': 'Experimental Setup. ', 'number': '6'}"
-"The latter are ranked according to word overlap (i.e., iden tical phrases are ranked higher than phrases with no6Shen and Klakow (2006) use a dynamic time warping al gorithm to calculate the degree to which dependency relationpaths are correlated.","{'title': 'Experimental Setup. ', 'number': '6'}"
-Correlations for individual relations are es timated from training data whereas we assume a binary value (1 for identical relations and 0 otherwise).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-The modification wasnecessary to render the baseline system comparable to our an swer extraction model which is unsupervised.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-7The software is available from http://www.coli.,"{'title': 'Experimental Setup. ', 'number': '6'}"
-uni-saarland.de/projects/salsa/shal/ . overlap at all).,"{'title': 'Experimental Setup. ', 'number': '6'}"
-Our evaluation was motivated by the following ques tions: (1) How does the incompleteness of FrameNet impact QA performance on the TREC data sets?,"{'title': 'Results. ', 'number': '7'}"
-"In particular, we wanted to examine whether there are questions for which in principle no answer can befound due to missing frame entries or missing an notated sentences.","{'title': 'Results. ', 'number': '7'}"
-(2) Are all questions and theircorresponding answers amenable to a FrameNet style analysis?,"{'title': 'Results. ', 'number': '7'}"
-"In other words, we wanted to assess whether questions and answers often evoke the sameor related frames (with similar roles).","{'title': 'Results. ', 'number': '7'}"
-This is a prerequisite for semantic structure matching and ulti mately answer extraction.,"{'title': 'Results. ', 'number': '7'}"
-(3) Do the graph-basedmodels introduced in this paper bring any perfor mance gains over state-of-the-art shallow semanticparsers or more conventional syntax-based QA systems?,"{'title': 'Results. ', 'number': '7'}"
-Recall that our graph-based models were de signed especially for the QA answer extraction task.,"{'title': 'Results. ', 'number': '7'}"
-Our results are summarized in Tables 1?3.,"{'title': 'Results. ', 'number': '7'}"
-Table 1 records the number of questions to be answered forthe TREC02?05 datasets (Total).,"{'title': 'Results. ', 'number': '7'}"
-We also give infor mation regarding the number of questions which arein principle unanswerable with a FrameNet-style se mantic role analysis.,"{'title': 'Results. ', 'number': '7'}"
-Column NoFrame shows the number of questions which don?t have an appropriate frame or predicate in the database.,"{'title': 'Results. ', 'number': '7'}"
-"For example, there is currently no predicate entry for sponsor or sink (e.g., Q: Who is the sponsor of the International Criminal Court?","{'title': 'Results. ', 'number': '7'}"
-and Q: What date did the Lusitania sink?,"{'title': 'Results. ', 'number': '7'}"
-Column NoAnnot refers to questions for which no semantic role labeling is possible because annotated sentences for the relevant predicates are missing.,"{'title': 'Results. ', 'number': '7'}"
-"For instance,there are no annotations for win (e.g., Q: What divi sion did Floyd Patterson win?","{'title': 'Results. ', 'number': '7'}"
-") or for hit (e.g., Q: What was the Beatles?","{'title': 'Results. ', 'number': '7'}"
-first number one hit?,"{'title': 'Results. ', 'number': '7'}"
-Thisproblem is not specific to our method which admit tedly relies on FrameNet annotations for performingthe semantic role assignment (see Section 4).,"{'title': 'Results. ', 'number': '7'}"
-Shal low semantic parsers trained on FrameNet would also have trouble assigning roles to predicates for which no data is available.,"{'title': 'Results. ', 'number': '7'}"
-"Finally, column NoMatch reports the number of questions which cannot be answered due to frame 18 Data Total NoFrame NoAnnot NoMatch Rest TREC02 444 87 (19.6) 29 (6.5) 176 (39.6) 152 (34.2) TREC03 380 55 (14.5) 30 (7.9) 183 (48.2) 112 (29.5) TREC04 203 47 (23.1) 14 (6.9) 67 (33.0) 75 (36.9) TREC05 352 70 (19.9) 23 (6.5) 145 (41.2) 114 (32.4) Table 1: Number of questions which cannot be answered using a FrameNet style semantic analysis; numbers in parentheses are percentages of Total (NoFrame: frames or predicates are missing; NoAnnot: annotated sentences are missing, NoMatch: questions and candidate answers evoke different frames.","{'title': 'Results. ', 'number': '7'}"
-mismatches.,"{'title': 'Results. ', 'number': '7'}"
-Consider Q: What does AARP stand for?,"{'title': 'Results. ', 'number': '7'}"
-whose answer is found in S: The American Association of Retired Persons (AARP) qualify fordiscounts.,"{'title': 'Results. ', 'number': '7'}"
-The answer and the question evoke dif ferent frames; in fact here a semantic role analysis is not relevant for locating the right answer.,"{'title': 'Results. ', 'number': '7'}"
-As can be seen NoMatch cases are by far the most frequent.,"{'title': 'Results. ', 'number': '7'}"
-"The number of questions remaining after excluding NoFrame, NoAnnot, and NoMatch are shown under the Rest heading in Table 1.These results indicate that FrameNet-based se mantic role analysis applies to approximately 35% of the TREC data.","{'title': 'Results. ', 'number': '7'}"
-"This means that an extraction module relying solely on FrameNet will have poor performance, since it will be unable to find answers for more than half of the questions beeing asked.","{'title': 'Results. ', 'number': '7'}"
-We nevertheless examine whether our model brings any performance improvements on this limited dataset which is admittedly favorable towards a FrameNetstyle analysis.,"{'title': 'Results. ', 'number': '7'}"
-Table 2 shows the results of our an swer extraction module (SemMatch) together with two baseline systems.,"{'title': 'Results. ', 'number': '7'}"
-"The first baseline uses only dependency relation path information (SynMatch),whereas the second baseline (SemParse) uses Shal maneser, a state-of-the-art shallow semantic parser for the role labeling task.","{'title': 'Results. ', 'number': '7'}"
-We consider an answer correct if it is returned with rank 1.,"{'title': 'Results. ', 'number': '7'}"
-"As can be seen,SemMatch is significantly better than both SynMatch and SemParse, whereas the latter is signifi cantly worse than SynMatch.","{'title': 'Results. ', 'number': '7'}"
-"Although promising, the results in Table 2 are not very informative, since they show performance gainson partial data.","{'title': 'Results. ', 'number': '7'}"
-"Instead of using our answer extrac tion model on its own, we next combined it with the syntax-based system mentioned above (SynMatch, see also Section 6 for details).","{'title': 'Results. ', 'number': '7'}"
-"If FrameNet is indeedhelpful for QA, we would expect an ensemble sys Model TREC02 TREC03 TREC04 TREC05 SemParse 13.16 8.92 17.33 13.16 SynMatch 35.53?","{'title': 'Results. ', 'number': '7'}"
-33.04?,"{'title': 'Results. ', 'number': '7'}"
-40.00?,"{'title': 'Results. ', 'number': '7'}"
-36.84?,"{'title': 'Results. ', 'number': '7'}"
-SemMatch 53.29??,"{'title': 'Results. ', 'number': '7'}"
-49.11??,"{'title': 'Results. ', 'number': '7'}"
-54.67??,"{'title': 'Results. ', 'number': '7'}"
-59.65??,"{'title': 'Results. ', 'number': '7'}"
-"Table 2: System Performance on subset of TRECdatasets (see Rest column in Table 1); ?: signifi cantly better than SemParse; ?: significantly better than SynMatch (p < 0.01, using a ?2 test).","{'title': 'Results. ', 'number': '7'}"
-Model TREC02 TREC03 TREC04 TREC05 SynMatch 32.88?,"{'title': 'Results. ', 'number': '7'}"
-30.70?,"{'title': 'Results. ', 'number': '7'}"
-35.95?,"{'title': 'Results. ', 'number': '7'}"
-34.38?,"{'title': 'Results. ', 'number': '7'}"
-+SemParse 25.23 23.68 28.57 26.70 +SemMatch 38.96??,"{'title': 'Results. ', 'number': '7'}"
-35.53??,"{'title': 'Results. ', 'number': '7'}"
-42.36??,"{'title': 'Results. ', 'number': '7'}"
-41.76??,"{'title': 'Results. ', 'number': '7'}"
-"Table 3: System Performance on TREC datasets (see Total column in Table 1); ?: significantly better than +SemParse; ?: significantly better than SynMatch (p < 0.01, using a ?2 test).tem to yield better performance over a purely syn tactic answer extraction module.","{'title': 'Results. ', 'number': '7'}"
-The two systems were combined as follows.,"{'title': 'Results. ', 'number': '7'}"
-"Given a question, we first pass it to our FrameNet model; if an answer is found,our job is done; if no answer is returned, the ques tion is passed on to SynMatch.","{'title': 'Results. ', 'number': '7'}"
-Our results are givenin Table 3.,"{'title': 'Results. ', 'number': '7'}"
-"+SemMatch and +SemParse are ensem ble systems using SynMatch together with the QAspecific role labeling method proposed in this pa per and Shalmaneser, respectively.","{'title': 'Results. ', 'number': '7'}"
-We also compare these systems against SynMatch on its own.We can now attempt to answer our third ques tion concerning our model?s performance on theTREC data.,"{'title': 'Results. ', 'number': '7'}"
-Our experiments show that a FrameNet enhanced answer extraction module significantlyoutperforms a similar module that uses only syntactic information (compare SynMatch and +Sem Match in Table 3).,"{'title': 'Results. ', 'number': '7'}"
-Another interesting finding is that 19 the shallow semantic parser performs considerably worse in comparison to our graph-based models and the syntax-based system.,"{'title': 'Results. ', 'number': '7'}"
-Inspection of the parser?s output highlights two explanations for this.,"{'title': 'Results. ', 'number': '7'}"
-"First, theshallow semantic parser has difficulty assigning ac curate semantic roles to questions (even when theyare reformulated as declarative sentences).","{'title': 'Results. ', 'number': '7'}"
-"And secondly, it tends to favor precision over recall, thus re ducing the number of questions for which answers can be found.","{'title': 'Results. ', 'number': '7'}"
-A similar finding is reported in Sun et al.,"{'title': 'Results. ', 'number': '7'}"
-(2005) for a PropBank trained parser.,"{'title': 'Results. ', 'number': '7'}"
-In this paper we assess the contribution of semanticrole labeling to open-domain factoid question answering.,"{'title': 'Conclusion. ', 'number': '8'}"
-We present a graph-based answer extrac tion model which effectively incorporates FrameNet style role semantic information and show that it achieves promising results.,"{'title': 'Conclusion. ', 'number': '8'}"
-Our experiments show that the proposed model can be effectively combined with a syntax-based system to obtain performancesuperior to the latter when used on its own.,"{'title': 'Conclusion. ', 'number': '8'}"
-"Fur thermore, we demonstrate performance gains over ashallow semantic parser trained on the FrameNet an notated corpus.","{'title': 'Conclusion. ', 'number': '8'}"
-We argue that performance gains are due to the adopted graph-theoretic framework which is robust to coverage and recall problems.We also provide a detailed analysis of the appropriateness of FrameNet for QA.,"{'title': 'Conclusion. ', 'number': '8'}"
-"We show that per formance can be compromised due to incomplete coverage (i.e., missing frame or predicate entries as well as annotated sentences) but also because of mismatching question-answer representations.","{'title': 'Conclusion. ', 'number': '8'}"
-"The question and the answer may evoke different frames or the answer simply falls outside the scope of agiven frame (i.e., in a non predicate-argument structure).","{'title': 'Conclusion. ', 'number': '8'}"
-Our study shows that mismatches are rela tively frequent and motivates the use of semantically informed methods in conjunction with syntax-based methods.,"{'title': 'Conclusion. ', 'number': '8'}"
-"Important future directions lie in evaluating the contribution of alternative semantic role frameworks (e.g., PropBank) to the answer extraction task anddeveloping models that learn semantic roles di rectly from unannotated text without the support of FrameNet annotations (Grenager and Manning, 2006).","{'title': 'Conclusion. ', 'number': '8'}"
-"Beyond question answering, we also plan to investigate the potential of our model for shallow semantic parsing since our experience so far has shown that it achieves good recall.","{'title': 'Conclusion. ', 'number': '8'}"
-Acknowledgements We are grateful to Sebastian Pado?,"{'title': 'Conclusion. ', 'number': '8'}"
-for running Shalmaneser on our data.,"{'title': 'Conclusion. ', 'number': '8'}"
-Thanks to Frank Keller and Amit Dubey for insightful comments and suggestions.,"{'title': 'Conclusion. ', 'number': '8'}"
-Theauthors acknowledge the support of DFG (Shen; PhD studentship within the International Postgraduate College ?Language Technology and Cognitive Systems?),"{'title': 'Conclusion. ', 'number': '8'}"
-and EPSRC (Lap ata; grant EP/C538447/1).,"{'title': 'Conclusion. ', 'number': '8'}"
+"Shallow semantic parsing, the automaticidentification and labeling of sentential constituents, has recently received much attention.",Introduction
+Our work examines whether seman tic role information is beneficial to questionanswering.,Introduction
+We introduce a general frame work for answer extraction which exploits semantic role annotations in the FrameNetparadigm.,Introduction
+We view semantic role assignment as an optimization problem in a bipartite graph and answer extraction as an instance of graph matching.,Introduction
+Experimental results on the TREC datasets demonstrate im provements over state-of-the-art models.,Introduction
+"Recent years have witnessed significant progress in developing methods for the automatic identificationand labeling of semantic roles conveyed by sentential constituents.1 The success of these methods, often referred to collectively as shallow semantic pars ing (Gildea and Jurafsky, 2002), is largely due to the availability of resources like FrameNet (Fillmore et al., 2003) and PropBank (Palmer et al, 2005), which document the surface realization of semantic roles in real world corpora.",Experiment/Discussion
+"More concretely, in the FrameNet paradigm, themeaning of predicates (usually verbs, nouns, or adjectives) is conveyed by frames, schematic repre sentations of situations.",Experiment/Discussion
+Semantic roles (or frame1The approaches are too numerous to list; we refer the inter ested reader to Carreras and Ma`rquez (2005) for an overview.elements) are defined for each frame and correspond to salient entities present in the evoked situ ation.,Experiment/Discussion
+Predicates with similar semantics instantiate the same frame and are attested with the same roles.,Experiment/Discussion
+"The FrameNet database lists the surface syntacticrealizations of semantic roles, and provides anno tated example sentences from the British National Corpus.",Experiment/Discussion
+"For example, the frame Commerce Sell has three core semantic roles, namely Buyer, Goods, andSeller ? each expressed by an indirect object, a di rect object, and a subject (see sentences (1a)?(1c)).",Experiment/Discussion
+"It can also be attested with non-core (peripheral) roles (e.g., Means, Manner, see (1d) and (1e)) thatare more generic and can be instantiated in sev eral frames, besides Commerce Sell.",Experiment/Discussion
+"The verbs sell, vend, and retail can evoke this frame, but also the nouns sale and vendor.",Experiment/Discussion
+(1) a. [Lee]Seller sold a textbook [to Abby]Buyer.,Experiment/Discussion
+b. [Kim]Seller sold [the sweater]Goods.,Experiment/Discussion
+c. [My company]Seller has sold [more than three million copies]Goods.,Experiment/Discussion
+d. [Abby]Seller sold [the car]Goods [for cash]Means.,Experiment/Discussion
+"e. [He]Seller [reluctanctly]Manner sold [his rock]Goods.By abstracting over surface syntactic configurations, semantic roles offer an important first step to wards deeper text understanding and hold promisefor a range of applications requiring broad cover age semantic processing.",Experiment/Discussion
+"Question answering (QA) is often cited as an obvious beneficiary of semantic 12 role labeling (Gildea and Jurafsky, 2002; Palmer et al., 2005; Narayanan and Harabagiu, 2004).",Experiment/Discussion
+Faced with the question Q: What year did the U.S. buyAlaska?,Experiment/Discussion
+"and the retrieved sentence S: . . .before Russia sold Alaska to the United States in 1867, a hypo thetical QA system must identify that United States is the Buyer despite the fact that it is attested in one instance as a subject and in another as an object.",Experiment/Discussion
+"Once this information is known, isolating the correct answer (i.e., 1867 ) can be relatively straightforward.Although conventional wisdom has it that seman tic role labeling ought to improve answer extraction, surprising little work has been done to this effect (see Section 2 for details) and initial results have been mostly inconclusive or negative (Sun et al, 2005; Kaisser, 2006).",Experiment/Discussion
+There are at least two good reasons for these findings.,Experiment/Discussion
+"First, shallow semanticparsers trained on declarative sentences will typically have poor performance on questions and generally on out-of-domain data.",Experiment/Discussion
+"Second, existing re sources do not have exhaustive coverage and recallwill be compromised, especially if the question an swering system is expected to retrieve answers fromunrestricted text.",Experiment/Discussion
+"Since FrameNet is still under development, its coverage tends to be more of a prob lem in comparison to other semantic role resources such as PropBank.",Experiment/Discussion
+In this paper we propose an answer extractionmodel which effectively incorporates FrameNetstyle semantic role information.,Experiment/Discussion
+We present an auto matic method for semantic role assignment which is conceptually simple and does not require extensive feature engineering.,Experiment/Discussion
+A key feature of our approachis the comparison of dependency relation paths at tested in the FrameNet annotations and raw text.,Experiment/Discussion
+We formalize the search for an optimal role assignment as an optimization problem in a bipartite graph.,Experiment/Discussion
+"Thisformalization allows us to find an exact, globally op timal solution.",Experiment/Discussion
+The graph-theoretic framework goessome way towards addressing coverage problems related with FrameNet and allows us to formulate an swer extraction as a graph matching problem.,Experiment/Discussion
+As abyproduct of our main investigation we also exam ine the issue of FrameNet coverage and show howmuch it impacts performance in a TREC-style ques tion answering setting.,Experiment/Discussion
+In the following section we provide an overview of existing work on question answering systems that exploit semantic role-based lexical resources.,Experiment/Discussion
+Thenwe define our learning task and introduce our approach to semantic role assignment and answer ex traction in the context of QA.,Experiment/Discussion
+"Next, we present our experimental framework and data.",Experiment/Discussion
+We conclude the paper by presenting and discussing our results.,Experiment/Discussion
+Question answering systems have traditionally de pended on a variety of lexical resources to bridge surface differences between questions and potential answers.,Experiment/Discussion
+"WordNet (Fellbaum, 1998) is perhaps the most popular resource and has been employed in a variety of QA-related tasks ranging from query expansion, to axiom-based reasoning (Moldovan et al., 2003), passage scoring (Paranjpe et al, 2003), and answer filtering (Leidner et al, 2004).",Experiment/Discussion
+"Besides WordNet, recent QA systems increasingly rely on syntactic information as a means of abstracting over word order differences and structural alternations (e.g., passive vs. active voice).",Experiment/Discussion
+"Most syntax-based QA systems (Wu et al, 2005) incorporate some means of comparison between the tree representing the question with the subtree surrounding the answer candidate.",Experiment/Discussion
+The assumption here is that appropriate answers are more likely to have syntactic relationsin common with their corresponding question.,Experiment/Discussion
+"Syntactic structure matching has been applied to passage retrieval (Cui et al, 2005) and answer extrac tion (Shen and Klakow, 2006).",Experiment/Discussion
+Narayanan and Harabagiu (2004) were the firstto stress the importance of semantic roles in an swering complex questions.,Experiment/Discussion
+Their system identifies predicate argument structures by merging semanticrole information from PropBank and FrameNet.,Experiment/Discussion
+Expected answers are extracted by performing probabilistic inference over the predicate argument struc tures in conjunction with a domain specific topicmodel.,Experiment/Discussion
+Sun et al (2005) incorporate semantic analy sis in their TREC05 QA system.,Experiment/Discussion
+"They use ASSERT (Pradhan et al, 2004), a publicly available shallow semantic parser trained on PropBank, to generate predicate-argument structures which subsequently form the basis of comparison between question and answer sentences.",Experiment/Discussion
+They find that semantic analysis does not boost performance due to the low recall of the semantic parser.,Experiment/Discussion
+Kaisser (2006) proposes a 13 SemStruc ac1SemStruc ac2 SemStruc aci SemStruc q Sent.,Experiment/Discussion
+Model I Q Model I Model II Answer Figure 1: Architecture of answer extraction question paraphrasing method based on FrameNet.,Experiment/Discussion
+Questions are assigned semantic roles by matching their dependency relations with those attested in the FrameNet annotations.,Experiment/Discussion
+The assignments are used to create question reformulations which are submitted to Google for answer extraction.,Experiment/Discussion
+"The semantic role assignment module is not probabilistic, it relies onstrict matching, and runs into severe coverage prob lems.",Experiment/Discussion
+"In line with previous work, our method exploitssyntactic information in the form of dependency re lation paths together with FrameNet-like semanticroles to smooth lexical and syntactic divergences be tween question and answer sentences.",Experiment/Discussion
+"Our approach is less domain dependent and resource intensive than Narayanan and Harabagiu (2004), it solely employs a dependency parser and the FrameNet database.",Experiment/Discussion
+"In contrast to Kaisser (2006), we model the semanticrole assignment and answer extraction tasks numerically, thereby alleviating the coverage problems en countered previously.",Experiment/Discussion
+We briefly summarize the architecture of the QA system we are working with before formalizing the mechanics of our FrameNet-based answer extractionmodule.,Experiment/Discussion
+"In common with previous work, our over all approach consists of three stages: (a) determiningthe expected answer type of the question, (b) retrieving passages likely to contain answers to the question, and (c) performing a match between the ques tion words and retrieved passages in order to extract the answer.",Experiment/Discussion
+In this paper we focus on the last stage: question and answer sentences are normalized to aFrameNet-style representation and answers are re trieved by selecting the candidate whose semantic structure is most similar to the question.The architecture of our answer extraction mod ule is shown in Figure 1.,Experiment/Discussion
+Semantic structures for questions and sentences are automatically derived using the model described in Section 4 (Model I).,Experiment/Discussion
+"Asemantic structure SemStruc = ?p,Set(SRA)?",Experiment/Discussion
+consists of a predicate p and a set of semantic role assignments Set(SRA).,Experiment/Discussion
+p is a word or phrase evoking a frame F of FrameNet.,Experiment/Discussion
+"A semantic role assignment SRA is a ternary structure ?w,SR,s?, consist ing of frame element w, its semantic role SR, and score s indicating to what degree SR qualifies as a label for w.For a question q, we generate a semantic struc ture SemStrucq.",Experiment/Discussion
+"Question words, such as what, who, when, etc., are considered expected answer phrases (EAPs).",Experiment/Discussion
+We require that EAPs are frame elementsof SemStrucq.,Experiment/Discussion
+Likely answer candidates are extracted from answer sentences following some pre processing steps detailed in Section 6.,Experiment/Discussion
+"For each candidate ac, we derive its semantic structureSemStrucac and assume that ac is a frame element of SemStrucac.",Experiment/Discussion
+Question and answer seman tic structures are compared using a model based on graph matching detailed in Section 5 (Model II).,Experiment/Discussion
+"We calculate the similarity of all derived pairs ?SemStrucq,SemStrucac?",Experiment/Discussion
+and select the candidate with the highest value as an answer for the question.,Experiment/Discussion
+Our method crucially exploits the annotated sen tences in the FrameNet database together with theoutput of a dependency parser.,Experiment/Discussion
+Our guiding assumption is that sentences that share dependency rela tions will also share semantic roles as long as they evoke the same or related frames.,Experiment/Discussion
+"This is motivated by much research in lexical semantics (e.g., Levin (1993)) hypothesizing that the behavior of words,particularly with respect to the expression and interpretation of their arguments, is to a large ex tent determined by their meaning.",Experiment/Discussion
+We first describe how predicates are identified and then introduce our model for semantic role labeling.,Experiment/Discussion
+Predicate Identification Predicate candidates are identified using a simple look-up procedure whichcompares POS-tagged tokens against FrameNet entries.,Experiment/Discussion
+"For efficiency reasons, we make the simplifying assumption that questions have only one predicate which we select heuristically: (1) verbs are pre 14 ferred to other parts of speech, (2) if there is more than one verb in the question, preference is given to the verb with the highest level of embedding in the dependency tree, (3) if no verbs are present, a nounis chosen.",Experiment/Discussion
+"For example, in Q: Who beat Floyd Pat terson to take the title away?, beat, take away, and title are identified as predicate candidates and beat is selected the main predicate of the question.",Experiment/Discussion
+"Foranswer sentences, we require that the predicate is ei ther identical or semantically related to the question predicate (see Section 5).",Experiment/Discussion
+"In the example given above, the predicate beat evoques a single frame (i.e., Cause harm).",Experiment/Discussion
+"However,predicates often have multiple meanings thus evo quing more than one frame.",Experiment/Discussion
+Knowing which is the appropriate frame for a given predicate impacts the semantic role assignment task; selecting the wrong frame will unavoidably result in erroneous semanticroles.,Experiment/Discussion
+"Rather than disambiguiting polysemous pred icates prior to semantic role assignment, we performthe assignment for each frame evoqued by the pred icate.",Experiment/Discussion
+Semantic Role Assignment Before describing our approach to semantic role labeling we define dependency relation paths.,Experiment/Discussion
+"A relation path R is a relation sequence ?r1,r2, ...,rL?, in which rl (l = 1,2, ...,L) is one of predefined dependency relations with suffix of traverse direction.",Experiment/Discussion
+"An example of arelation path is R = ?sub jU ,ob jD?, where the sub scripts U and D indicate upward and downwardmovement in trees, respectively.",Experiment/Discussion
+"Given an unannotated sentence whose roles we wish to label, we as sume that words or phrases w with a dependency path connecting them to p are frame elements.",Experiment/Discussion
+"Eachframe element is represented by an unlabeled depen dency path Rw which we extract by traversing thedependency tree from w to p. Analogously, we ex tract from the FrameNet annotations all dependencypaths RSR that are labeled with semantic role infor mation and correspond to p. We next measure thecompatibility of labeled and unlabeled paths as fol lows: s(w,SR) = maxRSR?M [sim(Rw,RSR) ?P(RSR)] (2) where M is the set of dependency relation pathsfor SR in FrameNet, sim(Rw,RSR) the similarity be tween paths Rw and RSR weighted by the relative w SRw SR (a) (b) Figure 2: Sample original bipartite graph (a) and its subgraph with edge covers (b).",Experiment/Discussion
+"In each graph, the left partition represents frame elements and the right partition semantic roles.frequency of RSR in FrameNet (P(RSR)).",Experiment/Discussion
+We consider both core and non-core semantic roles instan tiated by frames with at least one annotation in FrameNet.,Experiment/Discussion
+Core roles tend to have more annotations in Framenet and consequently are considered more probable.,Experiment/Discussion
+"We measure sim(Rw,RSR), by adapting a string kernel to our task.",Experiment/Discussion
+"Our hypothesis is that the more common substrings two dependency paths have, the more similar they are.",Experiment/Discussion
+The string kernel we used is similar to Leslie (2002) and defined asthe sum of weighted common dependency relation subsequences between Rw and RSR.,Experiment/Discussion
+"For efficiency, we consider only unigram and bigram sub sequences.",Experiment/Discussion
+Subsequences are weighted by a metricakin to t f ? id f which measures the degree of asso ciation between a candidate SR and the dependency relation r present in the subsequence: weightSR(r) = fr ? log ( 1+ Nnr ) (3) where fr is the frequency of r occurring in SR; N is the total number of SRs evoked by a given frame; and nr is the number of SRs containing r. For each frame element we thus generate a set of semantic role assignments Set(SRA).,Experiment/Discussion
+This initialassignment can be usefully represented as a com plete bipartite graph in which each frame element (word or phrase) is connected to the semantic roleslicensed by the predicate and vice versa.,Experiment/Discussion
+(see Figure 2a).,Experiment/Discussion
+Edges are weighted and represent how com patible the frame elements and semantic roles are (see equation (2)).,Experiment/Discussion
+"Now, for each frame element w 15 Q: Who discovered prions?S: 1997: Stanley B. Prusiner, United States, discovery of prions, ...",Experiment/Discussion
+SemStruc q p: discover Original SR assignments: Optimized SR assignments: 0.06 Cognizer.,Experiment/Discussion
+Phenomenon Ground State Evidence EAP prions 0000 0.01 0.1 0.05 0.05 0.02 0.06 Cognizer.,Experiment/Discussion
+Phenomenon Ground State Evidence EAP prions 0.1 0.05 0.05 0.02 SemStruc ac (ac: Stanley B. Prusiner) p: discovery Original SR assignments: Optimized SR assignments: 0.25 Cognizer.,Experiment/Discussion
+Phenomenon Topic Evidence ac prions 0.15 0.2 0.16 0.25 Cognizer.,Experiment/Discussion
+Phenomenon Topic Evidence ac prions 0.15 0.2 0.16 0.120.07 0 0 Figure 3: Semantic structures induced by our model for a question and answer sentence we could simply select the semantic role with the highest score.,Experiment/Discussion
+"However, this decision procedure is local, i.e., it yields a semantic role assignment foreach frame element independently of all other ele ments.",Experiment/Discussion
+We therefore may end up with the same role being assigned to two frame elements or with frameelements having no role at all.,Experiment/Discussion
+We remedy this short coming by treating the semantic role assignment as a global optimization problem.,Experiment/Discussion
+"Specifically, we model the interaction between all pairwise labeling decisions as a minimum weight bipartite edge cover problem (Eiter and Mannila,1997; Cormen et al, 1990).",Experiment/Discussion
+An edge cover is a sub graph of a bipartite graph so that each node is linked to at least one node of the other partition.,Experiment/Discussion
+This yields a semantic role assignment for all frame elements (see Figure 2b where frame elements and roles areadjacent to an edge).,Experiment/Discussion
+"Edge covers have been success fully applied in several natural language processing tasks, including machine translation (Taskar et al, 2005) and annotation projection (Pado?",Experiment/Discussion
+"and Lapata, 2006).Formally, optimal edge cover assignments are so lutions of following optimization problem: max E is edge cover ?(ndw,ndSR)?E s(nd w,ndSR)(4)where, s(ndw,ndSR) is the compatibility score be tween the frame element node ndw and semantic role node ndSR.",Experiment/Discussion
+Edge covers can be computed efficiently in cubic time using algorithms for the equivalent linear assignment problem.,Experiment/Discussion
+Our experiments used Jonker and Volgenant?s (1987) solver.2 Figure 3 shows the semantic role assignments generated by our model for the question Q: Whodiscovered prions?,Experiment/Discussion
+"and the candidate answer sen tence S: 1997: Stanley B. Prusiner, United States,discovery of prions.",Experiment/Discussion
+"Here we identify two predi cates, namely discover and discovery.",Experiment/Discussion
+The expectedanswer phrase (EAP) who and the answer candi date Stanley B. Prusiner are assigned the COGNIZERrole.,Experiment/Discussion
+Note that frame elements can bear multiple se mantic roles.,Experiment/Discussion
+"By inducing a soft labeling we hope to render the matching of questions and answers morerobust, thereby addressing to some extent the cover age problems associated with FrameNet.",Experiment/Discussion
+We measure the similarity between a question and its candidate answer by matching their predicatesand semantic role assignments.,Experiment/Discussion
+"Since SRs are framespecific, we prioritize frame matching to SR match ing.",Experiment/Discussion
+Two predicates match if they evoke the same frame or one of its hypernyms (or hyponyms).,Experiment/Discussion
+Thelatter are expressed by the Inherits From and Is In herited By relations in the frame definitions.,Experiment/Discussion
+"If the predicates match, we examine whether the assignedsemantic roles match.",Experiment/Discussion
+"Since we represent SR assignments as graphs with edge covers, we can also for malize SR matching as a graph matching problem.",Experiment/Discussion
+The similarity between two graphs is measured as the sum of similarities between their subgraphs.We first decompose a graph into subgraphs consist ing of one frame element node w and a set of SR nodes connected to it.,Experiment/Discussion
+"The similarity between two subgraphs SubG1, and SubG2 is then formalized as: (5) Sim(SubG1,SubG2) = ? ndSR1 ? SubG1 ndSR2 ? SubG2 ndSR1 = ndSR2 1 |s(ndw,ndSR1 )?",Experiment/Discussion
+"s(ndw,ndSR2 )|+1where, ndSR1 and ndSR2 are semantic role nodes con nected to a frame element node ndw in SubG1 and 2The software is available from http://www.magiclogic.",Experiment/Discussion
+"com/assignment.html . 16 1757[11, 20] 2117[21, 50] 439[51, 100] 40[101, INF) 33800 1175[1, 5]1287[6, 10] Figure 4: Distribution of Numbers of Predicates and annotated sentences; each sub-pie, lists the number of predicates (above) with their corresponding range of annotated sentences (below) SubG2, respectively.",Experiment/Discussion
+"s(ndw,ndsr1 ) and s(ndw,ndSR2 )are edge weights between two nodes in correspond ing subgraphs (see (2)).",Experiment/Discussion
+"Our intuition here is that the more semantic roles two subgraphs share for a given frame element, the more similar they are and the closer their corresponding edge weights should be.",Experiment/Discussion
+Edge weights are normalized by dividing by the sum of all edges in a subgraph.,Experiment/Discussion
+Data All our experiments were performed on the TREC02?05 factoid questions.,Experiment/Discussion
+We excluded NIL questions since TREC doesn?t supply an answer for them.,Experiment/Discussion
+"We used the FrameNet V1.3 lexical database.It contains 10,195 predicates grouped into 795 se mantic frames and 141,238 annotated sentences.",Experiment/Discussion
+Figure 4 shows the number of annotated sentences available for different predicates.,Experiment/Discussion
+"As can be seen,there are 3,380 predicates with no annotated sentences and 1,175 predicates with less than 5 anno tated sentences.",Experiment/Discussion
+"All FrameNet sentences, questions, and answer sentences were parsed using MiniPar (Lin, 1994), a robust dependency parser.As mentioned in Section 4 we extract depen dency relation paths by traversing the dependency tree from the frame element node to the predicate node.",Experiment/Discussion
+We used all dependency relations providedby MiniPar (42 in total).,Experiment/Discussion
+"In order to increase cov erage, we combine all relation paths for predicates that evoke the same frame and are labeled with the same POS tag.",Experiment/Discussion
+"For example, found and establish are both instances of the frame Intentionally createbut the database does not have any annotated sen tences for found.v. In default of not assigning anyrole labels for found.v, our model employs the rela tion paths for the semantically related establish.v. Preprocessing Here we summarize the steps ofour QA system preceding the assignment of semantic structure and answer extraction.",Experiment/Discussion
+"For each ques tion, we recognize its expected answer type (e.g., in Q: Which record company is Fred Durst with?",Experiment/Discussion
+wewould expect the answer to be an ORGANIZATION ).,Experiment/Discussion
+Answer types are determined using classi fication rules similar to Li and Roth (2002).,Experiment/Discussion
+We alsoreformulate questions into declarative sentences fol lowing the strategy proposed in Brill et al (2002).,Experiment/Discussion
+The reformulated sentences are submitted as queries to an IR engine for retrieving sentences with relevant answers.,Experiment/Discussion
+"Specifically, we use the Lemur Toolkit3, a state-of-the-art language model-driven search engine.",Experiment/Discussion
+We work only with the 50 top-rankedsentences as this setting performed best in previ ous experiments of our QA system.,Experiment/Discussion
+"We also add toLemur?s output gold standard sentences, which contain and support an answer for each question.",Experiment/Discussion
+"Specifically, documents relevant for each question are re trieved from the AQUAINT Corpus4 according to TREC supplied judgments.",Experiment/Discussion
+"Next, sentences which match both the TREC provided answer pattern and at least one question key word are extracted and their suitability is manually judged by humans.",Experiment/Discussion
+The set of relevant sentences thus includes at least one sentence with an appropriate answer as well as sentences that do not contain any answer specific information.,Experiment/Discussion
+"This setup is somewhat idealized, however it allows us toevaluate in more detail our answer extraction mod ule (since when an answer is not found, we know it is the fault of our system).",Experiment/Discussion
+"Relevant sentences are annotated with their named entities using Lingpipe5, a MUC-based named entity recognizer.",Experiment/Discussion
+When we successfully classify a question with an expected answer type 3See http://www.lemurproject.org/ for details.,Experiment/Discussion
+4This corpus consists of English newswire texts and is used as the main document collection in official TREC evaluations.,Experiment/Discussion
+"5The software is available from www.alias-i.com/ lingpipe/ 17 (e.g., ORGANIZATION in the example above), we assume that all NPs attested in the set of relevant sentences with the same answer type are candidate answers; in cases where no answer type is found (e.g., as in Q: What are prions made of?",Experiment/Discussion
+"), all NPs in the relevant answers set are considered candidate answers.",Experiment/Discussion
+Baseline We compared our answer extractionmethod to a QA system that exploits solely syntac tic information without making use of FrameNet or any other type of role semantic annotations.,Experiment/Discussion
+"For each question, the baseline identifies key phrases deemed important for answer identification.",Experiment/Discussion
+"These are verbs, noun phrases, and expected answer phrases (EAPs,see Section 3).",Experiment/Discussion
+All dependency relation paths con necting a key phrase and an EAP are compared tothose connecting the same key phrases and an answer candidate.,Experiment/Discussion
+The similarity of question and an swer paths is computed using a simplified version of the similarity measure6 proposed in Shen and Klakow (2006).,Experiment/Discussion
+"Our second baseline employs Shalmaneser (Erkand Pado?, 2006), a publicly available shallow se mantic parser7, for the role labeling task instead of the graph-based model presented in Section 4.",Experiment/Discussion
+Thesoftware is trained on the FrameNet annotated sen tences using a standard feature set (see Carreras and Ma`rquez (2005) for details).,Experiment/Discussion
+We use Shalmaneser to parse questions and answer sentences.,Experiment/Discussion
+The parser makes hard decisions about the presence or absence of a semantic role.,Experiment/Discussion
+"Unfortunately, this prevents usfrom using our method for semantic structure match ing (see Section 5) which assumes a soft labeling.We therefore came up with a simple matching strat egy suitable for the parser?s output.",Experiment/Discussion
+"For questionand answer sentences matching in their frame as signment, phrases bearing the same semantic role asthe EAP are considered answer candidates.",Experiment/Discussion
+"The latter are ranked according to word overlap (i.e., iden tical phrases are ranked higher than phrases with no6Shen and Klakow (2006) use a dynamic time warping al gorithm to calculate the degree to which dependency relationpaths are correlated.",Experiment/Discussion
+Correlations for individual relations are es timated from training data whereas we assume a binary value (1 for identical relations and 0 otherwise).,Experiment/Discussion
+The modification wasnecessary to render the baseline system comparable to our an swer extraction model which is unsupervised.,Experiment/Discussion
+7The software is available from http://www.coli.,Experiment/Discussion
+uni-saarland.de/projects/salsa/shal/ . overlap at all).,Experiment/Discussion
+Our evaluation was motivated by the following ques tions: (1) How does the incompleteness of FrameNet impact QA performance on the TREC data sets?,Results/Conclusion
+"In particular, we wanted to examine whether there are questions for which in principle no answer can befound due to missing frame entries or missing an notated sentences.",Results/Conclusion
+(2) Are all questions and theircorresponding answers amenable to a FrameNet style analysis?,Results/Conclusion
+"In other words, we wanted to assess whether questions and answers often evoke the sameor related frames (with similar roles).",Results/Conclusion
+This is a prerequisite for semantic structure matching and ulti mately answer extraction.,Results/Conclusion
+(3) Do the graph-basedmodels introduced in this paper bring any perfor mance gains over state-of-the-art shallow semanticparsers or more conventional syntax-based QA systems?,Results/Conclusion
+Recall that our graph-based models were de signed especially for the QA answer extraction task.,Results/Conclusion
+Our results are summarized in Tables 1?3.,Results/Conclusion
+Table 1 records the number of questions to be answered forthe TREC02?05 datasets (Total).,Results/Conclusion
+We also give infor mation regarding the number of questions which arein principle unanswerable with a FrameNet-style se mantic role analysis.,Results/Conclusion
+Column NoFrame shows the number of questions which don?t have an appropriate frame or predicate in the database.,Results/Conclusion
+"For example, there is currently no predicate entry for sponsor or sink (e.g., Q: Who is the sponsor of the International Criminal Court?",Results/Conclusion
+and Q: What date did the Lusitania sink?,Results/Conclusion
+Column NoAnnot refers to questions for which no semantic role labeling is possible because annotated sentences for the relevant predicates are missing.,Results/Conclusion
+"For instance,there are no annotations for win (e.g., Q: What divi sion did Floyd Patterson win?",Results/Conclusion
+") or for hit (e.g., Q: What was the Beatles?",Results/Conclusion
+first number one hit?,Results/Conclusion
+Thisproblem is not specific to our method which admit tedly relies on FrameNet annotations for performingthe semantic role assignment (see Section 4).,Results/Conclusion
+Shal low semantic parsers trained on FrameNet would also have trouble assigning roles to predicates for which no data is available.,Results/Conclusion
+"Finally, column NoMatch reports the number of questions which cannot be answered due to frame 18 Data Total NoFrame NoAnnot NoMatch Rest TREC02 444 87 (19.6) 29 (6.5) 176 (39.6) 152 (34.2) TREC03 380 55 (14.5) 30 (7.9) 183 (48.2) 112 (29.5) TREC04 203 47 (23.1) 14 (6.9) 67 (33.0) 75 (36.9) TREC05 352 70 (19.9) 23 (6.5) 145 (41.2) 114 (32.4) Table 1: Number of questions which cannot be answered using a FrameNet style semantic analysis; numbers in parentheses are percentages of Total (NoFrame: frames or predicates are missing; NoAnnot: annotated sentences are missing, NoMatch: questions and candidate answers evoke different frames.",Results/Conclusion
+mismatches.,Results/Conclusion
+Consider Q: What does AARP stand for?,Results/Conclusion
+whose answer is found in S: The American Association of Retired Persons (AARP) qualify fordiscounts.,Results/Conclusion
+The answer and the question evoke dif ferent frames; in fact here a semantic role analysis is not relevant for locating the right answer.,Results/Conclusion
+As can be seen NoMatch cases are by far the most frequent.,Results/Conclusion
+"The number of questions remaining after excluding NoFrame, NoAnnot, and NoMatch are shown under the Rest heading in Table 1.These results indicate that FrameNet-based se mantic role analysis applies to approximately 35% of the TREC data.",Results/Conclusion
+"This means that an extraction module relying solely on FrameNet will have poor performance, since it will be unable to find answers for more than half of the questions beeing asked.",Results/Conclusion
+We nevertheless examine whether our model brings any performance improvements on this limited dataset which is admittedly favorable towards a FrameNetstyle analysis.,Results/Conclusion
+Table 2 shows the results of our an swer extraction module (SemMatch) together with two baseline systems.,Results/Conclusion
+"The first baseline uses only dependency relation path information (SynMatch),whereas the second baseline (SemParse) uses Shal maneser, a state-of-the-art shallow semantic parser for the role labeling task.",Results/Conclusion
+We consider an answer correct if it is returned with rank 1.,Results/Conclusion
+"As can be seen,SemMatch is significantly better than both SynMatch and SemParse, whereas the latter is signifi cantly worse than SynMatch.",Results/Conclusion
+"Although promising, the results in Table 2 are not very informative, since they show performance gainson partial data.",Results/Conclusion
+"Instead of using our answer extrac tion model on its own, we next combined it with the syntax-based system mentioned above (SynMatch, see also Section 6 for details).",Results/Conclusion
+"If FrameNet is indeedhelpful for QA, we would expect an ensemble sys Model TREC02 TREC03 TREC04 TREC05 SemParse 13.16 8.92 17.33 13.16 SynMatch 35.53?",Results/Conclusion
+33.04?,Results/Conclusion
+40.00?,Results/Conclusion
+36.84?,Results/Conclusion
+SemMatch 53.29??,Results/Conclusion
+49.11??,Results/Conclusion
+54.67??,Results/Conclusion
+59.65??,Results/Conclusion
+"Table 2: System Performance on subset of TRECdatasets (see Rest column in Table 1); ?: signifi cantly better than SemParse; ?: significantly better than SynMatch (p < 0.01, using a ?2 test).",Results/Conclusion
+Model TREC02 TREC03 TREC04 TREC05 SynMatch 32.88?,Results/Conclusion
+30.70?,Results/Conclusion
+35.95?,Results/Conclusion
+34.38?,Results/Conclusion
++SemParse 25.23 23.68 28.57 26.70 +SemMatch 38.96??,Results/Conclusion
+35.53??,Results/Conclusion
+42.36??,Results/Conclusion
+41.76??,Results/Conclusion
+"Table 3: System Performance on TREC datasets (see Total column in Table 1); ?: significantly better than +SemParse; ?: significantly better than SynMatch (p < 0.01, using a ?2 test).tem to yield better performance over a purely syn tactic answer extraction module.",Results/Conclusion
+The two systems were combined as follows.,Results/Conclusion
+"Given a question, we first pass it to our FrameNet model; if an answer is found,our job is done; if no answer is returned, the ques tion is passed on to SynMatch.",Results/Conclusion
+Our results are givenin Table 3.,Results/Conclusion
+"+SemMatch and +SemParse are ensem ble systems using SynMatch together with the QAspecific role labeling method proposed in this pa per and Shalmaneser, respectively.",Results/Conclusion
+We also compare these systems against SynMatch on its own.We can now attempt to answer our third ques tion concerning our model?s performance on theTREC data.,Results/Conclusion
+Our experiments show that a FrameNet enhanced answer extraction module significantlyoutperforms a similar module that uses only syntactic information (compare SynMatch and +Sem Match in Table 3).,Results/Conclusion
+Another interesting finding is that 19 the shallow semantic parser performs considerably worse in comparison to our graph-based models and the syntax-based system.,Results/Conclusion
+Inspection of the parser?s output highlights two explanations for this.,Results/Conclusion
+"First, theshallow semantic parser has difficulty assigning ac curate semantic roles to questions (even when theyare reformulated as declarative sentences).",Results/Conclusion
+"And secondly, it tends to favor precision over recall, thus re ducing the number of questions for which answers can be found.",Results/Conclusion
+A similar finding is reported in Sun et al.,Results/Conclusion
+(2005) for a PropBank trained parser.,Results/Conclusion
+In this paper we assess the contribution of semanticrole labeling to open-domain factoid question answering.,Results/Conclusion
+We present a graph-based answer extrac tion model which effectively incorporates FrameNet style role semantic information and show that it achieves promising results.,Results/Conclusion
+Our experiments show that the proposed model can be effectively combined with a syntax-based system to obtain performancesuperior to the latter when used on its own.,Results/Conclusion
+"Fur thermore, we demonstrate performance gains over ashallow semantic parser trained on the FrameNet an notated corpus.",Results/Conclusion
+We argue that performance gains are due to the adopted graph-theoretic framework which is robust to coverage and recall problems.We also provide a detailed analysis of the appropriateness of FrameNet for QA.,Results/Conclusion
+"We show that per formance can be compromised due to incomplete coverage (i.e., missing frame or predicate entries as well as annotated sentences) but also because of mismatching question-answer representations.",Results/Conclusion
+"The question and the answer may evoke different frames or the answer simply falls outside the scope of agiven frame (i.e., in a non predicate-argument structure).",Results/Conclusion
+Our study shows that mismatches are rela tively frequent and motivates the use of semantically informed methods in conjunction with syntax-based methods.,Results/Conclusion
+"Important future directions lie in evaluating the contribution of alternative semantic role frameworks (e.g., PropBank) to the answer extraction task anddeveloping models that learn semantic roles di rectly from unannotated text without the support of FrameNet annotations (Grenager and Manning, 2006).",Results/Conclusion
+"Beyond question answering, we also plan to investigate the potential of our model for shallow semantic parsing since our experience so far has shown that it achieves good recall.",Results/Conclusion
+Acknowledgements We are grateful to Sebastian Pado?,Results/Conclusion
+for running Shalmaneser on our data.,Results/Conclusion
+Thanks to Frank Keller and Amit Dubey for insightful comments and suggestions.,Results/Conclusion
+Theauthors acknowledge the support of DFG (Shen; PhD studentship within the International Postgraduate College ?Language Technology and Cognitive Systems?),Results/Conclusion
+and EPSRC (Lap ata; grant EP/C538447/1).,Results/Conclusion

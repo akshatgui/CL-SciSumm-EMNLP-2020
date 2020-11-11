@@ -1,221 +1,221 @@
 col1,col2
-"Given a collection of discrete random variables representing outcomes of learned local predictors in natural language, e.g., named entities and relations, we seek an optimal global assignment to the variables in the presence of general (non-sequential) constraints.",{}
-"Examples of these constraints include the type of arguments a relation can take, and the mutual activity of different relations, etc.",{}
-We develop a linear programming formulation for this problem and evaluate it in the context of simultaneously learning named entities and relations.,{}
-"Our approach allows us to efficiently incorporate domain and task specific constraints at decision time, resulting in significant improvements in the accuracy and the “human-like” quality of the inferences.",{}
-Natural language decisions often depend on the outcomes of several different but mutually dependent predictions.,"{'title': '1 Introduction', 'number': '1'}"
-These predictions must respect some constraints that could arise from the nature of the data or from domain or task specific conditions.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, in part-ofspeech tagging, a sentence must have at least one verb, and cannot have three consecutive verbs.","{'title': '1 Introduction', 'number': '1'}"
-These facts can be used as constraints.,"{'title': '1 Introduction', 'number': '1'}"
-"In named entity recognition, “no entities can overlap” is a common constraint used in various works (Tjong Kim Sang and De Meulder, 2003).","{'title': '1 Introduction', 'number': '1'}"
-"Efficient solutions to problems of these sort have been given when the constraints on the predictors are sequential (Dietterich, 2002).","{'title': '1 Introduction', 'number': '1'}"
-These solutions can be categorized into the following two frameworks.,"{'title': '1 Introduction', 'number': '1'}"
-Learning global models trains a probabilistic model under the constraints imposed by the domain.,"{'title': '1 Introduction', 'number': '1'}"
-"Examples include variations of HMMs, conditional models and sequential variations of Markov random fields (Lafferty et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-"The other framework, inference with classifiers (Roth, 2002), views maintaining constraints and learning classifiers as separate processes.","{'title': '1 Introduction', 'number': '1'}"
-Various local classifiers are trained without the knowledge of constraints.,"{'title': '1 Introduction', 'number': '1'}"
-The predictions are taken as input on the inference procedure which then finds the best global prediction.,"{'title': '1 Introduction', 'number': '1'}"
-"In addition to the conceptual simplicity of this approach, it also seems to perform better experimentally (Tjong Kim Sang and De Meulder, 2003).","{'title': '1 Introduction', 'number': '1'}"
-"Typically, efficient inference procedures in both frameworks rely on dynamic programming (e.g., Viterbi), which works well in sequential data.","{'title': '1 Introduction', 'number': '1'}"
-"However, in many important problems, the structure is more general, resulting in computationally intractable inference.","{'title': '1 Introduction', 'number': '1'}"
-"Problems of these sorts have been studied in computer vision, where inference is generally performed over low level measurements rather than over higher level predictors (Levin et al., 2002; Boykov et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-This work develops a novel inference with classifiers approach.,"{'title': '1 Introduction', 'number': '1'}"
-"Rather than being restricted on sequential data, we study a fairly general setting.","{'title': '1 Introduction', 'number': '1'}"
-The problem is defined in terms of a collection of discrete random variables representing binary relations and their arguments; we seek an optimal assignment to the variables in the presence of the constraints on the binary relations between variables and the relation types.,"{'title': '1 Introduction', 'number': '1'}"
-"The key insight to this solution comes from recent techniques developed for approximation algorithms (Chekuri et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-"Following this work, we model inference as an optimization problem, and show how to cast it as a linear program.","{'title': '1 Introduction', 'number': '1'}"
-"Using existing numerical packages, which are able to solve very large linear programming problems in a very short time1, inference can be done very quickly.","{'title': '1 Introduction', 'number': '1'}"
-"Our approach could be contrasted with other approaches to sequential inference or to general Markov random field approaches (Lafferty et al., 2001; Taskar et al., 2002).","{'title': '1 Introduction', 'number': '1'}"
-"The key difference is that in these approaches, the model is learned globally, under the constraints imposed by the domain.","{'title': '1 Introduction', 'number': '1'}"
-"In our approach, predictors do not need to be learned in the context of the decision tasks, but rather can be learned in other contexts, or incorporated as background knowledge.","{'title': '1 Introduction', 'number': '1'}"
-"This way, our approach allows the incorporation of constraints into decisions in a dynamic fashion and can therefore support task specific inferences.","{'title': '1 Introduction', 'number': '1'}"
-The significance of this is clearly shown in our experimental results.,"{'title': '1 Introduction', 'number': '1'}"
-We develop our models in the context of natural language inferences and evaluate it here on the problem of simultaneously recognizing named entities and relations between them.,"{'title': '1 Introduction', 'number': '1'}"
-"This is the problem of recognizing the kill (KFJ, Oswald) relation in the sentence “J.","{'title': '1 Introduction', 'number': '1'}"
-"V. Oswald was murdered at JFK after his assassin, R. U. KFJ...” This task requires making several local decisions, such as identifying named entities in the sentence, in order to support the relation identification.","{'title': '1 Introduction', 'number': '1'}"
-"For example, it may be useful to identify that Oswald and KFJ are people, and JFK is a location.","{'title': '1 Introduction', 'number': '1'}"
-"This, in turn, may help to identify that the kill action is described in the sentence.","{'title': '1 Introduction', 'number': '1'}"
-"At the same time, the relation kill constrains its arguments to be people (or at least, not to be locations) and helps to enforce that Oswald and KFJ are likely to be people, while JFK is not.","{'title': '1 Introduction', 'number': '1'}"
-"In our model, we first learn a collection of “local” predictors, e.g., entity and relation identifiers.","{'title': '1 Introduction', 'number': '1'}"
-"At decision time, given a sentence, we produce a global decision that optimizes over the suggestions of the classifiers that are active in the sentence, known constraints among them and, potentially, domain or tasks specific constraints relevant to the current decision.","{'title': '1 Introduction', 'number': '1'}"
-"Although a brute-force algorithm may seem feasible for short sentences, as the number of entity variable grows, the computation becomes intractable very quickly.","{'title': '1 Introduction', 'number': '1'}"
-"Given n entities in a sentence, there are O(n2) possible relations between them.","{'title': '1 Introduction', 'number': '1'}"
-Assume that each variable (entity or relation) can take l labels (“none” is one of these labels).,"{'title': '1 Introduction', 'number': '1'}"
-"Thus, there are ln2 possible assignments, which is too large even for a small n. When evaluated on simultaneous learning of named entities and relations, our approach not only provides a significant improvement in the predictors’ accuracy; more importantly, it provides coherent solutions.","{'title': '1 Introduction', 'number': '1'}"
-"While many statistical methods make “stupid” mistakes (i.e., inconsistency among predictions), that no human ever makes, as we show, our approach improves also the quality of the inference significantly.","{'title': '1 Introduction', 'number': '1'}"
-The rest of the paper is organized as follows.,"{'title': '1 Introduction', 'number': '1'}"
-Section 2 formally defines our problem and section 3 describes the computational approach we propose.,"{'title': '1 Introduction', 'number': '1'}"
-"Experimental results are given in section 4, followed by some discussion and conclusion in section 5.","{'title': '1 Introduction', 'number': '1'}"
-"We consider the relational inference problem within the reasoning with classifiers paradigm, and study a specific but fairly general instantiation of this problem, motivated by the problem of recognizing named entities (e.g., persons, locations, organization names) and relations between them (e.g. work for, located in, live in).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"We consider a set V which consists of two types of variables V = E U R. The first set of variables E = {E1, E2, · · · , En} ranges G£.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"The value (called “label”) assigned to Ei ∈ E is denoted fE, ∈ G£.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"The second set of variables R = {Rij}{1≤i,j≤n;i0j} is viewed as binary relations over E. Specifically, for each pair of entities Ei and Ej, i =� j, we use Rij and Rji to denote the (binary) relations (Ei, Ej) and (Ej, Ei) respectively.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-The set of labels of relations is GR and the label assigned to relation Rij ∈ R is fR„ ∈ GR.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Apparently, there exists some constraints on the labels of corresponding relation and entity variables.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"For instance, if the relation is live in, then the first entity should be a person, and the second entity should be a location.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-The correspondence between the relation and entity variables can be represented by a bipartite graph.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Each relation variable Rij is connected to its first entity Ei , and second entity Ej.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-We use N1 and N2 to denote the entity variables of a relation Rij.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Specifically, Ei = N1(Rij) and Ej =N2(Rij).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"In addition, we define a set of constraints on the outcomes of the variables in V. C1 : G£ x GR → {0, 1} constraint values of the first argument of a relation.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-C2 is defined similarly and constrains the second argument a relation can take.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"For example, (born in, person) is in C1 but not in C2 because the first entity of relation born in has to be a person and the second entity can only be a location instead of a person.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Note that while we define the constraints here as Boolean, our formalisms in fact allows for stochastic constraints.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Also note that we can define a large number of constraints, such as CR : GR x GR → {0, 1} which constrain types of relations, etc.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"In fact, as will be clear in Sec.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-3 the language for defining constraints is very rich – linear (in)equalities over V. We exemplify the framework using the problem of simultaneous recognition of named entities and relations in sentences.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Briefly speaking, we assume a learning mechanism that can recognize entity phrases in sentences, based on local contextual features.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Similarly, we assume a learning mechanism that can recognize the semantic relation between two given phrases in a sentence.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-We seek an inference algorithm that can produce a coherent labeling of entities and relations in a given sentence.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Furthermore, it follows, as best as possible the recommendation of the entity and relation classifiers, but also satisfies natural constraints that exist on whether specific entities can be the argument of specific relations, whether two relations can occur together at the same time, or any other information that might be available at the inference time (e.g., suppose it is known that entities A and B represent the same location; one may like to incorporate an additional constraint that prevents an inference of the type: “C lives in A; C does not live in B”).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-We note that a large number of problems can be modeled this way.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Examples include problems such as chunking sentences (Punyakanok and Roth, 2001), coreference resolution and sequencing problems in computational biology.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"In fact, each of the components of our problem here, the separate task of recognizing named entities in sentences and the task of recognizing semantic relations between phrases, can be modeled this way.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"However, our goal is specifically to consider interacting problems at different levels, resulting in more complex constraints among them, and exhibit the power of our method.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"The most direct way to formalize our inference problem is via the formalism of Markov Random Field (MRF) theory (Li, 2001).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Rather than doing that, for computational reasons, we first use a fairly standard transformation of MRF to a discrete optimization problem (see (Kleinberg and Tardos, 1999) for details).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Specifically, under weak assumptions we can view the inference problem as the following optimization problem, which aims to minimize the objective function that is the sum of the following two cost functions.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-Assignment cost: the cost of deviating from the assignment of the variables V given by the classifiers.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"The specific cost function we use is defined as follows: Let l be the label assigned to variable u ∈ V. If the marginal probability estimation is p = P(fu = l), then the assignment cost cu(l) is − log p. Constraint cost: the cost imposed by breaking constraints between neighboring nodes.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"The specific cost function we use is defined as follows: Consider two entity nodes Ei, Ej and its corresponding relation node Rij; that is, Ei = N 1(Rij) and Ej = N2(Rij).","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-The constraint cost indicates whether the labels are consistent with the constraints.,"{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"In particular, we use: d1(fEi, fRij ) is 0 if (fRij, fEi) ∈ C1; otherwise, d1(fEi, fRij) is ∞ 2.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Similarly, we use d2 to force the consistency of the second argument of a relation.","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Since we are seeking the most probable global assignment that satisfies the constraints, therefore, the overall cost function we optimize, for a global labeling f of all variables is:","{'title': '2 The Relational Inference Problem', 'number': '2'}"
-"Unfortunately, it is not hard to see that the combinatorial problem (Eq.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"1) is computationally intractable even when placing assumptions on the cost function (Kleinberg and Tardos, 1999).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"The computational approach we adopt is to develop a linear programming (LP) formulation of the problem, and then solve the corresponding integer linear programming (ILP) problem.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Our LP formulation is based on the method proposed by (Chekuri et al., 2001).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-Since the objective function (Eq.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"1) is not a linear function in terms of the labels, we introduce new binary variables to represent different possible assignments to each original variable; we then represent the objective function as a linear function of these binary variables.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Let x{u,i1 be a {0,1}-variable, defined to be 1 if and only if variable u is labeled i, where u ∈ E, i ∈ GE or u ∈ R, i ∈ GR.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"For example, x{E1,21 = 1 when the label of entity E1 is 2; x{R23,31 = 0 when the label of relation R23 is not 3.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Let x{Rij,r,Ei,e11 be a {0,1}-variable indicating whether relation Rij is assigned label r and its first argument, Ei, is assigned label e1.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"For instance, x{R12,1,E1,21 = 1 means the label of relation R12 is 1 and the label of its first argument, E1, is 2.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Similarly, x{Rij,r,Ej,e21 = 1 indicates that Rij is assigned label r and its second argument, Ej, is assigned label e2.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"With these definitions, the optimization problem can be represented as the following ILP problem (Figure 1).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-Equations (2) and (3) require that each entity or relation variable can only be assigned one label.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-Equations (4) and (5) assure that the assignment to each entity or relation variable is consistent with the assignment to its neighboring variables.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"(6), (7), and (8) are the integral constraints on these binary variables.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-There are several advantages of representing the problem in an LP formulation.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"First of all, linear (in)equalities are fairly general and are able to represent many types of constraints (e.g., the decision time constraint in the experiment in Sec.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-4).,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"More importantly, an ILP problem at this scale can be solved very quickly using current commercial LP/ILP packages, like (Xpress-MP, 2003) or (CPLEX, 2003).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-We introduce the general strategies of solving an ILP problem here.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"To solve an ILP problem, a natural idea is to relax the integral constraints.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"That is, replacing (6), (7), and (8) with: If LPR returns an integer solution, then it is also the optimal solution to the ILP problem.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"If the solution is non integer, then at least it gives a lower bound to the value of the cost function, which can be used in modifying the problem and getting closer to deriving an optimal integer solution.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"A direct way to handle the non integer solution is called rounding, which finds an integer point that is close to the non integer solution.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Under some conditions of cost functions, which do not hold here, a well designed rounding algorithm can be shown that the rounded solution is a good approximation to the optimal solution (Kleinberg and Tardos, 1999; Chekuri et al., 2001).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Nevertheless, in general, the outcomes of the rounding procedure may not even be a legal solution to the problem.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-Branch and bound is the method that divides an ILP problem into several LP subproblems.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"It uses LPR as a subroutine to generate dual (upper and lower) bounds to reduce the search space, and finds the optimal solution as well.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"When LPR finds a non integer solution, it splits the problem on the non integer variable.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"For example, suppose variable xi is fractional in an non integer solution to the ILP problem min{cx : x ∈ S, x ∈ {0,1}n}, where S is the linear constraints.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"The ILP problem can be split into two sub LPR problems, min{cx : x ∈ S∩{xi = 0}} and min{cx : x ∈ S∩{xi = 1}}.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Since any feasible solution provides an upper bound and any LPR solution generates a lower bound, the search tree can be effectively cut.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Another strategy of dealing with non integer points, which is often combined with branch & bound, is called cutting plane.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"When a non integer solution is given by LPR, it adds a new linear constraint that makes the non integer point infeasible, while still keeps the optimal integer solution in the feasible region.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"As a result, the feasible region is closer to the ideal polyhedron, which is the convex hull of feasible integer solutions.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"The most famous cutting plane algorithm is Gomory’s fractional cutting plane method (Wolsey, 1998), which can be shown that only finite number of additional constraints are needed.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Moreover, researchers develop different cutting plane algorithms for different types of ILP problems.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"One example is (Wang and Regan, 2000), which only focuses on binary ILP problems.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Although in theory, a search based strategy may need several steps to find the optimal solution, LPR always generates integer solutions in our experiments.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-This phenomenon may link to the theory of unimodularity.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"When the coefficient matrix of a given linear program in its standard form is unimodular, it can be shown that the optimal solution to the linear program is in fact integral (Schrijver, 1986).","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"In other words, LPR is guaranteed to produce an integer solution.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Theorem 3.1 indicates that if a linear programming problem is in its standard form, then regardless of the cost function and the integral vector b, the optimal solution is an integer if and only if the coefficient matrix A is unimodular.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Although the coefficient matrix in our problem is not unimodular, LPR still produces integer solutions for all the (thousands of cases) we have experimented with.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-This may be due to the fact that the coefficient matrix shares many properties of a unimodular matrix.,"{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"As a result, most of the vertices of the polyhedron are integer points.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Another possible reason is that given the cost function we have, the optimal solution is always integer.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-"Because of the availability of very efficient LP/ILP packages, we defer the exploration of this direction for now.","{'title': '3 A Computational Approach to Relational Inference', 'number': '3'}"
-We describe below two experiments on the problem of simultaneously recognizing entities and relations.,"{'title': '4 Experiments', 'number': '4'}"
-"In the first, we view the task as a knowledge acquisition task – we let the system read sentences and identify entities and relations among them.","{'title': '4 Experiments', 'number': '4'}"
-"Given that this is a difficult task which may require quite often information beyond the sentence, we consider also a “forced decision” task, in which we simulate a question answering situation – we ask the system, say, “who killed whom” and evaluate it on identifying correctly the relation and its arguments, given that it is known that somewhere in this sentence this relation is active.","{'title': '4 Experiments', 'number': '4'}"
-"In addition, this evaluation exhibits the ability of our approach to incorporate task specific constraints at decision time.","{'title': '4 Experiments', 'number': '4'}"
-"Our experiments are based on the TREC data set (which consists of articles from WSJ, AP, etc.) that we annotated for named entities and relations.","{'title': '4 Experiments', 'number': '4'}"
-"In order to effectively observe the interaction between relations and entities, we picked 1437 sentences that have at least one active relation.","{'title': '4 Experiments', 'number': '4'}"
-"Among those sentences, there are 5336 entities, and 19048 pairs of entities (binary relations).","{'title': '4 Experiments', 'number': '4'}"
-"Entity labels include 1685 persons, 1968 locations, 978 organizations and 705 others.","{'title': '4 Experiments', 'number': '4'}"
-"Relation labels include 406 located in, 394 work for, 451 orgBased in, 521 live in, 268 kill, and 17007 none.","{'title': '4 Experiments', 'number': '4'}"
-Note that most pairs of entities have no active relations at all.,"{'title': '4 Experiments', 'number': '4'}"
-"Therefore, relation none significantly outnumbers others.","{'title': '4 Experiments', 'number': '4'}"
-Examples of each relation label and the constraints between a relation variable and its two entity arguments are shown as follows.,"{'title': '4 Experiments', 'number': '4'}"
-"Relation Entity1 Entity2 Example located in loc loc (New York, US) work for per org (Bill Gates, Microsoft) orgBased in org loc (HP, Palo Alto) live in per loc (Bush, US) kill per per (Oswald, JFK) In order to focus on the evaluation of our inference procedure, we assume the problem of segmentation (or phrase detection) (Abney, 1991; Punyakanok and Roth, 2001) is solved, and the entity boundaries are given to us as input; thus we only concentrate on their classifications.","{'title': '4 Experiments', 'number': '4'}"
-We evaluate our LP based global inference procedure against two simpler approaches and a third that is given more information at learning time.,"{'title': '4 Experiments', 'number': '4'}"
-"Basic, only tests our entity and relation classifiers, which are trained independently using only local features.","{'title': '4 Experiments', 'number': '4'}"
-"In particular, the relation classifier does not know the labels of its entity arguments, and the entity classifier does not know the labels of relations in the sentence either.","{'title': '4 Experiments', 'number': '4'}"
-"Since basic classifiers are used in all approaches, we describe how they are trained here.","{'title': '4 Experiments', 'number': '4'}"
-"For the entity classifier, one set of features are extracted from words within a size 4 window around the target phrase.","{'title': '4 Experiments', 'number': '4'}"
-"They are: (1) words, part-of-speech tags, and conjunctions of them; (2) bigrams and trigrams of the mixture of words and tags.","{'title': '4 Experiments', 'number': '4'}"
-"In addition, some other features are extracted from the target phrase, including: symbol explanation icap the first character of a word is capitalized acap all characters of a word are capitalized incap some characters of a word are capitalized suffix the suffix of a word is “ing”, “ment”, etc. bigram bigram of words in the target phrase len number of words in the target phrase place3 the phrase is/has a known place’s name prof3 the phrase is/has a professional title (e.g.","{'title': '4 Experiments', 'number': '4'}"
-"Lt.) name3 the phrase is/has a known person’s name For the relation classifier, there are three sets of features: (1) features similar to those used in the entity classification are extracted from the two argument entities of the relation; (2) conjunctions of the features from the two arguments; (3) some patterns extracted from the sentence or between the two arguments.","{'title': '4 Experiments', 'number': '4'}"
-"Some features in category (3) are “the number of words between arg1 and arg2 ”, “whether arg1 and arg2 are the same word”, or “arg1 is the beginning of the sentence and has words that consist of all capitalized characters”, where ar$1 and ar$2 represent the first and second argument entities respectively.","{'title': '4 Experiments', 'number': '4'}"
-"In addition, Table 1 presents some patterns we use.","{'title': '4 Experiments', 'number': '4'}"
-"The learning algorithm used is a variation of the Winnow update rule incorporated in SNoW (Roth, 1998; Roth and Yih, 2002), a multi-class classifier that is specifically tailored for large scale learning tasks.","{'title': '4 Experiments', 'number': '4'}"
-"SNoW learns a sparse network of linear functions, in which the targets (entity classes or relation classes, in this case) are represented as linear functions over a common feature space.","{'title': '4 Experiments', 'number': '4'}"
-"While SNoW can be used as a classifier and predicts using a winner-take-all mechanism over the activation value of the target classes, we can also rely directly on the raw activation value it outputs, which is the weighted linear sum of the active features, to estimate the posteriors.","{'title': '4 Experiments', 'number': '4'}"
-"It can be verified that the resulting values are monotonic with the confidence in the prediction, therefore provide a good source of probability estimation.","{'title': '4 Experiments', 'number': '4'}"
-"We use softmax (Bishop, 1995) over the raw activation values as conditional probabilities.","{'title': '4 Experiments', 'number': '4'}"
-"Specifically, suppose the number of classes is n, and the raw activation values of class i is acti.","{'title': '4 Experiments', 'number': '4'}"
-The posterior estimation for class i is derived by the following equation.,"{'title': '4 Experiments', 'number': '4'}"
-"Pipeline, mimics the typical strategy in solving complex natural language problems – separating a task into several stages and solving them sequentially.","{'title': '4 Experiments', 'number': '4'}"
-"For example, a named entity recognizer may be trained using a different corpus in advance, and given to a relation classifier as a tool to extract features.","{'title': '4 Experiments', 'number': '4'}"
-"This approach first trains an entity classifier as described in the basic approach, and then uses the prediction of entities in addition to other local features to learn the relation identifier.","{'title': '4 Experiments', 'number': '4'}"
-"Note that although the true labels of entities are known here when training the relation identifier, this may not be the case in general NLP problems.","{'title': '4 Experiments', 'number': '4'}"
-"Since only the predicted entity labels are available in testing, learning on the predictions of the entity classifier presumably makes the relation classifier more tolerant to the mistakes of the entity classifier.","{'title': '4 Experiments', 'number': '4'}"
-"In fact, we also observe this phenomenon empirically.","{'title': '4 Experiments', 'number': '4'}"
-"When the relation classifier is trained using the true entity labels, the performance is much worse than using the predicted entity labels.","{'title': '4 Experiments', 'number': '4'}"
-"LP, is our global inference procedure.","{'title': '4 Experiments', 'number': '4'}"
-"It takes as input the constraints between a relation and its entity arguments, and the output (the estimated probability distribution of labels) of the basic classifiers.","{'title': '4 Experiments', 'number': '4'}"
-"Note that LP may change the predictions for either entity labels or relation labels, while pipeline fully trusts the labels of entity classifier, and only the relation predictions may be different from the basic relation classifier.","{'title': '4 Experiments', 'number': '4'}"
-"In other words, LP is able to enhance the performance of entity classification, which is impossible for pipeline.","{'title': '4 Experiments', 'number': '4'}"
-"The final approach, Omniscience, tests the conceptual upper bound of this entity/relation classification problem.","{'title': '4 Experiments', 'number': '4'}"
-It also trains the two classifiers separately as the basic approach.,"{'title': '4 Experiments', 'number': '4'}"
-"However, it assumes that the entity classifier knows the correct relation labels, and similarly the relation classifier knows the right entity labels as well.","{'title': '4 Experiments', 'number': '4'}"
-This additional information is then used as features in training and testing.,"{'title': '4 Experiments', 'number': '4'}"
-Note that this assumption is totally unrealistic.,"{'title': '4 Experiments', 'number': '4'}"
-"Nevertheless, it may give us a hint that how much a global inference can achieve.","{'title': '4 Experiments', 'number': '4'}"
-Tables 2 & 3 show the performance of each approach in Fβ=1 using 5-fold cross-validation.,"{'title': '4 Experiments', 'number': '4'}"
-"The results show that LP performs consistently better than basic and pipeline, both in entities and relations.","{'title': '4 Experiments', 'number': '4'}"
-"Note that LP does not apply learning at all, but still outperforms pipeline, which uses entity predictions as new features in learning.","{'title': '4 Experiments', 'number': '4'}"
-The results of the omniscient classifiers reveal that there is still room for improvement.,"{'title': '4 Experiments', 'number': '4'}"
-One option is to apply learning to tune a better cost function in the LP approach.,"{'title': '4 Experiments', 'number': '4'}"
-"One of the more significant results in our experiments, we believe, is the improvement in the quality of the decisions.","{'title': '4 Experiments', 'number': '4'}"
-As mentioned in Sec.,"{'title': '4 Experiments', 'number': '4'}"
-"1, incorporating constraints helps to avoid inconsistency in classification.","{'title': '4 Experiments', 'number': '4'}"
-"It is inpi = teresting to investigate how often such mistakes happen without global inference, and see how effectively the global inference enhances this.","{'title': '4 Experiments', 'number': '4'}"
-"For this purpose, we define the quality of the decision as follows.","{'title': '4 Experiments', 'number': '4'}"
-"For an active relation of which the label is classified correctly, if both its argument entities are also predicted correctly, we count it as a coherent prediction.","{'title': '4 Experiments', 'number': '4'}"
-Quality is then the number of coherent predictions divided by the sum of coherent and incoherent predictions.,"{'title': '4 Experiments', 'number': '4'}"
-"Since the basic and pipeline approaches do not have a global view of the labels of entities and relations, 5% to 25% of the predictions are incoherent.","{'title': '4 Experiments', 'number': '4'}"
-"Therefore, the quality is not always good.","{'title': '4 Experiments', 'number': '4'}"
-"On the other hand, our global inference procedure, LP, takes the natural constraints into account, so it never generates incoherent predictions.","{'title': '4 Experiments', 'number': '4'}"
-"If the relation classifier has the correct entity labels as features, a good learner should learn the constraints as well.","{'title': '4 Experiments', 'number': '4'}"
-"As a result, the quality of omniscient is almost as good as LP.","{'title': '4 Experiments', 'number': '4'}"
-"Another experiment we did is the forced decision test, which boosts the F1 of “kill” relation to 86.2%.","{'title': '4 Experiments', 'number': '4'}"
-Here we consider only sentences in which the “kill” relation is active.,"{'title': '4 Experiments', 'number': '4'}"
-"We force the system to determine which of the possible relations in a sentence (i.e., which pair of entities) has this relation by adding a new linear equality.","{'title': '4 Experiments', 'number': '4'}"
-"This is a realistic situation (e.g., in the context of question answering) in that it adds an external constraint, not present at the time of learning the classifiers and it evaluates the ability of our inference algorithm to cope with it.","{'title': '4 Experiments', 'number': '4'}"
-The results exhibit that our expectations are correct.,"{'title': '4 Experiments', 'number': '4'}"
-"In fact, we believe that in natural situations the number of constraints that can apply is even larger.","{'title': '4 Experiments', 'number': '4'}"
-"Observing the algorithm performs on other, specific, forced decision tasks verifies that LP is reliable in these situations.","{'title': '4 Experiments', 'number': '4'}"
-"As shown in the experiment, it even performs better than omniscience, which is given more information at learning time, but cannot adapt to the situation at decision time.","{'title': '4 Experiments', 'number': '4'}"
-We presented an linear programming based approach for global inference where decisions depend on the outcomes of several different but mutually dependent classifiers.,"{'title': '5 Discussion', 'number': '5'}"
-"Even in the presence of a fairly general constraint structure, deviating from the sequential nature typically studied, this approach can find the optimal solution efficiently.","{'title': '5 Discussion', 'number': '5'}"
-"Contrary to general search schemes (e.g., beam search), which do not guarantee optimality, the linear programming approach provides an efficient way to finding the optimal solution.","{'title': '5 Discussion', 'number': '5'}"
-"The key advantage of the linear programming formulation is its generality and flexibility; in particular, it supports the ability to incorporate classifiers learned in other contexts, “hints” supplied and decision time constraints, and reason with all these for the best global prediction.","{'title': '5 Discussion', 'number': '5'}"
-"In sharp contrast with the typically used pipeline framework, our formulation does not blindly trust the results of some classifiers, and therefore is able to overcome mistakes made by classifiers with the help of constraints.","{'title': '5 Discussion', 'number': '5'}"
-Our experiments have demonstrated these advantages by considering the interaction between entity and relation classifiers.,"{'title': '5 Discussion', 'number': '5'}"
-"In fact, more classifiers can be added and used within the same framework.","{'title': '5 Discussion', 'number': '5'}"
-"For example, if coreference resolution is available, it is possible to incorporate it in the form of constraints that force the labels of the coreferred entities to be the same (but, of course, allowing the global solution to reject the suggestion of these classifiers).","{'title': '5 Discussion', 'number': '5'}"
-"Consequently, this may enhance the performance of entity/relation recognition and, at the same time, correct possible coreference resolution errors.","{'title': '5 Discussion', 'number': '5'}"
-"Another example is to use chunking information for better relation identification; suppose, for example, that we have available chunking information that identifies Subj+Verb and Verb+Object phrases.","{'title': '5 Discussion', 'number': '5'}"
-"Given a sentence that has the verb “murder”, we may conclude that the subject and object of this verb are in a “kill” relation.","{'title': '5 Discussion', 'number': '5'}"
-"Since the chunking information is used in the global inference procedure, this information will contribute to enhancing its performance and robustness, relying on having more constraints and overcoming possible mistakes by some of the classifiers.","{'title': '5 Discussion', 'number': '5'}"
-"Moreover, in an interactive environment where a user can supply new constraints (e.g., a question answering situation) this framework is able to make use of the new information and enhance the performance at decision time, without retraining the classifiers.","{'title': '5 Discussion', 'number': '5'}"
-"As we show, our formulation supports not only improved accuracy, but also improves the ‘human-like” quality of the decisions.","{'title': '5 Discussion', 'number': '5'}"
-We believe that it has the potential to be a powerful way for supporting natural language inferences.,"{'title': '5 Discussion', 'number': '5'}"
-"Acknowledgements This research has been supported by NFS grants CAREER IIS-9984168, ITR IIS-0085836, EIA-0224453, an ONR MURI Award, and an equipment donation from AMD.","{'title': '5 Discussion', 'number': '5'}"
-We also thank the anonymous referees for their useful comments.,"{'title': '5 Discussion', 'number': '5'}"
+"Given a collection of discrete random variables representing outcomes of learned local predictors in natural language, e.g., named entities and relations, we seek an optimal global assignment to the variables in the presence of general (non-sequential) constraints.",Introduction
+"Examples of these constraints include the type of arguments a relation can take, and the mutual activity of different relations, etc.",Introduction
+We develop a linear programming formulation for this problem and evaluate it in the context of simultaneously learning named entities and relations.,Introduction
+"Our approach allows us to efficiently incorporate domain and task specific constraints at decision time, resulting in significant improvements in the accuracy and the “human-like” quality of the inferences.",Introduction
+Natural language decisions often depend on the outcomes of several different but mutually dependent predictions.,Experiment/Discussion
+These predictions must respect some constraints that could arise from the nature of the data or from domain or task specific conditions.,Experiment/Discussion
+"For example, in part-ofspeech tagging, a sentence must have at least one verb, and cannot have three consecutive verbs.",Experiment/Discussion
+These facts can be used as constraints.,Experiment/Discussion
+"In named entity recognition, “no entities can overlap” is a common constraint used in various works (Tjong Kim Sang and De Meulder, 2003).",Experiment/Discussion
+"Efficient solutions to problems of these sort have been given when the constraints on the predictors are sequential (Dietterich, 2002).",Experiment/Discussion
+These solutions can be categorized into the following two frameworks.,Experiment/Discussion
+Learning global models trains a probabilistic model under the constraints imposed by the domain.,Experiment/Discussion
+"Examples include variations of HMMs, conditional models and sequential variations of Markov random fields (Lafferty et al., 2001).",Experiment/Discussion
+"The other framework, inference with classifiers (Roth, 2002), views maintaining constraints and learning classifiers as separate processes.",Experiment/Discussion
+Various local classifiers are trained without the knowledge of constraints.,Experiment/Discussion
+The predictions are taken as input on the inference procedure which then finds the best global prediction.,Experiment/Discussion
+"In addition to the conceptual simplicity of this approach, it also seems to perform better experimentally (Tjong Kim Sang and De Meulder, 2003).",Experiment/Discussion
+"Typically, efficient inference procedures in both frameworks rely on dynamic programming (e.g., Viterbi), which works well in sequential data.",Experiment/Discussion
+"However, in many important problems, the structure is more general, resulting in computationally intractable inference.",Experiment/Discussion
+"Problems of these sorts have been studied in computer vision, where inference is generally performed over low level measurements rather than over higher level predictors (Levin et al., 2002; Boykov et al., 2001).",Experiment/Discussion
+This work develops a novel inference with classifiers approach.,Experiment/Discussion
+"Rather than being restricted on sequential data, we study a fairly general setting.",Experiment/Discussion
+The problem is defined in terms of a collection of discrete random variables representing binary relations and their arguments; we seek an optimal assignment to the variables in the presence of the constraints on the binary relations between variables and the relation types.,Experiment/Discussion
+"The key insight to this solution comes from recent techniques developed for approximation algorithms (Chekuri et al., 2001).",Experiment/Discussion
+"Following this work, we model inference as an optimization problem, and show how to cast it as a linear program.",Experiment/Discussion
+"Using existing numerical packages, which are able to solve very large linear programming problems in a very short time1, inference can be done very quickly.",Experiment/Discussion
+"Our approach could be contrasted with other approaches to sequential inference or to general Markov random field approaches (Lafferty et al., 2001; Taskar et al., 2002).",Experiment/Discussion
+"The key difference is that in these approaches, the model is learned globally, under the constraints imposed by the domain.",Experiment/Discussion
+"In our approach, predictors do not need to be learned in the context of the decision tasks, but rather can be learned in other contexts, or incorporated as background knowledge.",Experiment/Discussion
+"This way, our approach allows the incorporation of constraints into decisions in a dynamic fashion and can therefore support task specific inferences.",Experiment/Discussion
+The significance of this is clearly shown in our experimental results.,Experiment/Discussion
+We develop our models in the context of natural language inferences and evaluate it here on the problem of simultaneously recognizing named entities and relations between them.,Experiment/Discussion
+"This is the problem of recognizing the kill (KFJ, Oswald) relation in the sentence “J.",Experiment/Discussion
+"V. Oswald was murdered at JFK after his assassin, R. U. KFJ...” This task requires making several local decisions, such as identifying named entities in the sentence, in order to support the relation identification.",Experiment/Discussion
+"For example, it may be useful to identify that Oswald and KFJ are people, and JFK is a location.",Experiment/Discussion
+"This, in turn, may help to identify that the kill action is described in the sentence.",Experiment/Discussion
+"At the same time, the relation kill constrains its arguments to be people (or at least, not to be locations) and helps to enforce that Oswald and KFJ are likely to be people, while JFK is not.",Experiment/Discussion
+"In our model, we first learn a collection of “local” predictors, e.g., entity and relation identifiers.",Experiment/Discussion
+"At decision time, given a sentence, we produce a global decision that optimizes over the suggestions of the classifiers that are active in the sentence, known constraints among them and, potentially, domain or tasks specific constraints relevant to the current decision.",Experiment/Discussion
+"Although a brute-force algorithm may seem feasible for short sentences, as the number of entity variable grows, the computation becomes intractable very quickly.",Experiment/Discussion
+"Given n entities in a sentence, there are O(n2) possible relations between them.",Experiment/Discussion
+Assume that each variable (entity or relation) can take l labels (“none” is one of these labels).,Experiment/Discussion
+"Thus, there are ln2 possible assignments, which is too large even for a small n. When evaluated on simultaneous learning of named entities and relations, our approach not only provides a significant improvement in the predictors’ accuracy; more importantly, it provides coherent solutions.",Experiment/Discussion
+"While many statistical methods make “stupid” mistakes (i.e., inconsistency among predictions), that no human ever makes, as we show, our approach improves also the quality of the inference significantly.",Experiment/Discussion
+The rest of the paper is organized as follows.,Experiment/Discussion
+Section 2 formally defines our problem and section 3 describes the computational approach we propose.,Experiment/Discussion
+"Experimental results are given in section 4, followed by some discussion and conclusion in section 5.",Experiment/Discussion
+"We consider the relational inference problem within the reasoning with classifiers paradigm, and study a specific but fairly general instantiation of this problem, motivated by the problem of recognizing named entities (e.g., persons, locations, organization names) and relations between them (e.g. work for, located in, live in).",Experiment/Discussion
+"We consider a set V which consists of two types of variables V = E U R. The first set of variables E = {E1, E2, · · · , En} ranges G£.",Experiment/Discussion
+"The value (called “label”) assigned to Ei ∈ E is denoted fE, ∈ G£.",Experiment/Discussion
+"The second set of variables R = {Rij}{1≤i,j≤n;i0j} is viewed as binary relations over E. Specifically, for each pair of entities Ei and Ej, i =� j, we use Rij and Rji to denote the (binary) relations (Ei, Ej) and (Ej, Ei) respectively.",Experiment/Discussion
+The set of labels of relations is GR and the label assigned to relation Rij ∈ R is fR„ ∈ GR.,Experiment/Discussion
+"Apparently, there exists some constraints on the labels of corresponding relation and entity variables.",Experiment/Discussion
+"For instance, if the relation is live in, then the first entity should be a person, and the second entity should be a location.",Experiment/Discussion
+The correspondence between the relation and entity variables can be represented by a bipartite graph.,Experiment/Discussion
+"Each relation variable Rij is connected to its first entity Ei , and second entity Ej.",Experiment/Discussion
+We use N1 and N2 to denote the entity variables of a relation Rij.,Experiment/Discussion
+"Specifically, Ei = N1(Rij) and Ej =N2(Rij).",Experiment/Discussion
+"In addition, we define a set of constraints on the outcomes of the variables in V. C1 : G£ x GR → {0, 1} constraint values of the first argument of a relation.",Experiment/Discussion
+C2 is defined similarly and constrains the second argument a relation can take.,Experiment/Discussion
+"For example, (born in, person) is in C1 but not in C2 because the first entity of relation born in has to be a person and the second entity can only be a location instead of a person.",Experiment/Discussion
+"Note that while we define the constraints here as Boolean, our formalisms in fact allows for stochastic constraints.",Experiment/Discussion
+"Also note that we can define a large number of constraints, such as CR : GR x GR → {0, 1} which constrain types of relations, etc.",Experiment/Discussion
+"In fact, as will be clear in Sec.",Experiment/Discussion
+3 the language for defining constraints is very rich – linear (in)equalities over V. We exemplify the framework using the problem of simultaneous recognition of named entities and relations in sentences.,Experiment/Discussion
+"Briefly speaking, we assume a learning mechanism that can recognize entity phrases in sentences, based on local contextual features.",Experiment/Discussion
+"Similarly, we assume a learning mechanism that can recognize the semantic relation between two given phrases in a sentence.",Experiment/Discussion
+We seek an inference algorithm that can produce a coherent labeling of entities and relations in a given sentence.,Experiment/Discussion
+"Furthermore, it follows, as best as possible the recommendation of the entity and relation classifiers, but also satisfies natural constraints that exist on whether specific entities can be the argument of specific relations, whether two relations can occur together at the same time, or any other information that might be available at the inference time (e.g., suppose it is known that entities A and B represent the same location; one may like to incorporate an additional constraint that prevents an inference of the type: “C lives in A; C does not live in B”).",Experiment/Discussion
+We note that a large number of problems can be modeled this way.,Experiment/Discussion
+"Examples include problems such as chunking sentences (Punyakanok and Roth, 2001), coreference resolution and sequencing problems in computational biology.",Experiment/Discussion
+"In fact, each of the components of our problem here, the separate task of recognizing named entities in sentences and the task of recognizing semantic relations between phrases, can be modeled this way.",Experiment/Discussion
+"However, our goal is specifically to consider interacting problems at different levels, resulting in more complex constraints among them, and exhibit the power of our method.",Experiment/Discussion
+"The most direct way to formalize our inference problem is via the formalism of Markov Random Field (MRF) theory (Li, 2001).",Experiment/Discussion
+"Rather than doing that, for computational reasons, we first use a fairly standard transformation of MRF to a discrete optimization problem (see (Kleinberg and Tardos, 1999) for details).",Experiment/Discussion
+"Specifically, under weak assumptions we can view the inference problem as the following optimization problem, which aims to minimize the objective function that is the sum of the following two cost functions.",Experiment/Discussion
+Assignment cost: the cost of deviating from the assignment of the variables V given by the classifiers.,Experiment/Discussion
+"The specific cost function we use is defined as follows: Let l be the label assigned to variable u ∈ V. If the marginal probability estimation is p = P(fu = l), then the assignment cost cu(l) is − log p. Constraint cost: the cost imposed by breaking constraints between neighboring nodes.",Experiment/Discussion
+"The specific cost function we use is defined as follows: Consider two entity nodes Ei, Ej and its corresponding relation node Rij; that is, Ei = N 1(Rij) and Ej = N2(Rij).",Experiment/Discussion
+The constraint cost indicates whether the labels are consistent with the constraints.,Experiment/Discussion
+"In particular, we use: d1(fEi, fRij ) is 0 if (fRij, fEi) ∈ C1; otherwise, d1(fEi, fRij) is ∞ 2.",Experiment/Discussion
+"Similarly, we use d2 to force the consistency of the second argument of a relation.",Experiment/Discussion
+"Since we are seeking the most probable global assignment that satisfies the constraints, therefore, the overall cost function we optimize, for a global labeling f of all variables is:",Experiment/Discussion
+"Unfortunately, it is not hard to see that the combinatorial problem (Eq.",Experiment/Discussion
+"1) is computationally intractable even when placing assumptions on the cost function (Kleinberg and Tardos, 1999).",Experiment/Discussion
+"The computational approach we adopt is to develop a linear programming (LP) formulation of the problem, and then solve the corresponding integer linear programming (ILP) problem.",Experiment/Discussion
+"Our LP formulation is based on the method proposed by (Chekuri et al., 2001).",Experiment/Discussion
+Since the objective function (Eq.,Experiment/Discussion
+"1) is not a linear function in terms of the labels, we introduce new binary variables to represent different possible assignments to each original variable; we then represent the objective function as a linear function of these binary variables.",Experiment/Discussion
+"Let x{u,i1 be a {0,1}-variable, defined to be 1 if and only if variable u is labeled i, where u ∈ E, i ∈ GE or u ∈ R, i ∈ GR.",Experiment/Discussion
+"For example, x{E1,21 = 1 when the label of entity E1 is 2; x{R23,31 = 0 when the label of relation R23 is not 3.",Experiment/Discussion
+"Let x{Rij,r,Ei,e11 be a {0,1}-variable indicating whether relation Rij is assigned label r and its first argument, Ei, is assigned label e1.",Experiment/Discussion
+"For instance, x{R12,1,E1,21 = 1 means the label of relation R12 is 1 and the label of its first argument, E1, is 2.",Experiment/Discussion
+"Similarly, x{Rij,r,Ej,e21 = 1 indicates that Rij is assigned label r and its second argument, Ej, is assigned label e2.",Experiment/Discussion
+"With these definitions, the optimization problem can be represented as the following ILP problem (Figure 1).",Experiment/Discussion
+Equations (2) and (3) require that each entity or relation variable can only be assigned one label.,Experiment/Discussion
+Equations (4) and (5) assure that the assignment to each entity or relation variable is consistent with the assignment to its neighboring variables.,Experiment/Discussion
+"(6), (7), and (8) are the integral constraints on these binary variables.",Experiment/Discussion
+There are several advantages of representing the problem in an LP formulation.,Experiment/Discussion
+"First of all, linear (in)equalities are fairly general and are able to represent many types of constraints (e.g., the decision time constraint in the experiment in Sec.",Experiment/Discussion
+4).,Experiment/Discussion
+"More importantly, an ILP problem at this scale can be solved very quickly using current commercial LP/ILP packages, like (Xpress-MP, 2003) or (CPLEX, 2003).",Experiment/Discussion
+We introduce the general strategies of solving an ILP problem here.,Experiment/Discussion
+"To solve an ILP problem, a natural idea is to relax the integral constraints.",Experiment/Discussion
+"That is, replacing (6), (7), and (8) with: If LPR returns an integer solution, then it is also the optimal solution to the ILP problem.",Experiment/Discussion
+"If the solution is non integer, then at least it gives a lower bound to the value of the cost function, which can be used in modifying the problem and getting closer to deriving an optimal integer solution.",Experiment/Discussion
+"A direct way to handle the non integer solution is called rounding, which finds an integer point that is close to the non integer solution.",Experiment/Discussion
+"Under some conditions of cost functions, which do not hold here, a well designed rounding algorithm can be shown that the rounded solution is a good approximation to the optimal solution (Kleinberg and Tardos, 1999; Chekuri et al., 2001).",Experiment/Discussion
+"Nevertheless, in general, the outcomes of the rounding procedure may not even be a legal solution to the problem.",Experiment/Discussion
+Branch and bound is the method that divides an ILP problem into several LP subproblems.,Experiment/Discussion
+"It uses LPR as a subroutine to generate dual (upper and lower) bounds to reduce the search space, and finds the optimal solution as well.",Experiment/Discussion
+"When LPR finds a non integer solution, it splits the problem on the non integer variable.",Experiment/Discussion
+"For example, suppose variable xi is fractional in an non integer solution to the ILP problem min{cx : x ∈ S, x ∈ {0,1}n}, where S is the linear constraints.",Experiment/Discussion
+"The ILP problem can be split into two sub LPR problems, min{cx : x ∈ S∩{xi = 0}} and min{cx : x ∈ S∩{xi = 1}}.",Experiment/Discussion
+"Since any feasible solution provides an upper bound and any LPR solution generates a lower bound, the search tree can be effectively cut.",Experiment/Discussion
+"Another strategy of dealing with non integer points, which is often combined with branch & bound, is called cutting plane.",Experiment/Discussion
+"When a non integer solution is given by LPR, it adds a new linear constraint that makes the non integer point infeasible, while still keeps the optimal integer solution in the feasible region.",Experiment/Discussion
+"As a result, the feasible region is closer to the ideal polyhedron, which is the convex hull of feasible integer solutions.",Experiment/Discussion
+"The most famous cutting plane algorithm is Gomory’s fractional cutting plane method (Wolsey, 1998), which can be shown that only finite number of additional constraints are needed.",Experiment/Discussion
+"Moreover, researchers develop different cutting plane algorithms for different types of ILP problems.",Experiment/Discussion
+"One example is (Wang and Regan, 2000), which only focuses on binary ILP problems.",Experiment/Discussion
+"Although in theory, a search based strategy may need several steps to find the optimal solution, LPR always generates integer solutions in our experiments.",Experiment/Discussion
+This phenomenon may link to the theory of unimodularity.,Experiment/Discussion
+"When the coefficient matrix of a given linear program in its standard form is unimodular, it can be shown that the optimal solution to the linear program is in fact integral (Schrijver, 1986).",Experiment/Discussion
+"In other words, LPR is guaranteed to produce an integer solution.",Experiment/Discussion
+"Theorem 3.1 indicates that if a linear programming problem is in its standard form, then regardless of the cost function and the integral vector b, the optimal solution is an integer if and only if the coefficient matrix A is unimodular.",Experiment/Discussion
+"Although the coefficient matrix in our problem is not unimodular, LPR still produces integer solutions for all the (thousands of cases) we have experimented with.",Experiment/Discussion
+This may be due to the fact that the coefficient matrix shares many properties of a unimodular matrix.,Experiment/Discussion
+"As a result, most of the vertices of the polyhedron are integer points.",Experiment/Discussion
+"Another possible reason is that given the cost function we have, the optimal solution is always integer.",Experiment/Discussion
+"Because of the availability of very efficient LP/ILP packages, we defer the exploration of this direction for now.",Experiment/Discussion
+We describe below two experiments on the problem of simultaneously recognizing entities and relations.,Results/Conclusion
+"In the first, we view the task as a knowledge acquisition task – we let the system read sentences and identify entities and relations among them.",Results/Conclusion
+"Given that this is a difficult task which may require quite often information beyond the sentence, we consider also a “forced decision” task, in which we simulate a question answering situation – we ask the system, say, “who killed whom” and evaluate it on identifying correctly the relation and its arguments, given that it is known that somewhere in this sentence this relation is active.",Results/Conclusion
+"In addition, this evaluation exhibits the ability of our approach to incorporate task specific constraints at decision time.",Results/Conclusion
+"Our experiments are based on the TREC data set (which consists of articles from WSJ, AP, etc.) that we annotated for named entities and relations.",Results/Conclusion
+"In order to effectively observe the interaction between relations and entities, we picked 1437 sentences that have at least one active relation.",Results/Conclusion
+"Among those sentences, there are 5336 entities, and 19048 pairs of entities (binary relations).",Results/Conclusion
+"Entity labels include 1685 persons, 1968 locations, 978 organizations and 705 others.",Results/Conclusion
+"Relation labels include 406 located in, 394 work for, 451 orgBased in, 521 live in, 268 kill, and 17007 none.",Results/Conclusion
+Note that most pairs of entities have no active relations at all.,Results/Conclusion
+"Therefore, relation none significantly outnumbers others.",Results/Conclusion
+Examples of each relation label and the constraints between a relation variable and its two entity arguments are shown as follows.,Results/Conclusion
+"Relation Entity1 Entity2 Example located in loc loc (New York, US) work for per org (Bill Gates, Microsoft) orgBased in org loc (HP, Palo Alto) live in per loc (Bush, US) kill per per (Oswald, JFK) In order to focus on the evaluation of our inference procedure, we assume the problem of segmentation (or phrase detection) (Abney, 1991; Punyakanok and Roth, 2001) is solved, and the entity boundaries are given to us as input; thus we only concentrate on their classifications.",Results/Conclusion
+We evaluate our LP based global inference procedure against two simpler approaches and a third that is given more information at learning time.,Results/Conclusion
+"Basic, only tests our entity and relation classifiers, which are trained independently using only local features.",Results/Conclusion
+"In particular, the relation classifier does not know the labels of its entity arguments, and the entity classifier does not know the labels of relations in the sentence either.",Results/Conclusion
+"Since basic classifiers are used in all approaches, we describe how they are trained here.",Results/Conclusion
+"For the entity classifier, one set of features are extracted from words within a size 4 window around the target phrase.",Results/Conclusion
+"They are: (1) words, part-of-speech tags, and conjunctions of them; (2) bigrams and trigrams of the mixture of words and tags.",Results/Conclusion
+"In addition, some other features are extracted from the target phrase, including: symbol explanation icap the first character of a word is capitalized acap all characters of a word are capitalized incap some characters of a word are capitalized suffix the suffix of a word is “ing”, “ment”, etc. bigram bigram of words in the target phrase len number of words in the target phrase place3 the phrase is/has a known place’s name prof3 the phrase is/has a professional title (e.g.",Results/Conclusion
+"Lt.) name3 the phrase is/has a known person’s name For the relation classifier, there are three sets of features: (1) features similar to those used in the entity classification are extracted from the two argument entities of the relation; (2) conjunctions of the features from the two arguments; (3) some patterns extracted from the sentence or between the two arguments.",Results/Conclusion
+"Some features in category (3) are “the number of words between arg1 and arg2 ”, “whether arg1 and arg2 are the same word”, or “arg1 is the beginning of the sentence and has words that consist of all capitalized characters”, where ar$1 and ar$2 represent the first and second argument entities respectively.",Results/Conclusion
+"In addition, Table 1 presents some patterns we use.",Results/Conclusion
+"The learning algorithm used is a variation of the Winnow update rule incorporated in SNoW (Roth, 1998; Roth and Yih, 2002), a multi-class classifier that is specifically tailored for large scale learning tasks.",Results/Conclusion
+"SNoW learns a sparse network of linear functions, in which the targets (entity classes or relation classes, in this case) are represented as linear functions over a common feature space.",Results/Conclusion
+"While SNoW can be used as a classifier and predicts using a winner-take-all mechanism over the activation value of the target classes, we can also rely directly on the raw activation value it outputs, which is the weighted linear sum of the active features, to estimate the posteriors.",Results/Conclusion
+"It can be verified that the resulting values are monotonic with the confidence in the prediction, therefore provide a good source of probability estimation.",Results/Conclusion
+"We use softmax (Bishop, 1995) over the raw activation values as conditional probabilities.",Results/Conclusion
+"Specifically, suppose the number of classes is n, and the raw activation values of class i is acti.",Results/Conclusion
+The posterior estimation for class i is derived by the following equation.,Results/Conclusion
+"Pipeline, mimics the typical strategy in solving complex natural language problems – separating a task into several stages and solving them sequentially.",Results/Conclusion
+"For example, a named entity recognizer may be trained using a different corpus in advance, and given to a relation classifier as a tool to extract features.",Results/Conclusion
+"This approach first trains an entity classifier as described in the basic approach, and then uses the prediction of entities in addition to other local features to learn the relation identifier.",Results/Conclusion
+"Note that although the true labels of entities are known here when training the relation identifier, this may not be the case in general NLP problems.",Results/Conclusion
+"Since only the predicted entity labels are available in testing, learning on the predictions of the entity classifier presumably makes the relation classifier more tolerant to the mistakes of the entity classifier.",Results/Conclusion
+"In fact, we also observe this phenomenon empirically.",Results/Conclusion
+"When the relation classifier is trained using the true entity labels, the performance is much worse than using the predicted entity labels.",Results/Conclusion
+"LP, is our global inference procedure.",Results/Conclusion
+"It takes as input the constraints between a relation and its entity arguments, and the output (the estimated probability distribution of labels) of the basic classifiers.",Results/Conclusion
+"Note that LP may change the predictions for either entity labels or relation labels, while pipeline fully trusts the labels of entity classifier, and only the relation predictions may be different from the basic relation classifier.",Results/Conclusion
+"In other words, LP is able to enhance the performance of entity classification, which is impossible for pipeline.",Results/Conclusion
+"The final approach, Omniscience, tests the conceptual upper bound of this entity/relation classification problem.",Results/Conclusion
+It also trains the two classifiers separately as the basic approach.,Results/Conclusion
+"However, it assumes that the entity classifier knows the correct relation labels, and similarly the relation classifier knows the right entity labels as well.",Results/Conclusion
+This additional information is then used as features in training and testing.,Results/Conclusion
+Note that this assumption is totally unrealistic.,Results/Conclusion
+"Nevertheless, it may give us a hint that how much a global inference can achieve.",Results/Conclusion
+Tables 2 & 3 show the performance of each approach in Fβ=1 using 5-fold cross-validation.,Results/Conclusion
+"The results show that LP performs consistently better than basic and pipeline, both in entities and relations.",Results/Conclusion
+"Note that LP does not apply learning at all, but still outperforms pipeline, which uses entity predictions as new features in learning.",Results/Conclusion
+The results of the omniscient classifiers reveal that there is still room for improvement.,Results/Conclusion
+One option is to apply learning to tune a better cost function in the LP approach.,Results/Conclusion
+"One of the more significant results in our experiments, we believe, is the improvement in the quality of the decisions.",Results/Conclusion
+As mentioned in Sec.,Results/Conclusion
+"1, incorporating constraints helps to avoid inconsistency in classification.",Results/Conclusion
+"It is inpi = teresting to investigate how often such mistakes happen without global inference, and see how effectively the global inference enhances this.",Results/Conclusion
+"For this purpose, we define the quality of the decision as follows.",Results/Conclusion
+"For an active relation of which the label is classified correctly, if both its argument entities are also predicted correctly, we count it as a coherent prediction.",Results/Conclusion
+Quality is then the number of coherent predictions divided by the sum of coherent and incoherent predictions.,Results/Conclusion
+"Since the basic and pipeline approaches do not have a global view of the labels of entities and relations, 5% to 25% of the predictions are incoherent.",Results/Conclusion
+"Therefore, the quality is not always good.",Results/Conclusion
+"On the other hand, our global inference procedure, LP, takes the natural constraints into account, so it never generates incoherent predictions.",Results/Conclusion
+"If the relation classifier has the correct entity labels as features, a good learner should learn the constraints as well.",Results/Conclusion
+"As a result, the quality of omniscient is almost as good as LP.",Results/Conclusion
+"Another experiment we did is the forced decision test, which boosts the F1 of “kill” relation to 86.2%.",Results/Conclusion
+Here we consider only sentences in which the “kill” relation is active.,Results/Conclusion
+"We force the system to determine which of the possible relations in a sentence (i.e., which pair of entities) has this relation by adding a new linear equality.",Results/Conclusion
+"This is a realistic situation (e.g., in the context of question answering) in that it adds an external constraint, not present at the time of learning the classifiers and it evaluates the ability of our inference algorithm to cope with it.",Results/Conclusion
+The results exhibit that our expectations are correct.,Results/Conclusion
+"In fact, we believe that in natural situations the number of constraints that can apply is even larger.",Results/Conclusion
+"Observing the algorithm performs on other, specific, forced decision tasks verifies that LP is reliable in these situations.",Results/Conclusion
+"As shown in the experiment, it even performs better than omniscience, which is given more information at learning time, but cannot adapt to the situation at decision time.",Results/Conclusion
+We presented an linear programming based approach for global inference where decisions depend on the outcomes of several different but mutually dependent classifiers.,Results/Conclusion
+"Even in the presence of a fairly general constraint structure, deviating from the sequential nature typically studied, this approach can find the optimal solution efficiently.",Results/Conclusion
+"Contrary to general search schemes (e.g., beam search), which do not guarantee optimality, the linear programming approach provides an efficient way to finding the optimal solution.",Results/Conclusion
+"The key advantage of the linear programming formulation is its generality and flexibility; in particular, it supports the ability to incorporate classifiers learned in other contexts, “hints” supplied and decision time constraints, and reason with all these for the best global prediction.",Results/Conclusion
+"In sharp contrast with the typically used pipeline framework, our formulation does not blindly trust the results of some classifiers, and therefore is able to overcome mistakes made by classifiers with the help of constraints.",Results/Conclusion
+Our experiments have demonstrated these advantages by considering the interaction between entity and relation classifiers.,Results/Conclusion
+"In fact, more classifiers can be added and used within the same framework.",Results/Conclusion
+"For example, if coreference resolution is available, it is possible to incorporate it in the form of constraints that force the labels of the coreferred entities to be the same (but, of course, allowing the global solution to reject the suggestion of these classifiers).",Results/Conclusion
+"Consequently, this may enhance the performance of entity/relation recognition and, at the same time, correct possible coreference resolution errors.",Results/Conclusion
+"Another example is to use chunking information for better relation identification; suppose, for example, that we have available chunking information that identifies Subj+Verb and Verb+Object phrases.",Results/Conclusion
+"Given a sentence that has the verb “murder”, we may conclude that the subject and object of this verb are in a “kill” relation.",Results/Conclusion
+"Since the chunking information is used in the global inference procedure, this information will contribute to enhancing its performance and robustness, relying on having more constraints and overcoming possible mistakes by some of the classifiers.",Results/Conclusion
+"Moreover, in an interactive environment where a user can supply new constraints (e.g., a question answering situation) this framework is able to make use of the new information and enhance the performance at decision time, without retraining the classifiers.",Results/Conclusion
+"As we show, our formulation supports not only improved accuracy, but also improves the ‘human-like” quality of the decisions.",Results/Conclusion
+We believe that it has the potential to be a powerful way for supporting natural language inferences.,Results/Conclusion
+"Acknowledgements This research has been supported by NFS grants CAREER IIS-9984168, ITR IIS-0085836, EIA-0224453, an ONR MURI Award, and an equipment donation from AMD.",Results/Conclusion
+We also thank the anonymous referees for their useful comments.,Results/Conclusion

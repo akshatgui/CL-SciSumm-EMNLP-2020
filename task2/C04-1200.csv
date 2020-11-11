@@ -1,188 +1,188 @@
 col1,col2
-Identifying sentiments (the affective parts of opinions) is a challenging problem.,{}
-"We present a system that, given a topic, automatically finds the people who hold opinions about that topic and the sentiment of each opinion.",{}
-The system contains a module for determining word sentiment and another for combining sentiments within a sentence.,{}
-"We experiment with various models of classifying and combining sentiment at word and sentence levels, with promising results.",{}
-What is an opinion?,"{'title': 'Introduction', 'number': '1'}"
-The many opinions on opinions are reflected in a considerable literature (Aristotle 1954; Perelman 1970; Toulmin et al 1979; Wallace 1975; Toulmin 2003).,"{'title': 'Introduction', 'number': '1'}"
-Recent computational work either focuses on sentence ?subjectivity?,"{'title': 'Introduction', 'number': '1'}"
-"(Wiebe et al 2002; Riloff et al 2003), concentrates just on explicit statements of evaluation, such as of films (Turney 2002; Pang et al 2002), or focuses on just one aspect of opinion, e.g., (Hatzivassiloglou and McKeown 1997) on adjectives.","{'title': 'Introduction', 'number': '1'}"
-We wish to study opinion in general; our work most closely resembles that of (Yu and Hatzivassiloglou 2003).,"{'title': 'Introduction', 'number': '1'}"
-"Since an analytic definition of opinion is probably impossible anyway, we will not summarize past discussion or try to define formally what is and what is not an opinion.","{'title': 'Introduction', 'number': '1'}"
-"For our purposes, we describe an opinion as a quadruple [Topic, Holder, Claim, Sentiment] in which the Holder believes a Claim about the Topic, and in many cases associates a Sentiment, such as good or bad, with the belief.","{'title': 'Introduction', 'number': '1'}"
-"For example, the following opinions contain Claims but no Sentiments: ?I believe the world is flat?","{'title': 'Introduction', 'number': '1'}"
-?The Gap is likely to go bankrupt?,"{'title': 'Introduction', 'number': '1'}"
-?Bin Laden is hiding in Pakistan?,"{'title': 'Introduction', 'number': '1'}"
-?Water always flushes anti-clockwise in the southern hemisphere?,"{'title': 'Introduction', 'number': '1'}"
-"Like Yu and Hatzivassiloglou (2003), we want to automatically identify Sentiments, which in this work we define as an explicit or implicit expression in text of the Holder?s positive, negative, or neutral regard toward the Claim about the Topic.","{'title': 'Introduction', 'number': '1'}"
-(Other sentiments we plan to study later.),"{'title': 'Introduction', 'number': '1'}"
-"Sentiments always involve the Holder?s emotions or desires, and may be present explicitly or only implicitly: ?I think that attacking Iraq would put the US in a difficult position?","{'title': 'Introduction', 'number': '1'}"
-(implicit) ?The US attack on Iraq is wrong?,"{'title': 'Introduction', 'number': '1'}"
-(explicit) ?I like Ike?,"{'title': 'Introduction', 'number': '1'}"
-(explicit) ?We should decrease our dependence on oil?,"{'title': 'Introduction', 'number': '1'}"
-(implicit) ?Reps. Tom Petri and William F. Goodling asserted that counting illegal aliens violates citizens?,"{'title': 'Introduction', 'number': '1'}"
-basic right to equal representation?,"{'title': 'Introduction', 'number': '1'}"
-(implicit) In this paper we address the following challenge problem.,"{'title': 'Introduction', 'number': '1'}"
-"Given a Topic (e.g., ?Should abortion be banned??)","{'title': 'Introduction', 'number': '1'}"
-"and a set of texts about the topic, find the Sentiments expressed about (claims about) the Topic (but not its supporting subtopics) in each text, and identify the people who hold each sentiment.","{'title': 'Introduction', 'number': '1'}"
-"To avoid the problem of differentiating between shades of sentiments, we simplify the problem to: identify just expressions of positive, negative, or neutral sentiments, together with their holders.","{'title': 'Introduction', 'number': '1'}"
-"In addition, for sentences that do not express a sentiment but simply state that some sentiment(s) exist(s), return these sentences in a separate set.","{'title': 'Introduction', 'number': '1'}"
-"For example, given the topic ?What should be done with Medicare??","{'title': 'Introduction', 'number': '1'}"
-"the sentence ?After years of empty promises, Congress has rolled out two Medicare prescription plans, one from House Republicans and the other from the Democratic Sentence POS Tagger verbs nounsAdjectives Adjective Senti ment classifier sentiment sentiment Sentence sentiment classifier Opinion region + polarity + holder Holder finder Named Entity Tagger Sentence Sentence texts + topic sentiment sentiment sentiment V rbs Verb Senti ment classifier Nouns Noun Senti ment classifier WordNet Sentence : Figure 1: System architecture.","{'title': 'Introduction', 'number': '1'}"
-Sens. Bob Graham of Florida and Zell Miller of Georgia?,"{'title': 'Introduction', 'number': '1'}"
-should be returned in the separate set.,"{'title': 'Introduction', 'number': '1'}"
-"We approach the problem in stages, starting with words and moving on to sentences.","{'title': 'Introduction', 'number': '1'}"
-"We take as unit sentiment carrier a single word, and first classify each adjective, verb, and noun by its sentiment.","{'title': 'Introduction', 'number': '1'}"
-We experimented with several classifier models.,"{'title': 'Introduction', 'number': '1'}"
-"But combining sentiments requires additional care, as Table 1 shows.","{'title': 'Introduction', 'number': '1'}"
-California Supreme Court agreed that the state?s new term-limit law was constitutional.,"{'title': 'Introduction', 'number': '1'}"
-California Supreme Court disagreed that the state?s new term-limit law was constitutional.,"{'title': 'Introduction', 'number': '1'}"
-California Supreme Court agreed that the state?s new term-limit law was unconstitutional.,"{'title': 'Introduction', 'number': '1'}"
-California Supreme Court disagreed that the state?s new term-limit law was unconstitutional.,"{'title': 'Introduction', 'number': '1'}"
-Table 1: Combining sentiments.,"{'title': 'Introduction', 'number': '1'}"
-A sentence might even express opinions of different people.,"{'title': 'Introduction', 'number': '1'}"
-"When combining word-level sentiments, we therefore first determine for each Holder a relevant region within the sentence and then experiment with various models for combining word sentiments.","{'title': 'Introduction', 'number': '1'}"
-"We describe our models and algorithm in Section 2, system experiments and discussion in Section 3, and conclude in Section 4.","{'title': 'Introduction', 'number': '1'}"
-"Given a topic and a set of texts, the system operates in four steps.","{'title': 'Algorithm. ', 'number': '2'}"
-First it selects sentences that contain both the topic phrase and holder candidates.,"{'title': 'Algorithm. ', 'number': '2'}"
-"Next, the holder-based regions of opinion are delimited.","{'title': 'Algorithm. ', 'number': '2'}"
-Then the sentence sentiment classifier calculates the polarity of all sentiment-bearing words individually.,"{'title': 'Algorithm. ', 'number': '2'}"
-"Finally, the system combines them to produce the holder?s sentiment for the whole sentence.","{'title': 'Algorithm. ', 'number': '2'}"
-Figure 1 shows the overall system architecture.,"{'title': 'Algorithm. ', 'number': '2'}"
-Section 2.1 describes the word sentiment classifier and Section 2.2 describes the sentence sentiment classifier.,"{'title': 'Algorithm. ', 'number': '2'}"
-2.1 Word Sentiment Classifier.,"{'title': 'Algorithm. ', 'number': '2'}"
-2.1.1 Word Classification Models For word sentiment classification we developed two models.,"{'title': 'Algorithm. ', 'number': '2'}"
-"The basic approach is to assemble a small amount of seed words by hand, sorted by polarity into two lists?positive and negative?and then to grow this by adding words obtained from WordNet (Miller et al 1993; Fellbaum et al 1993).","{'title': 'Algorithm. ', 'number': '2'}"
-"We assume synonyms of positive words are mostly positive and antonyms mostly negative, e.g., the positive word ?good?","{'title': 'Algorithm. ', 'number': '2'}"
-"has synonyms ?virtuous, honorable, righteous?","{'title': 'Algorithm. ', 'number': '2'}"
-"and antonyms ?evil, disreputable, unrighteous?.","{'title': 'Algorithm. ', 'number': '2'}"
-"Antonyms of negative words are added to the positive list, and synonyms to the negative one.","{'title': 'Algorithm. ', 'number': '2'}"
-"To start the seed lists we selected verbs (23 positive and 21 negative) and adjectives (15 positive and 19 negative), adding nouns later.","{'title': 'Algorithm. ', 'number': '2'}"
-"Since adjectives and verbs are structured differently in WordNet, we obtained from it synonyms and antonyms for adjectives but only synonyms for verbs.","{'title': 'Algorithm. ', 'number': '2'}"
-"For each seed word, we extracted from WordNet its expansions and added them back into the appropriate seed lists.","{'title': 'Algorithm. ', 'number': '2'}"
-"Using these expanded lists, we extracted an additional cycle of words from WordNet, to obtain finally 5880 positive adjectives, 6233 negative adjectives, 2840 positive verbs, and 3239 negative verbs.","{'title': 'Algorithm. ', 'number': '2'}"
-"However, not all synonyms and antonyms could be used: some had opposite sentiment or were neutral.","{'title': 'Algorithm. ', 'number': '2'}"
-"In addition, some common words such as ?great?, ?strong?, ?take?, and ?get?","{'title': 'Algorithm. ', 'number': '2'}"
-occurred many times in both positive and negative categories.,"{'title': 'Algorithm. ', 'number': '2'}"
-This indicated the need to develop a measure of strength of sentiment polarity (the alternative was simply to discard such ambiguous words)?to determine how strongly a word is positive and also how strongly it is negative.,"{'title': 'Algorithm. ', 'number': '2'}"
-This would enable us to discard sentiment-ambiguous words but retain those with strengths over some threshold.,"{'title': 'Algorithm. ', 'number': '2'}"
-"Armed with such a measure, we can also assign strength of sentiment polarity to as yet unseen words.","{'title': 'Algorithm. ', 'number': '2'}"
-"Given a new word, we use WordNet again to obtain a synonym set of the unseen word to determine how it interacts with our sentiment seed lists.","{'title': 'Algorithm. ', 'number': '2'}"
-"That is, we compute (1) ).....,|(maxarg )|(maxarg 21 n c c synsynsyncP wcP ? where c is a sentiment category (positive or negative), w is the unseen word, and synn are the WordNet synonyms of w. To compute Equation (1), we tried two different models: (2) )|()(maxarg )|()(maxarg )|()(maxarg)|(maxarg 1 ))(,( ...3 2 1 ? = = = = m k wsynsetfcount k c n c cc kcfPcP csynsynsynsynPcP cwPcPwcP where fk is the kth feature (list word) of sentiment class c which is also a member of the synonym set of w, and count(fk,synset(w)) is the total number of occurrences of fk in the synonym set of w. P(c) is the number of words in class c divided by the total number of words considered.","{'title': 'Algorithm. ', 'number': '2'}"
-This model derives from document classification.,"{'title': 'Algorithm. ', 'number': '2'}"
-"We used the synonym and antonym lists obtained from Wordnet instead of learning word sets from a corpus, since the former is simpler and does not require manually annotated data for training.","{'title': 'Algorithm. ', 'number': '2'}"
-Equation (3) shows the second model for a word sentiment classifier.,"{'title': 'Algorithm. ', 'number': '2'}"
-"(3) )( ),( )(maxarg )|()(maxarg)|(maxarg 1 ccount csyncount cP cwPcPwcP n i i c cc ? == = To compute the probability P(w|c) of word w given a sentiment class c, we count the occurrence of w?s synonyms in the list of c. The intuition is that the more synonyms occuring in c, the more likely the word belongs.","{'title': 'Algorithm. ', 'number': '2'}"
-We computed both positive and negative sentiment strengths for each word and compared their relative magnitudes.,"{'title': 'Algorithm. ', 'number': '2'}"
-"Table 2 shows several examples of the system output, computed with Equation (2), in which ?+?","{'title': 'Algorithm. ', 'number': '2'}"
-represents positive category strength and ?-?,"{'title': 'Algorithm. ', 'number': '2'}"
-negative.,"{'title': 'Algorithm. ', 'number': '2'}"
-"The word ?amusing?, for example, was classified as carrying primarily positive sentiment, and ?blame?","{'title': 'Algorithm. ', 'number': '2'}"
-as primarily negative.,"{'title': 'Algorithm. ', 'number': '2'}"
-The absolute value of each category represents the strength of its sentiment polarity.,"{'title': 'Algorithm. ', 'number': '2'}"
-"For instance, ?afraid?","{'title': 'Algorithm. ', 'number': '2'}"
-with strength -0.99 represents strong negavitity while ?abysmal?,"{'title': 'Algorithm. ', 'number': '2'}"
-with strength -0.61 represents weaker negativity.,"{'title': 'Algorithm. ', 'number': '2'}"
-abysmal : NEGATIVE [+ : 0.3811][- : 0.6188] adequate : POSITIVE [+ : 0.9999][- : 0.0484e-11] afraid : NEGATIVE [+ : 0.0212e-04][- : 0.9999] ailing : NEGATIVE [+ : 0.0467e-8][- : 0.9999] amusing : POSITIVE [+ : 0.9999][- : 0.0593e-07] answerable : POSITIVE [+ : 0.8655][- : 0.1344] apprehensible: POSITIVE [+ : 0.9999][- : 0.0227e-07] averse : NEGATIVE [+ : 0.0454e-05][- : 0.9999] blame : NEGATIVE [+ : 0.2530][- : 0.7469] Table 2: Sample output of word sentiment classifier.,"{'title': 'Algorithm. ', 'number': '2'}"
-2.2 Sentence Sentiment Classifier.,"{'title': 'Algorithm. ', 'number': '2'}"
-"As shows in Table 1, combining sentiments in a sentence can be tricky.","{'title': 'Algorithm. ', 'number': '2'}"
-We are interested in the sentiments of the Holder about the Claim.,"{'title': 'Algorithm. ', 'number': '2'}"
-"Manual analysis showed that such sentiments can be found most reliably close to the Holder; without either Holder or Topic/Claim nearby as anchor points, even humans sometimes have trouble reliably determining the source of a sentiment.","{'title': 'Algorithm. ', 'number': '2'}"
-"We therefore included in the algorithm steps to identify the Topic (through direct matching, since we took it as given) and any likely opinion Holders (see Section 2.2.1).","{'title': 'Algorithm. ', 'number': '2'}"
-Near each Holder we then identified a region in which sentiments would be considered; any sentiments outside such a region we take to be of undetermined origin and ignore (Section 2.2.2).,"{'title': 'Algorithm. ', 'number': '2'}"
-We then defined several models for combining the sentiments expressed within a region (Section 2.2.3).,"{'title': 'Algorithm. ', 'number': '2'}"
-2.2.1 Holder Identification We used BBN?s named entity tagger IdentiFinder to identify potential holders of an opinion.,"{'title': 'Algorithm. ', 'number': '2'}"
-We considered PERSON and ORGANIZATION as the only possible opinion holders.,"{'title': 'Algorithm. ', 'number': '2'}"
-"For sentences with more than one Holder, we chose the one closest to the Topic phrase, for simplicity.","{'title': 'Algorithm. ', 'number': '2'}"
-This is a very crude step.,"{'title': 'Algorithm. ', 'number': '2'}"
-A more sophisticated approach would employ a parser to identify syntactic relationships between each Holder and all dependent expressions of sentiment.,"{'title': 'Algorithm. ', 'number': '2'}"
-"2.2.2 Sentiment Region Lacking a parse of the sentence, we were faced with a dilemma: How large should a region be?","{'title': 'Algorithm. ', 'number': '2'}"
-"We therefore defined the sentiment region in various ways (see Table 3) and experimented with their effectiveness, as reported in Section 3.","{'title': 'Algorithm. ', 'number': '2'}"
-Window1: full sentence Window2: words between Holder and Topic Window3: window2 ? 2 words Window4: window2 to the end of sentence Table 3: Four variations of region size.,"{'title': 'Algorithm. ', 'number': '2'}"
-"2.2.3 Classification Models We built three models to assign a sentiment category to a given sentence, each combining the individual sentiments of sentiment-bearing words, as described above, in a different way.","{'title': 'Algorithm. ', 'number': '2'}"
-"Model 0 simply considers the polarities of the sentiments, not the strengths: Model 0: ?","{'title': 'Algorithm. ', 'number': '2'}"
-(signs in region) The intuition here is something like ?negatives cancel one another out?.,"{'title': 'Algorithm. ', 'number': '2'}"
-Here the system assigns the same sentiment to both ?the California Supreme Court agreed that the state?s new term-limit law was constitutional?,"{'title': 'Algorithm. ', 'number': '2'}"
-and ?the California Supreme Court disagreed that the state?s new term-limit law was unconstitutional?.,"{'title': 'Algorithm. ', 'number': '2'}"
-"For this model, we also included negation words such as not and never to reverse the sentiment polarity.","{'title': 'Algorithm. ', 'number': '2'}"
-"Model 1 is the harmonic mean (average) of the sentiment strengths in the region: Model 1: cwcp wcp cn scP ij n i i = = ? = )|(argmax if ,)|( )( 1)|( j 1 Here n(c) is the number of words in the region whose sentiment category is c. If a region contains more and stronger positive than negative words, the sentiment will be positive.","{'title': 'Algorithm. ', 'number': '2'}"
-"Model 2 is the geometric mean: Model 2: cwcpif wcpscP ij n i i cn = ?= ? = ? )|(argmax ,)|(10)|( j 1 1)( 2.2.4 Examples The following are two example outputs.","{'title': 'Algorithm. ', 'number': '2'}"
-"Public officials throughout California have condemned a U.S. Senate vote Thursday to exclude illegal aliens from the 1990 census, saying the action will shortchange California in Congress and possibly deprive the state of millions of dollars of federal aid for medical emergency services and other programs for poor people.","{'title': 'Algorithm. ', 'number': '2'}"
-"TOPIC : illegal alien HOLDER : U.S. Senate OPINION REGION: vote/NN Thursday/NNP to/TO exclude/VB illegal/JJ aliens/NNS from/IN the/DT 1990/CD census,/NN SENTIMENT_POLARITY: negative For that reason and others, the Constitutional Convention unanimously rejected term limits and the First Congress soundly defeated two subsequent term-limit proposals.","{'title': 'Algorithm. ', 'number': '2'}"
-TOPIC : term limit HOLDER : First Congress OPINION REGION: soundly/RB defeated/VBD two/CD subsequent/JJ term-limit/JJ proposals./NN SENTIMENT_POLARITY: negative,"{'title': 'Algorithm. ', 'number': '2'}"
-The first experiment examines the two word sentiment classifier models and the second the three sentence sentiment classifier models.,"{'title': 'Experiments. ', 'number': '3'}"
-3.1 Word Sentiment Classifier.,"{'title': 'Experiments. ', 'number': '3'}"
-"For test material, we asked three humans to classify data.","{'title': 'Experiments. ', 'number': '3'}"
-We started with a basic English word list for foreign students preparing for the TOEFL test and intersected it with an adjective list containing 19748 English adjectives and a verb list of 8011 verbs to obtain common adjectives and verbs.,"{'title': 'Experiments. ', 'number': '3'}"
-From this we randomly selected 462 adjectives and 502 verbs for human classification.,"{'title': 'Experiments. ', 'number': '3'}"
-"Human1 and human2 each classified 462 adjectives, and human2 and human3 502 verbs.","{'title': 'Experiments. ', 'number': '3'}"
-"The classification task is defined as assigning each word to one of three categories: positive, negative, and neutral.","{'title': 'Experiments. ', 'number': '3'}"
-3.1.1 Human?Human Agreement Adjectives Verbs Human1 : Human2 Human1 : Human3 Strict 76.19% 62.35% Lenient 88.96% 85.06% Table 4: Inter-human classification agreement.,"{'title': 'Experiments. ', 'number': '3'}"
-Table 4 shows inter-human agreement.,"{'title': 'Experiments. ', 'number': '3'}"
-"The strict measure is defined over all three categories, whereas the lenient measure is taken over only two categories, where positive and neutral have been merged, should we choose to focus only on differentiating words of negative sentiment.","{'title': 'Experiments. ', 'number': '3'}"
-"3.1.2 Human?Machine Agreement Table 5 shows results, using Equation (2) of Section 2.1.1, compared against a baseline that randomly assigns a sentiment category to each word (averaged over 10 iterations).","{'title': 'Experiments. ', 'number': '3'}"
-The system achieves lower agreement than humans but higher than the random process.,"{'title': 'Experiments. ', 'number': '3'}"
-"Of the test data, the algorithm classified 93.07% of adjectives and 83.27% of verbs as either positive and negative.","{'title': 'Experiments. ', 'number': '3'}"
-"The remainder of adjectives and verbs failed to be classified, since they did not overlap with the synonym set of adjectives and verbs.","{'title': 'Experiments. ', 'number': '3'}"
-"In Table 5, the seed list included just a few manually selected seed words (23 positive and 21 negative verbs and 15 and 19 adjectives, repectively).","{'title': 'Experiments. ', 'number': '3'}"
-We decided to investigate the effect of more seed words.,"{'title': 'Experiments. ', 'number': '3'}"
-"After collecting the annotated data, we added half of it (231 adjectives and 251 verbs) to the training set, retaining the other half for the test.","{'title': 'Experiments. ', 'number': '3'}"
-"As Table 6 shows, agreement of both adjectives and verbs with humans improves.","{'title': 'Experiments. ', 'number': '3'}"
-Recall is also improved.,"{'title': 'Experiments. ', 'number': '3'}"
-Adjective (Train: 231 Test : 231) Verb (Train: 251 Test : 251) Lenient agreement Lenient agreement H1:M H2:M recall H1:M H3:M recall 75.66% 77.88% 97.84% 81.20% 79.06% 93.23% Table 6: Results including manual data.,"{'title': 'Experiments. ', 'number': '3'}"
-3.2 Sentence Sentiment Classifier.,"{'title': 'Experiments. ', 'number': '3'}"
-"3.2.1 Data 100 sentences were selected from the DUC 2001 corpus with the topics ?illegal alien?, ?term limits?, ?gun control?, and ?NAFTA?.","{'title': 'Experiments. ', 'number': '3'}"
-"Two humans annotated the 100 sentences with three categories (positive, negative, and N/A).","{'title': 'Experiments. ', 'number': '3'}"
-"To measure the agreement between humans, we used the Kappa statistic (Siegel and Castellan Jr. 1988).","{'title': 'Experiments. ', 'number': '3'}"
-"The Kappa value for the annotation task of 100 sentences was 0.91, which is considered to be reliable.","{'title': 'Experiments. ', 'number': '3'}"
-"3.2.2 Test on Human Annotated Data We experimented on Section 2.2.3?s 3 models of sentiment classifiers, using the 4 different window definitions and 4 variations of word-level classifiers (the two word sentiment equations introduced in Section 2.1.1, first with and then without normalization, to compare performance).","{'title': 'Experiments. ', 'number': '3'}"
-"Since Model 0 considers not probabilities of words but only their polarities, the two word- level classifier equations yield the same results.","{'title': 'Experiments. ', 'number': '3'}"
-"Consequently, Model 0 has 8 combinations and Models 1 and 2 have 16 each.","{'title': 'Experiments. ', 'number': '3'}"
-"To test the identification of opinion Holder, we first ran models with holders that were annotated by humans then ran the same models with the automatic holder finding strategies.","{'title': 'Experiments. ', 'number': '3'}"
-The results appear in Figures 2 and 3.,"{'title': 'Experiments. ', 'number': '3'}"
-"The models are numbered as follows: m0 through m4 represent 4 sentence classifier models, Table 5.","{'title': 'Experiments. ', 'number': '3'}"
-Agreement between humans and system.,"{'title': 'Experiments. ', 'number': '3'}"
-Adjective (test: 231 adjectives) Verb (test : 251 verbs) Lenient agreement Lenient agreement H1:M H2:M recall H1:M H3:M recall Random selection (average of 10 iterations) 59.35% 57.81% 100% 59.02% 56.59% 100% Basic method 68.37% 68.60% 93.07% 75.84% 72.72% 83.27% p1/p2 and p3/p4 represent the word classifier models in Equation (2) and Equation (3) with normalization and without normalization respectively.,"{'title': 'Experiments. ', 'number': '3'}"
-0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu ra cy Window 1 Window 2 Window 3 Window 4 0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 Human 1 : Machine Human 2 : Machine Figure 2: Results with manually annotated Holder.,"{'title': 'Experiments. ', 'number': '3'}"
-0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 Human 1 : Machine Human 2 : Machine Figure 3: Results with automatic Holder detection.,"{'title': 'Experiments. ', 'number': '3'}"
-Correctness of an opinion is determined when the system finds both a correct holder and the appropriate sentiment within the sentence.,"{'title': 'Experiments. ', 'number': '3'}"
-"Since human1 classified 33 sentences positive and 33 negative, random classification gives 33 out of 66 sentences.","{'title': 'Experiments. ', 'number': '3'}"
-"Similarly, since human2 classified 29 positive and 34 negative, random classification gives 34 out of 63 when the system blindly marks all sentences as negative and 29 out of 63 when it marks all as positive.","{'title': 'Experiments. ', 'number': '3'}"
-The system?s best model performed at 81% accuracy with the manually provided holder and at 67% accuracy with automatic holder detection.,"{'title': 'Experiments. ', 'number': '3'}"
-3.3 Problems.,"{'title': 'Experiments. ', 'number': '3'}"
-"3.3.1 Word Sentiment Classification As mentioned, some words have both strong positive and negative sentiment.","{'title': 'Experiments. ', 'number': '3'}"
-"For these words, it is difficult to pick one sentiment category without considering context.","{'title': 'Experiments. ', 'number': '3'}"
-"Second, a unigram model is not sufficient: common words without much sentiment alone can combine to produce reliable sentiment.","{'title': 'Experiments. ', 'number': '3'}"
-"For example, in ??Term limits really hit at democracy,?","{'title': 'Experiments. ', 'number': '3'}"
-"says Prof. Fenno?, the common and multi-meaning word ?hit?","{'title': 'Experiments. ', 'number': '3'}"
-was used to express a negative point of view about term limits.,"{'title': 'Experiments. ', 'number': '3'}"
-"If such combinations occur adjacently, we can use bigrams or trigrams in the seed word list.","{'title': 'Experiments. ', 'number': '3'}"
-"When they occur at a distance, however, it is more difficult to identify the sentiment correctly, especially if one of the words falls outside the sentiment region.","{'title': 'Experiments. ', 'number': '3'}"
-"3.3.2 Sentence Sentiment Classification Even in a single sentence, a holder might express two different opinions.","{'title': 'Experiments. ', 'number': '3'}"
-Our system only detects the closest one.,"{'title': 'Experiments. ', 'number': '3'}"
-Another difficult problem is that the models cannot infer sentiments from facts in a sentence.,"{'title': 'Experiments. ', 'number': '3'}"
-?She thinks term limits will give women more opportunities in politics?,"{'title': 'Experiments. ', 'number': '3'}"
-"expresses a positive opinion about term limits but the absence of adjective, verb, and noun sentiment-words prevents a classification.","{'title': 'Experiments. ', 'number': '3'}"
-"Although relatively easy task for people, detecting an opinion holder is not simple either.","{'title': 'Experiments. ', 'number': '3'}"
-"As a result, our system sometimes picks a wrong holder when there are multiple plausible opinion holder candidates present.","{'title': 'Experiments. ', 'number': '3'}"
-Employing a parser to delimit opinion regions and more accurately associate them with potential holders should help.,"{'title': 'Experiments. ', 'number': '3'}"
-3.4 Discussion.,"{'title': 'Experiments. ', 'number': '3'}"
-Which combination of models is best?,"{'title': 'Experiments. ', 'number': '3'}"
-The best overall performance is provided by Model 0.,"{'title': 'Experiments. ', 'number': '3'}"
-"Apparently, the mere presence of negative words is more important than sentiment strength.","{'title': 'Experiments. ', 'number': '3'}"
-"For manually tagged holder and topic, Model 0 has the highest single performance, though Model 1 averages best.","{'title': 'Experiments. ', 'number': '3'}"
-"Which is better, a sentence or a region?","{'title': 'Experiments. ', 'number': '3'}"
-"With manually identified topic and holder, the region window4 (from Holder to sentence end) performs better than other regions.","{'title': 'Experiments. ', 'number': '3'}"
-How do scores differ from manual to automatic holder identification?,"{'title': 'Experiments. ', 'number': '3'}"
-Table 7 compares the average results with automatic holder identification to manually annotated holders in 40 different models.,"{'title': 'Experiments. ', 'number': '3'}"
-Around 7 more sentences (around 11%) were misclassified by the automatic detection method.,"{'title': 'Experiments. ', 'number': '3'}"
-positive negative total Human1 5.394 1.667 7.060 Human2 4.984 1.714 6.698 Table 7: Average difference between manual and automatic holder detection.,"{'title': 'Experiments. ', 'number': '3'}"
-How does adding the neutral sentiment as a separate category affect the score?,"{'title': 'Experiments. ', 'number': '3'}"
-It is very confusing even for humans to distinguish between a neutral opinion and non opinion bearing sentences.,"{'title': 'Experiments. ', 'number': '3'}"
-"In previous research, we built a sentence subjectivity classifier.","{'title': 'Experiments. ', 'number': '3'}"
-"Unfortunately, in most cases it classifies neutral and weak sentiment sentences as non-opinion bearing sentences.","{'title': 'Experiments. ', 'number': '3'}"
-Sentiment recognition is a challenging and difficult part of understanding opinions.,"{'title': 'Conclusion. ', 'number': '4'}"
-We plan to extend our work to more difficult cases such as sentences with weak-opinion-bearing words or sentences with multiple opinions about a topic.,"{'title': 'Conclusion. ', 'number': '4'}"
-"To improve identification of the Holder, we plan to use a parser to associate regions more reliably with holders.","{'title': 'Conclusion. ', 'number': '4'}"
-"We plan to explore other learning techniques, such as decision lists or SVMs.","{'title': 'Conclusion. ', 'number': '4'}"
-"Nonetheless, as the experiments show, encouraging results can be obtained even with relatively simple models and only a small amount of manual seeding effort.","{'title': 'Conclusion. ', 'number': '4'}"
+Identifying sentiments (the affective parts of opinions) is a challenging problem.,Introduction
+"We present a system that, given a topic, automatically finds the people who hold opinions about that topic and the sentiment of each opinion.",Introduction
+The system contains a module for determining word sentiment and another for combining sentiments within a sentence.,Introduction
+"We experiment with various models of classifying and combining sentiment at word and sentence levels, with promising results.",Introduction
+What is an opinion?,Experiment/Discussion
+The many opinions on opinions are reflected in a considerable literature (Aristotle 1954; Perelman 1970; Toulmin et al 1979; Wallace 1975; Toulmin 2003).,Experiment/Discussion
+Recent computational work either focuses on sentence ?subjectivity?,Experiment/Discussion
+"(Wiebe et al 2002; Riloff et al 2003), concentrates just on explicit statements of evaluation, such as of films (Turney 2002; Pang et al 2002), or focuses on just one aspect of opinion, e.g., (Hatzivassiloglou and McKeown 1997) on adjectives.",Experiment/Discussion
+We wish to study opinion in general; our work most closely resembles that of (Yu and Hatzivassiloglou 2003).,Experiment/Discussion
+"Since an analytic definition of opinion is probably impossible anyway, we will not summarize past discussion or try to define formally what is and what is not an opinion.",Experiment/Discussion
+"For our purposes, we describe an opinion as a quadruple [Topic, Holder, Claim, Sentiment] in which the Holder believes a Claim about the Topic, and in many cases associates a Sentiment, such as good or bad, with the belief.",Experiment/Discussion
+"For example, the following opinions contain Claims but no Sentiments: ?I believe the world is flat?",Experiment/Discussion
+?The Gap is likely to go bankrupt?,Experiment/Discussion
+?Bin Laden is hiding in Pakistan?,Experiment/Discussion
+?Water always flushes anti-clockwise in the southern hemisphere?,Experiment/Discussion
+"Like Yu and Hatzivassiloglou (2003), we want to automatically identify Sentiments, which in this work we define as an explicit or implicit expression in text of the Holder?s positive, negative, or neutral regard toward the Claim about the Topic.",Experiment/Discussion
+(Other sentiments we plan to study later.),Experiment/Discussion
+"Sentiments always involve the Holder?s emotions or desires, and may be present explicitly or only implicitly: ?I think that attacking Iraq would put the US in a difficult position?",Experiment/Discussion
+(implicit) ?The US attack on Iraq is wrong?,Experiment/Discussion
+(explicit) ?I like Ike?,Experiment/Discussion
+(explicit) ?We should decrease our dependence on oil?,Experiment/Discussion
+(implicit) ?Reps. Tom Petri and William F. Goodling asserted that counting illegal aliens violates citizens?,Experiment/Discussion
+basic right to equal representation?,Experiment/Discussion
+(implicit) In this paper we address the following challenge problem.,Experiment/Discussion
+"Given a Topic (e.g., ?Should abortion be banned??)",Experiment/Discussion
+"and a set of texts about the topic, find the Sentiments expressed about (claims about) the Topic (but not its supporting subtopics) in each text, and identify the people who hold each sentiment.",Experiment/Discussion
+"To avoid the problem of differentiating between shades of sentiments, we simplify the problem to: identify just expressions of positive, negative, or neutral sentiments, together with their holders.",Experiment/Discussion
+"In addition, for sentences that do not express a sentiment but simply state that some sentiment(s) exist(s), return these sentences in a separate set.",Experiment/Discussion
+"For example, given the topic ?What should be done with Medicare??",Experiment/Discussion
+"the sentence ?After years of empty promises, Congress has rolled out two Medicare prescription plans, one from House Republicans and the other from the Democratic Sentence POS Tagger verbs nounsAdjectives Adjective Senti ment classifier sentiment sentiment Sentence sentiment classifier Opinion region + polarity + holder Holder finder Named Entity Tagger Sentence Sentence texts + topic sentiment sentiment sentiment V rbs Verb Senti ment classifier Nouns Noun Senti ment classifier WordNet Sentence : Figure 1: System architecture.",Experiment/Discussion
+Sens. Bob Graham of Florida and Zell Miller of Georgia?,Experiment/Discussion
+should be returned in the separate set.,Experiment/Discussion
+"We approach the problem in stages, starting with words and moving on to sentences.",Experiment/Discussion
+"We take as unit sentiment carrier a single word, and first classify each adjective, verb, and noun by its sentiment.",Experiment/Discussion
+We experimented with several classifier models.,Experiment/Discussion
+"But combining sentiments requires additional care, as Table 1 shows.",Experiment/Discussion
+California Supreme Court agreed that the state?s new term-limit law was constitutional.,Experiment/Discussion
+California Supreme Court disagreed that the state?s new term-limit law was constitutional.,Experiment/Discussion
+California Supreme Court agreed that the state?s new term-limit law was unconstitutional.,Experiment/Discussion
+California Supreme Court disagreed that the state?s new term-limit law was unconstitutional.,Experiment/Discussion
+Table 1: Combining sentiments.,Experiment/Discussion
+A sentence might even express opinions of different people.,Experiment/Discussion
+"When combining word-level sentiments, we therefore first determine for each Holder a relevant region within the sentence and then experiment with various models for combining word sentiments.",Experiment/Discussion
+"We describe our models and algorithm in Section 2, system experiments and discussion in Section 3, and conclude in Section 4.",Experiment/Discussion
+"Given a topic and a set of texts, the system operates in four steps.",Experiment/Discussion
+First it selects sentences that contain both the topic phrase and holder candidates.,Experiment/Discussion
+"Next, the holder-based regions of opinion are delimited.",Experiment/Discussion
+Then the sentence sentiment classifier calculates the polarity of all sentiment-bearing words individually.,Experiment/Discussion
+"Finally, the system combines them to produce the holder?s sentiment for the whole sentence.",Experiment/Discussion
+Figure 1 shows the overall system architecture.,Experiment/Discussion
+Section 2.1 describes the word sentiment classifier and Section 2.2 describes the sentence sentiment classifier.,Experiment/Discussion
+2.1 Word Sentiment Classifier.,Experiment/Discussion
+2.1.1 Word Classification Models For word sentiment classification we developed two models.,Experiment/Discussion
+"The basic approach is to assemble a small amount of seed words by hand, sorted by polarity into two lists?positive and negative?and then to grow this by adding words obtained from WordNet (Miller et al 1993; Fellbaum et al 1993).",Experiment/Discussion
+"We assume synonyms of positive words are mostly positive and antonyms mostly negative, e.g., the positive word ?good?",Experiment/Discussion
+"has synonyms ?virtuous, honorable, righteous?",Experiment/Discussion
+"and antonyms ?evil, disreputable, unrighteous?.",Experiment/Discussion
+"Antonyms of negative words are added to the positive list, and synonyms to the negative one.",Experiment/Discussion
+"To start the seed lists we selected verbs (23 positive and 21 negative) and adjectives (15 positive and 19 negative), adding nouns later.",Experiment/Discussion
+"Since adjectives and verbs are structured differently in WordNet, we obtained from it synonyms and antonyms for adjectives but only synonyms for verbs.",Experiment/Discussion
+"For each seed word, we extracted from WordNet its expansions and added them back into the appropriate seed lists.",Experiment/Discussion
+"Using these expanded lists, we extracted an additional cycle of words from WordNet, to obtain finally 5880 positive adjectives, 6233 negative adjectives, 2840 positive verbs, and 3239 negative verbs.",Experiment/Discussion
+"However, not all synonyms and antonyms could be used: some had opposite sentiment or were neutral.",Experiment/Discussion
+"In addition, some common words such as ?great?, ?strong?, ?take?, and ?get?",Experiment/Discussion
+occurred many times in both positive and negative categories.,Experiment/Discussion
+This indicated the need to develop a measure of strength of sentiment polarity (the alternative was simply to discard such ambiguous words)?to determine how strongly a word is positive and also how strongly it is negative.,Experiment/Discussion
+This would enable us to discard sentiment-ambiguous words but retain those with strengths over some threshold.,Experiment/Discussion
+"Armed with such a measure, we can also assign strength of sentiment polarity to as yet unseen words.",Experiment/Discussion
+"Given a new word, we use WordNet again to obtain a synonym set of the unseen word to determine how it interacts with our sentiment seed lists.",Experiment/Discussion
+"That is, we compute (1) ).....,|(maxarg )|(maxarg 21 n c c synsynsyncP wcP ? where c is a sentiment category (positive or negative), w is the unseen word, and synn are the WordNet synonyms of w. To compute Equation (1), we tried two different models: (2) )|()(maxarg )|()(maxarg )|()(maxarg)|(maxarg 1 ))(,( ...3 2 1 ? = = = = m k wsynsetfcount k c n c cc kcfPcP csynsynsynsynPcP cwPcPwcP where fk is the kth feature (list word) of sentiment class c which is also a member of the synonym set of w, and count(fk,synset(w)) is the total number of occurrences of fk in the synonym set of w. P(c) is the number of words in class c divided by the total number of words considered.",Experiment/Discussion
+This model derives from document classification.,Experiment/Discussion
+"We used the synonym and antonym lists obtained from Wordnet instead of learning word sets from a corpus, since the former is simpler and does not require manually annotated data for training.",Experiment/Discussion
+Equation (3) shows the second model for a word sentiment classifier.,Experiment/Discussion
+"(3) )( ),( )(maxarg )|()(maxarg)|(maxarg 1 ccount csyncount cP cwPcPwcP n i i c cc ? == = To compute the probability P(w|c) of word w given a sentiment class c, we count the occurrence of w?s synonyms in the list of c. The intuition is that the more synonyms occuring in c, the more likely the word belongs.",Experiment/Discussion
+We computed both positive and negative sentiment strengths for each word and compared their relative magnitudes.,Experiment/Discussion
+"Table 2 shows several examples of the system output, computed with Equation (2), in which ?+?",Experiment/Discussion
+represents positive category strength and ?-?,Experiment/Discussion
+negative.,Experiment/Discussion
+"The word ?amusing?, for example, was classified as carrying primarily positive sentiment, and ?blame?",Experiment/Discussion
+as primarily negative.,Experiment/Discussion
+The absolute value of each category represents the strength of its sentiment polarity.,Experiment/Discussion
+"For instance, ?afraid?",Experiment/Discussion
+with strength -0.99 represents strong negavitity while ?abysmal?,Experiment/Discussion
+with strength -0.61 represents weaker negativity.,Experiment/Discussion
+abysmal : NEGATIVE [+ : 0.3811][- : 0.6188] adequate : POSITIVE [+ : 0.9999][- : 0.0484e-11] afraid : NEGATIVE [+ : 0.0212e-04][- : 0.9999] ailing : NEGATIVE [+ : 0.0467e-8][- : 0.9999] amusing : POSITIVE [+ : 0.9999][- : 0.0593e-07] answerable : POSITIVE [+ : 0.8655][- : 0.1344] apprehensible: POSITIVE [+ : 0.9999][- : 0.0227e-07] averse : NEGATIVE [+ : 0.0454e-05][- : 0.9999] blame : NEGATIVE [+ : 0.2530][- : 0.7469] Table 2: Sample output of word sentiment classifier.,Experiment/Discussion
+2.2 Sentence Sentiment Classifier.,Experiment/Discussion
+"As shows in Table 1, combining sentiments in a sentence can be tricky.",Experiment/Discussion
+We are interested in the sentiments of the Holder about the Claim.,Experiment/Discussion
+"Manual analysis showed that such sentiments can be found most reliably close to the Holder; without either Holder or Topic/Claim nearby as anchor points, even humans sometimes have trouble reliably determining the source of a sentiment.",Experiment/Discussion
+"We therefore included in the algorithm steps to identify the Topic (through direct matching, since we took it as given) and any likely opinion Holders (see Section 2.2.1).",Experiment/Discussion
+Near each Holder we then identified a region in which sentiments would be considered; any sentiments outside such a region we take to be of undetermined origin and ignore (Section 2.2.2).,Experiment/Discussion
+We then defined several models for combining the sentiments expressed within a region (Section 2.2.3).,Experiment/Discussion
+2.2.1 Holder Identification We used BBN?s named entity tagger IdentiFinder to identify potential holders of an opinion.,Experiment/Discussion
+We considered PERSON and ORGANIZATION as the only possible opinion holders.,Experiment/Discussion
+"For sentences with more than one Holder, we chose the one closest to the Topic phrase, for simplicity.",Experiment/Discussion
+This is a very crude step.,Experiment/Discussion
+A more sophisticated approach would employ a parser to identify syntactic relationships between each Holder and all dependent expressions of sentiment.,Experiment/Discussion
+"2.2.2 Sentiment Region Lacking a parse of the sentence, we were faced with a dilemma: How large should a region be?",Experiment/Discussion
+"We therefore defined the sentiment region in various ways (see Table 3) and experimented with their effectiveness, as reported in Section 3.",Experiment/Discussion
+Window1: full sentence Window2: words between Holder and Topic Window3: window2 ? 2 words Window4: window2 to the end of sentence Table 3: Four variations of region size.,Experiment/Discussion
+"2.2.3 Classification Models We built three models to assign a sentiment category to a given sentence, each combining the individual sentiments of sentiment-bearing words, as described above, in a different way.",Experiment/Discussion
+"Model 0 simply considers the polarities of the sentiments, not the strengths: Model 0: ?",Experiment/Discussion
+(signs in region) The intuition here is something like ?negatives cancel one another out?.,Experiment/Discussion
+Here the system assigns the same sentiment to both ?the California Supreme Court agreed that the state?s new term-limit law was constitutional?,Experiment/Discussion
+and ?the California Supreme Court disagreed that the state?s new term-limit law was unconstitutional?.,Experiment/Discussion
+"For this model, we also included negation words such as not and never to reverse the sentiment polarity.",Experiment/Discussion
+"Model 1 is the harmonic mean (average) of the sentiment strengths in the region: Model 1: cwcp wcp cn scP ij n i i = = ? = )|(argmax if ,)|( )( 1)|( j 1 Here n(c) is the number of words in the region whose sentiment category is c. If a region contains more and stronger positive than negative words, the sentiment will be positive.",Experiment/Discussion
+"Model 2 is the geometric mean: Model 2: cwcpif wcpscP ij n i i cn = ?= ? = ? )|(argmax ,)|(10)|( j 1 1)( 2.2.4 Examples The following are two example outputs.",Experiment/Discussion
+"Public officials throughout California have condemned a U.S. Senate vote Thursday to exclude illegal aliens from the 1990 census, saying the action will shortchange California in Congress and possibly deprive the state of millions of dollars of federal aid for medical emergency services and other programs for poor people.",Experiment/Discussion
+"TOPIC : illegal alien HOLDER : U.S. Senate OPINION REGION: vote/NN Thursday/NNP to/TO exclude/VB illegal/JJ aliens/NNS from/IN the/DT 1990/CD census,/NN SENTIMENT_POLARITY: negative For that reason and others, the Constitutional Convention unanimously rejected term limits and the First Congress soundly defeated two subsequent term-limit proposals.",Experiment/Discussion
+TOPIC : term limit HOLDER : First Congress OPINION REGION: soundly/RB defeated/VBD two/CD subsequent/JJ term-limit/JJ proposals./NN SENTIMENT_POLARITY: negative,Experiment/Discussion
+The first experiment examines the two word sentiment classifier models and the second the three sentence sentiment classifier models.,Results/Conclusion
+3.1 Word Sentiment Classifier.,Results/Conclusion
+"For test material, we asked three humans to classify data.",Results/Conclusion
+We started with a basic English word list for foreign students preparing for the TOEFL test and intersected it with an adjective list containing 19748 English adjectives and a verb list of 8011 verbs to obtain common adjectives and verbs.,Results/Conclusion
+From this we randomly selected 462 adjectives and 502 verbs for human classification.,Results/Conclusion
+"Human1 and human2 each classified 462 adjectives, and human2 and human3 502 verbs.",Results/Conclusion
+"The classification task is defined as assigning each word to one of three categories: positive, negative, and neutral.",Results/Conclusion
+3.1.1 Human?Human Agreement Adjectives Verbs Human1 : Human2 Human1 : Human3 Strict 76.19% 62.35% Lenient 88.96% 85.06% Table 4: Inter-human classification agreement.,Results/Conclusion
+Table 4 shows inter-human agreement.,Results/Conclusion
+"The strict measure is defined over all three categories, whereas the lenient measure is taken over only two categories, where positive and neutral have been merged, should we choose to focus only on differentiating words of negative sentiment.",Results/Conclusion
+"3.1.2 Human?Machine Agreement Table 5 shows results, using Equation (2) of Section 2.1.1, compared against a baseline that randomly assigns a sentiment category to each word (averaged over 10 iterations).",Results/Conclusion
+The system achieves lower agreement than humans but higher than the random process.,Results/Conclusion
+"Of the test data, the algorithm classified 93.07% of adjectives and 83.27% of verbs as either positive and negative.",Results/Conclusion
+"The remainder of adjectives and verbs failed to be classified, since they did not overlap with the synonym set of adjectives and verbs.",Results/Conclusion
+"In Table 5, the seed list included just a few manually selected seed words (23 positive and 21 negative verbs and 15 and 19 adjectives, repectively).",Results/Conclusion
+We decided to investigate the effect of more seed words.,Results/Conclusion
+"After collecting the annotated data, we added half of it (231 adjectives and 251 verbs) to the training set, retaining the other half for the test.",Results/Conclusion
+"As Table 6 shows, agreement of both adjectives and verbs with humans improves.",Results/Conclusion
+Recall is also improved.,Results/Conclusion
+Adjective (Train: 231 Test : 231) Verb (Train: 251 Test : 251) Lenient agreement Lenient agreement H1:M H2:M recall H1:M H3:M recall 75.66% 77.88% 97.84% 81.20% 79.06% 93.23% Table 6: Results including manual data.,Results/Conclusion
+3.2 Sentence Sentiment Classifier.,Results/Conclusion
+"3.2.1 Data 100 sentences were selected from the DUC 2001 corpus with the topics ?illegal alien?, ?term limits?, ?gun control?, and ?NAFTA?.",Results/Conclusion
+"Two humans annotated the 100 sentences with three categories (positive, negative, and N/A).",Results/Conclusion
+"To measure the agreement between humans, we used the Kappa statistic (Siegel and Castellan Jr. 1988).",Results/Conclusion
+"The Kappa value for the annotation task of 100 sentences was 0.91, which is considered to be reliable.",Results/Conclusion
+"3.2.2 Test on Human Annotated Data We experimented on Section 2.2.3?s 3 models of sentiment classifiers, using the 4 different window definitions and 4 variations of word-level classifiers (the two word sentiment equations introduced in Section 2.1.1, first with and then without normalization, to compare performance).",Results/Conclusion
+"Since Model 0 considers not probabilities of words but only their polarities, the two word- level classifier equations yield the same results.",Results/Conclusion
+"Consequently, Model 0 has 8 combinations and Models 1 and 2 have 16 each.",Results/Conclusion
+"To test the identification of opinion Holder, we first ran models with holders that were annotated by humans then ran the same models with the automatic holder finding strategies.",Results/Conclusion
+The results appear in Figures 2 and 3.,Results/Conclusion
+"The models are numbered as follows: m0 through m4 represent 4 sentence classifier models, Table 5.",Results/Conclusion
+Agreement between humans and system.,Results/Conclusion
+Adjective (test: 231 adjectives) Verb (test : 251 verbs) Lenient agreement Lenient agreement H1:M H2:M recall H1:M H3:M recall Random selection (average of 10 iterations) 59.35% 57.81% 100% 59.02% 56.59% 100% Basic method 68.37% 68.60% 93.07% 75.84% 72.72% 83.27% p1/p2 and p3/p4 represent the word classifier models in Equation (2) and Equation (3) with normalization and without normalization respectively.,Results/Conclusion
+0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu ra cy Window 1 Window 2 Window 3 Window 4 0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 Human 1 : Machine Human 2 : Machine Figure 2: Results with manually annotated Holder.,Results/Conclusion
+0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 0.3 0.4 0.5 0.6 0.7 0.8 0.9 m0p1 m0p3 m1p1 m1p2 m1p3 m1p4 m2p1 m2p2 m2p3 m2p4 ac cu rac y Window 1 Window 2 Window 3 Window 4 Human 1 : Machine Human 2 : Machine Figure 3: Results with automatic Holder detection.,Results/Conclusion
+Correctness of an opinion is determined when the system finds both a correct holder and the appropriate sentiment within the sentence.,Results/Conclusion
+"Since human1 classified 33 sentences positive and 33 negative, random classification gives 33 out of 66 sentences.",Results/Conclusion
+"Similarly, since human2 classified 29 positive and 34 negative, random classification gives 34 out of 63 when the system blindly marks all sentences as negative and 29 out of 63 when it marks all as positive.",Results/Conclusion
+The system?s best model performed at 81% accuracy with the manually provided holder and at 67% accuracy with automatic holder detection.,Results/Conclusion
+3.3 Problems.,Results/Conclusion
+"3.3.1 Word Sentiment Classification As mentioned, some words have both strong positive and negative sentiment.",Results/Conclusion
+"For these words, it is difficult to pick one sentiment category without considering context.",Results/Conclusion
+"Second, a unigram model is not sufficient: common words without much sentiment alone can combine to produce reliable sentiment.",Results/Conclusion
+"For example, in ??Term limits really hit at democracy,?",Results/Conclusion
+"says Prof. Fenno?, the common and multi-meaning word ?hit?",Results/Conclusion
+was used to express a negative point of view about term limits.,Results/Conclusion
+"If such combinations occur adjacently, we can use bigrams or trigrams in the seed word list.",Results/Conclusion
+"When they occur at a distance, however, it is more difficult to identify the sentiment correctly, especially if one of the words falls outside the sentiment region.",Results/Conclusion
+"3.3.2 Sentence Sentiment Classification Even in a single sentence, a holder might express two different opinions.",Results/Conclusion
+Our system only detects the closest one.,Results/Conclusion
+Another difficult problem is that the models cannot infer sentiments from facts in a sentence.,Results/Conclusion
+?She thinks term limits will give women more opportunities in politics?,Results/Conclusion
+"expresses a positive opinion about term limits but the absence of adjective, verb, and noun sentiment-words prevents a classification.",Results/Conclusion
+"Although relatively easy task for people, detecting an opinion holder is not simple either.",Results/Conclusion
+"As a result, our system sometimes picks a wrong holder when there are multiple plausible opinion holder candidates present.",Results/Conclusion
+Employing a parser to delimit opinion regions and more accurately associate them with potential holders should help.,Results/Conclusion
+3.4 Discussion.,Results/Conclusion
+Which combination of models is best?,Results/Conclusion
+The best overall performance is provided by Model 0.,Results/Conclusion
+"Apparently, the mere presence of negative words is more important than sentiment strength.",Results/Conclusion
+"For manually tagged holder and topic, Model 0 has the highest single performance, though Model 1 averages best.",Results/Conclusion
+"Which is better, a sentence or a region?",Results/Conclusion
+"With manually identified topic and holder, the region window4 (from Holder to sentence end) performs better than other regions.",Results/Conclusion
+How do scores differ from manual to automatic holder identification?,Results/Conclusion
+Table 7 compares the average results with automatic holder identification to manually annotated holders in 40 different models.,Results/Conclusion
+Around 7 more sentences (around 11%) were misclassified by the automatic detection method.,Results/Conclusion
+positive negative total Human1 5.394 1.667 7.060 Human2 4.984 1.714 6.698 Table 7: Average difference between manual and automatic holder detection.,Results/Conclusion
+How does adding the neutral sentiment as a separate category affect the score?,Results/Conclusion
+It is very confusing even for humans to distinguish between a neutral opinion and non opinion bearing sentences.,Results/Conclusion
+"In previous research, we built a sentence subjectivity classifier.",Results/Conclusion
+"Unfortunately, in most cases it classifies neutral and weak sentiment sentences as non-opinion bearing sentences.",Results/Conclusion
+Sentiment recognition is a challenging and difficult part of understanding opinions.,Results/Conclusion
+We plan to extend our work to more difficult cases such as sentences with weak-opinion-bearing words or sentences with multiple opinions about a topic.,Results/Conclusion
+"To improve identification of the Holder, we plan to use a parser to associate regions more reliably with holders.",Results/Conclusion
+"We plan to explore other learning techniques, such as decision lists or SVMs.",Results/Conclusion
+"Nonetheless, as the experiments show, encouraging results can be obtained even with relatively simple models and only a small amount of manual seeding effort.",Results/Conclusion

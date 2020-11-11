@@ -1,188 +1,188 @@
 col1,col2
-This paper explores methods for generating subjectivity analysis resources in a new language by leveraging on the tools and resources available in English.,{}
-"Given a bridge between English and the selected target language (e.g., a bilingual dictionary or a parallel corpus), the methods can be used to rapidly create tools for subjectivity analysis in the new language.",{}
-"There is growing interest in the automatic extraction of opinions, emotions, and sentiments in text (subjectivity), to provide tools and support for various natural language processing applications.","{'title': '1 Introduction', 'number': '1'}"
-"Most of the research to date has focused on English, which is mainly explained by the availability of resources for subjectivity analysis, such as lexicons and manually labeled corpora.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we investigate methods to automatically generate resources for subjectivity analysis for a new target language by leveraging on the resources and tools available for English, which in many cases took years of work to complete.","{'title': '1 Introduction', 'number': '1'}"
-"Specifically, through experiments with cross-lingual projection of subjectivity, we seek answers to the following questions.","{'title': '1 Introduction', 'number': '1'}"
-"First, can we derive a subjectivity lexicon for a new language using an existing English subjectivity lexicon and a bilingual dictionary?","{'title': '1 Introduction', 'number': '1'}"
-"Second, can we derive subjectivity-annotated corpora in a new language using existing subjectivity analysis tools for English and a parallel corpus?","{'title': '1 Introduction', 'number': '1'}"
-"Finally, third, can we build tools for subjectivity analysis for a new target language by relying on these automatically generated resources?","{'title': '1 Introduction', 'number': '1'}"
-"We focus our experiments on Romanian, selected as a representative of the large number of languages that have only limited text processing resources developed to date.","{'title': '1 Introduction', 'number': '1'}"
-"Note that, although we work with Romanian, the methods described are applicable to any other language, as in these experiments we (purposely) do not use any language-specific knowledge of the target language.","{'title': '1 Introduction', 'number': '1'}"
-"Given a bridge between English and the selected target language (e.g., a bilingual dictionary or a parallel corpus), the methods can be applied to other languages as well.","{'title': '1 Introduction', 'number': '1'}"
-"After providing motivations, we present two approaches to developing sentence-level subjectivity classifiers for a new target language.","{'title': '1 Introduction', 'number': '1'}"
-The first uses a subjectivity lexicon translated from an English one.,"{'title': '1 Introduction', 'number': '1'}"
-The second uses an English subjectivity classifier and a parallel corpus to create target-language training data for developing a statistical classifier.,"{'title': '1 Introduction', 'number': '1'}"
-"Automatic subjectivity analysis methods have been used in a wide variety of text processing applications, such as tracking sentiment timelines in online forums and news (Lloyd et al., 2005; Balog et al., 2006), review classification (Turney, 2002; Pang et al., 2002), mining opinions from product reviews (Hu and Liu, 2004), automatic expressive text-to-speech synthesis (Alm et al., 2005), text semantic analysis (Wiebe and Mihalcea, 2006; Esuli and Sebastiani, 2006), and question answering (Yu and Hatzivassiloglou, 2003).","{'title': '2 Motivation', 'number': '2'}"
-"While much recent work in subjectivity analysis focuses on sentiment (a type of subjectivity, namely positive and negative emotions, evaluations, and judgments), we opt to focus on recognizing subjectivity in general, for two reasons.","{'title': '2 Motivation', 'number': '2'}"
-"First, even when sentiment is the desired focus, researchers in sentiment analysis have shown that a two-stage approach is often beneficial, in which subjective instances are distinguished from objective ones, and then the subjective instances are further classified according to polarity (Yu and Hatzivassiloglou, 2003; Pang and Lee, 2004; Wilson et al., 2005; Kim and Hovy, 2006).","{'title': '2 Motivation', 'number': '2'}"
-"In fact, the problem of distinguishing subjective versus objective instances has often proved to be more difficult than subsequent polarity classification, so improvements in subjectivity classification promise to positively impact sentiment classification.","{'title': '2 Motivation', 'number': '2'}"
-"This is reported in studies of manual annotation of phrases (Takamura et al., 2006), recognizing contextual polarity of expressions (Wilson et al., 2005), and sentiment tagging of words and word senses (Andreevskaia and Bergler, 2006; Esuli and Sebastiani, 2006).","{'title': '2 Motivation', 'number': '2'}"
-"Second, an NLP application may seek a wide range of types of subjectivity attributed to a person, such as their motivations, thoughts, and speculations, in addition to their positive and negative sentiments.","{'title': '2 Motivation', 'number': '2'}"
-"For instance, the opinion tracking system Lydia (Lloyd et al., 2005) gives separate ratings for subjectivity and sentiment.","{'title': '2 Motivation', 'number': '2'}"
-These can be detected with subjectivity analysis but not by a method focused only on sentiment.,"{'title': '2 Motivation', 'number': '2'}"
-There is world-wide interest in text analysis applications.,"{'title': '2 Motivation', 'number': '2'}"
-"While work on subjectivity analysis in other languages is growing (e.g., Japanese data are used in (Takamura et al., 2006; Kanayama and Nasukawa, 2006), Chinese data are used in (Hu et al., 2005), and German data are used in (Kim and Hovy, 2006)), much of the work in subjectivity analysis has been applied to English data.","{'title': '2 Motivation', 'number': '2'}"
-Creating corpora and lexical resources for a new language is very time consuming.,"{'title': '2 Motivation', 'number': '2'}"
-"In general, we would like to leverage resources already developed for one language to more rapidly create subjectivity analysis tools for a new one.","{'title': '2 Motivation', 'number': '2'}"
-This motivates our exploration and use of cross-lingual lexicon translations and annotation projections.,"{'title': '2 Motivation', 'number': '2'}"
-Most if not all work on subjectivity analysis has been carried out in a monolingual framework.,"{'title': '2 Motivation', 'number': '2'}"
-"We are not aware of multi-lingual work in subjectivity analysis such as that proposed here, in which subjectivity analysis resources developed for one language are used to support developing resources in another.","{'title': '2 Motivation', 'number': '2'}"
-"Many subjectivity and sentiment analysis tools rely on manually or semi-automatically constructed lexicons (Yu and Hatzivassiloglou, 2003; Riloff and Wiebe, 2003; Kim and Hovy, 2006).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Given the success of such techniques, the first approach we take to generating a target-language subjectivity classifier is to create a subjectivity lexicon by translating an existing source language lexicon, and then build a classifier that relies on the resulting lexicon.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Below, we describe the translation process and discuss the results of an annotation study to assess the quality of the translated lexicon.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-We then describe and evaluate a lexicon-based target-language classifier.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The subjectivity lexicon we use is from OpinionFinder (Wiebe and Riloff, 2005), an English subjectivity analysis system which, among other things, classifies sentences as subjective or objective.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-The lexicon was compiled from manually developed resources augmented with entries learned from corpora.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"It contains 6,856 unique entries, out of which 990 are multi-word expressions.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The entries in the lexicon have been labeled for part of speech, and for reliability – those that appear most often in subjective contexts are strong clues of subjectivity, while those that appear less often, but still more often than expected by chance, are labeled weak.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"To perform the translation, we use two bilingual dictionaries.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The first is an authoritative EnglishRomanian dictionary, consisting of 41,500 entries,1 which we use as the main translation resource for the lexicon translation.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The second dictionary, drawn from the Universal Dictionary download site (UDP, 2007) consists of 4,500 entries written largely by Web volunteer contributors, and thus is not error free.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-We use this dictionary only for those entries that do not appear in the main dictionary.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-There were several challenges encountered in the translation process.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"First, although the English subjectivity lexicon contains inflected words, we must use the lemmatized form in order to be able to translate the entries using the bilingual dictionary.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"However, words may lose their subjective meaning once lemmatized.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"For instance, the inflected form of memories becomes memory.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Once translated into Romanian (as memorie), its main meaning is objective, referring to the power of retaining information as in Iron supplements may improve a woman’s memory.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Second, neither the lexicon nor the bilingual dictionary provides information on the sense of the individual entries, and therefore the translation has to rely on the most probable sense in the target language.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Fortunately, the bilingual dictionary lists the translations in reverse order of their usage frequencies.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Nonetheless, the ambiguity of the words and the translations still seems to represent an important source of error.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Moreover, the lexicon sometimes includes identical entries expressed through different parts of speech, e.g., grudge has two separate entries, for its noun and verb roles, respectively.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"On the other hand, the bilingual dictionary does not make this distinction, and therefore we have again to rely on the “most frequent” heuristic captured by the translation order in the bilingual dictionary.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Finally, the lexicon includes a significant number (990) of multi-word expressions that pose translation difficulties, sometimes because their meaning is idiomatic, and sometimes because the multi-word expression is not listed in the bilingual dictionary and the translation of the entire phrase is difficult to reconstruct from the translations of the individual words.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"To address this problem, when a translation is not found in the dictionary, we create one using a word-by-word approach.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"These translations are then validated by enforcing that they occur at least three times on the Web, using counts collected from the AltaVista search engine.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The multi-word expressions that are not validated in this process are discarded, reducing the number of expressions from an initial set of 990 to a final set of 264.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The final subjectivity lexicon in Romanian contains 4,983 entries.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Table 1 shows examples of entries in the Romanian lexicon, together with their corresponding original English form.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-The table also shows the reliability of the expression (weak or strong) and the part of speech – attributes that are provided in the English subjectivity lexicon.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"We want to assess the quality of the translated lexicon, and compare it to the quality of the original English lexicon.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The English subjectivity lexicon was evaluated in (Wiebe and Riloff, 2005) against a corpus of English-language news articles manually annotated for subjectivity (the MPQA corpus (Wiebe et al., 2005)).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"According to this evaluation, 85% of the instances of the clues marked as strong and 71.5% of the clues marked as weak are in subjective sentences in the MPQA corpus.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Since there is no comparable Romanian corpus, an alternate way to judge the subjectivity of a Romanian lexicon entry is needed.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-Two native speakers of Romanian annotated the subjectivity of 150 randomly selected entries.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Each annotator independently read approximately 100 examples of each drawn from the Web, including a large number from news sources.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The subjectivity of a word was consequently judged in the contexts where it most frequently appears, accounting for its most frequent meanings on the Web.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The tagset used for the annotations consists of S(ubjective), O(bjective), and B(oth).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-A W(rong) label is also used to indicate a wrong translation.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-Table 2 shows the contingency table for the two annotators’ judgments on this data.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Without counting the wrong translations, the agreement is measured at 0.80, with a Kappa κ = 0.70, which indicates consistent agreement.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"After the disagreements were reconciled through discussions, the final set of 123 correctly translated entries does include 49.6% (61) subjective entries, but fully 23.6% (29) were found in the study to have primarily objective uses (the other 26.8% are mixed).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Thus, this study suggests that the Romanian subjectivity clues derived through translation are less reliable than the original set of English clues.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"In several cases, the subjectivity is lost in the translation, mainly due to word ambiguity in either the source or target language, or both.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"For instance, the word fragile correctly translates into Romanian as fragil, yet this word is frequently used to refer to breakable objects, and it loses its subjective meaning of delicate.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Other words, such as one-sided, completely lose subjectivity once translated, as it becomes in Romanian cu o singura latur˘a, meaning with only one side (as of objects).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Interestingly, the reliability of clues in the English lexicon seems to help preserve subjectivity.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Out of the 77 entries marked as strong, 11 were judged to be objective in Romanian (14.3%), compared to 14 objective Romanian entries obtained from the 36 weak English clues (39.0%).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Starting with the Romanian lexicon, we developed a lexical classifier similar to the one introduced by (Riloff and Wiebe, 2003).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-At the core of this method is a high-precision subjectivity and objectivity classifier that can label large amounts of raw text using only a subjectivity lexicon.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-Their method is further improved with a bootstrapping process that learns extraction patterns.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"In our experiments, however, we apply only the rule-based classification step, since the extraction step cannot be implemented without tools for syntactic parsing and information extraction not available in Romanian.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The classifier relies on three main heuristics to label subjective and objective sentences: (1) if two or more strong subjective expressions occur in the same sentence, the sentence is labeled Subjective; (2) if no strong subjective expressions occur in a sentence, and at most two weak subjective expressions occur in the previous, current, and next sentence combined, then the sentence is labeled Objective; (3) otherwise, if none of the previous rules apply, the sentence is labeled Unknown.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-The quality of the classifier was evaluated on a Romanian gold-standard corpus annotated for subjectivity.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Two native Romanian speakers (Rol and Roe) manually annotated the subjectivity of the sentences of five randomly selected documents (504 sentences) from the Romanian side of an EnglishRomanian parallel corpus, according to the annotation scheme in (Wiebe et al., 2005).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Agreement between annotators was measured, and then their differences were adjudicated.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The baseline on this data set is 54.16%, which can be obtained by assigning a default Subjective label to all sentences.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"(More information about the corpus and annotations are given in Section 4 below, where agreement between English and Romanian aligned sentences is also assessed.)","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"As mentioned earlier, due to the lexicon projection process that is performed via a bilingual dictionary, the entries in our Romanian subjectivity lexicon are in a lemmatized form.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Consequently, we also lemmatize the gold-standard corpus, to allow for the identification of matches with the lexicon.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"For this purpose, we use the Romanian lemmatizer developed by Ion and Tufis¸ (Ion, 2007), which has an estimated accuracy of 98%.2 Table 3 shows the results of the rule-based classifier.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"We show the precision, recall, and F-measure independently measured for the subjective, objective, and all sentences.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"We also evaluated a variation of the rule-based classifier that labels a sentence as objective if there are at most three weak expressions in the previous, current, and next sentence combined, which raises the recall of the objective classifier.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Our attempts to increase the recall of the subjective classifier all resulted in significant loss in precision, and thus we kept the original heuristic.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"In its original English implementation, this system was proposed as being high-precision but low coverage.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Evaluated on the MPQA corpus, it has subjective precision of 90.4, subjective recall of 34.2, objective precision of 82.4, and objective recall of 30.7; overall, precision is 86.7 and recall is 32.6 (Wiebe and Riloff, 2005).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-We see a similar behavior on Romanian for subjective sentences.,"{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The subjective precision is good, albeit at the cost of low recall, and thus the classifier could be used to harvest subjective sentences from unlabeled Romanian data (e.g., for a subsequent bootstrapping process).","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"The system is not very effective for objective classification, however.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Recall that the objective classifier relies on the weak subjectivity clues, for which the transfer of subjectivity in the translation process was particularly low.","{'title': '3 A Lexicon-Based Approach', 'number': '3'}"
-"Given the low number of subjective entries found in the automatically generated lexicon and the subsequent low recall of the lexical classifier, we decided to also explore a second, corpus-based approach.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"This approach builds a subjectivity-annotated corpus for the target language through projection, and then trains a statistical classifier on the resulting corpus (numerous statistical classifiers have been trained for subjectivity or sentiment classification, e.g., (Pang et al., 2002; Yu and Hatzivassiloglou, 2003)).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The hypothesis is that we can eliminate some of the ambiguities (and consequent loss of subjectivity) observed during the lexicon translation by accounting for the context of the ambiguous words, which is possible in a corpus-based approach.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Additionally, we also hope to improve the recall of the classifier, by addressing those cases not covered by the lexicon-based approach.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In the experiments reported in this section, we use a parallel corpus consisting of 107 documents from the SemCor corpus (Miller et al., 1993) and their manual translations into Romanian.3 The corpus consists of roughly 11,000 sentences, with approximately 250,000 tokens on each side.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"It is a balanced corpus covering a number of topics in sports, politics, fashion, education, and others.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"3The translation was carried out by a Romanian native speaker, student in a department of “Foreign Languages and Translations” in Romania.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Below, we begin with a manual annotation study to assess the quality of annotation and preservation of subjectivity in translation.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"We then describe the automatic construction of a target-language training set, and evaluate a classifier trained on that data.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Annotation Study.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-We start by performing an agreement study meant to determine the extent to which subjectivity is preserved by the cross-lingual projections.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In the study, three annotators – one native English speaker (En) and two native Romanian speakers (Ro1 and Ro2) – first trained on 3 randomly selected documents (331 sentences).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"They then independently annotated the subjectivity of the sentences of two randomly selected documents from the parallel corpus, accounting for 173 aligned sentence pairs.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The annotators had access exclusively to the version of the sentences in their language, to avoid any bias that could be introduced by seeing the translation in the other language.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Note that the Romanian annotations (after all differences between the Romanian annotators were adjudicated) of all 331 + 173 sentences make up the gold standard corpus used in the experiments reported in Sections 3.2 and 4.1.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Before presenting the results of the annotation study, we give some examples.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The following are English subjective sentences and their Romanian translations (the subjective elements are shown in bold).,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[en] The desire to give Broglio as many starts as possible.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[ro] Dorint¸a de a-i da lui Broglio cˆat mai multe starturi posibile.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"[en] Suppose he did lie beside Lenin, would it be permanent ?","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"[ro] S˘a presupunem c˘a ar fi as¸ezat al˘aturi de Lenin, oare va fi pentru totdeauna?","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The following are examples of objective parallel sentences.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[en]The Pirates have a 9-6 record this year and the Redbirds are 7-9.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[ro] Pirat¸ii au un palmares de 9 la 6 anul acesta si P˘as˘arile Ros¸ii au 7 la 9.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[en] One of the obstacles to the easy control of a 2-year old child is a lack of verbal communication.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[ro] Unul dintre obstacolele in controlarea unui copil de 2 ani este lipsa comunic˘arii verbale.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The annotators were trained using the MPQA annotation guidelines (Wiebe et al., 2005).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The tagset consists of S(ubjective), O(bjective) and U(ncertain).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"For the U tags, a class was also given; OU means, for instance, that the annotator is uncertain but she is leaning toward O.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Table 4 shows the pairwise agreement figures and the Kappa (K) calculated for the three annotators.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The table also shows the agreement when the borderline uncertain cases are removed.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Annotations performed by three annotators: one native English speaker (En) and two native Romanian speakers (Rol and Roe) When all the sentences are included, the agreement between the two Romanian annotators is measured at 0.83 (K = 0.67).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"If we remove the borderline cases where at least one annotator’s tag is Uncertain, the agreement rises to 0.89 with K = 0.77.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"These figures are somewhat lower than the agreement observed during previous subjectivity annotation studies conducted on English (Wiebe et al., 2005) (the annotators were more extensively trained in those studies), but they nonetheless indicate consistent agreement.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Interestingly, when the agreement is conducted cross-lingually between an English and a Romanian annotator, the agreement figures, although somewhat lower, are comparable.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In fact, once the Uncertain tags are removed, the monolingual and cross-lingual agreement and K values become almost equal, which suggests that in most cases the sentence-level subjectivity is preserved.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The disagreements were reconciled first between the labels assigned by the two Romanian annotators, followed by a reconciliation between the resulting Romanian “gold-standard” labels and the labels assigned by the English annotator.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In most cases, the disagreement across the two languages was found to be due to a difference of opinion about the sentence subjectivity, similar to the differences encountered in monolingual annotations.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"However, there are cases where the differences are due to the subjectivity being lost in the translation.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Sometimes, this is due to several possible interpretations for the translated sentence.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"For instance, the following sentence: [en] They honored the battling Billikens last night.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"[ro] Ei i-au celebrat pe Billikens seara trecut˘a. is marked as Subjective in English (in context, the English annotator interpreted honored as referring to praises of the Billikens).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"However, the Romanian translation of honored is celebrat which, while correct as a translation, has the more frequent interpretation of having a party.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The two Romanian annotators chose this interpretation, which correspondingly lead them to mark the sentence as Objective.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In other cases, in particular when the subjectivity is due to figures of speech such as irony, the translation sometimes misses the ironic aspects.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"For instance, the translation of egghead was not perceived as ironic by the Romanian annotators, and consequently the following sentence labeled Subjective in English is annotated as Objective in Romanian.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[en] I have lived for many years in a Connecticut commuting town with a high percentage of [...] business executives of egghead tastes.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-[ro] Am tr˘ait mult¸i ani intr-un oras¸ din apropiere de Connecticut ce avea o mare proport¸ie de [...] oameni de afaceri cu gusturi intelectuale.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"To further validate the corpus-based projection of subjectivity, we developed a subjectivity classifier trained on Romanian subjectivity-annotated corpora obtained via cross-lingual projections.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Ideally, one would generate an annotated Romanian corpus by translating English documents manually annotated for subjectivity such as the MPQA corpus.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Unfortunately, the manual translation of this corpus would be prohibitively expensive, both timewise and financially.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The other alternative – automatic machine translation – has not yet reached a level that would enable the generation of a highquality translated corpus.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"We therefore decided to use a different approach where we automatically annotate the English side of an existing EnglishRomanian corpus, and subsequently project the annotations onto the Romanian side of the parallel corpus across the sentence-level alignments available in the corpus.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"For the automatic subjectivity annotations, we generated two sets of the English-side annotations, one using the high-precision classifier and one using the high-coverage classifier available in the OpinionFinder tool.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"The high-precision classifier in OpinionFinder uses the clues of the subjectivity lexicon to harvest subjective and objective sentences from a large amount of unannotated text; this data is then used to automatically identify a set of extraction patterns, which are then used iteratively to identify a larger set of subjective and objective sentences.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In addition, in OpinionFinder, the high-precision classifier is used to produce an English labeled data set for training, which is used to generate its Naive Bayes high-coverage subjectivity classifier.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Table 5 shows the performance of the two classifiers on the MPQA corpus as reported in (Wiebe and Riloff, 2005).","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Note that 55% of the sentences in the MPQA corpus are subjective – which represents the baseline for this data set.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The two OpinionFinder classifiers are used to label the training corpus.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"After removing the 504 test sentences, we are left with 10,628 sentences that are automatically annotated for subjectivity.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Table 6 shows the number of subjective and objective sentences obtained with each classifier.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Next, the OpinionFinder annotations are projected onto the Romanian training sentences, which are then used to develop a probabilistic classifier for the automatic labeling of subjectivity in Romanian sentences.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Similar to, e.g., (Pang et al., 2002), we use a Naive Bayes algorithm trained on word features cooccurring with the subjective and the objective classifications.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"We assume word independence, and we use a 0.3 cut-off for feature selection.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"While recent work has also considered more complex syntactic features, we are not able to generate such features for Romanian as they require tools currently not available for this language.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"We create two classifiers, one trained on each data set.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The quality of the classifiers is evaluated on the 504-sentence Romanian gold-standard corpus described above.,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Recall that the baseline on this data set is 54.16%, the percentage of sentences in the corpus that are subjective.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-Table 7 shows the results. fier using training data obtained via projections from data automatically labeled by OpinionFinder (OF).,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Our best classifier has an F-measure of 67.85, and is obtained by training on projections from the high-coverage OpinionFinder annotations.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Although smaller than the 74.70 F-measure obtained by the English high-coverage classifier (see Table 5), the result appears remarkable given that no language-specific Romanian information was used.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-The overall results obtained with the machine learning approach are considerably higher than those obtained from the rule-based classifier (except for the precision of the subjective sentences).,"{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"This is most likely due to the lexicon translation process, which as mentioned in the agreement study in Section 3.1, leads to ambiguity and loss of subjectivity.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"Instead, the corpus-based translations seem to better account for the ambiguity of the words, and the subjectivity is generally preserved in the sentence translations.","{'title': '4 A Corpus-Based Approach', 'number': '4'}"
-"In this paper, we described two approaches to generating resources for subjectivity annotations for a new language, by leveraging on resources and tools available for English.","{'title': '5 Conclusions', 'number': '5'}"
-The first approach builds a target language subjectivity lexicon by translating an existing English lexicon using a bilingual dictionary.,"{'title': '5 Conclusions', 'number': '5'}"
-The second generates a subjectivity-annotated corpus in a target language by projecting annotations from an automatically annotated English corpus.,"{'title': '5 Conclusions', 'number': '5'}"
-These resources were validated in two ways.,"{'title': '5 Conclusions', 'number': '5'}"
-"First, we carried out annotation studies measuring the extent to which subjectivity is preserved across languages in each of the two resources.","{'title': '5 Conclusions', 'number': '5'}"
-"These studies show that only a relatively small fraction of the entries in the lexicon preserve their subjectivity in the translation, mainly due to the ambiguity in both the source and the target languages.","{'title': '5 Conclusions', 'number': '5'}"
-"This is consistent with observations made in previous work that subjectivity is a property associated not with words, but with word meanings (Wiebe and Mihalcea, 2006).","{'title': '5 Conclusions', 'number': '5'}"
-"In contrast, the sentence-level subjectivity was found to be more reliably preserved across languages, with cross-lingual inter-annotator agreements comparable to the monolingual ones.","{'title': '5 Conclusions', 'number': '5'}"
-"Second, we validated the two automatically generated subjectivity resources by using them to build a tool for subjectivity analysis in the target language.","{'title': '5 Conclusions', 'number': '5'}"
-"Specifically, we developed two classifiers: a rulebased classifier that relies on the subjectivity lexicon described in Section 3.1, and a machine learning classifier trained on the subjectivity-annotated corpus described in Section 4.1.","{'title': '5 Conclusions', 'number': '5'}"
-"While the highest precision for the subjective classification is obtained with the rule-based classifier, the overall best result of 67.85 F-measure is due to the machine learning approach.","{'title': '5 Conclusions', 'number': '5'}"
-"This result is consistent with the annotation studies, showing that the corpus projections preserve subjectivity more reliably than the lexicon translations.","{'title': '5 Conclusions', 'number': '5'}"
-"Finally, neither one of the classifiers relies on language-specific information, but rather on knowledge obtained through projections from English.","{'title': '5 Conclusions', 'number': '5'}"
-A similar method can therefore be used to derive tools for subjectivity analysis in other languages.,"{'title': '5 Conclusions', 'number': '5'}"
+This paper explores methods for generating subjectivity analysis resources in a new language by leveraging on the tools and resources available in English.,Introduction
+"Given a bridge between English and the selected target language (e.g., a bilingual dictionary or a parallel corpus), the methods can be used to rapidly create tools for subjectivity analysis in the new language.",Introduction
+"There is growing interest in the automatic extraction of opinions, emotions, and sentiments in text (subjectivity), to provide tools and support for various natural language processing applications.",Experiment/Discussion
+"Most of the research to date has focused on English, which is mainly explained by the availability of resources for subjectivity analysis, such as lexicons and manually labeled corpora.",Experiment/Discussion
+"In this paper, we investigate methods to automatically generate resources for subjectivity analysis for a new target language by leveraging on the resources and tools available for English, which in many cases took years of work to complete.",Experiment/Discussion
+"Specifically, through experiments with cross-lingual projection of subjectivity, we seek answers to the following questions.",Experiment/Discussion
+"First, can we derive a subjectivity lexicon for a new language using an existing English subjectivity lexicon and a bilingual dictionary?",Experiment/Discussion
+"Second, can we derive subjectivity-annotated corpora in a new language using existing subjectivity analysis tools for English and a parallel corpus?",Experiment/Discussion
+"Finally, third, can we build tools for subjectivity analysis for a new target language by relying on these automatically generated resources?",Experiment/Discussion
+"We focus our experiments on Romanian, selected as a representative of the large number of languages that have only limited text processing resources developed to date.",Experiment/Discussion
+"Note that, although we work with Romanian, the methods described are applicable to any other language, as in these experiments we (purposely) do not use any language-specific knowledge of the target language.",Experiment/Discussion
+"Given a bridge between English and the selected target language (e.g., a bilingual dictionary or a parallel corpus), the methods can be applied to other languages as well.",Experiment/Discussion
+"After providing motivations, we present two approaches to developing sentence-level subjectivity classifiers for a new target language.",Experiment/Discussion
+The first uses a subjectivity lexicon translated from an English one.,Experiment/Discussion
+The second uses an English subjectivity classifier and a parallel corpus to create target-language training data for developing a statistical classifier.,Experiment/Discussion
+"Automatic subjectivity analysis methods have been used in a wide variety of text processing applications, such as tracking sentiment timelines in online forums and news (Lloyd et al., 2005; Balog et al., 2006), review classification (Turney, 2002; Pang et al., 2002), mining opinions from product reviews (Hu and Liu, 2004), automatic expressive text-to-speech synthesis (Alm et al., 2005), text semantic analysis (Wiebe and Mihalcea, 2006; Esuli and Sebastiani, 2006), and question answering (Yu and Hatzivassiloglou, 2003).",Experiment/Discussion
+"While much recent work in subjectivity analysis focuses on sentiment (a type of subjectivity, namely positive and negative emotions, evaluations, and judgments), we opt to focus on recognizing subjectivity in general, for two reasons.",Experiment/Discussion
+"First, even when sentiment is the desired focus, researchers in sentiment analysis have shown that a two-stage approach is often beneficial, in which subjective instances are distinguished from objective ones, and then the subjective instances are further classified according to polarity (Yu and Hatzivassiloglou, 2003; Pang and Lee, 2004; Wilson et al., 2005; Kim and Hovy, 2006).",Experiment/Discussion
+"In fact, the problem of distinguishing subjective versus objective instances has often proved to be more difficult than subsequent polarity classification, so improvements in subjectivity classification promise to positively impact sentiment classification.",Experiment/Discussion
+"This is reported in studies of manual annotation of phrases (Takamura et al., 2006), recognizing contextual polarity of expressions (Wilson et al., 2005), and sentiment tagging of words and word senses (Andreevskaia and Bergler, 2006; Esuli and Sebastiani, 2006).",Experiment/Discussion
+"Second, an NLP application may seek a wide range of types of subjectivity attributed to a person, such as their motivations, thoughts, and speculations, in addition to their positive and negative sentiments.",Experiment/Discussion
+"For instance, the opinion tracking system Lydia (Lloyd et al., 2005) gives separate ratings for subjectivity and sentiment.",Experiment/Discussion
+These can be detected with subjectivity analysis but not by a method focused only on sentiment.,Experiment/Discussion
+There is world-wide interest in text analysis applications.,Experiment/Discussion
+"While work on subjectivity analysis in other languages is growing (e.g., Japanese data are used in (Takamura et al., 2006; Kanayama and Nasukawa, 2006), Chinese data are used in (Hu et al., 2005), and German data are used in (Kim and Hovy, 2006)), much of the work in subjectivity analysis has been applied to English data.",Experiment/Discussion
+Creating corpora and lexical resources for a new language is very time consuming.,Experiment/Discussion
+"In general, we would like to leverage resources already developed for one language to more rapidly create subjectivity analysis tools for a new one.",Experiment/Discussion
+This motivates our exploration and use of cross-lingual lexicon translations and annotation projections.,Experiment/Discussion
+Most if not all work on subjectivity analysis has been carried out in a monolingual framework.,Experiment/Discussion
+"We are not aware of multi-lingual work in subjectivity analysis such as that proposed here, in which subjectivity analysis resources developed for one language are used to support developing resources in another.",Experiment/Discussion
+"Many subjectivity and sentiment analysis tools rely on manually or semi-automatically constructed lexicons (Yu and Hatzivassiloglou, 2003; Riloff and Wiebe, 2003; Kim and Hovy, 2006).",Experiment/Discussion
+"Given the success of such techniques, the first approach we take to generating a target-language subjectivity classifier is to create a subjectivity lexicon by translating an existing source language lexicon, and then build a classifier that relies on the resulting lexicon.",Experiment/Discussion
+"Below, we describe the translation process and discuss the results of an annotation study to assess the quality of the translated lexicon.",Experiment/Discussion
+We then describe and evaluate a lexicon-based target-language classifier.,Experiment/Discussion
+"The subjectivity lexicon we use is from OpinionFinder (Wiebe and Riloff, 2005), an English subjectivity analysis system which, among other things, classifies sentences as subjective or objective.",Experiment/Discussion
+The lexicon was compiled from manually developed resources augmented with entries learned from corpora.,Experiment/Discussion
+"It contains 6,856 unique entries, out of which 990 are multi-word expressions.",Experiment/Discussion
+"The entries in the lexicon have been labeled for part of speech, and for reliability – those that appear most often in subjective contexts are strong clues of subjectivity, while those that appear less often, but still more often than expected by chance, are labeled weak.",Experiment/Discussion
+"To perform the translation, we use two bilingual dictionaries.",Experiment/Discussion
+"The first is an authoritative EnglishRomanian dictionary, consisting of 41,500 entries,1 which we use as the main translation resource for the lexicon translation.",Experiment/Discussion
+"The second dictionary, drawn from the Universal Dictionary download site (UDP, 2007) consists of 4,500 entries written largely by Web volunteer contributors, and thus is not error free.",Experiment/Discussion
+We use this dictionary only for those entries that do not appear in the main dictionary.,Experiment/Discussion
+There were several challenges encountered in the translation process.,Experiment/Discussion
+"First, although the English subjectivity lexicon contains inflected words, we must use the lemmatized form in order to be able to translate the entries using the bilingual dictionary.",Experiment/Discussion
+"However, words may lose their subjective meaning once lemmatized.",Experiment/Discussion
+"For instance, the inflected form of memories becomes memory.",Experiment/Discussion
+"Once translated into Romanian (as memorie), its main meaning is objective, referring to the power of retaining information as in Iron supplements may improve a woman’s memory.",Experiment/Discussion
+"Second, neither the lexicon nor the bilingual dictionary provides information on the sense of the individual entries, and therefore the translation has to rely on the most probable sense in the target language.",Experiment/Discussion
+"Fortunately, the bilingual dictionary lists the translations in reverse order of their usage frequencies.",Experiment/Discussion
+"Nonetheless, the ambiguity of the words and the translations still seems to represent an important source of error.",Experiment/Discussion
+"Moreover, the lexicon sometimes includes identical entries expressed through different parts of speech, e.g., grudge has two separate entries, for its noun and verb roles, respectively.",Experiment/Discussion
+"On the other hand, the bilingual dictionary does not make this distinction, and therefore we have again to rely on the “most frequent” heuristic captured by the translation order in the bilingual dictionary.",Experiment/Discussion
+"Finally, the lexicon includes a significant number (990) of multi-word expressions that pose translation difficulties, sometimes because their meaning is idiomatic, and sometimes because the multi-word expression is not listed in the bilingual dictionary and the translation of the entire phrase is difficult to reconstruct from the translations of the individual words.",Experiment/Discussion
+"To address this problem, when a translation is not found in the dictionary, we create one using a word-by-word approach.",Experiment/Discussion
+"These translations are then validated by enforcing that they occur at least three times on the Web, using counts collected from the AltaVista search engine.",Experiment/Discussion
+"The multi-word expressions that are not validated in this process are discarded, reducing the number of expressions from an initial set of 990 to a final set of 264.",Experiment/Discussion
+"The final subjectivity lexicon in Romanian contains 4,983 entries.",Experiment/Discussion
+"Table 1 shows examples of entries in the Romanian lexicon, together with their corresponding original English form.",Experiment/Discussion
+The table also shows the reliability of the expression (weak or strong) and the part of speech – attributes that are provided in the English subjectivity lexicon.,Experiment/Discussion
+"We want to assess the quality of the translated lexicon, and compare it to the quality of the original English lexicon.",Experiment/Discussion
+"The English subjectivity lexicon was evaluated in (Wiebe and Riloff, 2005) against a corpus of English-language news articles manually annotated for subjectivity (the MPQA corpus (Wiebe et al., 2005)).",Experiment/Discussion
+"According to this evaluation, 85% of the instances of the clues marked as strong and 71.5% of the clues marked as weak are in subjective sentences in the MPQA corpus.",Experiment/Discussion
+"Since there is no comparable Romanian corpus, an alternate way to judge the subjectivity of a Romanian lexicon entry is needed.",Experiment/Discussion
+Two native speakers of Romanian annotated the subjectivity of 150 randomly selected entries.,Experiment/Discussion
+"Each annotator independently read approximately 100 examples of each drawn from the Web, including a large number from news sources.",Experiment/Discussion
+"The subjectivity of a word was consequently judged in the contexts where it most frequently appears, accounting for its most frequent meanings on the Web.",Experiment/Discussion
+"The tagset used for the annotations consists of S(ubjective), O(bjective), and B(oth).",Experiment/Discussion
+A W(rong) label is also used to indicate a wrong translation.,Experiment/Discussion
+Table 2 shows the contingency table for the two annotators’ judgments on this data.,Experiment/Discussion
+"Without counting the wrong translations, the agreement is measured at 0.80, with a Kappa κ = 0.70, which indicates consistent agreement.",Experiment/Discussion
+"After the disagreements were reconciled through discussions, the final set of 123 correctly translated entries does include 49.6% (61) subjective entries, but fully 23.6% (29) were found in the study to have primarily objective uses (the other 26.8% are mixed).",Experiment/Discussion
+"Thus, this study suggests that the Romanian subjectivity clues derived through translation are less reliable than the original set of English clues.",Experiment/Discussion
+"In several cases, the subjectivity is lost in the translation, mainly due to word ambiguity in either the source or target language, or both.",Experiment/Discussion
+"For instance, the word fragile correctly translates into Romanian as fragil, yet this word is frequently used to refer to breakable objects, and it loses its subjective meaning of delicate.",Experiment/Discussion
+"Other words, such as one-sided, completely lose subjectivity once translated, as it becomes in Romanian cu o singura latur˘a, meaning with only one side (as of objects).",Experiment/Discussion
+"Interestingly, the reliability of clues in the English lexicon seems to help preserve subjectivity.",Experiment/Discussion
+"Out of the 77 entries marked as strong, 11 were judged to be objective in Romanian (14.3%), compared to 14 objective Romanian entries obtained from the 36 weak English clues (39.0%).",Experiment/Discussion
+"Starting with the Romanian lexicon, we developed a lexical classifier similar to the one introduced by (Riloff and Wiebe, 2003).",Experiment/Discussion
+At the core of this method is a high-precision subjectivity and objectivity classifier that can label large amounts of raw text using only a subjectivity lexicon.,Experiment/Discussion
+Their method is further improved with a bootstrapping process that learns extraction patterns.,Experiment/Discussion
+"In our experiments, however, we apply only the rule-based classification step, since the extraction step cannot be implemented without tools for syntactic parsing and information extraction not available in Romanian.",Experiment/Discussion
+"The classifier relies on three main heuristics to label subjective and objective sentences: (1) if two or more strong subjective expressions occur in the same sentence, the sentence is labeled Subjective; (2) if no strong subjective expressions occur in a sentence, and at most two weak subjective expressions occur in the previous, current, and next sentence combined, then the sentence is labeled Objective; (3) otherwise, if none of the previous rules apply, the sentence is labeled Unknown.",Experiment/Discussion
+The quality of the classifier was evaluated on a Romanian gold-standard corpus annotated for subjectivity.,Experiment/Discussion
+"Two native Romanian speakers (Rol and Roe) manually annotated the subjectivity of the sentences of five randomly selected documents (504 sentences) from the Romanian side of an EnglishRomanian parallel corpus, according to the annotation scheme in (Wiebe et al., 2005).",Experiment/Discussion
+"Agreement between annotators was measured, and then their differences were adjudicated.",Experiment/Discussion
+"The baseline on this data set is 54.16%, which can be obtained by assigning a default Subjective label to all sentences.",Experiment/Discussion
+"(More information about the corpus and annotations are given in Section 4 below, where agreement between English and Romanian aligned sentences is also assessed.)",Experiment/Discussion
+"As mentioned earlier, due to the lexicon projection process that is performed via a bilingual dictionary, the entries in our Romanian subjectivity lexicon are in a lemmatized form.",Experiment/Discussion
+"Consequently, we also lemmatize the gold-standard corpus, to allow for the identification of matches with the lexicon.",Experiment/Discussion
+"For this purpose, we use the Romanian lemmatizer developed by Ion and Tufis¸ (Ion, 2007), which has an estimated accuracy of 98%.2 Table 3 shows the results of the rule-based classifier.",Experiment/Discussion
+"We show the precision, recall, and F-measure independently measured for the subjective, objective, and all sentences.",Experiment/Discussion
+"We also evaluated a variation of the rule-based classifier that labels a sentence as objective if there are at most three weak expressions in the previous, current, and next sentence combined, which raises the recall of the objective classifier.",Experiment/Discussion
+"Our attempts to increase the recall of the subjective classifier all resulted in significant loss in precision, and thus we kept the original heuristic.",Experiment/Discussion
+"In its original English implementation, this system was proposed as being high-precision but low coverage.",Experiment/Discussion
+"Evaluated on the MPQA corpus, it has subjective precision of 90.4, subjective recall of 34.2, objective precision of 82.4, and objective recall of 30.7; overall, precision is 86.7 and recall is 32.6 (Wiebe and Riloff, 2005).",Experiment/Discussion
+We see a similar behavior on Romanian for subjective sentences.,Experiment/Discussion
+"The subjective precision is good, albeit at the cost of low recall, and thus the classifier could be used to harvest subjective sentences from unlabeled Romanian data (e.g., for a subsequent bootstrapping process).",Experiment/Discussion
+"The system is not very effective for objective classification, however.",Experiment/Discussion
+"Recall that the objective classifier relies on the weak subjectivity clues, for which the transfer of subjectivity in the translation process was particularly low.",Experiment/Discussion
+"Given the low number of subjective entries found in the automatically generated lexicon and the subsequent low recall of the lexical classifier, we decided to also explore a second, corpus-based approach.",Results/Conclusion
+"This approach builds a subjectivity-annotated corpus for the target language through projection, and then trains a statistical classifier on the resulting corpus (numerous statistical classifiers have been trained for subjectivity or sentiment classification, e.g., (Pang et al., 2002; Yu and Hatzivassiloglou, 2003)).",Results/Conclusion
+"The hypothesis is that we can eliminate some of the ambiguities (and consequent loss of subjectivity) observed during the lexicon translation by accounting for the context of the ambiguous words, which is possible in a corpus-based approach.",Results/Conclusion
+"Additionally, we also hope to improve the recall of the classifier, by addressing those cases not covered by the lexicon-based approach.",Results/Conclusion
+"In the experiments reported in this section, we use a parallel corpus consisting of 107 documents from the SemCor corpus (Miller et al., 1993) and their manual translations into Romanian.3 The corpus consists of roughly 11,000 sentences, with approximately 250,000 tokens on each side.",Results/Conclusion
+"It is a balanced corpus covering a number of topics in sports, politics, fashion, education, and others.",Results/Conclusion
+"3The translation was carried out by a Romanian native speaker, student in a department of “Foreign Languages and Translations” in Romania.",Results/Conclusion
+"Below, we begin with a manual annotation study to assess the quality of annotation and preservation of subjectivity in translation.",Results/Conclusion
+"We then describe the automatic construction of a target-language training set, and evaluate a classifier trained on that data.",Results/Conclusion
+Annotation Study.,Results/Conclusion
+We start by performing an agreement study meant to determine the extent to which subjectivity is preserved by the cross-lingual projections.,Results/Conclusion
+"In the study, three annotators – one native English speaker (En) and two native Romanian speakers (Ro1 and Ro2) – first trained on 3 randomly selected documents (331 sentences).",Results/Conclusion
+"They then independently annotated the subjectivity of the sentences of two randomly selected documents from the parallel corpus, accounting for 173 aligned sentence pairs.",Results/Conclusion
+"The annotators had access exclusively to the version of the sentences in their language, to avoid any bias that could be introduced by seeing the translation in the other language.",Results/Conclusion
+Note that the Romanian annotations (after all differences between the Romanian annotators were adjudicated) of all 331 + 173 sentences make up the gold standard corpus used in the experiments reported in Sections 3.2 and 4.1.,Results/Conclusion
+"Before presenting the results of the annotation study, we give some examples.",Results/Conclusion
+The following are English subjective sentences and their Romanian translations (the subjective elements are shown in bold).,Results/Conclusion
+[en] The desire to give Broglio as many starts as possible.,Results/Conclusion
+[ro] Dorint¸a de a-i da lui Broglio cˆat mai multe starturi posibile.,Results/Conclusion
+"[en] Suppose he did lie beside Lenin, would it be permanent ?",Results/Conclusion
+"[ro] S˘a presupunem c˘a ar fi as¸ezat al˘aturi de Lenin, oare va fi pentru totdeauna?",Results/Conclusion
+The following are examples of objective parallel sentences.,Results/Conclusion
+[en]The Pirates have a 9-6 record this year and the Redbirds are 7-9.,Results/Conclusion
+[ro] Pirat¸ii au un palmares de 9 la 6 anul acesta si P˘as˘arile Ros¸ii au 7 la 9.,Results/Conclusion
+[en] One of the obstacles to the easy control of a 2-year old child is a lack of verbal communication.,Results/Conclusion
+[ro] Unul dintre obstacolele in controlarea unui copil de 2 ani este lipsa comunic˘arii verbale.,Results/Conclusion
+"The annotators were trained using the MPQA annotation guidelines (Wiebe et al., 2005).",Results/Conclusion
+"The tagset consists of S(ubjective), O(bjective) and U(ncertain).",Results/Conclusion
+"For the U tags, a class was also given; OU means, for instance, that the annotator is uncertain but she is leaning toward O.",Results/Conclusion
+Table 4 shows the pairwise agreement figures and the Kappa (K) calculated for the three annotators.,Results/Conclusion
+The table also shows the agreement when the borderline uncertain cases are removed.,Results/Conclusion
+"Annotations performed by three annotators: one native English speaker (En) and two native Romanian speakers (Rol and Roe) When all the sentences are included, the agreement between the two Romanian annotators is measured at 0.83 (K = 0.67).",Results/Conclusion
+"If we remove the borderline cases where at least one annotator’s tag is Uncertain, the agreement rises to 0.89 with K = 0.77.",Results/Conclusion
+"These figures are somewhat lower than the agreement observed during previous subjectivity annotation studies conducted on English (Wiebe et al., 2005) (the annotators were more extensively trained in those studies), but they nonetheless indicate consistent agreement.",Results/Conclusion
+"Interestingly, when the agreement is conducted cross-lingually between an English and a Romanian annotator, the agreement figures, although somewhat lower, are comparable.",Results/Conclusion
+"In fact, once the Uncertain tags are removed, the monolingual and cross-lingual agreement and K values become almost equal, which suggests that in most cases the sentence-level subjectivity is preserved.",Results/Conclusion
+"The disagreements were reconciled first between the labels assigned by the two Romanian annotators, followed by a reconciliation between the resulting Romanian “gold-standard” labels and the labels assigned by the English annotator.",Results/Conclusion
+"In most cases, the disagreement across the two languages was found to be due to a difference of opinion about the sentence subjectivity, similar to the differences encountered in monolingual annotations.",Results/Conclusion
+"However, there are cases where the differences are due to the subjectivity being lost in the translation.",Results/Conclusion
+"Sometimes, this is due to several possible interpretations for the translated sentence.",Results/Conclusion
+"For instance, the following sentence: [en] They honored the battling Billikens last night.",Results/Conclusion
+"[ro] Ei i-au celebrat pe Billikens seara trecut˘a. is marked as Subjective in English (in context, the English annotator interpreted honored as referring to praises of the Billikens).",Results/Conclusion
+"However, the Romanian translation of honored is celebrat which, while correct as a translation, has the more frequent interpretation of having a party.",Results/Conclusion
+"The two Romanian annotators chose this interpretation, which correspondingly lead them to mark the sentence as Objective.",Results/Conclusion
+"In other cases, in particular when the subjectivity is due to figures of speech such as irony, the translation sometimes misses the ironic aspects.",Results/Conclusion
+"For instance, the translation of egghead was not perceived as ironic by the Romanian annotators, and consequently the following sentence labeled Subjective in English is annotated as Objective in Romanian.",Results/Conclusion
+[en] I have lived for many years in a Connecticut commuting town with a high percentage of [...] business executives of egghead tastes.,Results/Conclusion
+[ro] Am tr˘ait mult¸i ani intr-un oras¸ din apropiere de Connecticut ce avea o mare proport¸ie de [...] oameni de afaceri cu gusturi intelectuale.,Results/Conclusion
+"To further validate the corpus-based projection of subjectivity, we developed a subjectivity classifier trained on Romanian subjectivity-annotated corpora obtained via cross-lingual projections.",Results/Conclusion
+"Ideally, one would generate an annotated Romanian corpus by translating English documents manually annotated for subjectivity such as the MPQA corpus.",Results/Conclusion
+"Unfortunately, the manual translation of this corpus would be prohibitively expensive, both timewise and financially.",Results/Conclusion
+The other alternative – automatic machine translation – has not yet reached a level that would enable the generation of a highquality translated corpus.,Results/Conclusion
+"We therefore decided to use a different approach where we automatically annotate the English side of an existing EnglishRomanian corpus, and subsequently project the annotations onto the Romanian side of the parallel corpus across the sentence-level alignments available in the corpus.",Results/Conclusion
+"For the automatic subjectivity annotations, we generated two sets of the English-side annotations, one using the high-precision classifier and one using the high-coverage classifier available in the OpinionFinder tool.",Results/Conclusion
+"The high-precision classifier in OpinionFinder uses the clues of the subjectivity lexicon to harvest subjective and objective sentences from a large amount of unannotated text; this data is then used to automatically identify a set of extraction patterns, which are then used iteratively to identify a larger set of subjective and objective sentences.",Results/Conclusion
+"In addition, in OpinionFinder, the high-precision classifier is used to produce an English labeled data set for training, which is used to generate its Naive Bayes high-coverage subjectivity classifier.",Results/Conclusion
+"Table 5 shows the performance of the two classifiers on the MPQA corpus as reported in (Wiebe and Riloff, 2005).",Results/Conclusion
+Note that 55% of the sentences in the MPQA corpus are subjective – which represents the baseline for this data set.,Results/Conclusion
+The two OpinionFinder classifiers are used to label the training corpus.,Results/Conclusion
+"After removing the 504 test sentences, we are left with 10,628 sentences that are automatically annotated for subjectivity.",Results/Conclusion
+Table 6 shows the number of subjective and objective sentences obtained with each classifier.,Results/Conclusion
+"Next, the OpinionFinder annotations are projected onto the Romanian training sentences, which are then used to develop a probabilistic classifier for the automatic labeling of subjectivity in Romanian sentences.",Results/Conclusion
+"Similar to, e.g., (Pang et al., 2002), we use a Naive Bayes algorithm trained on word features cooccurring with the subjective and the objective classifications.",Results/Conclusion
+"We assume word independence, and we use a 0.3 cut-off for feature selection.",Results/Conclusion
+"While recent work has also considered more complex syntactic features, we are not able to generate such features for Romanian as they require tools currently not available for this language.",Results/Conclusion
+"We create two classifiers, one trained on each data set.",Results/Conclusion
+The quality of the classifiers is evaluated on the 504-sentence Romanian gold-standard corpus described above.,Results/Conclusion
+"Recall that the baseline on this data set is 54.16%, the percentage of sentences in the corpus that are subjective.",Results/Conclusion
+Table 7 shows the results. fier using training data obtained via projections from data automatically labeled by OpinionFinder (OF).,Results/Conclusion
+"Our best classifier has an F-measure of 67.85, and is obtained by training on projections from the high-coverage OpinionFinder annotations.",Results/Conclusion
+"Although smaller than the 74.70 F-measure obtained by the English high-coverage classifier (see Table 5), the result appears remarkable given that no language-specific Romanian information was used.",Results/Conclusion
+The overall results obtained with the machine learning approach are considerably higher than those obtained from the rule-based classifier (except for the precision of the subjective sentences).,Results/Conclusion
+"This is most likely due to the lexicon translation process, which as mentioned in the agreement study in Section 3.1, leads to ambiguity and loss of subjectivity.",Results/Conclusion
+"Instead, the corpus-based translations seem to better account for the ambiguity of the words, and the subjectivity is generally preserved in the sentence translations.",Results/Conclusion
+"In this paper, we described two approaches to generating resources for subjectivity annotations for a new language, by leveraging on resources and tools available for English.",Results/Conclusion
+The first approach builds a target language subjectivity lexicon by translating an existing English lexicon using a bilingual dictionary.,Results/Conclusion
+The second generates a subjectivity-annotated corpus in a target language by projecting annotations from an automatically annotated English corpus.,Results/Conclusion
+These resources were validated in two ways.,Results/Conclusion
+"First, we carried out annotation studies measuring the extent to which subjectivity is preserved across languages in each of the two resources.",Results/Conclusion
+"These studies show that only a relatively small fraction of the entries in the lexicon preserve their subjectivity in the translation, mainly due to the ambiguity in both the source and the target languages.",Results/Conclusion
+"This is consistent with observations made in previous work that subjectivity is a property associated not with words, but with word meanings (Wiebe and Mihalcea, 2006).",Results/Conclusion
+"In contrast, the sentence-level subjectivity was found to be more reliably preserved across languages, with cross-lingual inter-annotator agreements comparable to the monolingual ones.",Results/Conclusion
+"Second, we validated the two automatically generated subjectivity resources by using them to build a tool for subjectivity analysis in the target language.",Results/Conclusion
+"Specifically, we developed two classifiers: a rulebased classifier that relies on the subjectivity lexicon described in Section 3.1, and a machine learning classifier trained on the subjectivity-annotated corpus described in Section 4.1.",Results/Conclusion
+"While the highest precision for the subjective classification is obtained with the rule-based classifier, the overall best result of 67.85 F-measure is due to the machine learning approach.",Results/Conclusion
+"This result is consistent with the annotation studies, showing that the corpus projections preserve subjectivity more reliably than the lexicon translations.",Results/Conclusion
+"Finally, neither one of the classifiers relies on language-specific information, but rather on knowledge obtained through projections from English.",Results/Conclusion
+A similar method can therefore be used to derive tools for subjectivity analysis in other languages.,Results/Conclusion

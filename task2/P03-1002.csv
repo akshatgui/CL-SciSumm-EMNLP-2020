@@ -1,184 +1,184 @@
 col1,col2
-"In this paper we present a novel, customizable IE paradigm that takes advantage of predicate-argument structures.",{}
-"We also introduce a new way of automatically identifying predicate argument structures, which is central to our IE paradigm.",{}
-It is based on: (1) an extended set of features; and (2) inductive decision tree learning.,{}
-The experimental results prove our claim that accurate predicate-argument structures enable high quality IE results.,{}
-"The goal of recent Information Extraction (IE) tasks was to provide event-level indexing into news stories, including news wire, radio and television sources.","{'title': '1 Introduction', 'number': '1'}"
-"In this context, the purpose of the HUB Event-99 evaluations (Hirschman et al., 1999) was to capture information on some newsworthy classes of events, e.g. natural disasters, deaths, bombings, elections, financial fluctuations or illness outbreaks.","{'title': '1 Introduction', 'number': '1'}"
-The identification and selective extraction of relevant information is dictated by templettes.,"{'title': '1 Introduction', 'number': '1'}"
-"Event templettes are frame-like structures with slots representing the event basic information, such as main event participants, event outcome, time and location.","{'title': '1 Introduction', 'number': '1'}"
-"For each type of event, a separate templette is defined.","{'title': '1 Introduction', 'number': '1'}"
-The slots fills consist of excerpts from text with pointers back into the original source material.,"{'title': '1 Introduction', 'number': '1'}"
-Templettes are designed to support event-based browsing and search.,"{'title': '1 Introduction', 'number': '1'}"
-Figure 1 illustrates a templette defined for “market changes” as well as the source of the slot fillers.,"{'title': '1 Introduction', 'number': '1'}"
-Figure 1: Templette filled with information about a market change event.,"{'title': '1 Introduction', 'number': '1'}"
-"To date, some of the most successful IE techniques are built around a set of domain relevant linguistic patterns based on select verbs (e.g. fall, gain or lose for the “market change” topic).","{'title': '1 Introduction', 'number': '1'}"
-These patterns are matched against documents for identifying and extracting domain-relevant information.,"{'title': '1 Introduction', 'number': '1'}"
-Such patterns are either handcrafted or acquired automatically.,"{'title': '1 Introduction', 'number': '1'}"
-A rich literature covers methods of automatically acquiring IE patterns.,"{'title': '1 Introduction', 'number': '1'}"
-"Some of the most recent methods were reported in (Riloff, 1996; Yangarber et al., 2000).","{'title': '1 Introduction', 'number': '1'}"
-"To process texts efficiently and fast, domain patterns are ideally implemented as finite state automata (FSAs), a methodology pioneered in the FASTUS IE system (Hobbs et al., 1997).","{'title': '1 Introduction', 'number': '1'}"
-"Although this paradigm is simple and elegant, it has the disadvantage that it is not easily portable from one domain of interest to the next.","{'title': '1 Introduction', 'number': '1'}"
-"In contrast, a new, truly domain-independent IE paradigm may be designed if we know (a) predicates relevant to a domain; and (b) which of their arguments fill templette slots.","{'title': '1 Introduction', 'number': '1'}"
-Central to this new way of extracting information from texts are systems that label predicate-argument structures on the output of full parsers.,"{'title': '1 Introduction', 'number': '1'}"
-"One such augmented parser, trained on data available from the PropBank project has been recently presented in (Gildea and Palmer, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper we describe a domain-independent IE paradigm that is based on predicate-argument structures identified automatically by two different methods: (1) the statistical method reported in (Gildea and Palmer, 2002); and (2) a new method based on inductive learning which obtains 17% higher Fscore over the first method when tested on the same data.","{'title': '1 Introduction', 'number': '1'}"
-The accuracy enhancement of predicate argument recognition determines up to 14% better IE results.,"{'title': '1 Introduction', 'number': '1'}"
-These results enforce our claim that predicate argument information for IE needs to be recognized with high accuracy.,"{'title': '1 Introduction', 'number': '1'}"
-The remainder of this paper is organized as follows.,"{'title': '1 Introduction', 'number': '1'}"
-"Section 2 reports on the parser that produces predicate-argument labels and compares it against the parser introduced in (Gildea and Palmer, 2002).","{'title': '1 Introduction', 'number': '1'}"
-Section 3 describes the pattern-free IE paradigm and compares it against FSA-based IE methods.,"{'title': '1 Introduction', 'number': '1'}"
-Section 4 describes the integration of predicate-argument parsers into the IE paradigm and compares the results against a FSA-based IE system.,"{'title': '1 Introduction', 'number': '1'}"
-Section 5 summarizes the conclusions.,"{'title': '1 Introduction', 'number': '1'}"
-Proposition Bank or PropBank is a one million word corpus annotated with predicateargument structures.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The corpus consists of the Penn Treebank 2 Wall Street Journal texts (www.cis.upenn.edu/ treebank).,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"The PropBank annotations, performed at University of Pennsylvania (www.cis.upenn.edu/ ace) were described in (Kingsbury et al., 2002).","{'title': '2 Learning to Recognize', 'number': '2'}"
-"To date PropBank has addressed only predicates lexicalized by verbs, proceeding from the most to the least common verbs while annotating verb predicates in the corpus.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For any given predicate, a survey was made to determine the predicate usage and if required, the usages were divided in major senses.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"However, the senses are divided more on syntactic grounds than semantic, under the fundamental assumption that syntactic frames are direct reflections of underlying semantics.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"The set of syntactic frames are determined by diathesis alternations, as defined in (Levin, 1993).","{'title': '2 Learning to Recognize', 'number': '2'}"
-Each of these syntactic frames reflect underlying semantic components that constrain allowable arguments of predicates.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The expected arguments of each predicate are numbered sequentially from Arg0 to Arg5.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Regardless of the syntactic frame or verb sense, the arguments are similarly labeled to determine near-similarity of the predicates.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The general procedure was to select for each verb the roles that seem to occur most frequently and use these roles as mnemonics for the predicate arguments.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Generally, Arg0 would stand for agent, Arg1 for direct object or theme whereas Arg2 represents indirect object, benefactive or instrument, but mnemonics tend to be verb specific.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For example, when retrieving the argument structure for the verb-predicate assail with the sense ”to tear attack” from www.cis.upenn.edu/ cotton/cgibin/pblex fmt.cgi, we find Arg0:agent, Arg1:entity assailed and Arg2:assailed for.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Additionally, the argument may include functional tags from Treebank, e.g.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"ArgM-DIR indicates a directional, ArgM-LOC indicates a locative, and ArgM-TMP stands for a temporal.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"In previous work using the PropBank corpus, (Gildea and Palmer, 2002) proposed a model predicting argument roles using the same statistical method as the one employed by (Gildea and Jurafsky, 2002) for predicting semantic roles based on the FrameNet corpus (Baker et al., 1998).","{'title': '2 Learning to Recognize', 'number': '2'}"
-"This statistical technique of labeling predicate argument operates on the output of the probabilistic parser reported in (Collins, 1997).","{'title': '2 Learning to Recognize', 'number': '2'}"
-It consists of two tasks: (1) identifying the parse tree constituents corresponding to arguments of each predicate encoded in PropBank; and (2) recognizing the role corresponding to each argument.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-Each task can be cast a separate classifier.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"For example, the result of the first classifier on the sentence illustrated in Figure 2 is the identification of the two NPs as arguments.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The second classifier assigns the specific roles ARG1 and ARG0 given the predicate “assailed”.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"− PHRASE TYPE (pt): This feature indicates the syntactic type of the phrase labeled as a predicate argument, e.g.","{'title': '2 Learning to Recognize', 'number': '2'}"
-NP for ARG1 in Figure 2.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"− PARSE TREE PATH (path): This feature contains the path in the parse tree between the predicate phrase and the argument phrase, expressed as a sequence of nonterminal labels linked by direction symbols (up or down), e.g.","{'title': '2 Learning to Recognize', 'number': '2'}"
-NP S VP VP for ARG1 in Figure 2.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-− POSITION (pos) − Indicates if the constituent appears before or after the the predicate in the sentence.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-− VOICE (voice) − This feature distinguishes between active or passive voice for the predicate phrase.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-− HEAD WORD (hw) − This feature contains the head word of the evaluated phrase.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-Case and morphological information are preserved.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"− GOVERNING CATEGORY (gov) − This feature applies to noun phrases only, and it indicates if the NP is dominated by a sentence phrase (typical for subject arguments with active−voice predicates), or by a verb phrase (typical for object arguments).","{'title': '2 Learning to Recognize', 'number': '2'}"
-− PREDICATE WORD − In our implementation this feature consists of two components: (1) VERB: the word itself with the case and morphological information preserved; and (2) LEMMA which represents the verb normalized to lower case and infinitive form.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-Statistical methods in general are hindered by the data sparsity problem.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"To achieve high accuracy and resolve the data sparsity problem the method reported in (Gildea and Palmer, 2002; Gildea and Jurafsky, 2002) employed a backoff solution based on a lattice that combines the model features.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For practical reasons, this solution restricts the size of the feature sets.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For example, the backoff lattice in (Gildea and Palmer, 2002) consists of eight connected nodes for a five-feature set.","{'title': '2 Learning to Recognize', 'number': '2'}"
-A larger set of features will determine a very complex backoff lattice.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Consequently, no new intuitions may be tested as no new features can be easily added to the model.","{'title': '2 Learning to Recognize', 'number': '2'}"
-In our studies we found that inductive learning through decision trees enabled us to easily test large sets of features and study the impact of each feature ferent than the head word.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The head words are indicated by the dashed arrows.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The content words are indicated by the continuous arrows. on the augmented parser that outputs predicate argument structures.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"For this reason we used the C5 inductive decision tree learning algorithm (Quinlan, 2002) to implement both the classifier that identifies argument constituents and the classifier that labels arguments with their roles.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Our model considers two sets of features: Feature Set 1 (FS1): features used in the work reported in (Gildea and Palmer, 2002) and (Gildea and Jurafsky, 2002) ; and Feature Set 2 (FS2): a novel set of features introduced in this paper.","{'title': '2 Learning to Recognize', 'number': '2'}"
-FS1 is illustrated in Figure 3 and FS2 is illustrated in Figure 4.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"In developing FS2 we used the following observations: Because most of the predicate arguments are prepositional attachments (PP) or relative clauses (SBAR), often the head word (hw) feature from FS1 is not in fact the most informative word in H1: if phrase type is PP then select the right−most child Example: phrase = &quot;in Texas&quot;, cw = &quot;Texas&quot; H2: if phrase type is SBAR then select the left−most sentence (S*) clause Example: phrase = &quot;that occurred yesterday&quot;, cw = &quot;occurred&quot; H3: if phrase type is VP then if there is a VP child then select the left−most VP child else select the head word Example: phrase = &quot;had placed&quot;, cw = &quot;placed&quot; H4: if phrase type is ADVP then select the right−most child not IN or TO Example: phrase = &quot;more than&quot;, cw = &quot;more&quot; H5: if phrase type is ADJP then select the right−most adjective, verb, noun, or ADJP Example: phrase = &quot;61 years old&quot;, cw = &quot;old&quot; H6: for for all other phrase types do select the head word Example: phrase = &quot;red house&quot;, cw = &quot;house&quot; the phrase.","{'title': '2 Learning to Recognize', 'number': '2'}"
-Figure 5 illustrates three examples of this situation.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"In Figure 5(a), the head word of the PP phrase is the preposition in, but June is at least as informative as the head word.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Similarly, in Figure 5(b), the relative clause is featured only by the relative pronoun that, whereas the verb occurred should also be taken into account.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Figure 5(c) shows another example of an infinitive verb phrase, in which the head word is to, whereas the verb declared should also be considered.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Based on these observations, we introduced in FS2 the CONTENT WORD (cw), which adds a new lexicalization from the argument constituent for better content representation.","{'title': '2 Learning to Recognize', 'number': '2'}"
-To select the content words we used the heuristics illustrated in Figure 6.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"After implementing FS1, we noticed that the hw feature was rarely used, and we believe that this happens because of data sparsity.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The same was noticed for the cw feature from FS2.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Therefore we decided to add two new features, namely the parts of speech of the head word and the content word respectively.","{'title': '2 Learning to Recognize', 'number': '2'}"
-These features are called hPos and cPos and are illustrated in Figure 4.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-Both these features generate an implicit yet simple backoff solution for the lexicalized features HEAD WORD (hw) and CONTENT WORD (cw).,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Predicate arguments often contain names or other expressions identified by named entity (NE) recognizers, e.g. dates, prices.","{'title': '2 Learning to Recognize', 'number': '2'}"
-Thus we believe that this form of semantic information should be introduced in the learning model.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-In FS2 we added the following features: (a) the named entity class of the content word (cNE); and (b) a set of NE features that can take only Boolean values grouped as BOOLEAN NAMED ENTITY FEATURES and defined in Figure 4.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"The cNE feature helps recognize the argument roles, e.g.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"ARGM-LOC and ARGM-TMP, when location or temporal expressions are identified.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The Boolean NE flags provide information useful in processing complex nominals occurring in argument constituents.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"For example, in Figure 2 ARG0 is featured not only by the word traders but also by ORGANIZATION, the semantic class of the name Big Board.","{'title': '2 Learning to Recognize', 'number': '2'}"
-Predicate argument structures are recognized accurately when both predicates and arguments are correctly identified.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Often, predicates are lexicalized by phrasal verbs, e.g. put up, put off.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"To identify correctly the verb particle and capture it in the structure of predicates instead of the argument structure, we introduced two collocation features that measure the frequency with which verbs and succeeding prepositions cooccurr in the corpus.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The features are pvcSum and pvcMax and are defined in Figure 4.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"The results presented in this paper were obtained by training on Proposition Bank (PropBank) release 2002/7/15 (Kingsbury et al., 2002).","{'title': '2 Learning to Recognize', 'number': '2'}"
-Syntactic information was extracted from the gold-standard parses in TreeBank Release 2.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"As named entity information is not available in PropBank/TreeBank we tagged the training corpus with NE information using an open-domain NE recognizer, having 96% F-measure on the MUC61 data.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"We reserved section 23 of PropBank/TreeBank for testing, and we trained on the rest.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Due to memory limitations on our hardware, for the argument finding task we trained on the first 150 KB of TreeBank (about 11% of TreeBank), and for the role assignment task on the first 75 KB of argument constituents (about 60% of PropBank annotations).","{'title': '2 Learning to Recognize', 'number': '2'}"
-Table 1 shows the results obtained by our inductive learning approach.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The first column describes the feature sets used in each of the 7 experiments performed.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"The following three columns indicate the precision (P), recall (R), and F-measure ( )2 obtained for the task of identifying argument constituents.","{'title': '2 Learning to Recognize', 'number': '2'}"
-The last column shows the accuracy (A) for the role assignment task using known argument constituents.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The first row in Table 1 lists the results obtained when using only the FS1 features.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The next five lines list the individual contributions of each of the newly added features when combined with the FS1 features.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The last line shows the results obtained when all features from FS1 and FS2 were used.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"Table 1 shows that the new features increase the argument identification F-measure by 3.61%, and the role assignment accuracy with 4.29%.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For the argument identification task, the head and content word features have a significant contribution for the task precision, whereas NE features contribute significantly to the task recall.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"For the role assignment task the best features from the feature set FS2 are the content word features (cw and cPos) and the Boolean NE flags, which show that semantic information, even if minimal, is important for role classification.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Surprisingly, the phrasal verb collocation features did not help for any of the tasks, but they were useful for boosting the decision trees.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Decision tree learning provided by C5 (Quinlan, 2002) has built in support for boosting.","{'title': '2 Learning to Recognize', 'number': '2'}"
-We used it and obtained improvements for both tasks.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The best Fmeasure obtained for argument constituent identification was 88.98% in the fifth iteration (a 0.76% improvement).,"{'title': '2 Learning to Recognize', 'number': '2'}"
-The best accuracy for role assignment was 83.74% in the eight iteration (a 0.69% improvement)3.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-We further analyzed the boosted trees and noticed that phrasal verb collocation features were mainly responsible for the improvements.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-This is the rationale for including them in the FS2 set.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"We also were interested in comparing the results of the decision-tree-based method against the results obtained by the statistical approach reported in (Gildea and Palmer, 2002).","{'title': '2 Learning to Recognize', 'number': '2'}"
-Table 2 summarizes the results.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"(Gildea and Palmer, 2002) report the results listed on the first line of Table 2.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Because no Fscores were reported for the argument identification task, we re-implemented the model and obtained the results listed on the second line.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"It looks like we had some implementation differences, and our results for the argument role classification task were slightly worse.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"However, we used our results for the statistical model for comparing with the inductive learning model because we used the same feature extraction code for both models.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"Lines 3 and 4 list the results of the inductive learning model with boosting enabled, when the features were only from FS1, and from FS1 and FS2 respectively.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"When comparing the results obtained for both models when using only features from FS1, we find that almost the same results were obtained for role classification, but an enhancement of almost 13% was obtained when recognizing argument constituents.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"When comparing the statistical model with the inductive model that uses all features, there is an enhancement of 17.12% for argument identification and 4.87% for argument role recognition.","{'title': '2 Learning to Recognize', 'number': '2'}"
-Another significant advantage of our inductive learning approach is that it scales better to unknown predicates.,"{'title': '2 Learning to Recognize', 'number': '2'}"
-"The statistical model introduced in Gildea and Jurafsky (2002) uses predicate lexical information at most levels in the probability lattice, hence its scalability to unknown predicates is limited.","{'title': '2 Learning to Recognize', 'number': '2'}"
-"In contrast, the decision tree approach uses predicate lexical information only for 5% of the branching decisions recorded when testing the role assignment task, and only for 0.01% of the branching decisions seen during the argument constituent identification evaluation.","{'title': '2 Learning to Recognize', 'number': '2'}"
-Figure 7(a) illustrates an IE architecture that employs predicate argument structures.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"Documents are processed in parallel to: (1) parse them syntactically, and (2) recognize the NEs.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"The full parser first performs part-of-speech (POS) tagging using transformation based learning (TBL) (Brill, 1995).","{'title': '3 The IE Paradigm', 'number': '3'}"
-"Then non-recursive, or basic, noun phrases (NPB) are identified using the TBL method reported in (Ngai and Florian, 2001).","{'title': '3 The IE Paradigm', 'number': '3'}"
-"At last, the dependency parser presented in (Collins, 1997) is used to generate the full parse.","{'title': '3 The IE Paradigm', 'number': '3'}"
-This approach allows us to parse the sentences with less than 40 words from TreeBank section 23 with an F-measure slightly over 85% at an average of 0.12 seconds/sentence on a 2GHz Pentium IV computer.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"The parse texts marked with NE tags are passed to a module that identifies entity coreference in documents, resolving pronominal and nominal anaphors and normalizing coreferring expressions.","{'title': '3 The IE Paradigm', 'number': '3'}"
-The parses are also used by a module that recognizes predicate argument structures with any of the methods described in Section 2.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-For each templette modeling a different domain a mapping between predicate arguments and templette slots is produced.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"Figure 8 illustrates the mapping produced for two Event99 doFigure 8: Mapping rules between predicate arguments and templette slots for: (a) the “market change” domain, and (b) the “death” domain mains.","{'title': '3 The IE Paradigm', 'number': '3'}"
-The “market change” domain monitors changes (AMOUNT CHANGE) and current values (CURRENT VALUE) for financial instruments (INSTRUMENT).,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"The “death” domain extracts the description of the person deceased (DECEASED), the manner of death (MANNER OF DEATH), and, if applicable, the person to whom the death is attributed (AGENT OF DEATH).","{'title': '3 The IE Paradigm', 'number': '3'}"
-"To produce the mappings we used training data that consists of: (1) texts, and (2) their corresponding filled templettes.","{'title': '3 The IE Paradigm', 'number': '3'}"
-Each templette has pointers back to the source text similarly to the example presented in Figure 1.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"When the predicate argument structures were identified, the mappings were collected as illustrated in Figure 9.","{'title': '3 The IE Paradigm', 'number': '3'}"
-Figure 9(a) shows an interesting aspect of the mappings.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"Although the role classification of the last argument is incorrect (it should have been identified as ARG4), it is mapped into the CURRENT-VALUE slot.","{'title': '3 The IE Paradigm', 'number': '3'}"
-This shows how the mappings resolve incorrect but consistent classifications.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-Figure 9(b) shows the flexibility of the system to identify and classify constituents that are not close to the predicate phrase (ARG0).,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"This is a clear advantage over the FSA-based system, which in fact missed the AGENT-OF-DEATH in this sentence.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"Because several templettes might describe the same event, event coreference is processed and, based on the results, templettes are merged when necessary.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"The IE architecture in Figure 7(a) may be compared with the IE architecture with cascaded FSA represented in Figure 7(b) and reported in (Surdeanu and Harabagiu, 2002).","{'title': '3 The IE Paradigm', 'number': '3'}"
-"Both architectures share the same NER, coreference and merging modules.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"Specific to the FSA-based architecture are the phrasal parser, which identifies simple phrases such as basic noun or verb phrases (some of them domain specific), the combiner, which builds domain-dependent complex phrases, and the event recognizer, which detects the domain-specific Subject-Verb-Object (SVO) patterns.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"An example of a pattern used by the FSA-based architecture is: DEATH-CAUSE KILL-VERB PERSON, where DEATH-CAUSE may identify more than 20 lexemes, e.g. wreck, catastrophe, malpractice, and more than 20 verbs are KILL-VERBS, e.g. murder, execute, behead, slay.","{'title': '3 The IE Paradigm', 'number': '3'}"
-"Most importantly, each pattern must recognize up to 26 syntactic variations, e.g. determined by the active or passive form of the verb, relative subjects or objects etc.","{'title': '3 The IE Paradigm', 'number': '3'}"
-Predicate argument structures offer the great advantage that syntactic variations do not need to be accounted by IE systems anymore.,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"Because entity and event coreference, as well as templette merging will attempt to recover from partial patterns or predicate argument recognitions, and our goal is to compare the usage of FSA patterns versus predicate argument structures, we decided to disable the coreference and merging modules.","{'title': '3 The IE Paradigm', 'number': '3'}"
-This explains why in Figure 7 these modules are repre,"{'title': '3 The IE Paradigm', 'number': '3'}"
-"To evaluate the proposed IE paradigm we selected two Event99 domains: “market change”, which tracks changes in stock indexes, and “death”, which extracts all manners of human deaths.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-These domains were selected because most of the domain information can be processed without needing entity or event coreference.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"Moreover, one of the domains (market change) uses verbs commonly used in PropBank/TreeBank, while the other (death) uses relatively unknown verbs, so we can also evaluate how well the system scales to verbs unseen in training.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-Table 3 lists the F-scores for the two domains.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-The first line of the Table lists the results obtained by the IE architecture illustrated in Figure 7(a) when the predicate argument structures were identified by the statistical model.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-The next line shows the same results for the inductive learning model.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-The last line shows the results for the IE architecture in Figure 7(b).,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"The results obtained by the FSA-based IE were the best, but they were made possible by handcrafted patterns requiring an effort of 10 person days per domain.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"The only human effort necessary in the new IE paradigm was imposed by the generation of mappings between arguments and templette slots, accomplished in less than 2 hours per domain, given that the training templettes are known.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"Additionally, it is easier to automatically learn these mappings than to acquire FSA patterns.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-Table 3 also shows that the new IE paradigm performs better when the predicate argument structures are recognized with the inductive learning model.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-The cause is the substantial difference in quality of the argument identification task between the two models.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"The Table shows that the new IE paradigm with the inductive learning model achieves about 90% of the performance of the FSA-based system for both domains, even though one of the domains uses mainly verbs rarely seen in training (e.g.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-“die” appears 5 times in PropBank).,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-Another way of evaluating the integration of predicate argument structures in IE is by comparing the number of events identified by each architecture.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-Table 4 shows the results.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-"Once again, the new IE paradigm performs better when the predicate argument structures are recognized with the inductive learning model.","{'title': '4 Experiments with The Integration of', 'number': '4'}"
-More events are missed by the statistical model which does not recognize argument constituents as well the inductive learning model.,"{'title': '4 Experiments with The Integration of', 'number': '4'}"
-This paper reports on a novel inductive learning method for identifying predicate argument structures in text.,"{'title': '5 Conclusion', 'number': '5'}"
-"The proposed approach achieves over 88% F-measure for the problem of identifying argument constituents, and over 83% accuracy for the task of assigning roles to pre-identified argument constituents.","{'title': '5 Conclusion', 'number': '5'}"
-"Because predicate lexical information is used for less than 5% of the branching decisions, the generated classifier scales better than the statistical method from (Gildea and Palmer, 2002) to unknown predicates.","{'title': '5 Conclusion', 'number': '5'}"
-This way of identifying predicate argument structures is a central piece of an IE paradigm easily customizable to new domains.,"{'title': '5 Conclusion', 'number': '5'}"
-The performance degradation of this paradigm when compared to IE systems based on hand-crafted patterns is only 10%.,"{'title': '5 Conclusion', 'number': '5'}"
+"In this paper we present a novel, customizable IE paradigm that takes advantage of predicate-argument structures.",Introduction
+"We also introduce a new way of automatically identifying predicate argument structures, which is central to our IE paradigm.",Introduction
+It is based on: (1) an extended set of features; and (2) inductive decision tree learning.,Introduction
+The experimental results prove our claim that accurate predicate-argument structures enable high quality IE results.,Introduction
+"The goal of recent Information Extraction (IE) tasks was to provide event-level indexing into news stories, including news wire, radio and television sources.",Experiment/Discussion
+"In this context, the purpose of the HUB Event-99 evaluations (Hirschman et al., 1999) was to capture information on some newsworthy classes of events, e.g. natural disasters, deaths, bombings, elections, financial fluctuations or illness outbreaks.",Experiment/Discussion
+The identification and selective extraction of relevant information is dictated by templettes.,Experiment/Discussion
+"Event templettes are frame-like structures with slots representing the event basic information, such as main event participants, event outcome, time and location.",Experiment/Discussion
+"For each type of event, a separate templette is defined.",Experiment/Discussion
+The slots fills consist of excerpts from text with pointers back into the original source material.,Experiment/Discussion
+Templettes are designed to support event-based browsing and search.,Experiment/Discussion
+Figure 1 illustrates a templette defined for “market changes” as well as the source of the slot fillers.,Experiment/Discussion
+Figure 1: Templette filled with information about a market change event.,Experiment/Discussion
+"To date, some of the most successful IE techniques are built around a set of domain relevant linguistic patterns based on select verbs (e.g. fall, gain or lose for the “market change” topic).",Experiment/Discussion
+These patterns are matched against documents for identifying and extracting domain-relevant information.,Experiment/Discussion
+Such patterns are either handcrafted or acquired automatically.,Experiment/Discussion
+A rich literature covers methods of automatically acquiring IE patterns.,Experiment/Discussion
+"Some of the most recent methods were reported in (Riloff, 1996; Yangarber et al., 2000).",Experiment/Discussion
+"To process texts efficiently and fast, domain patterns are ideally implemented as finite state automata (FSAs), a methodology pioneered in the FASTUS IE system (Hobbs et al., 1997).",Experiment/Discussion
+"Although this paradigm is simple and elegant, it has the disadvantage that it is not easily portable from one domain of interest to the next.",Experiment/Discussion
+"In contrast, a new, truly domain-independent IE paradigm may be designed if we know (a) predicates relevant to a domain; and (b) which of their arguments fill templette slots.",Experiment/Discussion
+Central to this new way of extracting information from texts are systems that label predicate-argument structures on the output of full parsers.,Experiment/Discussion
+"One such augmented parser, trained on data available from the PropBank project has been recently presented in (Gildea and Palmer, 2002).",Experiment/Discussion
+"In this paper we describe a domain-independent IE paradigm that is based on predicate-argument structures identified automatically by two different methods: (1) the statistical method reported in (Gildea and Palmer, 2002); and (2) a new method based on inductive learning which obtains 17% higher Fscore over the first method when tested on the same data.",Experiment/Discussion
+The accuracy enhancement of predicate argument recognition determines up to 14% better IE results.,Experiment/Discussion
+These results enforce our claim that predicate argument information for IE needs to be recognized with high accuracy.,Experiment/Discussion
+The remainder of this paper is organized as follows.,Experiment/Discussion
+"Section 2 reports on the parser that produces predicate-argument labels and compares it against the parser introduced in (Gildea and Palmer, 2002).",Experiment/Discussion
+Section 3 describes the pattern-free IE paradigm and compares it against FSA-based IE methods.,Experiment/Discussion
+Section 4 describes the integration of predicate-argument parsers into the IE paradigm and compares the results against a FSA-based IE system.,Experiment/Discussion
+Section 5 summarizes the conclusions.,Experiment/Discussion
+Proposition Bank or PropBank is a one million word corpus annotated with predicateargument structures.,Experiment/Discussion
+The corpus consists of the Penn Treebank 2 Wall Street Journal texts (www.cis.upenn.edu/ treebank).,Experiment/Discussion
+"The PropBank annotations, performed at University of Pennsylvania (www.cis.upenn.edu/ ace) were described in (Kingsbury et al., 2002).",Experiment/Discussion
+"To date PropBank has addressed only predicates lexicalized by verbs, proceeding from the most to the least common verbs while annotating verb predicates in the corpus.",Experiment/Discussion
+"For any given predicate, a survey was made to determine the predicate usage and if required, the usages were divided in major senses.",Experiment/Discussion
+"However, the senses are divided more on syntactic grounds than semantic, under the fundamental assumption that syntactic frames are direct reflections of underlying semantics.",Experiment/Discussion
+"The set of syntactic frames are determined by diathesis alternations, as defined in (Levin, 1993).",Experiment/Discussion
+Each of these syntactic frames reflect underlying semantic components that constrain allowable arguments of predicates.,Experiment/Discussion
+The expected arguments of each predicate are numbered sequentially from Arg0 to Arg5.,Experiment/Discussion
+"Regardless of the syntactic frame or verb sense, the arguments are similarly labeled to determine near-similarity of the predicates.",Experiment/Discussion
+The general procedure was to select for each verb the roles that seem to occur most frequently and use these roles as mnemonics for the predicate arguments.,Experiment/Discussion
+"Generally, Arg0 would stand for agent, Arg1 for direct object or theme whereas Arg2 represents indirect object, benefactive or instrument, but mnemonics tend to be verb specific.",Experiment/Discussion
+"For example, when retrieving the argument structure for the verb-predicate assail with the sense ”to tear attack” from www.cis.upenn.edu/ cotton/cgibin/pblex fmt.cgi, we find Arg0:agent, Arg1:entity assailed and Arg2:assailed for.",Experiment/Discussion
+"Additionally, the argument may include functional tags from Treebank, e.g.",Experiment/Discussion
+"ArgM-DIR indicates a directional, ArgM-LOC indicates a locative, and ArgM-TMP stands for a temporal.",Experiment/Discussion
+"In previous work using the PropBank corpus, (Gildea and Palmer, 2002) proposed a model predicting argument roles using the same statistical method as the one employed by (Gildea and Jurafsky, 2002) for predicting semantic roles based on the FrameNet corpus (Baker et al., 1998).",Experiment/Discussion
+"This statistical technique of labeling predicate argument operates on the output of the probabilistic parser reported in (Collins, 1997).",Experiment/Discussion
+It consists of two tasks: (1) identifying the parse tree constituents corresponding to arguments of each predicate encoded in PropBank; and (2) recognizing the role corresponding to each argument.,Experiment/Discussion
+Each task can be cast a separate classifier.,Experiment/Discussion
+"For example, the result of the first classifier on the sentence illustrated in Figure 2 is the identification of the two NPs as arguments.",Experiment/Discussion
+The second classifier assigns the specific roles ARG1 and ARG0 given the predicate “assailed”.,Experiment/Discussion
+"− PHRASE TYPE (pt): This feature indicates the syntactic type of the phrase labeled as a predicate argument, e.g.",Experiment/Discussion
+NP for ARG1 in Figure 2.,Experiment/Discussion
+"− PARSE TREE PATH (path): This feature contains the path in the parse tree between the predicate phrase and the argument phrase, expressed as a sequence of nonterminal labels linked by direction symbols (up or down), e.g.",Experiment/Discussion
+NP S VP VP for ARG1 in Figure 2.,Experiment/Discussion
+− POSITION (pos) − Indicates if the constituent appears before or after the the predicate in the sentence.,Experiment/Discussion
+− VOICE (voice) − This feature distinguishes between active or passive voice for the predicate phrase.,Experiment/Discussion
+− HEAD WORD (hw) − This feature contains the head word of the evaluated phrase.,Experiment/Discussion
+Case and morphological information are preserved.,Experiment/Discussion
+"− GOVERNING CATEGORY (gov) − This feature applies to noun phrases only, and it indicates if the NP is dominated by a sentence phrase (typical for subject arguments with active−voice predicates), or by a verb phrase (typical for object arguments).",Experiment/Discussion
+− PREDICATE WORD − In our implementation this feature consists of two components: (1) VERB: the word itself with the case and morphological information preserved; and (2) LEMMA which represents the verb normalized to lower case and infinitive form.,Experiment/Discussion
+Statistical methods in general are hindered by the data sparsity problem.,Experiment/Discussion
+"To achieve high accuracy and resolve the data sparsity problem the method reported in (Gildea and Palmer, 2002; Gildea and Jurafsky, 2002) employed a backoff solution based on a lattice that combines the model features.",Experiment/Discussion
+"For practical reasons, this solution restricts the size of the feature sets.",Experiment/Discussion
+"For example, the backoff lattice in (Gildea and Palmer, 2002) consists of eight connected nodes for a five-feature set.",Experiment/Discussion
+A larger set of features will determine a very complex backoff lattice.,Experiment/Discussion
+"Consequently, no new intuitions may be tested as no new features can be easily added to the model.",Experiment/Discussion
+In our studies we found that inductive learning through decision trees enabled us to easily test large sets of features and study the impact of each feature ferent than the head word.,Experiment/Discussion
+The head words are indicated by the dashed arrows.,Experiment/Discussion
+The content words are indicated by the continuous arrows. on the augmented parser that outputs predicate argument structures.,Experiment/Discussion
+"For this reason we used the C5 inductive decision tree learning algorithm (Quinlan, 2002) to implement both the classifier that identifies argument constituents and the classifier that labels arguments with their roles.",Experiment/Discussion
+"Our model considers two sets of features: Feature Set 1 (FS1): features used in the work reported in (Gildea and Palmer, 2002) and (Gildea and Jurafsky, 2002) ; and Feature Set 2 (FS2): a novel set of features introduced in this paper.",Experiment/Discussion
+FS1 is illustrated in Figure 3 and FS2 is illustrated in Figure 4.,Experiment/Discussion
+"In developing FS2 we used the following observations: Because most of the predicate arguments are prepositional attachments (PP) or relative clauses (SBAR), often the head word (hw) feature from FS1 is not in fact the most informative word in H1: if phrase type is PP then select the right−most child Example: phrase = &quot;in Texas&quot;, cw = &quot;Texas&quot; H2: if phrase type is SBAR then select the left−most sentence (S*) clause Example: phrase = &quot;that occurred yesterday&quot;, cw = &quot;occurred&quot; H3: if phrase type is VP then if there is a VP child then select the left−most VP child else select the head word Example: phrase = &quot;had placed&quot;, cw = &quot;placed&quot; H4: if phrase type is ADVP then select the right−most child not IN or TO Example: phrase = &quot;more than&quot;, cw = &quot;more&quot; H5: if phrase type is ADJP then select the right−most adjective, verb, noun, or ADJP Example: phrase = &quot;61 years old&quot;, cw = &quot;old&quot; H6: for for all other phrase types do select the head word Example: phrase = &quot;red house&quot;, cw = &quot;house&quot; the phrase.",Experiment/Discussion
+Figure 5 illustrates three examples of this situation.,Experiment/Discussion
+"In Figure 5(a), the head word of the PP phrase is the preposition in, but June is at least as informative as the head word.",Experiment/Discussion
+"Similarly, in Figure 5(b), the relative clause is featured only by the relative pronoun that, whereas the verb occurred should also be taken into account.",Experiment/Discussion
+"Figure 5(c) shows another example of an infinitive verb phrase, in which the head word is to, whereas the verb declared should also be considered.",Experiment/Discussion
+"Based on these observations, we introduced in FS2 the CONTENT WORD (cw), which adds a new lexicalization from the argument constituent for better content representation.",Experiment/Discussion
+To select the content words we used the heuristics illustrated in Figure 6.,Experiment/Discussion
+"After implementing FS1, we noticed that the hw feature was rarely used, and we believe that this happens because of data sparsity.",Experiment/Discussion
+The same was noticed for the cw feature from FS2.,Experiment/Discussion
+"Therefore we decided to add two new features, namely the parts of speech of the head word and the content word respectively.",Experiment/Discussion
+These features are called hPos and cPos and are illustrated in Figure 4.,Experiment/Discussion
+Both these features generate an implicit yet simple backoff solution for the lexicalized features HEAD WORD (hw) and CONTENT WORD (cw).,Experiment/Discussion
+"Predicate arguments often contain names or other expressions identified by named entity (NE) recognizers, e.g. dates, prices.",Experiment/Discussion
+Thus we believe that this form of semantic information should be introduced in the learning model.,Experiment/Discussion
+In FS2 we added the following features: (a) the named entity class of the content word (cNE); and (b) a set of NE features that can take only Boolean values grouped as BOOLEAN NAMED ENTITY FEATURES and defined in Figure 4.,Experiment/Discussion
+"The cNE feature helps recognize the argument roles, e.g.",Experiment/Discussion
+"ARGM-LOC and ARGM-TMP, when location or temporal expressions are identified.",Experiment/Discussion
+The Boolean NE flags provide information useful in processing complex nominals occurring in argument constituents.,Experiment/Discussion
+"For example, in Figure 2 ARG0 is featured not only by the word traders but also by ORGANIZATION, the semantic class of the name Big Board.",Experiment/Discussion
+Predicate argument structures are recognized accurately when both predicates and arguments are correctly identified.,Experiment/Discussion
+"Often, predicates are lexicalized by phrasal verbs, e.g. put up, put off.",Experiment/Discussion
+"To identify correctly the verb particle and capture it in the structure of predicates instead of the argument structure, we introduced two collocation features that measure the frequency with which verbs and succeeding prepositions cooccurr in the corpus.",Experiment/Discussion
+The features are pvcSum and pvcMax and are defined in Figure 4.,Experiment/Discussion
+"The results presented in this paper were obtained by training on Proposition Bank (PropBank) release 2002/7/15 (Kingsbury et al., 2002).",Experiment/Discussion
+Syntactic information was extracted from the gold-standard parses in TreeBank Release 2.,Experiment/Discussion
+"As named entity information is not available in PropBank/TreeBank we tagged the training corpus with NE information using an open-domain NE recognizer, having 96% F-measure on the MUC61 data.",Experiment/Discussion
+"We reserved section 23 of PropBank/TreeBank for testing, and we trained on the rest.",Experiment/Discussion
+"Due to memory limitations on our hardware, for the argument finding task we trained on the first 150 KB of TreeBank (about 11% of TreeBank), and for the role assignment task on the first 75 KB of argument constituents (about 60% of PropBank annotations).",Experiment/Discussion
+Table 1 shows the results obtained by our inductive learning approach.,Experiment/Discussion
+The first column describes the feature sets used in each of the 7 experiments performed.,Experiment/Discussion
+"The following three columns indicate the precision (P), recall (R), and F-measure ( )2 obtained for the task of identifying argument constituents.",Experiment/Discussion
+The last column shows the accuracy (A) for the role assignment task using known argument constituents.,Experiment/Discussion
+The first row in Table 1 lists the results obtained when using only the FS1 features.,Experiment/Discussion
+The next five lines list the individual contributions of each of the newly added features when combined with the FS1 features.,Experiment/Discussion
+The last line shows the results obtained when all features from FS1 and FS2 were used.,Experiment/Discussion
+"Table 1 shows that the new features increase the argument identification F-measure by 3.61%, and the role assignment accuracy with 4.29%.",Experiment/Discussion
+"For the argument identification task, the head and content word features have a significant contribution for the task precision, whereas NE features contribute significantly to the task recall.",Experiment/Discussion
+"For the role assignment task the best features from the feature set FS2 are the content word features (cw and cPos) and the Boolean NE flags, which show that semantic information, even if minimal, is important for role classification.",Experiment/Discussion
+"Surprisingly, the phrasal verb collocation features did not help for any of the tasks, but they were useful for boosting the decision trees.",Experiment/Discussion
+"Decision tree learning provided by C5 (Quinlan, 2002) has built in support for boosting.",Experiment/Discussion
+We used it and obtained improvements for both tasks.,Experiment/Discussion
+The best Fmeasure obtained for argument constituent identification was 88.98% in the fifth iteration (a 0.76% improvement).,Experiment/Discussion
+The best accuracy for role assignment was 83.74% in the eight iteration (a 0.69% improvement)3.,Experiment/Discussion
+We further analyzed the boosted trees and noticed that phrasal verb collocation features were mainly responsible for the improvements.,Experiment/Discussion
+This is the rationale for including them in the FS2 set.,Experiment/Discussion
+"We also were interested in comparing the results of the decision-tree-based method against the results obtained by the statistical approach reported in (Gildea and Palmer, 2002).",Experiment/Discussion
+Table 2 summarizes the results.,Experiment/Discussion
+"(Gildea and Palmer, 2002) report the results listed on the first line of Table 2.",Experiment/Discussion
+"Because no Fscores were reported for the argument identification task, we re-implemented the model and obtained the results listed on the second line.",Experiment/Discussion
+"It looks like we had some implementation differences, and our results for the argument role classification task were slightly worse.",Experiment/Discussion
+"However, we used our results for the statistical model for comparing with the inductive learning model because we used the same feature extraction code for both models.",Experiment/Discussion
+"Lines 3 and 4 list the results of the inductive learning model with boosting enabled, when the features were only from FS1, and from FS1 and FS2 respectively.",Experiment/Discussion
+"When comparing the results obtained for both models when using only features from FS1, we find that almost the same results were obtained for role classification, but an enhancement of almost 13% was obtained when recognizing argument constituents.",Experiment/Discussion
+"When comparing the statistical model with the inductive model that uses all features, there is an enhancement of 17.12% for argument identification and 4.87% for argument role recognition.",Experiment/Discussion
+Another significant advantage of our inductive learning approach is that it scales better to unknown predicates.,Experiment/Discussion
+"The statistical model introduced in Gildea and Jurafsky (2002) uses predicate lexical information at most levels in the probability lattice, hence its scalability to unknown predicates is limited.",Experiment/Discussion
+"In contrast, the decision tree approach uses predicate lexical information only for 5% of the branching decisions recorded when testing the role assignment task, and only for 0.01% of the branching decisions seen during the argument constituent identification evaluation.",Experiment/Discussion
+Figure 7(a) illustrates an IE architecture that employs predicate argument structures.,Experiment/Discussion
+"Documents are processed in parallel to: (1) parse them syntactically, and (2) recognize the NEs.",Experiment/Discussion
+"The full parser first performs part-of-speech (POS) tagging using transformation based learning (TBL) (Brill, 1995).",Experiment/Discussion
+"Then non-recursive, or basic, noun phrases (NPB) are identified using the TBL method reported in (Ngai and Florian, 2001).",Experiment/Discussion
+"At last, the dependency parser presented in (Collins, 1997) is used to generate the full parse.",Experiment/Discussion
+This approach allows us to parse the sentences with less than 40 words from TreeBank section 23 with an F-measure slightly over 85% at an average of 0.12 seconds/sentence on a 2GHz Pentium IV computer.,Experiment/Discussion
+"The parse texts marked with NE tags are passed to a module that identifies entity coreference in documents, resolving pronominal and nominal anaphors and normalizing coreferring expressions.",Experiment/Discussion
+The parses are also used by a module that recognizes predicate argument structures with any of the methods described in Section 2.,Experiment/Discussion
+For each templette modeling a different domain a mapping between predicate arguments and templette slots is produced.,Experiment/Discussion
+"Figure 8 illustrates the mapping produced for two Event99 doFigure 8: Mapping rules between predicate arguments and templette slots for: (a) the “market change” domain, and (b) the “death” domain mains.",Experiment/Discussion
+The “market change” domain monitors changes (AMOUNT CHANGE) and current values (CURRENT VALUE) for financial instruments (INSTRUMENT).,Experiment/Discussion
+"The “death” domain extracts the description of the person deceased (DECEASED), the manner of death (MANNER OF DEATH), and, if applicable, the person to whom the death is attributed (AGENT OF DEATH).",Experiment/Discussion
+"To produce the mappings we used training data that consists of: (1) texts, and (2) their corresponding filled templettes.",Experiment/Discussion
+Each templette has pointers back to the source text similarly to the example presented in Figure 1.,Experiment/Discussion
+"When the predicate argument structures were identified, the mappings were collected as illustrated in Figure 9.",Experiment/Discussion
+Figure 9(a) shows an interesting aspect of the mappings.,Experiment/Discussion
+"Although the role classification of the last argument is incorrect (it should have been identified as ARG4), it is mapped into the CURRENT-VALUE slot.",Experiment/Discussion
+This shows how the mappings resolve incorrect but consistent classifications.,Experiment/Discussion
+Figure 9(b) shows the flexibility of the system to identify and classify constituents that are not close to the predicate phrase (ARG0).,Experiment/Discussion
+"This is a clear advantage over the FSA-based system, which in fact missed the AGENT-OF-DEATH in this sentence.",Experiment/Discussion
+"Because several templettes might describe the same event, event coreference is processed and, based on the results, templettes are merged when necessary.",Experiment/Discussion
+"The IE architecture in Figure 7(a) may be compared with the IE architecture with cascaded FSA represented in Figure 7(b) and reported in (Surdeanu and Harabagiu, 2002).",Experiment/Discussion
+"Both architectures share the same NER, coreference and merging modules.",Experiment/Discussion
+"Specific to the FSA-based architecture are the phrasal parser, which identifies simple phrases such as basic noun or verb phrases (some of them domain specific), the combiner, which builds domain-dependent complex phrases, and the event recognizer, which detects the domain-specific Subject-Verb-Object (SVO) patterns.",Experiment/Discussion
+"An example of a pattern used by the FSA-based architecture is: DEATH-CAUSE KILL-VERB PERSON, where DEATH-CAUSE may identify more than 20 lexemes, e.g. wreck, catastrophe, malpractice, and more than 20 verbs are KILL-VERBS, e.g. murder, execute, behead, slay.",Experiment/Discussion
+"Most importantly, each pattern must recognize up to 26 syntactic variations, e.g. determined by the active or passive form of the verb, relative subjects or objects etc.",Experiment/Discussion
+Predicate argument structures offer the great advantage that syntactic variations do not need to be accounted by IE systems anymore.,Experiment/Discussion
+"Because entity and event coreference, as well as templette merging will attempt to recover from partial patterns or predicate argument recognitions, and our goal is to compare the usage of FSA patterns versus predicate argument structures, we decided to disable the coreference and merging modules.",Experiment/Discussion
+This explains why in Figure 7 these modules are repre,Experiment/Discussion
+"To evaluate the proposed IE paradigm we selected two Event99 domains: “market change”, which tracks changes in stock indexes, and “death”, which extracts all manners of human deaths.",Results/Conclusion
+These domains were selected because most of the domain information can be processed without needing entity or event coreference.,Results/Conclusion
+"Moreover, one of the domains (market change) uses verbs commonly used in PropBank/TreeBank, while the other (death) uses relatively unknown verbs, so we can also evaluate how well the system scales to verbs unseen in training.",Results/Conclusion
+Table 3 lists the F-scores for the two domains.,Results/Conclusion
+The first line of the Table lists the results obtained by the IE architecture illustrated in Figure 7(a) when the predicate argument structures were identified by the statistical model.,Results/Conclusion
+The next line shows the same results for the inductive learning model.,Results/Conclusion
+The last line shows the results for the IE architecture in Figure 7(b).,Results/Conclusion
+"The results obtained by the FSA-based IE were the best, but they were made possible by handcrafted patterns requiring an effort of 10 person days per domain.",Results/Conclusion
+"The only human effort necessary in the new IE paradigm was imposed by the generation of mappings between arguments and templette slots, accomplished in less than 2 hours per domain, given that the training templettes are known.",Results/Conclusion
+"Additionally, it is easier to automatically learn these mappings than to acquire FSA patterns.",Results/Conclusion
+Table 3 also shows that the new IE paradigm performs better when the predicate argument structures are recognized with the inductive learning model.,Results/Conclusion
+The cause is the substantial difference in quality of the argument identification task between the two models.,Results/Conclusion
+"The Table shows that the new IE paradigm with the inductive learning model achieves about 90% of the performance of the FSA-based system for both domains, even though one of the domains uses mainly verbs rarely seen in training (e.g.",Results/Conclusion
+“die” appears 5 times in PropBank).,Results/Conclusion
+Another way of evaluating the integration of predicate argument structures in IE is by comparing the number of events identified by each architecture.,Results/Conclusion
+Table 4 shows the results.,Results/Conclusion
+"Once again, the new IE paradigm performs better when the predicate argument structures are recognized with the inductive learning model.",Results/Conclusion
+More events are missed by the statistical model which does not recognize argument constituents as well the inductive learning model.,Results/Conclusion
+This paper reports on a novel inductive learning method for identifying predicate argument structures in text.,Results/Conclusion
+"The proposed approach achieves over 88% F-measure for the problem of identifying argument constituents, and over 83% accuracy for the task of assigning roles to pre-identified argument constituents.",Results/Conclusion
+"Because predicate lexical information is used for less than 5% of the branching decisions, the generated classifier scales better than the statistical method from (Gildea and Palmer, 2002) to unknown predicates.",Results/Conclusion
+This way of identifying predicate argument structures is a central piece of an IE paradigm easily customizable to new domains.,Results/Conclusion
+The performance degradation of this paradigm when compared to IE systems based on hand-crafted patterns is only 10%.,Results/Conclusion

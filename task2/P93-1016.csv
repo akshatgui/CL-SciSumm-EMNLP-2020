@@ -1,204 +1,204 @@
 col1,col2
-Overgeneration is the main source of computational complexity in previous principle-based parsers.,{}
-This paper presents a message passing algorithm for principle-based parsing that avoids the overgeneration problem.,{}
-This algorithm has been implemented in C++ and successfully tested with example sen,{}
-"Unlike rule-based grammars that use a large number of rules to describe patterns in a language, Government-Binding (GB) Theory (Chomsky, 1981; Haegeman, 1991; van Riemsdijk and Williams, 1986) explains these patterns in terms of more foundmental and universal principles.","{'title': '1.', 'number': '1'}"
-A key issue in building a principle-based parser is how to procedurally interpret the principles.,"{'title': '1.', 'number': '1'}"
-"Since GB principles are constraints over syntactic structures, one way to implement the principles is to This implementation of GB theory is very inefficient, since there are a large number of structures being generated and then filtered out.","{'title': '1.', 'number': '1'}"
-"The problem of producing too many illicit structures is called overgeneration and has been recognized as the culprit of computational difficulties in principle-based parsing (Berwick, 1991).","{'title': '1.', 'number': '1'}"
-"Many methods have been proposed to alleviate the overgeneration problem by detecting illicit structures as early as possible, such as optimal ordering of principles (Fong, 1991), coroutining (Dorr, 1991; Johnson, 1991).","{'title': '1.', 'number': '1'}"
-"This paper presents a principle-based parser that avoids the overgeneration problem by applying principles to descriptions of the structures, instead of the structures themselves.","{'title': '1.', 'number': '1'}"
-A structure for the input sentence is only constructed after its description has been found to satisfy all the principles.,"{'title': '1.', 'number': '1'}"
-The structure can then be retrieved in time linear to its size and is guaranteed to be consistent with the principles.,"{'title': '1.', 'number': '1'}"
-"Since the descriptions of structures are constantsized attribute vectors, checking whether a structural description satisfy a principle takes constant amount of time.","{'title': '1.', 'number': '1'}"
-This compares favorably to approaches where constraint satisfaction involves tree traversal.,"{'title': '1.', 'number': '1'}"
-The next section presents a general framework for parsing by message passing.,"{'title': '1.', 'number': '1'}"
-"Section 3 shows how linguistic notions, such as dominance and government, can be translated into relationships between descriptions of structures.","{'title': '1.', 'number': '1'}"
-Section 4 describes interpretation of GB principles.,"{'title': '1.', 'number': '1'}"
-Familiarity with GB theory is assumed in the presentation.,"{'title': '1.', 'number': '1'}"
-Section 5 sketches an object-oriented implementation of the parser.,"{'title': '1.', 'number': '1'}"
-Section 6 discusses complexity issues and related work.,"{'title': '1.', 'number': '1'}"
-"The message passing algorithm presented here is an extension to a message passing algorithm for context-free grammars (Lin and Goebel, 1993).","{'title': '2.', 'number': '2'}"
-"We encode the grammar, as well as the parser, in a network (Figure 1).","{'title': '2.', 'number': '2'}"
-The nodes in the networks represent syntactic categories.,"{'title': '2.', 'number': '2'}"
-The links in the network represent dominance and subsumption relationships between the categories: The network is also a parser.,"{'title': '2.', 'number': '2'}"
-The nodes in the network are computing agents.,"{'title': '2.', 'number': '2'}"
-They communicate with each other by passing messages in the reverse direction of the links in the network.,"{'title': '2.', 'number': '2'}"
-The messages contains items.,"{'title': '2.', 'number': '2'}"
-"An item is a triplet that describes a structure: <surface-string, attribute-values, sources>, where surface-string is an integer interval [i, j] denoting the i'th to j'th word in the input sentence. attribute-values specify syntactic features, such as cat, plu, case, of the root node of the structure described by the item. sources component is the set of items that describe the immediate sub-structures.","{'title': '2.', 'number': '2'}"
-"Therefore, by tracing the sources of an item, a complete structure can be retrieved.","{'title': '2.', 'number': '2'}"
-The location of the item in the network determines the syntactic category of the structure.,"{'title': '2.', 'number': '2'}"
-"For example, [Nip the ice-cream] in the sentence &quot;the ice-cream was eaten&quot; is represented by an item i4 at NP node (see Figure 2): <[0,1], ((cat n) -plu (nform norm) -cm +theta), {i1 i3}> An item represents the root node of a structure and contains enough information such that the internal nodes of the structure are irrelevant.","{'title': '2.', 'number': '2'}"
-"The message passing process is initiated by sending initial items externally to lexical nodes (e.g., N, P, ...).","{'title': '2.', 'number': '2'}"
-The initial items represent the words in the sentence.,"{'title': '2.', 'number': '2'}"
-The attribute values of these items are obtained from the lexicon.,"{'title': '2.', 'number': '2'}"
-"In case of lexical ambiguity, each possibility is represented by an item.","{'title': '2.', 'number': '2'}"
-"For example, suppose the input sentence is &quot;I saw a man,&quot; then the word &quot;saw&quot; is represented by the following two items sent to nodes N and V:NP2 respectively: < [1 , 1.]","{'title': '2.', 'number': '2'}"
-", ( (cat n) -plu (nform norm)), 0> <[1,1], ((cat v) (cform fin) -pas (tense past)), {}> When a node receives an item, it attempts to combine the item with items from other nodes to form new items.","{'title': '2.', 'number': '2'}"
-"Two items The result of the combination is a new item: <[i1j2], unify(Ai, A2), Si U S2>• The new items represent larger parse trees resulted from combining smaller ones.","{'title': '2.', 'number': '2'}"
-They are then propagated further to other nodes.,"{'title': '2.', 'number': '2'}"
-The principles in GB theory are implemented as a set of constraints that must be satisfied during the propagation and combination of items.,"{'title': '2.', 'number': '2'}"
-The constraints are attached to nodes and links in the network.,"{'title': '2.', 'number': '2'}"
-Different nodes and links may have different constraints.,"{'title': '2.', 'number': '2'}"
-The items received or created by a node must satisfy the constraints at the node.,"{'title': '2.', 'number': '2'}"
-The constraints attached to the links serve as filters.,"{'title': '2.', 'number': '2'}"
-A link only allows items that satisfy its constraints to pass through.,"{'title': '2.', 'number': '2'}"
-"For example, the link from V:NP to NP in Figure 1 has a constraint that any item passing through it must be unifiable with (case acc).","{'title': '2.', 'number': '2'}"
-"Thus items representing NPs with nominative case, such as &quot;he&quot;, will not be able to pass through the link.","{'title': '2.', 'number': '2'}"
-"By default, the attributes of an item percolate with the item as it is sent across a link.","{'title': '2.', 'number': '2'}"
-"However, the links in the network may block the percolation of certain attributes.","{'title': '2.', 'number': '2'}"
-The sentence is successfully parsed if an item is found at IF or CP node whose surface string is the input sentence.,"{'title': '2.', 'number': '2'}"
-A parse tree of the sentence can be retrieved by tracing the sources of the item.,"{'title': '2.', 'number': '2'}"
-The message passing process for analyzing the sentence 2V:NP denotes verbs taking an NP complement.,"{'title': '2.', 'number': '2'}"
-"Similarly, V:IP denotes verbs taking a CP complement, N:CP represents nouns taking a CP complement. is illustrated in Figure 2.a.","{'title': '2.', 'number': '2'}"
-"In order not to convolute the figure, we have only shown the items that are involved in the parse tree of the sentence and their propagation paths.","{'title': '2.', 'number': '2'}"
-The parsing process is described as follows: which means that normal NPs need to be casemarked.,"{'title': '2.', 'number': '2'}"
-"Therefore, i4 acquires -cm.","{'title': '2.', 'number': '2'}"
-Item i4 is then sent to nodes that have links to NP.,"{'title': '2.', 'number': '2'}"
-4.,"{'title': '2.', 'number': '2'}"
-"The word &quot;was&quot; is represented by item i5, which is sent to Ibar via I.","{'title': '2.', 'number': '2'}"
-5.,"{'title': '2.', 'number': '2'}"
-The word &quot;eaten&quot; can be either the past participle or the passive voice of &quot;eat&quot;.,"{'title': '2.', 'number': '2'}"
-The second possibility is represented by the item i7.,"{'title': '2.', 'number': '2'}"
-The word belongs to the subcategory V:NP which takes an NP as the complement.,"{'title': '2.', 'number': '2'}"
-"Therefore, the item i7 is sent to node V:NP. i6 from Ito form in.","{'title': '2.', 'number': '2'}"
-8.,"{'title': '2.', 'number': '2'}"
-"When IP receives in, it is combined with i4 from NP to form i12.","{'title': '2.', 'number': '2'}"
-"Since in contains an npmovement whose np-atts attribute is unifiable with i4, i4 is identified as the antecedent of npmovement.","{'title': '2.', 'number': '2'}"
-The np-movement attributes in i12 are cleared.,"{'title': '2.', 'number': '2'}"
-The sources of i12 are i4 from NP and in from Ibar.,"{'title': '2.', 'number': '2'}"
-"Therefore, the top-level of parse tree consists of an NP and Ibar node dominated by IP node.","{'title': '2.', 'number': '2'}"
-The complete parse tree (Figure 2.b) is obtained by recursively tracing the origins of i4 and in from NP and Ibar respectively.,"{'title': '2.', 'number': '2'}"
-"The trace after &quot;eaten&quot; is indicated by the np-movement attributes of i7, even though the tree does not include a node representing the trace.","{'title': '2.', 'number': '2'}"
-"GB principles are stated in terms of linguistic concepts such as barrier, government and movement, which are relationships between nodes in syntactic structures.","{'title': '3.', 'number': '3'}"
-"Since we interpret the principles with descriptions of the structures, instead of the structures themselves, we must be able to model these notions with the descriptions.","{'title': '3.', 'number': '3'}"
-Dominance and m-command: Dominance and m-command are relationships between nodes in syntactic structures.,"{'title': '3.', 'number': '3'}"
-"Since an item represent a node in a syntactic structure, relationships between the nodes can be represented by relationships between items: dominance: An item dominates its direct and indirect sources.","{'title': '3.', 'number': '3'}"
-"For example, in Figure 2, i4 dominates i1, i2, and i3. in-command: The head daughter of an item representing a maximal category m-commands nonhead daughters of the item and their sources.","{'title': '3.', 'number': '3'}"
-Barrier Chomsky (1986) proposed the notion of barrier to unify the treatment of government and subjacency.,"{'title': '3.', 'number': '3'}"
-"In Chomsky's proposal, barrierhood is a property of maximal nodes (nodes representing maximal categories).","{'title': '3.', 'number': '3'}"
-"However, not every maximal node is a barrier.","{'title': '3.', 'number': '3'}"
-"The barrierhood of a node also depends on its context, in terms of L-marking and inheritance.","{'title': '3.', 'number': '3'}"
-"Instead of making barrierhood a property of the nodes in syntactic structures, we define it to be a property of links in the grammar network.","{'title': '3.', 'number': '3'}"
-"That is, certain links in the grammar network are classified as barriers.","{'title': '3.', 'number': '3'}"
-"In Figure 1, barrier links have a black ink-spot on them.","{'title': '3.', 'number': '3'}"
-"Barrierhood is a property of these links, independent of the context.","{'title': '3.', 'number': '3'}"
-This definition of barrier is simpler than Chomsky's since it is context-free.,"{'title': '3.', 'number': '3'}"
-"In our experiments so far, this simpler definition has been found to be adequate.","{'title': '3.', 'number': '3'}"
-"Government Once the notion of barrier has been defined, the government relationship between two nodes in a structure can be defined as follows: government: A governs B if A is the minimal governor that m-commands B via a sequence of non-barrier links, where governors are N, V, P, A, and tensed I.","{'title': '3.', 'number': '3'}"
-Items representing governors are assigned +govern attribute.,"{'title': '3.', 'number': '3'}"
-This attribute percolates across head dominance links.,"{'title': '3.', 'number': '3'}"
-"If an item has +govern attribute, then non-head sources of the item and their sources are governed by the head of the item if there are paths between them and the item satisfying the conditions: Movement :3 Movement is a major source of complexity in principle-based parsing.","{'title': '3.', 'number': '3'}"
-Directly modeling Move-a would obviously generate a large number of invalid movements.,"{'title': '3.', 'number': '3'}"
-"Fortunately, movements must also satisfy: c-command condition: A moved element must ccommand its trace (Radford, 1988, p.564), where A c-command B if A does not dominate B but the parent of A dominates B.","{'title': '3.', 'number': '3'}"
-"The c-command condition implies that a movement consists of a sequence of moves in the reverse direction of dominance links, except the last one.","{'title': '3.', 'number': '3'}"
-"Therefore, we can model a movement with a set of attribute values.","{'title': '3.', 'number': '3'}"
-"If an item contains these attribute values, it means that there is a movement out of the structure represented by the item.","{'title': '3.', 'number': '3'}"
-"For example, in Figure 2.b, item i10 contains movement attributes: nppg , npbarrier and np-atts.","{'title': '3.', 'number': '3'}"
-This indicates that there is an np-movement out of the VP whose root node is ilo.,"{'title': '3.', 'number': '3'}"
-The movement attributes are generated at the parent node of the initial trace.,"{'title': '3.', 'number': '3'}"
-"For example, V:NP is a node representing normal transitive verbs which take an NP as complement.","{'title': '3.', 'number': '3'}"
-"When V:NP receives an item representing the passive sense of the word eaten, V:NP creates another item < [i, i] , ((cat v) -npbarrier +nppg (np-atts (cat n))), 0> This item will not be combined with any item from NP node because the NP complement is assumed to be an np-trace.","{'title': '3.', 'number': '3'}"
-The item is then sent to nodes dominating V:NP.,"{'title': '3.', 'number': '3'}"
-"As the item propagates further, the attributes is carried with it, simulating the effect of movement.","{'title': '3.', 'number': '3'}"
-The np-movement land at IP node when the IP node combines an item from subject NP and another item from Ibar with np-movement attributes.,"{'title': '3.', 'number': '3'}"
-A precondition on the landing is that the attributes of the former can be unified with the value of np-atts of the latter.,"{'title': '3.', 'number': '3'}"
-"Wh-movements are dealt with by attributes whpg, whbarrier, wh-atts.","{'title': '3.', 'number': '3'}"
-This treatment of movement requires that the parent node of a initial trace be able to determine the type of movement.,"{'title': '3.', 'number': '3'}"
-"When a movement is generated, the type of the movement depends on the ca (case assigner) attribute of the item: ca movement examples + wh active V, P, finite IP - np A, passive V, non-finite IP For example, when IP node receives an item from Ibar, IP attempts to combine it with another item from subject NP.","{'title': '3.', 'number': '3'}"
-"If the subject is not found, then the IF node generates a movement.","{'title': '3.', 'number': '3'}"
-"If the item represent a finite clause, then it has attributes +ca (cform fin) and the movement is of type wh.","{'title': '3.', 'number': '3'}"
-"Otherwise, the movement is of type np.","{'title': '3.', 'number': '3'}"
-We now describe how the principles of GB theory are implemented.,"{'title': '4.', 'number': '4'}"
-The first condition requires that every non-lexical category have a head.,"{'title': '4.', 'number': '4'}"
-This is guaranteed by a constraint in item combination: one of the sources of the two items being combined must be from the head daughter.,"{'title': '4.', 'number': '4'}"
-The second condition is implemented by the structure of the grammar network.,"{'title': '4.', 'number': '4'}"
-The combinations of items represent constructions of larger parse trees from smaller ones.,"{'title': '4.', 'number': '4'}"
-"Since the structure of the grammar network satisfies the constraint, the parse trees constructed by item combination also satisfy the X-bar theory.","{'title': '4.', 'number': '4'}"
-The case filter is implemented as follows: The word &quot;believe&quot; belongs to a subcategory of verb (V:IP) that takes an IP as the complement.,"{'title': '4.', 'number': '4'}"
-"Since there is no barrier between V:IP and the subject of IP, words like &quot;believe&quot; can govern into the IP complement and case-mark its subject (known as exceptional case-marking in literature).","{'title': '4.', 'number': '4'}"
-"In (2a), the -cm attribute assigned to the item representing [NI, John] percolates to V:IP node without being blocked by any barrier.","{'title': '4.', 'number': '4'}"
-"Since +govern +ca -cm co-occur in the item at V:IP node, the case-filter is satisfied (Figure 3.a).","{'title': '4.', 'number': '4'}"
-"On the other hand, in (2b) the passive &quot;believed&quot; is not a case-assigner.","{'title': '4.', 'number': '4'}"
-The case-filter violation is detected at V:IP node (Figure 3.b).,"{'title': '4.', 'number': '4'}"
-The word &quot;hope&quot; takes a CP complement.,"{'title': '4.', 'number': '4'}"
-It does not govern the subject of CP because there is a barrier between them.,"{'title': '4.', 'number': '4'}"
-The subject of an infinitive CP can only be governed by complement &quot;for&quot; (Figure 3.c and 3.d).,"{'title': '4.', 'number': '4'}"
-"4-criterion: Every chain must receive and orionly one 0-role, where a chain consists of an NP and the traces (if any) coindexed with it (van ...liemsdijk and Williams, 1986, p.245).","{'title': '4.', 'number': '4'}"
-We first consider chains consisting of one element.,"{'title': '4.', 'number': '4'}"
-"The 0-criterion is implemented as the following constraints: value 0-role* examples +subj -theta yes &quot;take&quot;, &quot;sleep&quot; -subj-theta no &quot;seem&quot;, passive verbs *assigning 0-role to subject This attribute percolates with the item from V to IP.","{'title': '4.', 'number': '4'}"
-"The IP node then check the value of theta and subj-theta to make sure that the verb assigns a 0-role to the subject if it requires one, and vice versa.","{'title': '4.', 'number': '4'}"
-"Figure 4 shows an example of 0-criterion in action when parsing: The subject NP, &quot;it&quot;, has attribute -theta, which is percolated to the IP node.","{'title': '4.', 'number': '4'}"
-The verb &quot;love&quot; has attributes +theta +subj-theta.,"{'title': '4.', 'number': '4'}"
-"The NP, &quot;Mary&quot;, has attribute +theta.","{'title': '4.', 'number': '4'}"
-When the items representing &quot;love&quot; and &quot;Mary&quot; are combined.,"{'title': '4.', 'number': '4'}"
-"Their theta attribute are unifiable, thus satisfying the 0-criterion.","{'title': '4.', 'number': '4'}"
-"The +subj-theta attribute of &quot;love&quot; percolates with the item representing &quot;love Mary&quot;, which is propagated to IP node.","{'title': '4.', 'number': '4'}"
-"When the item from NP and Ibar are combined at IP node, the new item has both -theta and +subj-theta attribute, resulting in a 0-criterion violation.","{'title': '4.', 'number': '4'}"
-The above constraints guarantee that chains with only one element satisfy 0-criterion.,"{'title': '4.', 'number': '4'}"
-We now consider chains with more than one element.,"{'title': '4.', 'number': '4'}"
-The base-position of a wh-movement is case-marked and assigned a 0-role.,"{'title': '4.', 'number': '4'}"
-"The base position of an ripmovement is assigned a 0-role, but not case-marked.","{'title': '4.', 'number': '4'}"
-"To ensure that the movement chains satisfy 0criterion we need only to make sure that the items representing the parents of intermediate traces and landing sites of the movements satisfy these conditions: Sub jacency: Movement cannot cross more than' one barrier (Haegeman, 1991, p.494).","{'title': '4.', 'number': '4'}"
-A wh-movement carries a whbarrier attribute.,"{'title': '4.', 'number': '4'}"
-The value -whbarrier means that the movement has not crossed any barrier and +whbarrier means that the movement has already crossed one barrier.,"{'title': '4.', 'number': '4'}"
-"Barrier links allow items with -whbarrier to pass through, but change the value to +whbarrier.","{'title': '4.', 'number': '4'}"
-Items with +whbarrier are blocked by barrier links.,"{'title': '4.', 'number': '4'}"
-"When a wh-movement leaves an intermediate trace at a position, the corresponding whbarrier becomes -.","{'title': '4.', 'number': '4'}"
-The subjacency of np-movements is similarly handled with a npbarrier attribute.,"{'title': '4.', 'number': '4'}"
-Empty Category Principle (ECP): A trace&quot; or its parent must be properly governed.,"{'title': '4.', 'number': '4'}"
-"In literature, proper government is not, as the term suggests, subsumed by government.","{'title': '4.', 'number': '4'}"
-"For example, in the tensed I in [ip e came] governs but does not properly govern the trace e. On the other hand, e' properly governs but does not govern e (Haegeman, 1991, p.456).","{'title': '4.', 'number': '4'}"
-"Here, we define proper government to be a subclass of government: Proper government: A properly governs B if A governs B and A is a 0-role assigner (A do not have to assign 0-role to B).","{'title': '4.', 'number': '4'}"
-"Therefore, if an item have both +govern and one of +theta or +subj-theta, then the head of the item properly governs the non-head source items and their sources that are reachable via a sequence of non-barrier links.","{'title': '4.', 'number': '4'}"
-This definition unifies the notions of government and proper government.,"{'title': '4.', 'number': '4'}"
-"In (4), e is properly governed by tensed I, e' is properly governed by &quot;think&quot;.","{'title': '4.', 'number': '4'}"
-"This definition won't be able to account for difference between (4) and (5) (That-Trace Effect (Haegeman, 1991, p.456)): However, That-Trace Effect can be explained by a separate principle.","{'title': '4.', 'number': '4'}"
-The proper government of wh-traces are handled by an attribute whpg (np-movements are similarly dealt with by an uppg attribute): Value Meaning -whpg the most recent trace has yet to +whpg be properly governed. the most recent trace has already been properly governed.,"{'title': '4.', 'number': '4'}"
-"For example, the word claim takes a CP cornplement.","{'title': '4.', 'number': '4'}"
-In the sentence: (6) *Whoi did you make the claim e that Reagan met ei there is a wh-movement out of the complement CP of claim.,"{'title': '4.', 'number': '4'}"
-"When the movement left an intermediate trace at CSpec, the value of whpg became -.","{'title': '4.', 'number': '4'}"
-"When the item with -whpg is combined with the item representing claim, their unification has attributes (+govern -theta -whpg), which is an ECP violation.","{'title': '4.', 'number': '4'}"
-The item is recognized as invalid and discarded.,"{'title': '4.', 'number': '4'}"
-"PRO Theorem: PRO must be ungoverned (Haegeman, 1991, p.263).","{'title': '4.', 'number': '4'}"
-"When the IP node receives an item from Ibar with cform not being fin, the node makes a copy of the item and assign +pro and -ppro to the copy and then send it further without combining it with any item from (subject) NP node.","{'title': '4.', 'number': '4'}"
-The attribute +pro represents the hypothesis that the subject of the clause is PRO.,"{'title': '4.', 'number': '4'}"
-The meaning of -ppro is that the subject PRO has not yet been protected (from being governed).,"{'title': '4.', 'number': '4'}"
-"When an item containing -ppro passes through a barrier link, -ppro becomes +ppro which means that the PRO subject has now been protected.","{'title': '4.', 'number': '4'}"
-A PROtheorem violation is detected if +govern and -ppro co-occur in an item.,"{'title': '4.', 'number': '4'}"
-"The parser has been implemented in C++, an object-oriented extension of C. The object-oriented paradigm makes the relationships between nodes and links in the grammar network and their software counterparts explicit and direct.","{'title': '5.', 'number': '5'}"
-Communication via message passing is reflected in the message passing metaphor used in object-oriented languages.,"{'title': '5.', 'number': '5'}"
-Nodes and links are implemented as objects.,"{'title': '5.', 'number': '5'}"
-Figure 6 shows the class hierarchy for nodes.,"{'title': '5.', 'number': '5'}"
-The constraints that implement the principles are distributed over the nodes and links in the network.,"{'title': '5.', 'number': '5'}"
-The implementation of the constraints is modular because they are defined in class definitions and all the instances of the class and its subclasses inherit these constraints.,"{'title': '5.', 'number': '5'}"
-The object-oriented paradigm allows the subclasses to modify the constraints.,"{'title': '5.', 'number': '5'}"
-"The implementation of the parser has been tested with example sentences from Chapters 410, 15-18 of (van Riemsdijk and Williams, 1986).","{'title': '5.', 'number': '5'}"
-"The chapters left out are mostly about logical form and Binding Theory, which have not yet been implemented in the parser.","{'title': '5.', 'number': '5'}"
-The average parsing time for sentences with 5 to 20 words is below half of a second on a SPARCstation ELC.,"{'title': '5.', 'number': '5'}"
-The attribute vectors used here are similar to those in unification based grammars/parsers.,"{'title': '6.', 'number': '6'}"
-"An important difference, however, is that the attribute vectors used here satisfy the unit closure condition (Barton, Jr. et al., 1987, p.257).","{'title': '6.', 'number': '6'}"
-"That is, nonatomic attribute values are vectors that consist only of atomic attribute values.","{'title': '6.', 'number': '6'}"
-"For example: (7a) satisfies the unit closure condition, whereas (7b) does not, because wh-atts in (7b) contains a non-atomic attribute np-atts.","{'title': '6.', 'number': '6'}"
-"(Barton, Jr. et al., 1987) argued that the unification of recursive attribute structures is a major source of computational complexity.","{'title': '6.', 'number': '6'}"
-"On the other hand, let a be the number of atomic attributes, n be the number of non-atomic attributes.","{'title': '6.', 'number': '6'}"
-The time it takes to unify two attribute vectors is a + ma if they satisfy the unit closure condition.,"{'title': '6.', 'number': '6'}"
-"Since both n and a can be regarded as constants, the unification takes only constant amount of time.","{'title': '6.', 'number': '6'}"
-"In our current implementation, n -= 2, a = 59.","{'title': '6.', 'number': '6'}"
-Correa (1991) proposed an interpretation of GB principles based on attribute grammars.,"{'title': 'Attribute grammar interpretation', 'number': '7'}"
-An attribute grammar consists of a phrase structure grammar and a set of attribution rules to compute the attribute values of the non-terminal symbols.,"{'title': 'Attribute grammar interpretation', 'number': '7'}"
-The attributes are evaluated after a parse tree has been constructed by the phrase structure grammar.,"{'title': 'Attribute grammar interpretation', 'number': '7'}"
-The original objective of attribute grammar is to derive the semantics of programs from parse trees.,"{'title': 'Attribute grammar interpretation', 'number': '7'}"
-"Since programming languages are designed to be unambiguous, the attribution rules need to be evaluated on only one parse tree.","{'title': 'Attribute grammar interpretation', 'number': '7'}"
-"In attribute grammar interpretation of GB theory, the principles are encoded in the attribution rules, and the phrase structure grammar is replaced by X-bar theory and Move-a.","{'title': 'Attribute grammar interpretation', 'number': '7'}"
-"Therefore, a large number of structures will be constructed and evaluated by the attribution rules, thus leading to a serious overgeneration problem.","{'title': 'Attribute grammar interpretation', 'number': '7'}"
-"For this reason, Correa pointed out that the attribute grammar interpretation should be used as a specification of an implementation, rather than an implementation itself.","{'title': 'Attribute grammar interpretation', 'number': '7'}"
-"Abney and Cole (1986) presented a GB parser that uses actors (Agha, 1986).","{'title': 'Actor-based GB parsing', 'number': '8'}"
-Actors are similar to objects in having internal states and responding to messages.,"{'title': 'Actor-based GB parsing', 'number': '8'}"
-"In our model, each syntactic category is represented by an object.","{'title': 'Actor-based GB parsing', 'number': '8'}"
-"In (Abney and Cole, 1986), each instance of a category is represented by an actor.","{'title': 'Actor-based GB parsing', 'number': '8'}"
-"The actors build structures by creating other actors and their relationships according to 0-assignment, predication, and functional-selection.","{'title': 'Actor-based GB parsing', 'number': '8'}"
-"Other principles are then used to filter out illicit structures, such as subjacency and case-filter.","{'title': 'Actor-based GB parsing', 'number': '8'}"
-This generate-and-test nature of the algorithm makes it suscetible to the overgeneration problem.,"{'title': 'Actor-based GB parsing', 'number': '8'}"
-"We have presented an efficient message passing algorithm for principle-based parsing, where ferent places so that stricter principles are applied earlier.","{'title': '7.', 'number': '9'}"
-"We have also proposed simplifications of GB theory with regard to barrier and proper government, which have been found to be adequate in our experiments so far.","{'title': '7.', 'number': '9'}"
+Overgeneration is the main source of computational complexity in previous principle-based parsers.,Introduction
+This paper presents a message passing algorithm for principle-based parsing that avoids the overgeneration problem.,Introduction
+This algorithm has been implemented in C++ and successfully tested with example sen,Introduction
+"Unlike rule-based grammars that use a large number of rules to describe patterns in a language, Government-Binding (GB) Theory (Chomsky, 1981; Haegeman, 1991; van Riemsdijk and Williams, 1986) explains these patterns in terms of more foundmental and universal principles.",Experiment/Discussion
+A key issue in building a principle-based parser is how to procedurally interpret the principles.,Experiment/Discussion
+"Since GB principles are constraints over syntactic structures, one way to implement the principles is to This implementation of GB theory is very inefficient, since there are a large number of structures being generated and then filtered out.",Experiment/Discussion
+"The problem of producing too many illicit structures is called overgeneration and has been recognized as the culprit of computational difficulties in principle-based parsing (Berwick, 1991).",Experiment/Discussion
+"Many methods have been proposed to alleviate the overgeneration problem by detecting illicit structures as early as possible, such as optimal ordering of principles (Fong, 1991), coroutining (Dorr, 1991; Johnson, 1991).",Experiment/Discussion
+"This paper presents a principle-based parser that avoids the overgeneration problem by applying principles to descriptions of the structures, instead of the structures themselves.",Experiment/Discussion
+A structure for the input sentence is only constructed after its description has been found to satisfy all the principles.,Experiment/Discussion
+The structure can then be retrieved in time linear to its size and is guaranteed to be consistent with the principles.,Experiment/Discussion
+"Since the descriptions of structures are constantsized attribute vectors, checking whether a structural description satisfy a principle takes constant amount of time.",Experiment/Discussion
+This compares favorably to approaches where constraint satisfaction involves tree traversal.,Experiment/Discussion
+The next section presents a general framework for parsing by message passing.,Experiment/Discussion
+"Section 3 shows how linguistic notions, such as dominance and government, can be translated into relationships between descriptions of structures.",Experiment/Discussion
+Section 4 describes interpretation of GB principles.,Experiment/Discussion
+Familiarity with GB theory is assumed in the presentation.,Experiment/Discussion
+Section 5 sketches an object-oriented implementation of the parser.,Experiment/Discussion
+Section 6 discusses complexity issues and related work.,Experiment/Discussion
+"The message passing algorithm presented here is an extension to a message passing algorithm for context-free grammars (Lin and Goebel, 1993).",Experiment/Discussion
+"We encode the grammar, as well as the parser, in a network (Figure 1).",Experiment/Discussion
+The nodes in the networks represent syntactic categories.,Experiment/Discussion
+The links in the network represent dominance and subsumption relationships between the categories: The network is also a parser.,Experiment/Discussion
+The nodes in the network are computing agents.,Experiment/Discussion
+They communicate with each other by passing messages in the reverse direction of the links in the network.,Experiment/Discussion
+The messages contains items.,Experiment/Discussion
+"An item is a triplet that describes a structure: <surface-string, attribute-values, sources>, where surface-string is an integer interval [i, j] denoting the i'th to j'th word in the input sentence. attribute-values specify syntactic features, such as cat, plu, case, of the root node of the structure described by the item. sources component is the set of items that describe the immediate sub-structures.",Experiment/Discussion
+"Therefore, by tracing the sources of an item, a complete structure can be retrieved.",Experiment/Discussion
+The location of the item in the network determines the syntactic category of the structure.,Experiment/Discussion
+"For example, [Nip the ice-cream] in the sentence &quot;the ice-cream was eaten&quot; is represented by an item i4 at NP node (see Figure 2): <[0,1], ((cat n) -plu (nform norm) -cm +theta), {i1 i3}> An item represents the root node of a structure and contains enough information such that the internal nodes of the structure are irrelevant.",Experiment/Discussion
+"The message passing process is initiated by sending initial items externally to lexical nodes (e.g., N, P, ...).",Experiment/Discussion
+The initial items represent the words in the sentence.,Experiment/Discussion
+The attribute values of these items are obtained from the lexicon.,Experiment/Discussion
+"In case of lexical ambiguity, each possibility is represented by an item.",Experiment/Discussion
+"For example, suppose the input sentence is &quot;I saw a man,&quot; then the word &quot;saw&quot; is represented by the following two items sent to nodes N and V:NP2 respectively: < [1 , 1.]",Experiment/Discussion
+", ( (cat n) -plu (nform norm)), 0> <[1,1], ((cat v) (cform fin) -pas (tense past)), {}> When a node receives an item, it attempts to combine the item with items from other nodes to form new items.",Experiment/Discussion
+"Two items The result of the combination is a new item: <[i1j2], unify(Ai, A2), Si U S2>• The new items represent larger parse trees resulted from combining smaller ones.",Experiment/Discussion
+They are then propagated further to other nodes.,Experiment/Discussion
+The principles in GB theory are implemented as a set of constraints that must be satisfied during the propagation and combination of items.,Experiment/Discussion
+The constraints are attached to nodes and links in the network.,Experiment/Discussion
+Different nodes and links may have different constraints.,Experiment/Discussion
+The items received or created by a node must satisfy the constraints at the node.,Experiment/Discussion
+The constraints attached to the links serve as filters.,Experiment/Discussion
+A link only allows items that satisfy its constraints to pass through.,Experiment/Discussion
+"For example, the link from V:NP to NP in Figure 1 has a constraint that any item passing through it must be unifiable with (case acc).",Experiment/Discussion
+"Thus items representing NPs with nominative case, such as &quot;he&quot;, will not be able to pass through the link.",Experiment/Discussion
+"By default, the attributes of an item percolate with the item as it is sent across a link.",Experiment/Discussion
+"However, the links in the network may block the percolation of certain attributes.",Experiment/Discussion
+The sentence is successfully parsed if an item is found at IF or CP node whose surface string is the input sentence.,Experiment/Discussion
+A parse tree of the sentence can be retrieved by tracing the sources of the item.,Experiment/Discussion
+The message passing process for analyzing the sentence 2V:NP denotes verbs taking an NP complement.,Experiment/Discussion
+"Similarly, V:IP denotes verbs taking a CP complement, N:CP represents nouns taking a CP complement. is illustrated in Figure 2.a.",Experiment/Discussion
+"In order not to convolute the figure, we have only shown the items that are involved in the parse tree of the sentence and their propagation paths.",Experiment/Discussion
+The parsing process is described as follows: which means that normal NPs need to be casemarked.,Experiment/Discussion
+"Therefore, i4 acquires -cm.",Experiment/Discussion
+Item i4 is then sent to nodes that have links to NP.,Experiment/Discussion
+4.,Experiment/Discussion
+"The word &quot;was&quot; is represented by item i5, which is sent to Ibar via I.",Experiment/Discussion
+5.,Experiment/Discussion
+The word &quot;eaten&quot; can be either the past participle or the passive voice of &quot;eat&quot;.,Experiment/Discussion
+The second possibility is represented by the item i7.,Experiment/Discussion
+The word belongs to the subcategory V:NP which takes an NP as the complement.,Experiment/Discussion
+"Therefore, the item i7 is sent to node V:NP. i6 from Ito form in.",Experiment/Discussion
+8.,Experiment/Discussion
+"When IP receives in, it is combined with i4 from NP to form i12.",Experiment/Discussion
+"Since in contains an npmovement whose np-atts attribute is unifiable with i4, i4 is identified as the antecedent of npmovement.",Experiment/Discussion
+The np-movement attributes in i12 are cleared.,Experiment/Discussion
+The sources of i12 are i4 from NP and in from Ibar.,Experiment/Discussion
+"Therefore, the top-level of parse tree consists of an NP and Ibar node dominated by IP node.",Experiment/Discussion
+The complete parse tree (Figure 2.b) is obtained by recursively tracing the origins of i4 and in from NP and Ibar respectively.,Experiment/Discussion
+"The trace after &quot;eaten&quot; is indicated by the np-movement attributes of i7, even though the tree does not include a node representing the trace.",Experiment/Discussion
+"GB principles are stated in terms of linguistic concepts such as barrier, government and movement, which are relationships between nodes in syntactic structures.",Experiment/Discussion
+"Since we interpret the principles with descriptions of the structures, instead of the structures themselves, we must be able to model these notions with the descriptions.",Experiment/Discussion
+Dominance and m-command: Dominance and m-command are relationships between nodes in syntactic structures.,Experiment/Discussion
+"Since an item represent a node in a syntactic structure, relationships between the nodes can be represented by relationships between items: dominance: An item dominates its direct and indirect sources.",Experiment/Discussion
+"For example, in Figure 2, i4 dominates i1, i2, and i3. in-command: The head daughter of an item representing a maximal category m-commands nonhead daughters of the item and their sources.",Experiment/Discussion
+Barrier Chomsky (1986) proposed the notion of barrier to unify the treatment of government and subjacency.,Experiment/Discussion
+"In Chomsky's proposal, barrierhood is a property of maximal nodes (nodes representing maximal categories).",Experiment/Discussion
+"However, not every maximal node is a barrier.",Experiment/Discussion
+"The barrierhood of a node also depends on its context, in terms of L-marking and inheritance.",Experiment/Discussion
+"Instead of making barrierhood a property of the nodes in syntactic structures, we define it to be a property of links in the grammar network.",Experiment/Discussion
+"That is, certain links in the grammar network are classified as barriers.",Experiment/Discussion
+"In Figure 1, barrier links have a black ink-spot on them.",Experiment/Discussion
+"Barrierhood is a property of these links, independent of the context.",Experiment/Discussion
+This definition of barrier is simpler than Chomsky's since it is context-free.,Experiment/Discussion
+"In our experiments so far, this simpler definition has been found to be adequate.",Experiment/Discussion
+"Government Once the notion of barrier has been defined, the government relationship between two nodes in a structure can be defined as follows: government: A governs B if A is the minimal governor that m-commands B via a sequence of non-barrier links, where governors are N, V, P, A, and tensed I.",Experiment/Discussion
+Items representing governors are assigned +govern attribute.,Experiment/Discussion
+This attribute percolates across head dominance links.,Experiment/Discussion
+"If an item has +govern attribute, then non-head sources of the item and their sources are governed by the head of the item if there are paths between them and the item satisfying the conditions: Movement :3 Movement is a major source of complexity in principle-based parsing.",Experiment/Discussion
+Directly modeling Move-a would obviously generate a large number of invalid movements.,Experiment/Discussion
+"Fortunately, movements must also satisfy: c-command condition: A moved element must ccommand its trace (Radford, 1988, p.564), where A c-command B if A does not dominate B but the parent of A dominates B.",Experiment/Discussion
+"The c-command condition implies that a movement consists of a sequence of moves in the reverse direction of dominance links, except the last one.",Experiment/Discussion
+"Therefore, we can model a movement with a set of attribute values.",Experiment/Discussion
+"If an item contains these attribute values, it means that there is a movement out of the structure represented by the item.",Experiment/Discussion
+"For example, in Figure 2.b, item i10 contains movement attributes: nppg , npbarrier and np-atts.",Experiment/Discussion
+This indicates that there is an np-movement out of the VP whose root node is ilo.,Experiment/Discussion
+The movement attributes are generated at the parent node of the initial trace.,Experiment/Discussion
+"For example, V:NP is a node representing normal transitive verbs which take an NP as complement.",Experiment/Discussion
+"When V:NP receives an item representing the passive sense of the word eaten, V:NP creates another item < [i, i] , ((cat v) -npbarrier +nppg (np-atts (cat n))), 0> This item will not be combined with any item from NP node because the NP complement is assumed to be an np-trace.",Experiment/Discussion
+The item is then sent to nodes dominating V:NP.,Experiment/Discussion
+"As the item propagates further, the attributes is carried with it, simulating the effect of movement.",Experiment/Discussion
+The np-movement land at IP node when the IP node combines an item from subject NP and another item from Ibar with np-movement attributes.,Experiment/Discussion
+A precondition on the landing is that the attributes of the former can be unified with the value of np-atts of the latter.,Experiment/Discussion
+"Wh-movements are dealt with by attributes whpg, whbarrier, wh-atts.",Experiment/Discussion
+This treatment of movement requires that the parent node of a initial trace be able to determine the type of movement.,Experiment/Discussion
+"When a movement is generated, the type of the movement depends on the ca (case assigner) attribute of the item: ca movement examples + wh active V, P, finite IP - np A, passive V, non-finite IP For example, when IP node receives an item from Ibar, IP attempts to combine it with another item from subject NP.",Experiment/Discussion
+"If the subject is not found, then the IF node generates a movement.",Experiment/Discussion
+"If the item represent a finite clause, then it has attributes +ca (cform fin) and the movement is of type wh.",Experiment/Discussion
+"Otherwise, the movement is of type np.",Experiment/Discussion
+We now describe how the principles of GB theory are implemented.,Experiment/Discussion
+The first condition requires that every non-lexical category have a head.,Experiment/Discussion
+This is guaranteed by a constraint in item combination: one of the sources of the two items being combined must be from the head daughter.,Experiment/Discussion
+The second condition is implemented by the structure of the grammar network.,Experiment/Discussion
+The combinations of items represent constructions of larger parse trees from smaller ones.,Experiment/Discussion
+"Since the structure of the grammar network satisfies the constraint, the parse trees constructed by item combination also satisfy the X-bar theory.",Experiment/Discussion
+The case filter is implemented as follows: The word &quot;believe&quot; belongs to a subcategory of verb (V:IP) that takes an IP as the complement.,Experiment/Discussion
+"Since there is no barrier between V:IP and the subject of IP, words like &quot;believe&quot; can govern into the IP complement and case-mark its subject (known as exceptional case-marking in literature).",Experiment/Discussion
+"In (2a), the -cm attribute assigned to the item representing [NI, John] percolates to V:IP node without being blocked by any barrier.",Experiment/Discussion
+"Since +govern +ca -cm co-occur in the item at V:IP node, the case-filter is satisfied (Figure 3.a).",Experiment/Discussion
+"On the other hand, in (2b) the passive &quot;believed&quot; is not a case-assigner.",Experiment/Discussion
+The case-filter violation is detected at V:IP node (Figure 3.b).,Experiment/Discussion
+The word &quot;hope&quot; takes a CP complement.,Experiment/Discussion
+It does not govern the subject of CP because there is a barrier between them.,Experiment/Discussion
+The subject of an infinitive CP can only be governed by complement &quot;for&quot; (Figure 3.c and 3.d).,Experiment/Discussion
+"4-criterion: Every chain must receive and orionly one 0-role, where a chain consists of an NP and the traces (if any) coindexed with it (van ...liemsdijk and Williams, 1986, p.245).",Experiment/Discussion
+We first consider chains consisting of one element.,Experiment/Discussion
+"The 0-criterion is implemented as the following constraints: value 0-role* examples +subj -theta yes &quot;take&quot;, &quot;sleep&quot; -subj-theta no &quot;seem&quot;, passive verbs *assigning 0-role to subject This attribute percolates with the item from V to IP.",Experiment/Discussion
+"The IP node then check the value of theta and subj-theta to make sure that the verb assigns a 0-role to the subject if it requires one, and vice versa.",Experiment/Discussion
+"Figure 4 shows an example of 0-criterion in action when parsing: The subject NP, &quot;it&quot;, has attribute -theta, which is percolated to the IP node.",Experiment/Discussion
+The verb &quot;love&quot; has attributes +theta +subj-theta.,Experiment/Discussion
+"The NP, &quot;Mary&quot;, has attribute +theta.",Experiment/Discussion
+When the items representing &quot;love&quot; and &quot;Mary&quot; are combined.,Experiment/Discussion
+"Their theta attribute are unifiable, thus satisfying the 0-criterion.",Experiment/Discussion
+"The +subj-theta attribute of &quot;love&quot; percolates with the item representing &quot;love Mary&quot;, which is propagated to IP node.",Experiment/Discussion
+"When the item from NP and Ibar are combined at IP node, the new item has both -theta and +subj-theta attribute, resulting in a 0-criterion violation.",Experiment/Discussion
+The above constraints guarantee that chains with only one element satisfy 0-criterion.,Experiment/Discussion
+We now consider chains with more than one element.,Experiment/Discussion
+The base-position of a wh-movement is case-marked and assigned a 0-role.,Experiment/Discussion
+"The base position of an ripmovement is assigned a 0-role, but not case-marked.",Experiment/Discussion
+"To ensure that the movement chains satisfy 0criterion we need only to make sure that the items representing the parents of intermediate traces and landing sites of the movements satisfy these conditions: Sub jacency: Movement cannot cross more than' one barrier (Haegeman, 1991, p.494).",Experiment/Discussion
+A wh-movement carries a whbarrier attribute.,Experiment/Discussion
+The value -whbarrier means that the movement has not crossed any barrier and +whbarrier means that the movement has already crossed one barrier.,Experiment/Discussion
+"Barrier links allow items with -whbarrier to pass through, but change the value to +whbarrier.",Experiment/Discussion
+Items with +whbarrier are blocked by barrier links.,Experiment/Discussion
+"When a wh-movement leaves an intermediate trace at a position, the corresponding whbarrier becomes -.",Experiment/Discussion
+The subjacency of np-movements is similarly handled with a npbarrier attribute.,Experiment/Discussion
+Empty Category Principle (ECP): A trace&quot; or its parent must be properly governed.,Experiment/Discussion
+"In literature, proper government is not, as the term suggests, subsumed by government.",Experiment/Discussion
+"For example, in the tensed I in [ip e came] governs but does not properly govern the trace e. On the other hand, e' properly governs but does not govern e (Haegeman, 1991, p.456).",Experiment/Discussion
+"Here, we define proper government to be a subclass of government: Proper government: A properly governs B if A governs B and A is a 0-role assigner (A do not have to assign 0-role to B).",Experiment/Discussion
+"Therefore, if an item have both +govern and one of +theta or +subj-theta, then the head of the item properly governs the non-head source items and their sources that are reachable via a sequence of non-barrier links.",Experiment/Discussion
+This definition unifies the notions of government and proper government.,Experiment/Discussion
+"In (4), e is properly governed by tensed I, e' is properly governed by &quot;think&quot;.",Experiment/Discussion
+"This definition won't be able to account for difference between (4) and (5) (That-Trace Effect (Haegeman, 1991, p.456)): However, That-Trace Effect can be explained by a separate principle.",Experiment/Discussion
+The proper government of wh-traces are handled by an attribute whpg (np-movements are similarly dealt with by an uppg attribute): Value Meaning -whpg the most recent trace has yet to +whpg be properly governed. the most recent trace has already been properly governed.,Experiment/Discussion
+"For example, the word claim takes a CP cornplement.",Experiment/Discussion
+In the sentence: (6) *Whoi did you make the claim e that Reagan met ei there is a wh-movement out of the complement CP of claim.,Experiment/Discussion
+"When the movement left an intermediate trace at CSpec, the value of whpg became -.",Experiment/Discussion
+"When the item with -whpg is combined with the item representing claim, their unification has attributes (+govern -theta -whpg), which is an ECP violation.",Experiment/Discussion
+The item is recognized as invalid and discarded.,Experiment/Discussion
+"PRO Theorem: PRO must be ungoverned (Haegeman, 1991, p.263).",Experiment/Discussion
+"When the IP node receives an item from Ibar with cform not being fin, the node makes a copy of the item and assign +pro and -ppro to the copy and then send it further without combining it with any item from (subject) NP node.",Experiment/Discussion
+The attribute +pro represents the hypothesis that the subject of the clause is PRO.,Experiment/Discussion
+The meaning of -ppro is that the subject PRO has not yet been protected (from being governed).,Experiment/Discussion
+"When an item containing -ppro passes through a barrier link, -ppro becomes +ppro which means that the PRO subject has now been protected.",Experiment/Discussion
+A PROtheorem violation is detected if +govern and -ppro co-occur in an item.,Experiment/Discussion
+"The parser has been implemented in C++, an object-oriented extension of C. The object-oriented paradigm makes the relationships between nodes and links in the grammar network and their software counterparts explicit and direct.",Experiment/Discussion
+Communication via message passing is reflected in the message passing metaphor used in object-oriented languages.,Experiment/Discussion
+Nodes and links are implemented as objects.,Experiment/Discussion
+Figure 6 shows the class hierarchy for nodes.,Experiment/Discussion
+The constraints that implement the principles are distributed over the nodes and links in the network.,Experiment/Discussion
+The implementation of the constraints is modular because they are defined in class definitions and all the instances of the class and its subclasses inherit these constraints.,Experiment/Discussion
+The object-oriented paradigm allows the subclasses to modify the constraints.,Experiment/Discussion
+"The implementation of the parser has been tested with example sentences from Chapters 410, 15-18 of (van Riemsdijk and Williams, 1986).",Experiment/Discussion
+"The chapters left out are mostly about logical form and Binding Theory, which have not yet been implemented in the parser.",Experiment/Discussion
+The average parsing time for sentences with 5 to 20 words is below half of a second on a SPARCstation ELC.,Experiment/Discussion
+The attribute vectors used here are similar to those in unification based grammars/parsers.,Experiment/Discussion
+"An important difference, however, is that the attribute vectors used here satisfy the unit closure condition (Barton, Jr. et al., 1987, p.257).",Experiment/Discussion
+"That is, nonatomic attribute values are vectors that consist only of atomic attribute values.",Experiment/Discussion
+"For example: (7a) satisfies the unit closure condition, whereas (7b) does not, because wh-atts in (7b) contains a non-atomic attribute np-atts.",Experiment/Discussion
+"(Barton, Jr. et al., 1987) argued that the unification of recursive attribute structures is a major source of computational complexity.",Experiment/Discussion
+"On the other hand, let a be the number of atomic attributes, n be the number of non-atomic attributes.",Experiment/Discussion
+The time it takes to unify two attribute vectors is a + ma if they satisfy the unit closure condition.,Experiment/Discussion
+"Since both n and a can be regarded as constants, the unification takes only constant amount of time.",Experiment/Discussion
+"In our current implementation, n -= 2, a = 59.",Experiment/Discussion
+Correa (1991) proposed an interpretation of GB principles based on attribute grammars.,Experiment/Discussion
+An attribute grammar consists of a phrase structure grammar and a set of attribution rules to compute the attribute values of the non-terminal symbols.,Experiment/Discussion
+The attributes are evaluated after a parse tree has been constructed by the phrase structure grammar.,Experiment/Discussion
+The original objective of attribute grammar is to derive the semantics of programs from parse trees.,Experiment/Discussion
+"Since programming languages are designed to be unambiguous, the attribution rules need to be evaluated on only one parse tree.",Experiment/Discussion
+"In attribute grammar interpretation of GB theory, the principles are encoded in the attribution rules, and the phrase structure grammar is replaced by X-bar theory and Move-a.",Experiment/Discussion
+"Therefore, a large number of structures will be constructed and evaluated by the attribution rules, thus leading to a serious overgeneration problem.",Experiment/Discussion
+"For this reason, Correa pointed out that the attribute grammar interpretation should be used as a specification of an implementation, rather than an implementation itself.",Experiment/Discussion
+"Abney and Cole (1986) presented a GB parser that uses actors (Agha, 1986).",Results/Conclusion
+Actors are similar to objects in having internal states and responding to messages.,Results/Conclusion
+"In our model, each syntactic category is represented by an object.",Results/Conclusion
+"In (Abney and Cole, 1986), each instance of a category is represented by an actor.",Results/Conclusion
+"The actors build structures by creating other actors and their relationships according to 0-assignment, predication, and functional-selection.",Results/Conclusion
+"Other principles are then used to filter out illicit structures, such as subjacency and case-filter.",Results/Conclusion
+This generate-and-test nature of the algorithm makes it suscetible to the overgeneration problem.,Results/Conclusion
+"We have presented an efficient message passing algorithm for principle-based parsing, where ferent places so that stricter principles are applied earlier.",Results/Conclusion
+"We have also proposed simplifications of GB theory with regard to barrier and proper government, which have been found to be adequate in our experiments so far.",Results/Conclusion

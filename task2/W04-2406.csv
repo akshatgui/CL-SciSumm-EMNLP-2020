@@ -1,227 +1,227 @@
 col1,col2
-This paper systematically compares unsupervised word sense discrimination techniques that cluster instances of a target word that occur in raw text using both vector and similarity spaces.,{}
-The context of each instance is represented as a vector in a high dimensional feature space.,{}
-Discrimination is achieved by clustering these context vectors directly in vector space and also by finding pairwise similarities among the vectors and then clustering in similarity space.,{}
-We employ two different representations of the context in which a target word occurs.,{}
-First order context vectors represent the context of each instance of a target word as a vector of features that occur in that context.,{}
-Second order context vectors are an indirect representation of the context based on the average of vectors that represent the words that occur in the context.,{}
-We evaluate the discriminated clusters by carrying out experiments ussense–tagged instances of 24 words and the well known corpora.,{}
-Most words in natural language have multiple possible meanings that can only be determined by considering the context in which they occur.,"{'title': '1 Introduction', 'number': '1'}"
-"Given a target word used in a number of different contexts, word sense discrimination is the process of grouping these instances of the target word together by determining which contexts are the most similar to each other.","{'title': '1 Introduction', 'number': '1'}"
-"This is motivated by (Miller and Charles, 1991), who hypothesize that words with similar meanings are often used in similar contexts.","{'title': '1 Introduction', 'number': '1'}"
-"Hence, word sense discrimination reduces to the problem of finding classes of similar contexts such that each class represents a single word sense.","{'title': '1 Introduction', 'number': '1'}"
-"Put another way, contexts that are grouped together in the same class represent a particular word sense.","{'title': '1 Introduction', 'number': '1'}"
-"While there has been some previous work in sense discrimination (e.g., (Sch¨utze, 1992), (Pedersen and Bruce, 1997), (Pedersen and Bruce, 1998), (Sch¨utze, 1998), (Fukumoto and Suzuki, 1999)), by comparison it is much less than that devoted to word sense disambiguation, which is the process of assigning a meaning to a word from a predefined set of possibilities.","{'title': '1 Introduction', 'number': '1'}"
-"However, solutions to disambiguation usually require the availability of an external knowledge source or manually created sense– tagged training data.","{'title': '1 Introduction', 'number': '1'}"
-As such these are knowledge intensive methods that are difficult to adapt to new domains.,"{'title': '1 Introduction', 'number': '1'}"
-"By contrast, word sense discrimination is an unsupervised clustering problem.","{'title': '1 Introduction', 'number': '1'}"
-This is an attractive methodology because it is a knowledge lean approach based on evidence found in simple raw text.,"{'title': '1 Introduction', 'number': '1'}"
-"Manually sense tagged text is not required, nor are specific knowledge rich resources like dictionaries or ontologies.","{'title': '1 Introduction', 'number': '1'}"
-Instances are clustered based on their mutual contextual similarities which can be completely computed from the text itself.,"{'title': '1 Introduction', 'number': '1'}"
-"This paper presents a systematic comparison of discrimination techniques suggested by Pedersen and Bruce ((Pedersen and Bruce, 1997), (Pedersen and Bruce, 1998)) and by Sch¨utze ((Sch¨utze, 1992), (Sch¨utze, 1998)).","{'title': '1 Introduction', 'number': '1'}"
-This paper also proposes and evaluates several extensions to these techniques.,"{'title': '1 Introduction', 'number': '1'}"
-"We begin with a summary of previous work, and then a discussion of features and two types of context vectors.","{'title': '1 Introduction', 'number': '1'}"
-"We summarize techniques for clustering in vector versus similarity spaces, and then present our experimental methodology, including a discussion of the data used in our experiments.","{'title': '1 Introduction', 'number': '1'}"
-Then we describe our approach to the evaluation of unsupervised word sense discrimination.,"{'title': '1 Introduction', 'number': '1'}"
-"Finally we present an analysis of our experimental results, and conclude with directions for future work.","{'title': '1 Introduction', 'number': '1'}"
-"(Pedersen and Bruce, 1997) and (Pedersen and Bruce, 1998) propose a (dis)similarity based discrimination approach that computes (dis)similarity among each pair of instances of the target word.","{'title': '2 Previous Work', 'number': '2'}"
-This information is recorded in a (dis)similarity matrix whose rows/columns represent the instances of the target word that are to be discriminated.,"{'title': '2 Previous Work', 'number': '2'}"
-The cell entries of the matrix show the degree to which the pair of instances represented by the corresponding row and column are (dis)similar.,"{'title': '2 Previous Work', 'number': '2'}"
-The (dis)similarity is computed from the first order context vectors of the instances which show each instance as a vector of features that directly occur near the target word in that instance.,"{'title': '2 Previous Work', 'number': '2'}"
-"(Sch¨utze, 1998) introduces second order context vectors that represent an instance by averaging the feature vectors of the content words that occur in the context of the target word in that instance.","{'title': '2 Previous Work', 'number': '2'}"
-"These second order context vectors then become the input to the clustering algorithm which clusters the given contexts in vector space, instead of building the similarity matrix structure.","{'title': '2 Previous Work', 'number': '2'}"
-There are some significant differences in the approaches suggested by Pedersen and Bruce and by Sch¨utze.,"{'title': '2 Previous Work', 'number': '2'}"
-As yet there has not been any systematic study to determine which set of techniques results in better sense discrimination.,"{'title': '2 Previous Work', 'number': '2'}"
-"In the sections that follow, we highlight some of the differences between these approaches.","{'title': '2 Previous Work', 'number': '2'}"
-Pedersen and Bruce represent the context of each test instance as a vector of features that directly occur near the target word in that instance.,"{'title': '2 Previous Work', 'number': '2'}"
-We refer to this representation as the first order context vector.,"{'title': '2 Previous Work', 'number': '2'}"
-"Sch¨utze, by contrast, uses the second order context representation that averages the first order context vectors of individual features that occur near the target word in the instance.","{'title': '2 Previous Work', 'number': '2'}"
-"Thus, Sch¨utze represents each feature as a vector of words that occur in its context and then computes the context of the target word by adding the feature vectors of significant content words that occur near the target word in that context.","{'title': '2 Previous Work', 'number': '2'}"
-Pedersen and Bruce use a small number of local features that include co–occurrence and part of speech information near the target word.,"{'title': '2 Previous Work', 'number': '2'}"
-"They select features from the same test data that is being discriminated, which is a common practice in clustering in general.","{'title': '2 Previous Work', 'number': '2'}"
-Sch¨utze represents contexts in a high dimensional feature space that is created using a separate large corpus (referred to as the training corpus).,"{'title': '2 Previous Work', 'number': '2'}"
-He selects features based on their frequency counts or log-likelihood ratios in this corpus.,"{'title': '2 Previous Work', 'number': '2'}"
-"In this paper, we adopt Sch¨utze’s approach and select features from a separate corpus of training data, in part because the number of test instances may be relatively small and may not be suitable for selecting a good feature set.","{'title': '2 Previous Work', 'number': '2'}"
-"In addition, this makes it possible to explore variations in the training data while maintaining a consistent test set.","{'title': '2 Previous Work', 'number': '2'}"
-"Since the training data used in unsupervised clustering does not need to be sense tagged, in future work we plan to develop methods of collecting very large amounts of raw corpora from the Web and other online sources and use it to extract features.","{'title': '2 Previous Work', 'number': '2'}"
-Sch¨utze represents each feature as a vector of words that co–occur with that feature in the training data.,"{'title': '2 Previous Work', 'number': '2'}"
-These feature vectors are in fact the first order context vectors of the feature words (and not target word).,"{'title': '2 Previous Work', 'number': '2'}"
-The words that co–occur with the feature words form the dimensions of the feature space.,"{'title': '2 Previous Work', 'number': '2'}"
-"Sch¨utze reduces the dimensionality of this feature space using Singular Value Decomposition (SVD), which is also employed by related techniques such as Latent Semantic Indexing (Deerwester et al., 1990) and Latent Semantic Analysis (Landauer et al., 1998).","{'title': '2 Previous Work', 'number': '2'}"
-SVD has the effect of converting a word level feature space into a concept level semantic space that smoothes the fine distinctions between features that represent similar concepts.,"{'title': '2 Previous Work', 'number': '2'}"
-Pedersen and Bruce represent instances in a (dis)similarity space where each instance can be seen as a point and the distance between any two points is a function of their mutual (dis)similarities.,"{'title': '2 Previous Work', 'number': '2'}"
-The (dis)similarity matrix showing the pair-wise (dis)similarities among the instances is given as the input to the agglomerative clustering algorithm.,"{'title': '2 Previous Work', 'number': '2'}"
-"The context group discrimination method used by Sch¨utze, on the other hand, operates on the vector representations of instances and thus works in vector space.","{'title': '2 Previous Work', 'number': '2'}"
-Also he employs a hybrid clustering approach which uses both an agglomerative and the Estimation Maximization (EM) algorithm.,"{'title': '2 Previous Work', 'number': '2'}"
-First order context vectors directly indicate which features make up a context.,"{'title': '3 First Order Context Vectors', 'number': '3'}"
-"In all of our experiments, the context of the target word is limited to 20 surrounding content words on either side.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-"This is true both when we are selecting features from a set of training data, or when we are converting test instances into vectors for clustering.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-The particular features we are interested in are bigrams and co–occurrences.,"{'title': '3 First Order Context Vectors', 'number': '3'}"
-"Co-occurrences are words that occur within five positions of the target word (i.e., up to three intervening words are allowed).","{'title': '3 First Order Context Vectors', 'number': '3'}"
-Bigrams are ordered pairs of words that co–occur within five positions of each other.,"{'title': '3 First Order Context Vectors', 'number': '3'}"
-"Thus, co–occurrences are unordered word pairs that include the target word, whereas bigrams are ordered pairs that may or may not include the target.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-"Both the co–occurrences and the bigrams must occur in at least two instances in the training data, and the two words must have a log– likelihood ratio in excess of 3.841, which has the effect of removing co–occurrences and bigrams that have more than 95% chance of being independent of the target word.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-"After selecting a set of co-occurrences or bigrams from a corpus of training data, a first order context representation is created for each test instance.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-"This shows how many times each feature occurs in the context of the target word (i.e., within 20 positions from the target word) in that instance.","{'title': '3 First Order Context Vectors', 'number': '3'}"
-A test instance can be represented by a second order context vector by finding the average of the first order context vectors that are associated with the words that occur near the target word.,"{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"Thus, the second order context representation relies on the first order context vectors of feature words.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"The second order experiments in this paper use two different types of features, co–occurrences and bigrams, defined as they are in the first order experiments.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-Each co–occurrence identified in training data is assigned a unique index and occupies the corresponding row/column in a word co–occurrence matrix.,"{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"This is constructed from the co–occurrence pairs, and is a symmetric adjacency matrix whose cell values show the loglikelihood ratio for the pair of words representing the corresponding row and column.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-Each row of the co– occurrence matrix can be seen as a first order context vector of the word represented by that row.,"{'title': '4 Second Order Context Vectors', 'number': '4'}"
-The set of words forming the rows/columns of the co–occurrence matrix are treated as the feature words.,"{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"Bigram features lead to a bigram matrix such that for each selected bigram WORDi<>WORDj, WORDi represents a single row, say the ith row, and WORDj represents a single column, say the jth column, of the bigram matrix.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"Then the value of cell (i,j) indicates the log–likelihood ratio of the words in the bigram WORDi<>WORDj.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-Each row of the bigram matrix can be seen as a bigram vector that shows the scores of all bigrams in which the word represented by that row occurs as the first word.,"{'title': '4 Second Order Context Vectors', 'number': '4'}"
-"Thus, the words representing the rows of the bigram matrix make the feature set while the words representing the columns form the dimensions of the feature space.","{'title': '4 Second Order Context Vectors', 'number': '4'}"
-The objective of clustering is to take a set of instances represented as either a similarity matrix or context vectors and cluster together instances that are more like each other than they are to the instances that belong to other clusters.,"{'title': '5 Clustering', 'number': '5'}"
-"Clustering algorithms are classified into three main categories, hierarchical, partitional, and hybrid methods that incorporate ideas from both.","{'title': '5 Clustering', 'number': '5'}"
-The algorithm acts as a search strategy that dictates how to proceed through the instances.,"{'title': '5 Clustering', 'number': '5'}"
-The actual choice of which clusters to split or merge is decided by a criteria function.,"{'title': '5 Clustering', 'number': '5'}"
-This section describes the clustering algorithms and criteria functions that have been employed in our experiments.,"{'title': '5 Clustering', 'number': '5'}"
-Hierarchical algorithms are either agglomerative or divisive.,"{'title': '5 Clustering', 'number': '5'}"
-"They both proceed iteratively, and merge or divide clusters at each step.","{'title': '5 Clustering', 'number': '5'}"
-Agglomerative algorithms start with each instance in a separate cluster and merge a pair of clusters at each iteration until there is only a single cluster remaining.,"{'title': '5 Clustering', 'number': '5'}"
-Divisive methods start with all instances in the same cluster and split one cluster into two during each iteration until all instances are in their own cluster.,"{'title': '5 Clustering', 'number': '5'}"
-"The most widely known criteria functions used with hierarchical agglomerative algorithms are single link, complete link, and average link, also known as UPGMA.","{'title': '5 Clustering', 'number': '5'}"
-"(Sch¨utze, 1998) points out that single link clustering tends to place all instances into a single elongated cluster, whereas (Pedersen and Bruce, 1997) and (Purandare, 2003) show that hierarchical agglomerative clustering using average link (via McQuitty’s method) fares well.","{'title': '5 Clustering', 'number': '5'}"
-"Thus, we have chosen to use average link/UPGMA as our criteria function for the agglomerative experiments.","{'title': '5 Clustering', 'number': '5'}"
-"In similarity space, each instance can be viewed as a node in a weighted graph.","{'title': '5 Clustering', 'number': '5'}"
-The weights on edges joining two nodes indicate their pairwise similarity as measured by the cosine between the context vectors that represent the pair of instances.,"{'title': '5 Clustering', 'number': '5'}"
-"When agglomerative clustering starts, each node is in its own cluster and is considered to be the centroid of that cluster.","{'title': '5 Clustering', 'number': '5'}"
-"At each iteration, average link selects the pair of clusters whose centroids are most similar and merges them into a single cluster.","{'title': '5 Clustering', 'number': '5'}"
-"For example, suppose the clusters I and J are to be merged into a single cluster IJ.","{'title': '5 Clustering', 'number': '5'}"
-The weights on all other edges that connect existing nodes to the new node IJ must now be revised.,"{'title': '5 Clustering', 'number': '5'}"
-Suppose that Q is such a node.,"{'title': '5 Clustering', 'number': '5'}"
-The new weight in the graph is computed by averaging the weight on the edge between nodes I and Q and that on the edge between J and Q.,"{'title': '5 Clustering', 'number': '5'}"
-"In other words: In vector space, average link starts by assigning each vector to a single cluster.","{'title': '5 Clustering', 'number': '5'}"
-The centroid of each cluster is found by calculating the average of all the context vectors that make up the cluster.,"{'title': '5 Clustering', 'number': '5'}"
-"At each iteration, average link selects the pair of clusters whose centroids are closest with respect to their cosines.","{'title': '5 Clustering', 'number': '5'}"
-The selected pair of clusters is merged and a centroid is computed for this newly created cluster.,"{'title': '5 Clustering', 'number': '5'}"
-Partitional algorithms divide an entire set of instances into a predetermined number of clusters (K) without going through a series of pairwise comparisons.,"{'title': '5 Clustering', 'number': '5'}"
-As such these methods are somewhat faster than hierarchical algorithms.,"{'title': '5 Clustering', 'number': '5'}"
-"For example, the well known K-means algorithm is partitional.","{'title': '5 Clustering', 'number': '5'}"
-"In vector space, each instance is represented by a context vector.","{'title': '5 Clustering', 'number': '5'}"
-K-means initially selects K random vectors to serve as centroids of these initial K clusters.,"{'title': '5 Clustering', 'number': '5'}"
-It then assigns every other vector to one of the K clusters whose centroid is closest to that vector.,"{'title': '5 Clustering', 'number': '5'}"
-"After all vectors are assigned, it recomputes the cluster centroids by averaging all of the vectors assigned to that cluster.","{'title': '5 Clustering', 'number': '5'}"
-"This repeats until convergence, that is until no vector changes its cluster across iterations and the centroids stabilize.","{'title': '5 Clustering', 'number': '5'}"
-"In similarity space, each instance can be viewed as a node of a fully connected weighted graph whose edges indicate the similarity between the instances they connect.","{'title': '5 Clustering', 'number': '5'}"
-K-means will first select K random nodes that represent the centroids of the initial K clusters.,"{'title': '5 Clustering', 'number': '5'}"
-It will then assign every other node I to one of the K clusters such that the edge joining I and the centroid of that cluster has maximum weight among the edges joining I to all centroids.,"{'title': '5 Clustering', 'number': '5'}"
-It is generally believed that the quality of clustering by partitional algorithms is inferior to that of the agglomerative methods.,"{'title': '5 Clustering', 'number': '5'}"
-"However, a recent study (Zhao and Karypis, 2002) has suggested that these conclusions are based on experiments conducted with smaller data sets, and that with larger data sets partitional algorithms are not only faster but lead to better results.","{'title': '5 Clustering', 'number': '5'}"
-"In particular, Zhao and Karypis recommend a hybrid approach known as Repeated Bisections.","{'title': '5 Clustering', 'number': '5'}"
-"This overcomes the main weakness with partitional approaches, which is the instability in clustering solutions due to the choice of the initial random centroids.","{'title': '5 Clustering', 'number': '5'}"
-Repeated Bisections starts with all instances in a single cluster.,"{'title': '5 Clustering', 'number': '5'}"
-At each iteration it selects one cluster whose bisection optimizes the chosen criteria function.,"{'title': '5 Clustering', 'number': '5'}"
-"The cluster is bisected using standard K-means method with K=2, while the criteria function maximizes the similarity between each instance and the centroid of the cluster to which it is assigned.","{'title': '5 Clustering', 'number': '5'}"
-As such this is a hybrid method that combines a hierarchical divisive approach with partitioning.,"{'title': '5 Clustering', 'number': '5'}"
-"We use 24 of the 73 words in the SENSEVAL-2 sense– tagged corpus, and the Line, Hard and Serve sense– tagged corpora.","{'title': '6 Experimental Data', 'number': '6'}"
-Each of these corpora are made up of instances that consist of 2 or 3 sentences that include a single target word that has a manually assigned sense tag.,"{'title': '6 Experimental Data', 'number': '6'}"
-"However, we ignore the sense tags at all times except during evaluation.","{'title': '6 Experimental Data', 'number': '6'}"
-At no point do the sense tags enter into the clustering or feature selection processes.,"{'title': '6 Experimental Data', 'number': '6'}"
-"To be clear, we do not believe that unsupervised word sense discrimination needs to be carried out relative to a pre-existing set of senses.","{'title': '6 Experimental Data', 'number': '6'}"
-"In fact, one of the great advantages of unsupervised technique is that it doesn’t need a manually annotated text.","{'title': '6 Experimental Data', 'number': '6'}"
-"However, here we employ sense–tagged text in order to evaluate the clusters that we discover.","{'title': '6 Experimental Data', 'number': '6'}"
-"The SENSEVAL-2 data is already divided into training and test sets, and those splits were retained for these experiments.","{'title': '6 Experimental Data', 'number': '6'}"
-"The SENSEVAL-2 data is relatively small, in that each word has approximately 50-200 training and test instances.","{'title': '6 Experimental Data', 'number': '6'}"
-"The data is particularly challenging for unsupervised algorithms due to the large number of fine grained senses, generally 8 to 12 per word.","{'title': '6 Experimental Data', 'number': '6'}"
-The small volume of data combined with large number of possible senses leads to very small set of examples for most of the senses.,"{'title': '6 Experimental Data', 'number': '6'}"
-"As a result, prior to clustering we filter the training and test data independently such that any instance that uses a sense that occurs in less than 10% of the available instances for a given word is removed.","{'title': '6 Experimental Data', 'number': '6'}"
-We then eliminate any words that have less than 90 training instances after filtering.,"{'title': '6 Experimental Data', 'number': '6'}"
-"This process leaves us with a set of 24 SENSEVAL-2 words, which includes the 14 nouns, 6 adjectives and 4 verbs that are shown in Table 1.","{'title': '6 Experimental Data', 'number': '6'}"
-"In creating our evaluation standard, we assume that each instance will be assigned to at most a single cluster.","{'title': '6 Experimental Data', 'number': '6'}"
-"Therefore if an instance has multiple correct senses associated with it, we treat the most frequent of these as the desired tag, and ignore the others as possible correct answers in the test data.","{'title': '6 Experimental Data', 'number': '6'}"
-"The Line, Hard and Serve corpora do not have a standard training–test split, so these were randomly divided into 60–40 training–test splits.","{'title': '6 Experimental Data', 'number': '6'}"
-"Due to the large number of training and test instances for these words, we filtered out instances associated with any sense that occurred in less than 5% of the training or test instances.","{'title': '6 Experimental Data', 'number': '6'}"
-We also randomly selected five pairs of words from the SENSEVAL-2 data and mixed their instances together (while retaining the training and test distinction that already existed in the data).,"{'title': '6 Experimental Data', 'number': '6'}"
-"After mixing, the data was filtered such that any sense that made up less than 10% in the training or test data of the new mixed sample was removed; this is why the total number of instances for the mixed pairs is not the same as the sum of those for the individual words.","{'title': '6 Experimental Data', 'number': '6'}"
-These mix-words were created in order to provide data that included both fine grained and coarse grained distinctions.,"{'title': '6 Experimental Data', 'number': '6'}"
-Table 1 shows all words that were used in our experiments along with their parts of speech.,"{'title': '6 Experimental Data', 'number': '6'}"
-"Thereafter we show the number of training (TRN) and test instances (TST) that remain after filtering, and the number of senses found in the test data (S).","{'title': '6 Experimental Data', 'number': '6'}"
-We also show the percentage of the majority sense in the test data (MAJ).,"{'title': '6 Experimental Data', 'number': '6'}"
-"This is particularly useful, since this is the accuracy that would be attained by a baseline clustering algorithm that puts all test instances into a single cluster.","{'title': '6 Experimental Data', 'number': '6'}"
-"When we cluster test instances, we specify an upper limit on the number of clusters that can be discovered.","{'title': '7 Evaluation Technique', 'number': '7'}"
-In these experiments that value is 7.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-This reflects the fact that we do not know a–priori the number of possible senses a word will have.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-"This also allows us to verify the hypothesis that a good clustering approach will automatically discover approximately same number of clusters as senses for that word, and the extra clusters (7–#actual senses) will contain very few instances.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"As can be seen from column S in Table 1, most of the words have 2 to 4 senses on an average.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"Of the 7 clusters created by an algorithm, we detect the significant clusters by ignoring (throwing out) clusters that contain less than 2% of the total instances.","{'title': '7 Evaluation Technique', 'number': '7'}"
-The instances in the discarded clusters are counted as unclustered instances and are subtracted from the total number of instances.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-Our basic strategy for evaluation is to assign available sense tags to the discovered clusters such that the assignment leads to a maximally accurate mapping of senses to clusters.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-The problem of assigning senses to clusters becomes one of reordering the columns of a confusion matrix that shows how senses and clusters align such that the diagonal sum is maximized.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-"This corresponds to several well known problems, among them the Assignment Problem in Operations Research, or determining the maximal matching of a bipartite graph in Graph Theory.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"During evaluation we assign one sense to at most one cluster, and vice versa.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"When the number of discovered clusters is the same as the number of senses, then there is a one to one mapping between them.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"When the number of clusters is greater than the number of actual senses, then some clusters will be left unassigned.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"And when the number of senses is greater than the number of clusters, some senses will not be assigned to any cluster.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"The reason for not assigning a single sense to multiple clusters or multiple senses to one cluster is that, we are assuming one sense per instance and one sense per cluster.","{'title': '7 Evaluation Technique', 'number': '7'}"
-We measure the precision and recall based on this maximally accurate assignment of sense tags to clusters.,"{'title': '7 Evaluation Technique', 'number': '7'}"
-"Precision is defined as the number of instances that are clustered correctly divided by the number of instances clustered, while recall is the number of instances clustered correctly over the total number of instances.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"From that we compute the F–measure, which is two times the precision and recall, divided by the sum of precision and recall.","{'title': '7 Evaluation Technique', 'number': '7'}"
-"We present the discrimination results for six configurations of features, context representations and clustering algorithms.","{'title': '8 Experimental Results', 'number': '8'}"
-"These were run on each of the 27 target words, and also on the five mixed words.","{'title': '8 Experimental Results', 'number': '8'}"
-What follows is a concise description of each configuration.,"{'title': '8 Experimental Results', 'number': '8'}"
-All of the SC experiments use second order context vectors and hence follow the approach suggested by Sch¨utze.,"{'title': '8 Experimental Results', 'number': '8'}"
-"Experiment PB2 clusters the Pedersen and Bruce style (first order) context vectors using the Sch¨utze like clustering scheme, while SC2 tries to see the effect of using the Pedersen and Bruce style clustering method on Sch¨utze style (second order) context vectors.","{'title': '8 Experimental Results', 'number': '8'}"
-The motivation behind experiments PB3 and SC3 is to try bigram features in both PB and SC style context vectors.,"{'title': '8 Experimental Results', 'number': '8'}"
-The F–measure associated with the discrimination of each word is shown in Table 1.,"{'title': '8 Experimental Results', 'number': '8'}"
-Any score that is significantly greater than the majority sense (according to a paired t–test) is shown in bold face.,"{'title': '8 Experimental Results', 'number': '8'}"
-We employ three different types of data in our experiments.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-The SENSEVAL-2 words have a relatively small number of training and test instances (around 50-200).,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"However, the Line, Hard and Serve data is much larger, where each contains around 4200 training and test instances combined.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Mixed word are unique because they combined the instances of multiple target words and thereby have a larger number of senses to discriminate.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Each type of data brings with it unique characteristics, and sheds light on different aspects of our experiments.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Table 2 compares PB1 against PB3, and SC1 against SC3, when these methods are used to discriminate the 24 SENSEVAL-2 words.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Our objective is to study the effect of using bigram features against co–occurrences in first (PB) and second (SC) order context vectors while using relatively small amounts of training data per word.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Note that PB1 and SC1 use co–occurrence features, while PB3 and SC3 rely on bigram features.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"This table shows the number of nouns (N), adjectives (A) and verbs (V) where bigrams were more effective than co-occurrences (bigram>co-occur), less effective (bigram<co-occur), and had no effect (bigram=cooccur).","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Table 2 shows that there is no clear advantage to using either bigrams or co–occurrence features in first order context vectors (PB).,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"However, bigram features show clear improvement in the results of second order context vectors (SC).","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Our hypothesis is that first order context vectors (PB) represent a small set of bigram features since they are selected from the relatively small SENSEVAL-2 words.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"These features are very sparse, and as such most instances do not share many common features with other instances, making first order clustering difficult.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"However, second order context vectors indirectly represent bigram features, and do not require an exact match between vectors in order to establish similarity.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Thus, the poor performance of bigrams in the case of first order context vectors suggests that when dealing with small amounts of data, we need to boost or enrich our bigram feature set by using some other larger training source like a corpus drawn from the Web.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Table 3 shows the results of using the Repeated Bisections algorithm in vector space (PB) against that of using UPGMA method in similarity space.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"This table shows the number of Nouns, Adjectives and Verbs SENSEVAL-2 words that performed better (rbr>upgma), worse (rbr<upgma), and equal (rbr=upgma) when using Repeated Bisections clustering versus the UPGMA technique, on first (PB) and second (SC) order vectors.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"In short, Table 3 compares PB1 against PB2 and SC1 against SC2.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"From this, we observe that with both first order and second order context vectors Repeated Bisections is more effective than UPGMA.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-This suggests that it is better suited to deal with very small amounts of sparse data.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-Table 4 summarizes the overall performance of each of these experiments compared with the majority class.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"This table shows the number of words for which an experiment performed better than the the majority class, broken down by part of speech.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Note that SC3 and SC1 are most often better than the majority class, followed closely by PB2 and SC2.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-This suggests that the second order context vectors (SC) have an advantage over the first order vectors for small training data as is found among the 24 SENSEVAL-2 words.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"We believe that second order methods work better on smaller amounts of data, in that the feature spaces are quite small, and are not able to support the degree of exact matching of features between instances that first order vectors require.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Second order context vectors succeed in such cases because they find indirect second order co– occurrences of feature words and hence describe the context more extensively than the first order representations.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"With smaller quantities of data, there is less possibility of finding instances that use exactly the same set of words.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Semantically related instances use words that are conceptually the same but perhaps not lexically.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Second order context vectors are designed to identify such relationships, in that exact matching is not required, but rather words that occur in similar contexts will have similar vectors.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"The comparatively good performance of PB1 and PB3 in the case of the Line, Hard and Serve data (see Table 1) suggests that first order context vectors when clustered with UPGMA perform relatively well on larger samples of data.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Moreover, among the SC experiments on this data, the performance of SC2 is relatively high.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-This further suggests that UPGMA performs much better than Repeated Bisections with larger amounts of training data.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-These observations correspond with the hypothesis drawn from the SENSEVAL-2 results.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"That is, a large amount of training data will lead to a larger feature space and hence there is a greater chance of matching more features directly in the context of the test instances.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Hence, the first order context vectors that rely on the immediate context of the target word succeed as the contexts are more likely to use similar sets of words that in turn are selected from a large feature collection.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Nearly all of the experiments carried out with the 6 different methods perform better than the majority sense in the case of the mix-words.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"This is partially due to the fact that these words have a large number of senses, and therefore have low majority classifiers.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-"In addition, recall that this data is created by mixing instances of distinct target words, which leads to a subset of coarse grained (distinct) senses within the data that are easier to discover than the senses of a single word.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-Table 1 shows that the top 3 experiments for each of the mixed-words are all second order vectors (SC).,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-We believe that this is due to the sparsity of the feature spaces of this data.,"{'title': '9 Analysis and Discussion', 'number': '9'}"
-"Since there are so many different senses, the number of first order features that would be required to correctly discriminate them is very high, leading to better results for second order vectors.","{'title': '9 Analysis and Discussion', 'number': '9'}"
-We plan to conduct experiments that compare the effect of using very large amounts of training data versus smaller amounts where each instance includes the target word (as is the case in this paper).,"{'title': '10 Future Directions', 'number': '10'}"
-"We will draw our large corpora from a variety of sources, including the British National Corpus, the English GigaWord Corpus, and the Web.","{'title': '10 Future Directions', 'number': '10'}"
-Our motivation is that the larger corpora will provide more generic co–occurrence information about words without regard to a particular target word.,"{'title': '10 Future Directions', 'number': '10'}"
-"However, the data specific to a given target word will capture the word usages in the immediate context of the target word.","{'title': '10 Future Directions', 'number': '10'}"
-"Thus, we will test the hypothesis that a smaller sample of data where each instance includes the target word is more effective for sense discrimination than a more general corpus of training data.","{'title': '10 Future Directions', 'number': '10'}"
-We are also planning to automatically attach descriptive labels to the discovered clusters that capture the underlying word sense.,"{'title': '10 Future Directions', 'number': '10'}"
-These labels will be created from the most characteristic features used by the instances belonging to the same cluster.,"{'title': '10 Future Directions', 'number': '10'}"
-"By comparing such descriptive features of each cluster with the words that occur in actual dictionary definitions of the target word, we plan to carry out fully automated word sense disambiguation that does not rely on any manually annotated text.","{'title': '10 Future Directions', 'number': '10'}"
-"We present an extensive comparative analysis of word sense discrimination techniques using first order and second order context vectors, where both can be employed in similarity and vector space.","{'title': '11 Conclusions', 'number': '11'}"
-"We conclude that for larger amounts of homogeneous data such as the Line, Hard and Serve data, the first order context vector representation and the UPGMA clustering algorithm are the most effective at word sense discrimination.","{'title': '11 Conclusions', 'number': '11'}"
-"We believe this is the case because in a large sample of data, it is very likely that the features that occur in the training data will also occur in the test data, making it possible to represent test instances with fairly rich feature sets.","{'title': '11 Conclusions', 'number': '11'}"
-"When given smaller amounts of data like SENSEVAL-2, second order context vectors and a hybrid clustering method like Repeated Bisections perform better.","{'title': '11 Conclusions', 'number': '11'}"
-"This occurs because in small and sparse data, direct first order features are seldom observed in both the training and the test data.","{'title': '11 Conclusions', 'number': '11'}"
-"However, the indirect second order co–occurrence relationships that are captured by these methods provide sufficient information for discrimination to proceed.","{'title': '11 Conclusions', 'number': '11'}"
-This research is supported by a National Science Foundation Faculty Early CAREER Development Award (#0092784).,"{'title': '12 Acknowledgments', 'number': '12'}"
-"All of the experiments in this paper were carried out with version 0.47 of the SenseClusters package, freely available from the URL shown on the title page.","{'title': '12 Acknowledgments', 'number': '12'}"
+This paper systematically compares unsupervised word sense discrimination techniques that cluster instances of a target word that occur in raw text using both vector and similarity spaces.,Introduction
+The context of each instance is represented as a vector in a high dimensional feature space.,Introduction
+Discrimination is achieved by clustering these context vectors directly in vector space and also by finding pairwise similarities among the vectors and then clustering in similarity space.,Introduction
+We employ two different representations of the context in which a target word occurs.,Introduction
+First order context vectors represent the context of each instance of a target word as a vector of features that occur in that context.,Introduction
+Second order context vectors are an indirect representation of the context based on the average of vectors that represent the words that occur in the context.,Introduction
+We evaluate the discriminated clusters by carrying out experiments ussense–tagged instances of 24 words and the well known corpora.,Introduction
+Most words in natural language have multiple possible meanings that can only be determined by considering the context in which they occur.,Experiment/Discussion
+"Given a target word used in a number of different contexts, word sense discrimination is the process of grouping these instances of the target word together by determining which contexts are the most similar to each other.",Experiment/Discussion
+"This is motivated by (Miller and Charles, 1991), who hypothesize that words with similar meanings are often used in similar contexts.",Experiment/Discussion
+"Hence, word sense discrimination reduces to the problem of finding classes of similar contexts such that each class represents a single word sense.",Experiment/Discussion
+"Put another way, contexts that are grouped together in the same class represent a particular word sense.",Experiment/Discussion
+"While there has been some previous work in sense discrimination (e.g., (Sch¨utze, 1992), (Pedersen and Bruce, 1997), (Pedersen and Bruce, 1998), (Sch¨utze, 1998), (Fukumoto and Suzuki, 1999)), by comparison it is much less than that devoted to word sense disambiguation, which is the process of assigning a meaning to a word from a predefined set of possibilities.",Experiment/Discussion
+"However, solutions to disambiguation usually require the availability of an external knowledge source or manually created sense– tagged training data.",Experiment/Discussion
+As such these are knowledge intensive methods that are difficult to adapt to new domains.,Experiment/Discussion
+"By contrast, word sense discrimination is an unsupervised clustering problem.",Experiment/Discussion
+This is an attractive methodology because it is a knowledge lean approach based on evidence found in simple raw text.,Experiment/Discussion
+"Manually sense tagged text is not required, nor are specific knowledge rich resources like dictionaries or ontologies.",Experiment/Discussion
+Instances are clustered based on their mutual contextual similarities which can be completely computed from the text itself.,Experiment/Discussion
+"This paper presents a systematic comparison of discrimination techniques suggested by Pedersen and Bruce ((Pedersen and Bruce, 1997), (Pedersen and Bruce, 1998)) and by Sch¨utze ((Sch¨utze, 1992), (Sch¨utze, 1998)).",Experiment/Discussion
+This paper also proposes and evaluates several extensions to these techniques.,Experiment/Discussion
+"We begin with a summary of previous work, and then a discussion of features and two types of context vectors.",Experiment/Discussion
+"We summarize techniques for clustering in vector versus similarity spaces, and then present our experimental methodology, including a discussion of the data used in our experiments.",Experiment/Discussion
+Then we describe our approach to the evaluation of unsupervised word sense discrimination.,Experiment/Discussion
+"Finally we present an analysis of our experimental results, and conclude with directions for future work.",Experiment/Discussion
+"(Pedersen and Bruce, 1997) and (Pedersen and Bruce, 1998) propose a (dis)similarity based discrimination approach that computes (dis)similarity among each pair of instances of the target word.",Experiment/Discussion
+This information is recorded in a (dis)similarity matrix whose rows/columns represent the instances of the target word that are to be discriminated.,Experiment/Discussion
+The cell entries of the matrix show the degree to which the pair of instances represented by the corresponding row and column are (dis)similar.,Experiment/Discussion
+The (dis)similarity is computed from the first order context vectors of the instances which show each instance as a vector of features that directly occur near the target word in that instance.,Experiment/Discussion
+"(Sch¨utze, 1998) introduces second order context vectors that represent an instance by averaging the feature vectors of the content words that occur in the context of the target word in that instance.",Experiment/Discussion
+"These second order context vectors then become the input to the clustering algorithm which clusters the given contexts in vector space, instead of building the similarity matrix structure.",Experiment/Discussion
+There are some significant differences in the approaches suggested by Pedersen and Bruce and by Sch¨utze.,Experiment/Discussion
+As yet there has not been any systematic study to determine which set of techniques results in better sense discrimination.,Experiment/Discussion
+"In the sections that follow, we highlight some of the differences between these approaches.",Experiment/Discussion
+Pedersen and Bruce represent the context of each test instance as a vector of features that directly occur near the target word in that instance.,Experiment/Discussion
+We refer to this representation as the first order context vector.,Experiment/Discussion
+"Sch¨utze, by contrast, uses the second order context representation that averages the first order context vectors of individual features that occur near the target word in the instance.",Experiment/Discussion
+"Thus, Sch¨utze represents each feature as a vector of words that occur in its context and then computes the context of the target word by adding the feature vectors of significant content words that occur near the target word in that context.",Experiment/Discussion
+Pedersen and Bruce use a small number of local features that include co–occurrence and part of speech information near the target word.,Experiment/Discussion
+"They select features from the same test data that is being discriminated, which is a common practice in clustering in general.",Experiment/Discussion
+Sch¨utze represents contexts in a high dimensional feature space that is created using a separate large corpus (referred to as the training corpus).,Experiment/Discussion
+He selects features based on their frequency counts or log-likelihood ratios in this corpus.,Experiment/Discussion
+"In this paper, we adopt Sch¨utze’s approach and select features from a separate corpus of training data, in part because the number of test instances may be relatively small and may not be suitable for selecting a good feature set.",Experiment/Discussion
+"In addition, this makes it possible to explore variations in the training data while maintaining a consistent test set.",Experiment/Discussion
+"Since the training data used in unsupervised clustering does not need to be sense tagged, in future work we plan to develop methods of collecting very large amounts of raw corpora from the Web and other online sources and use it to extract features.",Experiment/Discussion
+Sch¨utze represents each feature as a vector of words that co–occur with that feature in the training data.,Experiment/Discussion
+These feature vectors are in fact the first order context vectors of the feature words (and not target word).,Experiment/Discussion
+The words that co–occur with the feature words form the dimensions of the feature space.,Experiment/Discussion
+"Sch¨utze reduces the dimensionality of this feature space using Singular Value Decomposition (SVD), which is also employed by related techniques such as Latent Semantic Indexing (Deerwester et al., 1990) and Latent Semantic Analysis (Landauer et al., 1998).",Experiment/Discussion
+SVD has the effect of converting a word level feature space into a concept level semantic space that smoothes the fine distinctions between features that represent similar concepts.,Experiment/Discussion
+Pedersen and Bruce represent instances in a (dis)similarity space where each instance can be seen as a point and the distance between any two points is a function of their mutual (dis)similarities.,Experiment/Discussion
+The (dis)similarity matrix showing the pair-wise (dis)similarities among the instances is given as the input to the agglomerative clustering algorithm.,Experiment/Discussion
+"The context group discrimination method used by Sch¨utze, on the other hand, operates on the vector representations of instances and thus works in vector space.",Experiment/Discussion
+Also he employs a hybrid clustering approach which uses both an agglomerative and the Estimation Maximization (EM) algorithm.,Experiment/Discussion
+First order context vectors directly indicate which features make up a context.,Experiment/Discussion
+"In all of our experiments, the context of the target word is limited to 20 surrounding content words on either side.",Experiment/Discussion
+"This is true both when we are selecting features from a set of training data, or when we are converting test instances into vectors for clustering.",Experiment/Discussion
+The particular features we are interested in are bigrams and co–occurrences.,Experiment/Discussion
+"Co-occurrences are words that occur within five positions of the target word (i.e., up to three intervening words are allowed).",Experiment/Discussion
+Bigrams are ordered pairs of words that co–occur within five positions of each other.,Experiment/Discussion
+"Thus, co–occurrences are unordered word pairs that include the target word, whereas bigrams are ordered pairs that may or may not include the target.",Experiment/Discussion
+"Both the co–occurrences and the bigrams must occur in at least two instances in the training data, and the two words must have a log– likelihood ratio in excess of 3.841, which has the effect of removing co–occurrences and bigrams that have more than 95% chance of being independent of the target word.",Experiment/Discussion
+"After selecting a set of co-occurrences or bigrams from a corpus of training data, a first order context representation is created for each test instance.",Experiment/Discussion
+"This shows how many times each feature occurs in the context of the target word (i.e., within 20 positions from the target word) in that instance.",Experiment/Discussion
+A test instance can be represented by a second order context vector by finding the average of the first order context vectors that are associated with the words that occur near the target word.,Experiment/Discussion
+"Thus, the second order context representation relies on the first order context vectors of feature words.",Experiment/Discussion
+"The second order experiments in this paper use two different types of features, co–occurrences and bigrams, defined as they are in the first order experiments.",Experiment/Discussion
+Each co–occurrence identified in training data is assigned a unique index and occupies the corresponding row/column in a word co–occurrence matrix.,Experiment/Discussion
+"This is constructed from the co–occurrence pairs, and is a symmetric adjacency matrix whose cell values show the loglikelihood ratio for the pair of words representing the corresponding row and column.",Experiment/Discussion
+Each row of the co– occurrence matrix can be seen as a first order context vector of the word represented by that row.,Experiment/Discussion
+The set of words forming the rows/columns of the co–occurrence matrix are treated as the feature words.,Experiment/Discussion
+"Bigram features lead to a bigram matrix such that for each selected bigram WORDi<>WORDj, WORDi represents a single row, say the ith row, and WORDj represents a single column, say the jth column, of the bigram matrix.",Experiment/Discussion
+"Then the value of cell (i,j) indicates the log–likelihood ratio of the words in the bigram WORDi<>WORDj.",Experiment/Discussion
+Each row of the bigram matrix can be seen as a bigram vector that shows the scores of all bigrams in which the word represented by that row occurs as the first word.,Experiment/Discussion
+"Thus, the words representing the rows of the bigram matrix make the feature set while the words representing the columns form the dimensions of the feature space.",Experiment/Discussion
+The objective of clustering is to take a set of instances represented as either a similarity matrix or context vectors and cluster together instances that are more like each other than they are to the instances that belong to other clusters.,Experiment/Discussion
+"Clustering algorithms are classified into three main categories, hierarchical, partitional, and hybrid methods that incorporate ideas from both.",Experiment/Discussion
+The algorithm acts as a search strategy that dictates how to proceed through the instances.,Experiment/Discussion
+The actual choice of which clusters to split or merge is decided by a criteria function.,Experiment/Discussion
+This section describes the clustering algorithms and criteria functions that have been employed in our experiments.,Experiment/Discussion
+Hierarchical algorithms are either agglomerative or divisive.,Experiment/Discussion
+"They both proceed iteratively, and merge or divide clusters at each step.",Experiment/Discussion
+Agglomerative algorithms start with each instance in a separate cluster and merge a pair of clusters at each iteration until there is only a single cluster remaining.,Experiment/Discussion
+Divisive methods start with all instances in the same cluster and split one cluster into two during each iteration until all instances are in their own cluster.,Experiment/Discussion
+"The most widely known criteria functions used with hierarchical agglomerative algorithms are single link, complete link, and average link, also known as UPGMA.",Experiment/Discussion
+"(Sch¨utze, 1998) points out that single link clustering tends to place all instances into a single elongated cluster, whereas (Pedersen and Bruce, 1997) and (Purandare, 2003) show that hierarchical agglomerative clustering using average link (via McQuitty’s method) fares well.",Experiment/Discussion
+"Thus, we have chosen to use average link/UPGMA as our criteria function for the agglomerative experiments.",Experiment/Discussion
+"In similarity space, each instance can be viewed as a node in a weighted graph.",Experiment/Discussion
+The weights on edges joining two nodes indicate their pairwise similarity as measured by the cosine between the context vectors that represent the pair of instances.,Experiment/Discussion
+"When agglomerative clustering starts, each node is in its own cluster and is considered to be the centroid of that cluster.",Experiment/Discussion
+"At each iteration, average link selects the pair of clusters whose centroids are most similar and merges them into a single cluster.",Experiment/Discussion
+"For example, suppose the clusters I and J are to be merged into a single cluster IJ.",Experiment/Discussion
+The weights on all other edges that connect existing nodes to the new node IJ must now be revised.,Experiment/Discussion
+Suppose that Q is such a node.,Experiment/Discussion
+The new weight in the graph is computed by averaging the weight on the edge between nodes I and Q and that on the edge between J and Q.,Experiment/Discussion
+"In other words: In vector space, average link starts by assigning each vector to a single cluster.",Experiment/Discussion
+The centroid of each cluster is found by calculating the average of all the context vectors that make up the cluster.,Experiment/Discussion
+"At each iteration, average link selects the pair of clusters whose centroids are closest with respect to their cosines.",Experiment/Discussion
+The selected pair of clusters is merged and a centroid is computed for this newly created cluster.,Experiment/Discussion
+Partitional algorithms divide an entire set of instances into a predetermined number of clusters (K) without going through a series of pairwise comparisons.,Experiment/Discussion
+As such these methods are somewhat faster than hierarchical algorithms.,Experiment/Discussion
+"For example, the well known K-means algorithm is partitional.",Experiment/Discussion
+"In vector space, each instance is represented by a context vector.",Experiment/Discussion
+K-means initially selects K random vectors to serve as centroids of these initial K clusters.,Experiment/Discussion
+It then assigns every other vector to one of the K clusters whose centroid is closest to that vector.,Experiment/Discussion
+"After all vectors are assigned, it recomputes the cluster centroids by averaging all of the vectors assigned to that cluster.",Experiment/Discussion
+"This repeats until convergence, that is until no vector changes its cluster across iterations and the centroids stabilize.",Experiment/Discussion
+"In similarity space, each instance can be viewed as a node of a fully connected weighted graph whose edges indicate the similarity between the instances they connect.",Experiment/Discussion
+K-means will first select K random nodes that represent the centroids of the initial K clusters.,Experiment/Discussion
+It will then assign every other node I to one of the K clusters such that the edge joining I and the centroid of that cluster has maximum weight among the edges joining I to all centroids.,Experiment/Discussion
+It is generally believed that the quality of clustering by partitional algorithms is inferior to that of the agglomerative methods.,Experiment/Discussion
+"However, a recent study (Zhao and Karypis, 2002) has suggested that these conclusions are based on experiments conducted with smaller data sets, and that with larger data sets partitional algorithms are not only faster but lead to better results.",Experiment/Discussion
+"In particular, Zhao and Karypis recommend a hybrid approach known as Repeated Bisections.",Experiment/Discussion
+"This overcomes the main weakness with partitional approaches, which is the instability in clustering solutions due to the choice of the initial random centroids.",Experiment/Discussion
+Repeated Bisections starts with all instances in a single cluster.,Experiment/Discussion
+At each iteration it selects one cluster whose bisection optimizes the chosen criteria function.,Experiment/Discussion
+"The cluster is bisected using standard K-means method with K=2, while the criteria function maximizes the similarity between each instance and the centroid of the cluster to which it is assigned.",Experiment/Discussion
+As such this is a hybrid method that combines a hierarchical divisive approach with partitioning.,Experiment/Discussion
+"We use 24 of the 73 words in the SENSEVAL-2 sense– tagged corpus, and the Line, Hard and Serve sense– tagged corpora.",Experiment/Discussion
+Each of these corpora are made up of instances that consist of 2 or 3 sentences that include a single target word that has a manually assigned sense tag.,Experiment/Discussion
+"However, we ignore the sense tags at all times except during evaluation.",Experiment/Discussion
+At no point do the sense tags enter into the clustering or feature selection processes.,Experiment/Discussion
+"To be clear, we do not believe that unsupervised word sense discrimination needs to be carried out relative to a pre-existing set of senses.",Experiment/Discussion
+"In fact, one of the great advantages of unsupervised technique is that it doesn’t need a manually annotated text.",Experiment/Discussion
+"However, here we employ sense–tagged text in order to evaluate the clusters that we discover.",Experiment/Discussion
+"The SENSEVAL-2 data is already divided into training and test sets, and those splits were retained for these experiments.",Experiment/Discussion
+"The SENSEVAL-2 data is relatively small, in that each word has approximately 50-200 training and test instances.",Experiment/Discussion
+"The data is particularly challenging for unsupervised algorithms due to the large number of fine grained senses, generally 8 to 12 per word.",Experiment/Discussion
+The small volume of data combined with large number of possible senses leads to very small set of examples for most of the senses.,Experiment/Discussion
+"As a result, prior to clustering we filter the training and test data independently such that any instance that uses a sense that occurs in less than 10% of the available instances for a given word is removed.",Experiment/Discussion
+We then eliminate any words that have less than 90 training instances after filtering.,Experiment/Discussion
+"This process leaves us with a set of 24 SENSEVAL-2 words, which includes the 14 nouns, 6 adjectives and 4 verbs that are shown in Table 1.",Experiment/Discussion
+"In creating our evaluation standard, we assume that each instance will be assigned to at most a single cluster.",Experiment/Discussion
+"Therefore if an instance has multiple correct senses associated with it, we treat the most frequent of these as the desired tag, and ignore the others as possible correct answers in the test data.",Experiment/Discussion
+"The Line, Hard and Serve corpora do not have a standard training–test split, so these were randomly divided into 60–40 training–test splits.",Experiment/Discussion
+"Due to the large number of training and test instances for these words, we filtered out instances associated with any sense that occurred in less than 5% of the training or test instances.",Experiment/Discussion
+We also randomly selected five pairs of words from the SENSEVAL-2 data and mixed their instances together (while retaining the training and test distinction that already existed in the data).,Experiment/Discussion
+"After mixing, the data was filtered such that any sense that made up less than 10% in the training or test data of the new mixed sample was removed; this is why the total number of instances for the mixed pairs is not the same as the sum of those for the individual words.",Experiment/Discussion
+These mix-words were created in order to provide data that included both fine grained and coarse grained distinctions.,Experiment/Discussion
+Table 1 shows all words that were used in our experiments along with their parts of speech.,Experiment/Discussion
+"Thereafter we show the number of training (TRN) and test instances (TST) that remain after filtering, and the number of senses found in the test data (S).",Experiment/Discussion
+We also show the percentage of the majority sense in the test data (MAJ).,Experiment/Discussion
+"This is particularly useful, since this is the accuracy that would be attained by a baseline clustering algorithm that puts all test instances into a single cluster.",Experiment/Discussion
+"When we cluster test instances, we specify an upper limit on the number of clusters that can be discovered.",Experiment/Discussion
+In these experiments that value is 7.,Experiment/Discussion
+This reflects the fact that we do not know a–priori the number of possible senses a word will have.,Experiment/Discussion
+"This also allows us to verify the hypothesis that a good clustering approach will automatically discover approximately same number of clusters as senses for that word, and the extra clusters (7–#actual senses) will contain very few instances.",Experiment/Discussion
+"As can be seen from column S in Table 1, most of the words have 2 to 4 senses on an average.",Experiment/Discussion
+"Of the 7 clusters created by an algorithm, we detect the significant clusters by ignoring (throwing out) clusters that contain less than 2% of the total instances.",Experiment/Discussion
+The instances in the discarded clusters are counted as unclustered instances and are subtracted from the total number of instances.,Experiment/Discussion
+Our basic strategy for evaluation is to assign available sense tags to the discovered clusters such that the assignment leads to a maximally accurate mapping of senses to clusters.,Experiment/Discussion
+The problem of assigning senses to clusters becomes one of reordering the columns of a confusion matrix that shows how senses and clusters align such that the diagonal sum is maximized.,Experiment/Discussion
+"This corresponds to several well known problems, among them the Assignment Problem in Operations Research, or determining the maximal matching of a bipartite graph in Graph Theory.",Experiment/Discussion
+"During evaluation we assign one sense to at most one cluster, and vice versa.",Experiment/Discussion
+"When the number of discovered clusters is the same as the number of senses, then there is a one to one mapping between them.",Experiment/Discussion
+"When the number of clusters is greater than the number of actual senses, then some clusters will be left unassigned.",Experiment/Discussion
+"And when the number of senses is greater than the number of clusters, some senses will not be assigned to any cluster.",Experiment/Discussion
+"The reason for not assigning a single sense to multiple clusters or multiple senses to one cluster is that, we are assuming one sense per instance and one sense per cluster.",Experiment/Discussion
+We measure the precision and recall based on this maximally accurate assignment of sense tags to clusters.,Experiment/Discussion
+"Precision is defined as the number of instances that are clustered correctly divided by the number of instances clustered, while recall is the number of instances clustered correctly over the total number of instances.",Experiment/Discussion
+"From that we compute the F–measure, which is two times the precision and recall, divided by the sum of precision and recall.",Experiment/Discussion
+"We present the discrimination results for six configurations of features, context representations and clustering algorithms.",Experiment/Discussion
+"These were run on each of the 27 target words, and also on the five mixed words.",Experiment/Discussion
+What follows is a concise description of each configuration.,Experiment/Discussion
+All of the SC experiments use second order context vectors and hence follow the approach suggested by Sch¨utze.,Experiment/Discussion
+"Experiment PB2 clusters the Pedersen and Bruce style (first order) context vectors using the Sch¨utze like clustering scheme, while SC2 tries to see the effect of using the Pedersen and Bruce style clustering method on Sch¨utze style (second order) context vectors.",Experiment/Discussion
+The motivation behind experiments PB3 and SC3 is to try bigram features in both PB and SC style context vectors.,Experiment/Discussion
+The F–measure associated with the discrimination of each word is shown in Table 1.,Experiment/Discussion
+Any score that is significantly greater than the majority sense (according to a paired t–test) is shown in bold face.,Experiment/Discussion
+We employ three different types of data in our experiments.,Experiment/Discussion
+The SENSEVAL-2 words have a relatively small number of training and test instances (around 50-200).,Experiment/Discussion
+"However, the Line, Hard and Serve data is much larger, where each contains around 4200 training and test instances combined.",Experiment/Discussion
+Mixed word are unique because they combined the instances of multiple target words and thereby have a larger number of senses to discriminate.,Experiment/Discussion
+"Each type of data brings with it unique characteristics, and sheds light on different aspects of our experiments.",Experiment/Discussion
+"Table 2 compares PB1 against PB3, and SC1 against SC3, when these methods are used to discriminate the 24 SENSEVAL-2 words.",Experiment/Discussion
+Our objective is to study the effect of using bigram features against co–occurrences in first (PB) and second (SC) order context vectors while using relatively small amounts of training data per word.,Experiment/Discussion
+"Note that PB1 and SC1 use co–occurrence features, while PB3 and SC3 rely on bigram features.",Experiment/Discussion
+"This table shows the number of nouns (N), adjectives (A) and verbs (V) where bigrams were more effective than co-occurrences (bigram>co-occur), less effective (bigram<co-occur), and had no effect (bigram=cooccur).",Experiment/Discussion
+Table 2 shows that there is no clear advantage to using either bigrams or co–occurrence features in first order context vectors (PB).,Experiment/Discussion
+"However, bigram features show clear improvement in the results of second order context vectors (SC).",Experiment/Discussion
+Our hypothesis is that first order context vectors (PB) represent a small set of bigram features since they are selected from the relatively small SENSEVAL-2 words.,Experiment/Discussion
+"These features are very sparse, and as such most instances do not share many common features with other instances, making first order clustering difficult.",Experiment/Discussion
+"However, second order context vectors indirectly represent bigram features, and do not require an exact match between vectors in order to establish similarity.",Experiment/Discussion
+"Thus, the poor performance of bigrams in the case of first order context vectors suggests that when dealing with small amounts of data, we need to boost or enrich our bigram feature set by using some other larger training source like a corpus drawn from the Web.",Experiment/Discussion
+Table 3 shows the results of using the Repeated Bisections algorithm in vector space (PB) against that of using UPGMA method in similarity space.,Experiment/Discussion
+"This table shows the number of Nouns, Adjectives and Verbs SENSEVAL-2 words that performed better (rbr>upgma), worse (rbr<upgma), and equal (rbr=upgma) when using Repeated Bisections clustering versus the UPGMA technique, on first (PB) and second (SC) order vectors.",Experiment/Discussion
+"In short, Table 3 compares PB1 against PB2 and SC1 against SC2.",Experiment/Discussion
+"From this, we observe that with both first order and second order context vectors Repeated Bisections is more effective than UPGMA.",Experiment/Discussion
+This suggests that it is better suited to deal with very small amounts of sparse data.,Experiment/Discussion
+Table 4 summarizes the overall performance of each of these experiments compared with the majority class.,Experiment/Discussion
+"This table shows the number of words for which an experiment performed better than the the majority class, broken down by part of speech.",Experiment/Discussion
+"Note that SC3 and SC1 are most often better than the majority class, followed closely by PB2 and SC2.",Experiment/Discussion
+This suggests that the second order context vectors (SC) have an advantage over the first order vectors for small training data as is found among the 24 SENSEVAL-2 words.,Experiment/Discussion
+"We believe that second order methods work better on smaller amounts of data, in that the feature spaces are quite small, and are not able to support the degree of exact matching of features between instances that first order vectors require.",Experiment/Discussion
+Second order context vectors succeed in such cases because they find indirect second order co– occurrences of feature words and hence describe the context more extensively than the first order representations.,Experiment/Discussion
+"With smaller quantities of data, there is less possibility of finding instances that use exactly the same set of words.",Experiment/Discussion
+Semantically related instances use words that are conceptually the same but perhaps not lexically.,Experiment/Discussion
+"Second order context vectors are designed to identify such relationships, in that exact matching is not required, but rather words that occur in similar contexts will have similar vectors.",Experiment/Discussion
+"The comparatively good performance of PB1 and PB3 in the case of the Line, Hard and Serve data (see Table 1) suggests that first order context vectors when clustered with UPGMA perform relatively well on larger samples of data.",Experiment/Discussion
+"Moreover, among the SC experiments on this data, the performance of SC2 is relatively high.",Experiment/Discussion
+This further suggests that UPGMA performs much better than Repeated Bisections with larger amounts of training data.,Experiment/Discussion
+These observations correspond with the hypothesis drawn from the SENSEVAL-2 results.,Experiment/Discussion
+"That is, a large amount of training data will lead to a larger feature space and hence there is a greater chance of matching more features directly in the context of the test instances.",Experiment/Discussion
+"Hence, the first order context vectors that rely on the immediate context of the target word succeed as the contexts are more likely to use similar sets of words that in turn are selected from a large feature collection.",Experiment/Discussion
+Nearly all of the experiments carried out with the 6 different methods perform better than the majority sense in the case of the mix-words.,Experiment/Discussion
+"This is partially due to the fact that these words have a large number of senses, and therefore have low majority classifiers.",Experiment/Discussion
+"In addition, recall that this data is created by mixing instances of distinct target words, which leads to a subset of coarse grained (distinct) senses within the data that are easier to discover than the senses of a single word.",Experiment/Discussion
+Table 1 shows that the top 3 experiments for each of the mixed-words are all second order vectors (SC).,Experiment/Discussion
+We believe that this is due to the sparsity of the feature spaces of this data.,Experiment/Discussion
+"Since there are so many different senses, the number of first order features that would be required to correctly discriminate them is very high, leading to better results for second order vectors.",Experiment/Discussion
+We plan to conduct experiments that compare the effect of using very large amounts of training data versus smaller amounts where each instance includes the target word (as is the case in this paper).,Experiment/Discussion
+"We will draw our large corpora from a variety of sources, including the British National Corpus, the English GigaWord Corpus, and the Web.",Experiment/Discussion
+Our motivation is that the larger corpora will provide more generic co–occurrence information about words without regard to a particular target word.,Experiment/Discussion
+"However, the data specific to a given target word will capture the word usages in the immediate context of the target word.",Experiment/Discussion
+"Thus, we will test the hypothesis that a smaller sample of data where each instance includes the target word is more effective for sense discrimination than a more general corpus of training data.",Experiment/Discussion
+We are also planning to automatically attach descriptive labels to the discovered clusters that capture the underlying word sense.,Experiment/Discussion
+These labels will be created from the most characteristic features used by the instances belonging to the same cluster.,Experiment/Discussion
+"By comparing such descriptive features of each cluster with the words that occur in actual dictionary definitions of the target word, we plan to carry out fully automated word sense disambiguation that does not rely on any manually annotated text.",Experiment/Discussion
+"We present an extensive comparative analysis of word sense discrimination techniques using first order and second order context vectors, where both can be employed in similarity and vector space.",Results/Conclusion
+"We conclude that for larger amounts of homogeneous data such as the Line, Hard and Serve data, the first order context vector representation and the UPGMA clustering algorithm are the most effective at word sense discrimination.",Results/Conclusion
+"We believe this is the case because in a large sample of data, it is very likely that the features that occur in the training data will also occur in the test data, making it possible to represent test instances with fairly rich feature sets.",Results/Conclusion
+"When given smaller amounts of data like SENSEVAL-2, second order context vectors and a hybrid clustering method like Repeated Bisections perform better.",Results/Conclusion
+"This occurs because in small and sparse data, direct first order features are seldom observed in both the training and the test data.",Results/Conclusion
+"However, the indirect second order co–occurrence relationships that are captured by these methods provide sufficient information for discrimination to proceed.",Results/Conclusion
+This research is supported by a National Science Foundation Faculty Early CAREER Development Award (#0092784).,Results/Conclusion
+"All of the experiments in this paper were carried out with version 0.47 of the SenseClusters package, freely available from the URL shown on the title page.",Results/Conclusion

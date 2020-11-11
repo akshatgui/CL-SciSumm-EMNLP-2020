@@ -1,142 +1,142 @@
 col1,col2
-Traditional noun phrase coreference resolution systems represent features only of pairs of noun phrases.,{}
-"In this paper, we propose a machine learning method enables features over noun phrases, resulting in a first-order probabilistic model for coreference.",{}
-"We outline a set of approximations that make this approach practical, and apply our method to the ACE coreference dataset, achieving a 45% error reduction over a comparable method that only considers features of pairs of noun phrases.",{}
-This result demonstrates an example of how a firstorder logic representation can be incorporated into a probabilistic model and scaled efficiently.,{}
-Noun phrase coreference resolution is the problem of clustering noun phrases into anaphoric sets.,"{'title': '1 Introduction', 'number': '1'}"
-A standard machine learning approach is to perform a set of independent binary classifications of the form “Is mention a coreferent with mention b?” This approach of decomposing the problem into pairwise decisions presents at least two related difficulties.,"{'title': '1 Introduction', 'number': '1'}"
-"First, it is not clear how best to convert the set of pairwise classifications into a disjoint clustering of noun phrases.","{'title': '1 Introduction', 'number': '1'}"
-"The problem stems from the transitivity constraints of coreference: If a and b are coreferent, and b and c are coreferent, then a and c must be coreferent.","{'title': '1 Introduction', 'number': '1'}"
-This problem has recently been addressed by a number of researchers.,"{'title': '1 Introduction', 'number': '1'}"
-A simple approach is to perform the transitive closure of the pairwise decisions.,"{'title': '1 Introduction', 'number': '1'}"
-"However, as shown in recent work (McCallum and Wellner, 2003; Singla and Domingos, 2005), better performance can be obtained by performing relational inference to directly consider the dependence among a set of predictions.","{'title': '1 Introduction', 'number': '1'}"
-"For example, McCallum and Wellner (2005) apply a graph partitioning algorithm on a weighted, undirected graph in which vertices are noun phrases and edges are weighted by the pairwise score between noun phrases.","{'title': '1 Introduction', 'number': '1'}"
-A second and less studied difficulty is that the pairwise decomposition restricts the feature set to evidence about pairs of noun phrases only.,"{'title': '1 Introduction', 'number': '1'}"
-This restriction can be detrimental if there exist features of sets of noun phrases that cannot be captured by a combination of pairwise features.,"{'title': '1 Introduction', 'number': '1'}"
-"As a simple example, consider prohibiting coreferent sets that consist only of pronouns.","{'title': '1 Introduction', 'number': '1'}"
-"That is, we would like to require that there be at least one antecedent for a set of pronouns.","{'title': '1 Introduction', 'number': '1'}"
-The pairwise decomposition does not make it possible to capture this constraint.,"{'title': '1 Introduction', 'number': '1'}"
-"In general, we would like to construct arbitrary features over a cluster of noun phrases using the full expressivity of first-order logic.","{'title': '1 Introduction', 'number': '1'}"
-"Enabling this sort of flexible representation within a statistical model has been the subject of a long line of research on first-order probabilistic models (Gaifman, 1964; Halpern, 1990; Paskin, 2002; Poole, 2003; Richardson and Domingos, 2006).","{'title': '1 Introduction', 'number': '1'}"
-"Conceptually, a first-order probabilistic model can be described quite compactly.","{'title': '1 Introduction', 'number': '1'}"
-A configuration of the world is represented by a set of prediChoosing the closest preceding phrase is common because nearby phrases are a priori more likely to be coreferent.,"{'title': '1 Introduction', 'number': '1'}"
-We refer to the training and inference methods described in this section as the Pairwise Model.,"{'title': '1 Introduction', 'number': '1'}"
-where ZX; is a normalizer that sums over the two settings of yj.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-"Note that this model gives us the representational power of recently proposed Markov logic networks (Richardson and Domingos, 2006); that is, we can construct arbitrary formulae in first-order logic to characterize the noun coreference task, and can learn weights for instantiations of these formulae.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-"However, naively grounding the corresponding Markov logic network results in a combinatorial explosion of variables.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-Below we outline methods to scale training and prediction with this representation.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-"As in the Pairwise Model, we must decide how to sample training examples and how to combine independent classifications at testing time.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-"It is important to note that by moving to the First-Order Logic Model, the number of possible predictions has increased exponentially.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-"In the Pairwise Model, the number of possible y variables is O(|x|2), where x is the set of noun phrases.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-"In the First-Order Logic Model, the number of possible y variables is O(21&quot;l): There is a y variable for each possible element of the powerset of x.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-"Of course, we do not enumerate this set; rather, we incrementally instantiate y variables as needed during prediction.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-A simple method to generate training examples is to sample positive and negative cluster examples uniformly at random from the training data.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-"Positive examples are generated by first sampling a true cluster, then sampling a subset of that cluster.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-Negative examples are generated by sampling two positive examples and merging them into the same cluster.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-"At testing time, we perform standard greedy agglomerative clustering, where the score for each merger is proportional to the probability of the newly formed clustering according to the model.","{'title': '3 First-Order Logic Model', 'number': '2'}"
-Clustering terminates when there exists no additional merge that improves the probability of the clustering.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-We refer to the system described in this section as First-Order Uniform.,"{'title': '3 First-Order Logic Model', 'number': '2'}"
-In this section we propose two enhancements to the training procedure for the First-Order Uniform model.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"First, because each training example consists of a subset of noun phrases, the number of possible training examples we can generate is exponential in the number of noun phrases.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-We propose an errordriven sampling method that generates training examples from errors the model makes on the training data.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"The algorithm is as follows: Given initial parameters A, perform greedy agglomerative clustering on training document i until an incorrect cluster is formed.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Update the parameter vector according to this mistake, then repeat for the next training document.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-This process is repeated for a fixed number of iterations.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-Exactly how to update the parameter vector is addressed by the second enhancement.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-We propose modifying the optimization criterion of training to perform ranking rather than classification of clusters.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Consider a training example cluster with a negative label, indicating that not all of the noun phrases it contains are coreferent.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"A classification training algorithm will “penalize” all the features associated with this cluster, since they correspond to a negative example.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"However, because there may exists subsets of the cluster that are coreferent, features representing these positive subsets may be unjustly penalized.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"To address this problem, we propose constructing training examples consisting of one negative examWe propose augmenting the Pairwise Model to enable classification decisions over sets of noun phrases.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Given a set of noun phrases xj = {xi}, let the binary random variable yj be 1 if all the noun phrases xi E xj are coreferent.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"The features fk and weights Ak are defined as before, but now the features can represent arbitrary attributes over the entire set xj.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-This allows us to use the full flexibility of first-order logic to construct features about sets of nouns.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-The First-Order Logic Model is ple and one “nearby” positive example.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"In particular, when agglomerative clustering incorrectly merges two clusters, we select the resulting cluster as the negative example, and select as the positive example a cluster that can be created by merging other existing clusters.1 We then update the weight vector so that the positive example is assigned a higher score than the negative example.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"This approach allows the update to only penalize the difference between the two features of examples, thereby not penalizing features representing any overlapping coreferent clusters.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"To implement this update, we use MIRA (Margin Infused Relaxed Algorithm), a relaxed, online maximum margin training algorithm (Crammer and Singer, 2003).","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"It updates the parameter vector with two constraints: (1) the positive example must have a higher score by a given margin, and (2) the change to A should be minimal.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-This second constraint is to reduce fluctuations in A.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Let s+(A, xj) be the unnormalized score for the positive example and s−(A,xk) be the unnormalized score of the negative example.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Each update solves the following 1Of the possible positive examples, we choose the one with the highest probability under the current model to guard against large fluctuations in parameter updates fc Figure 3: An example noun coreference factor graph for the First-Order Model in which factors f, model the coreference between sets of nouns, and ft enforce the transitivity among related decisions.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Here, the additional node y123 indicates whether nouns {x1, x2, x3} are all coreferent.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-The number of y variables increases exponentially in the number of x variables.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"In this case, MIRA with a single constraint can be efficiently solved in one iteration of the Hildreth and D’Esopo method (Censor and Zenios, 1997).","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"Additionally, we average the parameters calculated at each iteration to improve convergence.","{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-We refer to the system described in this section as First-Order MIRA.,"{'title': '4 Error-driven and Rank-based training', 'number': '3'}"
-"In this section, we describe the Pairwise and FirstOrder models in terms of the factor graphs they approximate.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"For the Pairwise Model, a corresponding undirected graphical model can be defined as where Zx is the input-dependent normalizer and factor fc parameterizes the pairwise noun phrase compatibility as fc(yij, xij) = exp(Ek λkfk(yij, xij)).","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"Factor ft enforces the transitivity constraints by ft(·) = −oc if transitivity is not satisfied, 1 otherwise.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-This is similar to the model presented in McCallum and Wellner (2005).,"{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-A factor graph for the Pairwise Model is presented in Figure 2 for three noun phrases.,"{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"For the First-Order model, an undirected graphical model can be defined as where Zx is the input-dependent normalizer and factor fc parameterizes the cluster-wise noun phrase compatibility as fc(yj, xj) = exp(Ek λkfk(yj, xj)).","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"Again, factor ft enforces the transitivity constraints by ft(·) = −oc if transitivity is not satisfied, 1 otherwise.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"Here, transitivity is a bit more complicated, since it also requires that if yj = 1, then for any subset xk C_ xj, yk = 1.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-A factor graph for the First-Order Model is presented in Figure 3 for three noun phrases.,"{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"The methods described in Sections 2, 3 and 4 can be viewed as estimating the parameters of each factor fc independently.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"This approach can therefore be viewed as a type of piecewise approximation of exact parameter estimation in these models (Sutton and McCallum, 2005).","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"Here, each fc is a “piece” of the model trained independently.","{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-These pieces are combined at prediction time using clustering algorithms to enforce transitivity.,"{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-Sutton and McCallum (2005) show that such a piecewise approximation can be theoretically justified as minimizing an upper bound of the exact loss function.,"{'title': '5 Probabilistic Interpretation', 'number': '4'}"
-"We apply our approach to the noun coreference ACE 2004 data, containing 443 news documents with 28,135 noun phrases to be coreferenced.","{'title': '6 Experiments', 'number': '5'}"
-"336 documents are used for training, and the remainder for testing.","{'title': '6 Experiments', 'number': '5'}"
-"All entity types are candidates for coreference (pronouns, named entities, and nominal entities).","{'title': '6 Experiments', 'number': '5'}"
-"We use the true entity segmentation, and parse each sentence in the corpus using a phrase-structure grammar, as is common for this task.","{'title': '6 Experiments', 'number': '5'}"
-We follow Soon et al. (2001) and Ng and Cardie (2002) to generate most of our features for the Pairwise Model.,"{'title': '6 Experiments', 'number': '5'}"
-These include: The First-Order Model includes the following features: • Enumerate each pair of noun phrases and compute the features listed above.,"{'title': '6 Experiments', 'number': '5'}"
-"All-X is true if all pairs share a feature X, Most-True-X is true if the majority of pairs share a feature X, and Most-False-X is true if most of the pairs do not share feature X.","{'title': '6 Experiments', 'number': '5'}"
-"In addition to the listed features, we also include conjunctions of size 2, for example “Genders match AND numbers match”.","{'title': '6 Experiments', 'number': '5'}"
-"We use the B3 algorithm to evaluate the predicted coreferent clusters (Amit and Baldwin, 1998).","{'title': '6 Experiments', 'number': '5'}"
-"B3 is common in coreference evaluation and is similar to the precision and recall of coreferent links, except that systems are rewarded for singleton clusters.","{'title': '6 Experiments', 'number': '5'}"
-"For each noun phrase xi, let ci be the number of mentions in xi’s predicted cluster that are in fact coreferent with xi (including xi itself).","{'title': '6 Experiments', 'number': '5'}"
-Precision for xi is defined as ci divided by the number of noun phrases in xi’s cluster.,"{'title': '6 Experiments', 'number': '5'}"
-Recall for xi is defined as the ci divided by the number of mentions in the gold standard cluster for xi.,"{'title': '6 Experiments', 'number': '5'}"
-F1 is the harmonic mean of recall and precision.,"{'title': '6 Experiments', 'number': '5'}"
-"In addition to Pairwise, First-Order Uniform, and First-Order MIRA, we also compare against Pairwise MIRA, which differs from First-Order MIRA only by the fact that it is restricted to pairwise features. ence.","{'title': '6 Experiments', 'number': '5'}"
-FIRST-ORDER MIRA is our proposed model that takes advantage of first-order features of the data and is trained with error-driven and rank-based methods.,"{'title': '6 Experiments', 'number': '5'}"
-We see that both the first-order features and the training enhancements improve performance consistently. wise Model in F1 measure for both standard training and error-driven training.,"{'title': '6 Experiments', 'number': '5'}"
-We attribute some of this improvement to the capability of the First-Order model to capture features of entire clusters that may indicate some phrases are not coreferent.,"{'title': '6 Experiments', 'number': '5'}"
-"Also, we attribute the gains from error-driven training to the fact that training examples are generated based on errors made on the training data.","{'title': '6 Experiments', 'number': '5'}"
-"(However, we should note that there are also small differences in the feature sets used for error-driven and standard training results.)","{'title': '6 Experiments', 'number': '5'}"
-Error analysis indicates that often noun xi is correctly not merged with a cluster xj when xj has a strong internal coherence.,"{'title': '6 Experiments', 'number': '5'}"
-"For example, if all 5 mentions of France in a document are string identical, then the system will be extremely cautious of merging a noun that is not equivalent to France into xj, since this will turn off the “All-String-Match” feature for cluster xj.","{'title': '6 Experiments', 'number': '5'}"
-"To our knowledge, the best results on this dataset were obtained by the meta-classification scheme of Ng (2005).","{'title': '6 Experiments', 'number': '5'}"
-"Although our train-test splits may differ slightly, the best B-Cubed F1 score reported in Ng (2005) is 69.3%, which is considerably lower than the 79.3% obtained with our method.","{'title': '6 Experiments', 'number': '5'}"
-Also note that the Pairwise baseline obtains results similar to those in Ng and Cardie (2002).,"{'title': '6 Experiments', 'number': '5'}"
-"There has been a recent interest in training methods that enable the use of first-order features (Paskin, 2002; Daum´e III and Marcu, 2005b; Richardson and Domingos, 2006).","{'title': '7 Related Work', 'number': '6'}"
-"Perhaps the most related is “learning as search optimization” (LASO) (Daum´e III and Marcu, 2005b; Daum´e III and Marcu, 2005a).","{'title': '7 Related Work', 'number': '6'}"
-"Like the current paper, LASO is also an error-driven training method that integrates prediction and training.","{'title': '7 Related Work', 'number': '6'}"
-"However, whereas we explicitly use a ranking-based loss function, LASO uses a binary classification loss function that labels each candidate structure as correct or incorrect.","{'title': '7 Related Work', 'number': '6'}"
-"Thus, each LASO training example contains all candidate predictions, whereas our training examples contain only the highest scoring incorrect prediction and the highest scoring correct prediction.","{'title': '7 Related Work', 'number': '6'}"
-Our experiments show the advantages of this ranking-based loss function.,"{'title': '7 Related Work', 'number': '6'}"
-"Additionally, we provide an empirical study to quantify the effects of different example generation and loss function decisions.","{'title': '7 Related Work', 'number': '6'}"
-Collins and Roark (2004) present an incremental perceptron algorithm for parsing that uses “early update” to update the parameters when an error is encountered.,"{'title': '7 Related Work', 'number': '6'}"
-Our method uses a similar “early update” in that training examples are only generated for the first mistake made during prediction.,"{'title': '7 Related Work', 'number': '6'}"
-"However, they do not investigate rank-based loss functions.","{'title': '7 Related Work', 'number': '6'}"
-"Others have attempted to train global scoring functions using Gibbs sampling (Finkel et al., 2005), message propagation, (Bunescu and Mooney, 2004; Sutton and McCallum, 2004), and integer linear programming (Roth and Yih, 2004).","{'title': '7 Related Work', 'number': '6'}"
-"The main distinctions of our approach are that it is simple to implement, not computationally intensive, and adaptable to arbitrary loss functions.","{'title': '7 Related Work', 'number': '6'}"
-"There have been a number of machine learning approaches to coreference resolution, traditionally factored into classification decisions over pairs of nouns (Soon et al., 2001; Ng and Cardie, 2002).","{'title': '7 Related Work', 'number': '6'}"
-Nicolae and Nicolae (2006) combine pairwise classification with graph-cut algorithms.,"{'title': '7 Related Work', 'number': '6'}"
-"Luo et al. (2004) do enable features between mention-cluster pairs, but do not perform the error-driven and ranking enhancements proposed in our work.","{'title': '7 Related Work', 'number': '6'}"
-"Denis and Baldridge (2007) use a ranking loss function for pronoun coreference; however the examples are still pairs of pronouns, and the example generation is not error driven.","{'title': '7 Related Work', 'number': '6'}"
-Ng (2005) learns a meta-classifier to choose the best prediction from the output of several coreference systems.,"{'title': '7 Related Work', 'number': '6'}"
-"While in theory a metaclassifier can flexibly represent features, they do not explore features using the full flexibility of firstorder logic.","{'title': '7 Related Work', 'number': '6'}"
-"Also, their method is neither errordriven nor rank-based.","{'title': '7 Related Work', 'number': '6'}"
-McCallum and Wellner (2003) use a conditional random field that factors into a product of pairwise decisions about pairs of nouns.,"{'title': '7 Related Work', 'number': '6'}"
-"These pairwise decisions are made collectively using relational inference; however, as pointed out in Milch et al. (2004), this model has limited representational power since it does not capture features of entities, only of pairs of mention.","{'title': '7 Related Work', 'number': '6'}"
-"Milch et al. (2005) address these issues by constructing a generative probabilistic model, where noun clusters are sampled from a generative process.","{'title': '7 Related Work', 'number': '6'}"
-Our current work has similar representational flexibility as Milch et al. (2005) but is discriminatively trained.,"{'title': '7 Related Work', 'number': '6'}"
-We have presented learning and inference procedures for coreference models using first-order features.,"{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"By relying on sampling methods at training time and approximate inference methods at testing time, this approach can be made scalable.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"This results in a coreference model that can capture features over sets of noun phrases, rather than simply pairs of noun phrases.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"This is an example of a model with extremely flexible representational power, but for which exact inference is intractable.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-The simple approximations we have described here have enabled this more flexible model to outperform a model that is simplified for tractability.,"{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"A short-term extension would be to consider features over entire clusterings, such as the number of clusters.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"This could be incorporated in a ranking scheme, as in Ng (2005).","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-Future work will extend our approach to a wider variety of tasks.,"{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"The model we have described here is specific to clustering tasks; however a similar formulation could be used to approach a number of language processing tasks, such as parsing and relation extraction.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"These tasks could benefit from first-order features, and the present work can guide the approximations required in those domains.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-"Additionally, we are investigating more sophisticated inference algorithms that will reduce the greediness of the search procedures described here.","{'title': '8 Conclusions and Future Work', 'number': '7'}"
-We thank Robert Hall for helpful contributions.,"{'title': 'Acknowledgments', 'number': '8'}"
-"This work was supported in part by the Defense Advanced Research Projects Agency (DARPA), through the Department of the Interior, NBC, Acquisition Services Division, under contract #NBCHD030010, in part by U.S. Government contract #NBCH040171 through a subcontract with BBNT Solutions LLC, in part by The Central Intelligence Agency, the National Security Agency and National Science Foundation under NSF grant #IIS-0326249, in part by Microsoft Live Labs, and in part by the Defense Advanced Research Projects Agency (DARPA) under contract #HR0011-06-C-0023.","{'title': 'Acknowledgments', 'number': '8'}"
-"Any opinions, findings and conclusions or recommendations expressed in this material are the author(s)’ and do not necessarily reflect those of the sponsor.","{'title': 'Acknowledgments', 'number': '8'}"
+Traditional noun phrase coreference resolution systems represent features only of pairs of noun phrases.,Introduction
+"In this paper, we propose a machine learning method enables features over noun phrases, resulting in a first-order probabilistic model for coreference.",Introduction
+"We outline a set of approximations that make this approach practical, and apply our method to the ACE coreference dataset, achieving a 45% error reduction over a comparable method that only considers features of pairs of noun phrases.",Introduction
+This result demonstrates an example of how a firstorder logic representation can be incorporated into a probabilistic model and scaled efficiently.,Introduction
+Noun phrase coreference resolution is the problem of clustering noun phrases into anaphoric sets.,Experiment/Discussion
+A standard machine learning approach is to perform a set of independent binary classifications of the form “Is mention a coreferent with mention b?” This approach of decomposing the problem into pairwise decisions presents at least two related difficulties.,Experiment/Discussion
+"First, it is not clear how best to convert the set of pairwise classifications into a disjoint clustering of noun phrases.",Experiment/Discussion
+"The problem stems from the transitivity constraints of coreference: If a and b are coreferent, and b and c are coreferent, then a and c must be coreferent.",Experiment/Discussion
+This problem has recently been addressed by a number of researchers.,Experiment/Discussion
+A simple approach is to perform the transitive closure of the pairwise decisions.,Experiment/Discussion
+"However, as shown in recent work (McCallum and Wellner, 2003; Singla and Domingos, 2005), better performance can be obtained by performing relational inference to directly consider the dependence among a set of predictions.",Experiment/Discussion
+"For example, McCallum and Wellner (2005) apply a graph partitioning algorithm on a weighted, undirected graph in which vertices are noun phrases and edges are weighted by the pairwise score between noun phrases.",Experiment/Discussion
+A second and less studied difficulty is that the pairwise decomposition restricts the feature set to evidence about pairs of noun phrases only.,Experiment/Discussion
+This restriction can be detrimental if there exist features of sets of noun phrases that cannot be captured by a combination of pairwise features.,Experiment/Discussion
+"As a simple example, consider prohibiting coreferent sets that consist only of pronouns.",Experiment/Discussion
+"That is, we would like to require that there be at least one antecedent for a set of pronouns.",Experiment/Discussion
+The pairwise decomposition does not make it possible to capture this constraint.,Experiment/Discussion
+"In general, we would like to construct arbitrary features over a cluster of noun phrases using the full expressivity of first-order logic.",Experiment/Discussion
+"Enabling this sort of flexible representation within a statistical model has been the subject of a long line of research on first-order probabilistic models (Gaifman, 1964; Halpern, 1990; Paskin, 2002; Poole, 2003; Richardson and Domingos, 2006).",Experiment/Discussion
+"Conceptually, a first-order probabilistic model can be described quite compactly.",Experiment/Discussion
+A configuration of the world is represented by a set of prediChoosing the closest preceding phrase is common because nearby phrases are a priori more likely to be coreferent.,Experiment/Discussion
+We refer to the training and inference methods described in this section as the Pairwise Model.,Experiment/Discussion
+where ZX; is a normalizer that sums over the two settings of yj.,Experiment/Discussion
+"Note that this model gives us the representational power of recently proposed Markov logic networks (Richardson and Domingos, 2006); that is, we can construct arbitrary formulae in first-order logic to characterize the noun coreference task, and can learn weights for instantiations of these formulae.",Experiment/Discussion
+"However, naively grounding the corresponding Markov logic network results in a combinatorial explosion of variables.",Experiment/Discussion
+Below we outline methods to scale training and prediction with this representation.,Experiment/Discussion
+"As in the Pairwise Model, we must decide how to sample training examples and how to combine independent classifications at testing time.",Experiment/Discussion
+"It is important to note that by moving to the First-Order Logic Model, the number of possible predictions has increased exponentially.",Experiment/Discussion
+"In the Pairwise Model, the number of possible y variables is O(|x|2), where x is the set of noun phrases.",Experiment/Discussion
+"In the First-Order Logic Model, the number of possible y variables is O(21&quot;l): There is a y variable for each possible element of the powerset of x.",Experiment/Discussion
+"Of course, we do not enumerate this set; rather, we incrementally instantiate y variables as needed during prediction.",Experiment/Discussion
+A simple method to generate training examples is to sample positive and negative cluster examples uniformly at random from the training data.,Experiment/Discussion
+"Positive examples are generated by first sampling a true cluster, then sampling a subset of that cluster.",Experiment/Discussion
+Negative examples are generated by sampling two positive examples and merging them into the same cluster.,Experiment/Discussion
+"At testing time, we perform standard greedy agglomerative clustering, where the score for each merger is proportional to the probability of the newly formed clustering according to the model.",Experiment/Discussion
+Clustering terminates when there exists no additional merge that improves the probability of the clustering.,Experiment/Discussion
+We refer to the system described in this section as First-Order Uniform.,Experiment/Discussion
+In this section we propose two enhancements to the training procedure for the First-Order Uniform model.,Experiment/Discussion
+"First, because each training example consists of a subset of noun phrases, the number of possible training examples we can generate is exponential in the number of noun phrases.",Experiment/Discussion
+We propose an errordriven sampling method that generates training examples from errors the model makes on the training data.,Experiment/Discussion
+"The algorithm is as follows: Given initial parameters A, perform greedy agglomerative clustering on training document i until an incorrect cluster is formed.",Experiment/Discussion
+"Update the parameter vector according to this mistake, then repeat for the next training document.",Experiment/Discussion
+This process is repeated for a fixed number of iterations.,Experiment/Discussion
+Exactly how to update the parameter vector is addressed by the second enhancement.,Experiment/Discussion
+We propose modifying the optimization criterion of training to perform ranking rather than classification of clusters.,Experiment/Discussion
+"Consider a training example cluster with a negative label, indicating that not all of the noun phrases it contains are coreferent.",Experiment/Discussion
+"A classification training algorithm will “penalize” all the features associated with this cluster, since they correspond to a negative example.",Experiment/Discussion
+"However, because there may exists subsets of the cluster that are coreferent, features representing these positive subsets may be unjustly penalized.",Experiment/Discussion
+"To address this problem, we propose constructing training examples consisting of one negative examWe propose augmenting the Pairwise Model to enable classification decisions over sets of noun phrases.",Experiment/Discussion
+"Given a set of noun phrases xj = {xi}, let the binary random variable yj be 1 if all the noun phrases xi E xj are coreferent.",Experiment/Discussion
+"The features fk and weights Ak are defined as before, but now the features can represent arbitrary attributes over the entire set xj.",Experiment/Discussion
+This allows us to use the full flexibility of first-order logic to construct features about sets of nouns.,Experiment/Discussion
+The First-Order Logic Model is ple and one “nearby” positive example.,Experiment/Discussion
+"In particular, when agglomerative clustering incorrectly merges two clusters, we select the resulting cluster as the negative example, and select as the positive example a cluster that can be created by merging other existing clusters.1 We then update the weight vector so that the positive example is assigned a higher score than the negative example.",Experiment/Discussion
+"This approach allows the update to only penalize the difference between the two features of examples, thereby not penalizing features representing any overlapping coreferent clusters.",Experiment/Discussion
+"To implement this update, we use MIRA (Margin Infused Relaxed Algorithm), a relaxed, online maximum margin training algorithm (Crammer and Singer, 2003).",Experiment/Discussion
+"It updates the parameter vector with two constraints: (1) the positive example must have a higher score by a given margin, and (2) the change to A should be minimal.",Experiment/Discussion
+This second constraint is to reduce fluctuations in A.,Experiment/Discussion
+"Let s+(A, xj) be the unnormalized score for the positive example and s−(A,xk) be the unnormalized score of the negative example.",Experiment/Discussion
+"Each update solves the following 1Of the possible positive examples, we choose the one with the highest probability under the current model to guard against large fluctuations in parameter updates fc Figure 3: An example noun coreference factor graph for the First-Order Model in which factors f, model the coreference between sets of nouns, and ft enforce the transitivity among related decisions.",Experiment/Discussion
+"Here, the additional node y123 indicates whether nouns {x1, x2, x3} are all coreferent.",Experiment/Discussion
+The number of y variables increases exponentially in the number of x variables.,Experiment/Discussion
+"In this case, MIRA with a single constraint can be efficiently solved in one iteration of the Hildreth and D’Esopo method (Censor and Zenios, 1997).",Experiment/Discussion
+"Additionally, we average the parameters calculated at each iteration to improve convergence.",Experiment/Discussion
+We refer to the system described in this section as First-Order MIRA.,Experiment/Discussion
+"In this section, we describe the Pairwise and FirstOrder models in terms of the factor graphs they approximate.",Experiment/Discussion
+"For the Pairwise Model, a corresponding undirected graphical model can be defined as where Zx is the input-dependent normalizer and factor fc parameterizes the pairwise noun phrase compatibility as fc(yij, xij) = exp(Ek λkfk(yij, xij)).",Experiment/Discussion
+"Factor ft enforces the transitivity constraints by ft(·) = −oc if transitivity is not satisfied, 1 otherwise.",Experiment/Discussion
+This is similar to the model presented in McCallum and Wellner (2005).,Experiment/Discussion
+A factor graph for the Pairwise Model is presented in Figure 2 for three noun phrases.,Experiment/Discussion
+"For the First-Order model, an undirected graphical model can be defined as where Zx is the input-dependent normalizer and factor fc parameterizes the cluster-wise noun phrase compatibility as fc(yj, xj) = exp(Ek λkfk(yj, xj)).",Experiment/Discussion
+"Again, factor ft enforces the transitivity constraints by ft(·) = −oc if transitivity is not satisfied, 1 otherwise.",Experiment/Discussion
+"Here, transitivity is a bit more complicated, since it also requires that if yj = 1, then for any subset xk C_ xj, yk = 1.",Experiment/Discussion
+A factor graph for the First-Order Model is presented in Figure 3 for three noun phrases.,Experiment/Discussion
+"The methods described in Sections 2, 3 and 4 can be viewed as estimating the parameters of each factor fc independently.",Experiment/Discussion
+"This approach can therefore be viewed as a type of piecewise approximation of exact parameter estimation in these models (Sutton and McCallum, 2005).",Experiment/Discussion
+"Here, each fc is a “piece” of the model trained independently.",Experiment/Discussion
+These pieces are combined at prediction time using clustering algorithms to enforce transitivity.,Experiment/Discussion
+Sutton and McCallum (2005) show that such a piecewise approximation can be theoretically justified as minimizing an upper bound of the exact loss function.,Experiment/Discussion
+"We apply our approach to the noun coreference ACE 2004 data, containing 443 news documents with 28,135 noun phrases to be coreferenced.",Experiment/Discussion
+"336 documents are used for training, and the remainder for testing.",Experiment/Discussion
+"All entity types are candidates for coreference (pronouns, named entities, and nominal entities).",Experiment/Discussion
+"We use the true entity segmentation, and parse each sentence in the corpus using a phrase-structure grammar, as is common for this task.",Experiment/Discussion
+We follow Soon et al. (2001) and Ng and Cardie (2002) to generate most of our features for the Pairwise Model.,Experiment/Discussion
+These include: The First-Order Model includes the following features: • Enumerate each pair of noun phrases and compute the features listed above.,Experiment/Discussion
+"All-X is true if all pairs share a feature X, Most-True-X is true if the majority of pairs share a feature X, and Most-False-X is true if most of the pairs do not share feature X.",Experiment/Discussion
+"In addition to the listed features, we also include conjunctions of size 2, for example “Genders match AND numbers match”.",Experiment/Discussion
+"We use the B3 algorithm to evaluate the predicted coreferent clusters (Amit and Baldwin, 1998).",Experiment/Discussion
+"B3 is common in coreference evaluation and is similar to the precision and recall of coreferent links, except that systems are rewarded for singleton clusters.",Experiment/Discussion
+"For each noun phrase xi, let ci be the number of mentions in xi’s predicted cluster that are in fact coreferent with xi (including xi itself).",Experiment/Discussion
+Precision for xi is defined as ci divided by the number of noun phrases in xi’s cluster.,Experiment/Discussion
+Recall for xi is defined as the ci divided by the number of mentions in the gold standard cluster for xi.,Experiment/Discussion
+F1 is the harmonic mean of recall and precision.,Experiment/Discussion
+"In addition to Pairwise, First-Order Uniform, and First-Order MIRA, we also compare against Pairwise MIRA, which differs from First-Order MIRA only by the fact that it is restricted to pairwise features. ence.",Experiment/Discussion
+FIRST-ORDER MIRA is our proposed model that takes advantage of first-order features of the data and is trained with error-driven and rank-based methods.,Experiment/Discussion
+We see that both the first-order features and the training enhancements improve performance consistently. wise Model in F1 measure for both standard training and error-driven training.,Experiment/Discussion
+We attribute some of this improvement to the capability of the First-Order model to capture features of entire clusters that may indicate some phrases are not coreferent.,Experiment/Discussion
+"Also, we attribute the gains from error-driven training to the fact that training examples are generated based on errors made on the training data.",Experiment/Discussion
+"(However, we should note that there are also small differences in the feature sets used for error-driven and standard training results.)",Experiment/Discussion
+Error analysis indicates that often noun xi is correctly not merged with a cluster xj when xj has a strong internal coherence.,Experiment/Discussion
+"For example, if all 5 mentions of France in a document are string identical, then the system will be extremely cautious of merging a noun that is not equivalent to France into xj, since this will turn off the “All-String-Match” feature for cluster xj.",Experiment/Discussion
+"To our knowledge, the best results on this dataset were obtained by the meta-classification scheme of Ng (2005).",Experiment/Discussion
+"Although our train-test splits may differ slightly, the best B-Cubed F1 score reported in Ng (2005) is 69.3%, which is considerably lower than the 79.3% obtained with our method.",Experiment/Discussion
+Also note that the Pairwise baseline obtains results similar to those in Ng and Cardie (2002).,Experiment/Discussion
+"There has been a recent interest in training methods that enable the use of first-order features (Paskin, 2002; Daum´e III and Marcu, 2005b; Richardson and Domingos, 2006).",Experiment/Discussion
+"Perhaps the most related is “learning as search optimization” (LASO) (Daum´e III and Marcu, 2005b; Daum´e III and Marcu, 2005a).",Experiment/Discussion
+"Like the current paper, LASO is also an error-driven training method that integrates prediction and training.",Experiment/Discussion
+"However, whereas we explicitly use a ranking-based loss function, LASO uses a binary classification loss function that labels each candidate structure as correct or incorrect.",Experiment/Discussion
+"Thus, each LASO training example contains all candidate predictions, whereas our training examples contain only the highest scoring incorrect prediction and the highest scoring correct prediction.",Experiment/Discussion
+Our experiments show the advantages of this ranking-based loss function.,Experiment/Discussion
+"Additionally, we provide an empirical study to quantify the effects of different example generation and loss function decisions.",Experiment/Discussion
+Collins and Roark (2004) present an incremental perceptron algorithm for parsing that uses “early update” to update the parameters when an error is encountered.,Experiment/Discussion
+Our method uses a similar “early update” in that training examples are only generated for the first mistake made during prediction.,Experiment/Discussion
+"However, they do not investigate rank-based loss functions.",Experiment/Discussion
+"Others have attempted to train global scoring functions using Gibbs sampling (Finkel et al., 2005), message propagation, (Bunescu and Mooney, 2004; Sutton and McCallum, 2004), and integer linear programming (Roth and Yih, 2004).",Experiment/Discussion
+"The main distinctions of our approach are that it is simple to implement, not computationally intensive, and adaptable to arbitrary loss functions.",Experiment/Discussion
+"There have been a number of machine learning approaches to coreference resolution, traditionally factored into classification decisions over pairs of nouns (Soon et al., 2001; Ng and Cardie, 2002).",Experiment/Discussion
+Nicolae and Nicolae (2006) combine pairwise classification with graph-cut algorithms.,Experiment/Discussion
+"Luo et al. (2004) do enable features between mention-cluster pairs, but do not perform the error-driven and ranking enhancements proposed in our work.",Experiment/Discussion
+"Denis and Baldridge (2007) use a ranking loss function for pronoun coreference; however the examples are still pairs of pronouns, and the example generation is not error driven.",Experiment/Discussion
+Ng (2005) learns a meta-classifier to choose the best prediction from the output of several coreference systems.,Experiment/Discussion
+"While in theory a metaclassifier can flexibly represent features, they do not explore features using the full flexibility of firstorder logic.",Experiment/Discussion
+"Also, their method is neither errordriven nor rank-based.",Experiment/Discussion
+McCallum and Wellner (2003) use a conditional random field that factors into a product of pairwise decisions about pairs of nouns.,Experiment/Discussion
+"These pairwise decisions are made collectively using relational inference; however, as pointed out in Milch et al. (2004), this model has limited representational power since it does not capture features of entities, only of pairs of mention.",Experiment/Discussion
+"Milch et al. (2005) address these issues by constructing a generative probabilistic model, where noun clusters are sampled from a generative process.",Experiment/Discussion
+Our current work has similar representational flexibility as Milch et al. (2005) but is discriminatively trained.,Experiment/Discussion
+We have presented learning and inference procedures for coreference models using first-order features.,Results/Conclusion
+"By relying on sampling methods at training time and approximate inference methods at testing time, this approach can be made scalable.",Results/Conclusion
+"This results in a coreference model that can capture features over sets of noun phrases, rather than simply pairs of noun phrases.",Results/Conclusion
+"This is an example of a model with extremely flexible representational power, but for which exact inference is intractable.",Results/Conclusion
+The simple approximations we have described here have enabled this more flexible model to outperform a model that is simplified for tractability.,Results/Conclusion
+"A short-term extension would be to consider features over entire clusterings, such as the number of clusters.",Results/Conclusion
+"This could be incorporated in a ranking scheme, as in Ng (2005).",Results/Conclusion
+Future work will extend our approach to a wider variety of tasks.,Results/Conclusion
+"The model we have described here is specific to clustering tasks; however a similar formulation could be used to approach a number of language processing tasks, such as parsing and relation extraction.",Results/Conclusion
+"These tasks could benefit from first-order features, and the present work can guide the approximations required in those domains.",Results/Conclusion
+"Additionally, we are investigating more sophisticated inference algorithms that will reduce the greediness of the search procedures described here.",Results/Conclusion
+We thank Robert Hall for helpful contributions.,Results/Conclusion
+"This work was supported in part by the Defense Advanced Research Projects Agency (DARPA), through the Department of the Interior, NBC, Acquisition Services Division, under contract #NBCHD030010, in part by U.S. Government contract #NBCH040171 through a subcontract with BBNT Solutions LLC, in part by The Central Intelligence Agency, the National Security Agency and National Science Foundation under NSF grant #IIS-0326249, in part by Microsoft Live Labs, and in part by the Defense Advanced Research Projects Agency (DARPA) under contract #HR0011-06-C-0023.",Results/Conclusion
+"Any opinions, findings and conclusions or recommendations expressed in this material are the author(s)’ and do not necessarily reflect those of the sponsor.",Results/Conclusion

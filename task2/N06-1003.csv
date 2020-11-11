@@ -1,132 +1,132 @@
 col1,col2
-Parallel corpora are crucial for training SMT systems.,{}
-"However, for many language pairs they are available only in very limited quantities.",{}
-For these language pairs a huge portion of phrases encountered at run-time will be unknown.,{}
-We show how techniques from paraphrasing can be used to deal with these otherwise unknown source language phrases.,{}
-Our results show that augmenting a stateof-the-art SMT system with paraphrases leads to significantly improved coverage and translation quality.,{}
-"For a training corpus with 10,000 sentence pairs we increase the coverage of unique test set unigrams from 48% to 90%, with more than half of the newly covered items accurately translated, as opposed to none in current approaches.",{}
-"As with many other statistical natural language processing tasks, statistical machine translation (Brown et al., 1993) produces high quality results when ample training data is available.","{'title': '1 Introduction', 'number': '1'}"
-This is problematic for so called “low density” language pairs which do not have very large parallel corpora.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, when words occur infrequently in a parallel corpus parameter estimates for word-level alignments can be inaccurate, which can in turn lead to inaccurate phrase translations.","{'title': '1 Introduction', 'number': '1'}"
-Limited amounts of training data can further lead to a problem of low coverage in that many phrases encountered at run-time are not observed in the training data and therefore their translations will not be learned.,"{'title': '1 Introduction', 'number': '1'}"
-Here we address the problem of unknown phrases.,"{'title': '1 Introduction', 'number': '1'}"
-"Specifically we show that upon encountering an unknown source phrase, we can substitute a paraphrase for it and then proceed using the translation of that paraphrase.","{'title': '1 Introduction', 'number': '1'}"
-"We derive these paraphrases from resources that are external to the parallel corpus that the translation model is trained from, and we are able to exploit (potentially more abundant) parallel corpora from other language pairs to do so.","{'title': '1 Introduction', 'number': '1'}"
-In this paper we:,"{'title': '1 Introduction', 'number': '1'}"
-"Statistical machine translation made considerable advances in translation quality with the introduction of phrase-based translation (Marcu and Wong, 2002; Koehn et al., 2003; Och and Ney, 2004).","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"By grams, and 4-grams from the Europarl Spanish test sentences for which translations were learned in increasingly large training corpora increasing the size of the basic unit of translation, phrase-based machine translation does away with many of the problems associated with the original word-based formulation of statistical machine translation (Brown et al., 1993).","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"For instance, with multiword units less re-ordering needs to occur since local dependencies are frequently captured.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"For example, common adjective-noun alternations are memorized.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"However, since this linguistic information is not explicitly and generatively encoded in the model, unseen adjective noun pairs may still be handled incorrectly.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"Thus, having observed phrases in the past dramatically increases the chances that they will be translated correctly in the future.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"However, for any given test set, a huge amount of training data has to be observed before translations are learned for a reasonable percentage of the test phrases.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-Figure 1 shows the extent of this problem.,"{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"For a training corpus containing 10,000 words translations will have been learned for only 10% of the unigrams (types, not tokens).","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"For a training corpus containing 100,000 words this increases to 30%.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"It is not until nearly 10,000,000 words worth of training data have been analyzed that translation for more than 90% of the vocabulary items have been learned.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"This problem is obviously compounded for higher-order n-grams (longer phrases), and for morphologically richer languages. phrases for the Spanish words encargarnos and usado along with their English translations which were automatically learned from the Europarl corpus Currently most statistical machine translation systems are simply unable to handle unknown words.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-There are two strategies that are generally employed when an unknown source word is encountered.,"{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"Either the source word is simply omitted when producing the translation, or alternatively it is passed through untranslated, which is a reasonable strategy if the unknown word happens to be a name (assuming that no transliteration need be done).","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-Neither of these strategies is satisfying.,"{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"When a system is trained using 10,000 sentence pairs (roughly 200,000 words) there will be a number of words and phrases in a test sentence which it has not learned the translation of.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"For example, the Spanish sentence Es positivo llegar a un acuerdo sobre los procedimientos, pero debemos encargarnos de que este sistema no sea susceptible de ser usado como arma politica. may translate as It is good reach an agreement on procedures, but we must encargarnos that this system is not susceptible to be usado as political weapon. what is more, the relevant cost dynamic is completely under control im Ÿbrigen ist die diesbezŸgliche kostenentwicklung völlig unter kontrolle wir sind es den steuerzahlern schuldig die kosten unter kontrolle zu haben we owe it to the taxpayers to keep in check the costs The strategy that we employ for dealing with unknown source language words is to substitute paraphrases of those words, and then translate the paraphrases.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-Table 1 gives examples of paraphrases and their translations.,"{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-"If we had learned a translation of garantizar we could translate it instead of encargarnos, and similarly for utilizado instead of usado.","{'title': '2 The Problem of Coverage in SMT', 'number': '2'}"
-Paraphrases are alternative ways of expressing the same information within one language.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-The automatic generation of paraphrases has been the focus of a significant amount of research lately.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"Many methods for extracting paraphrases (Barzilay and McKeown, 2001; Pang et al., 2003) make use of monolingual parallel corpora, such as multiple translations of classic French novels into English, or the multiple reference translations used by many automatic evaluation metrics for machine translation.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-Bannard and Callison-Burch (2005) use bilingual parallel corpora to generate paraphrases.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-Paraphrases are identified by pivoting through phrases in another language.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"The foreign language translations of an English phrase are identified, all occurrences of those foreign phrases are found, and all English phrases that they translate back to are treated as potential paraphrases of the original English phrase.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-Figure 2 illustrates how a German phrase can be used as a point of identification for English paraphrases in this way.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-The method defined in Bannard and CallisonBurch (2005) has several features that make it an ideal candidate for incorporation into statistical machine translation system.,"{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"Firstly, it can easily be applied to any language for which we have one or more parallel corpora.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"Secondly, it defines a paraphrase probability, p(e2|e1), which can be incorporated into the probabilistic framework of SMT.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"The paraphrase probability p(e2|e1) is defined in terms of two translation model probabilities: p(f|e1), the probability that the original English phrase e1 translates as a particular phrase f in the other language, and p(e2|f), the probability that the candidate paraphrase e2 translates as the foreign language phrase.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"Since e1 can translate as multiple foreign language phrases, we marginalize f out: The translation model probabilities can be computed using any standard formulation from phrasebased machine translation.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"For example, p(e2|f) can be calculated straightforwardly using maximum likelihood estimation by counting how often the phrases e and f were aligned in the parallel corpus: There is nothing that limits us to estimating paraphrases probabilities from a single parallel corpus.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-"We can extend the definition of the paraphrase probability to include multiple corpora, as follows: where c is a parallel corpus from a set of parallel corpora C. Thus multiple corpora may be used by summing over all paraphrase probabilities calculated from a single corpus (as in Equation 1) and normalized by the number of parallel corpora.","{'title': '3 Acquiring Paraphrases', 'number': '3'}"
-We examined the application of paraphrases to deal with unknown phrases when translating from Spanish and French into English.,"{'title': '4 Experimental Design', 'number': '4'}"
-"We used the publicly available Europarl multilingual parallel corpus (Koehn, 2005) to create six training corpora for the two language pairs, and used the standard Europarl development and test sets.","{'title': '4 Experimental Design', 'number': '4'}"
-"For a baseline system we produced a phrase-based statistical machine translation system based on the log-linear formulation described in (Och and Ney, 2002) The baseline model had a total of eight feature functions, hm(e, f): a language model probability, a phrase translation probability, a reverse phrase translation probability, lexical translation probability, a reverse lexical translation probability, a word penalty, a phrase penalty, and a distortion cost.","{'title': '4 Experimental Design', 'number': '4'}"
-"To set the weights, am, we performed minimum error rate training (Och, 2003) on the development set using Bleu (Papineni et al., 2002) as the objective function.","{'title': '4 Experimental Design', 'number': '4'}"
-The phrase translation probabilities were determined using maximum likelihood estimation over phrases induced from word-level alignments produced by performing Giza++ training on each of the three training corpora.,"{'title': '4 Experimental Design', 'number': '4'}"
-"We used the Pharaoh beamsearch decoder (Koehn, 2004) to produce the translations after all of the model parameters had been set.","{'title': '4 Experimental Design', 'number': '4'}"
-"When the baseline system encountered unknown words in the test set, its behavior was simply to reproduce the foreign word in the translated output.","{'title': '4 Experimental Design', 'number': '4'}"
-"This is the default behavior for many systems, as noted in Section 2.1.","{'title': '4 Experimental Design', 'number': '4'}"
-We extracted all source language (Spanish and French) phrases up to length 10 from the test and development sets which did not have translations in phrase tables that were generated for the three training corpora.,"{'title': '4 Experimental Design', 'number': '4'}"
-For each of these phrases we generated a list of paraphrases using all of the parallel corpora from Europarl aside from the Spanish-English and French-English corpora.,"{'title': '4 Experimental Design', 'number': '4'}"
-"We used bitexts between Spanish and Danish, Dutch, Finnish, French, German, Italian, Portuguese, and Swedish to generate our Spanish paraphrases, and did similarly for the French paraphrases.","{'title': '4 Experimental Design', 'number': '4'}"
-"We manage the parallel corpora with a suffix array -based data structure (Callison-Burch et al., 2005).","{'title': '4 Experimental Design', 'number': '4'}"
-"We calculated paraphrase probabilities using the Bannard and CallisonBurch (2005) method, summarized in Equation 3.","{'title': '4 Experimental Design', 'number': '4'}"
-Source language phrases that included names and numbers were not paraphrased.,"{'title': '4 Experimental Design', 'number': '4'}"
-"For each paraphrase that had translations in the phrase table, we added additional entries in the phrase table containing the original phrase and the paraphrase’s translations.","{'title': '4 Experimental Design', 'number': '4'}"
-"We augmented the baseline model by incorporating the paraphrase probability into an additional feature function which assigns values as follows: p(f2|f1) If phrase table entry (e, f1) is generated from (e, f2)","{'title': '4 Experimental Design', 'number': '4'}"
-"Just as we did in the baseline system, we performed minimum error rate training to set the weights of the nine feature functions in our translation model that exploits paraphrases.","{'title': '1 Otherwise', 'number': '5'}"
-We tested the usefulness of the paraphrase feature function by performing an additional experiment where the phrase table was expanded but the paraphrase probability was omitted.,"{'title': '1 Otherwise', 'number': '5'}"
-"We evaluated the efficacy of using paraphrases in three ways: by calculating the Bleu score for the translated output, by measuring the increase in coverage when including paraphrases, and through a targeted manual evaluation of the phrasal translations of unseen phrases to determine how many of the newly covered phrases were accurately translated. were manually word-aligned.","{'title': '1 Otherwise', 'number': '5'}"
-This allowed us to equate unseen phrases with their corresponding English phrase.,"{'title': '1 Otherwise', 'number': '5'}"
-In this case enumeradas with listed.,"{'title': '1 Otherwise', 'number': '5'}"
-"Although Bleu is currently the standard metric for MT evaluation, we believe that it may not meaningfully measure translation improvements in our setup.","{'title': '1 Otherwise', 'number': '5'}"
-By substituting a paraphrase for an unknown source phrase there is a strong chance that its translation may also be a paraphrase of the equivalent target language phrase.,"{'title': '1 Otherwise', 'number': '5'}"
-Bleu relies on exact matches of n-grams in a reference translation.,"{'title': '1 Otherwise', 'number': '5'}"
-"Thus if our translation is a paraphrase of the reference, Bleu will fail to score it correctly.","{'title': '1 Otherwise', 'number': '5'}"
-"Because Bleu is potentially insensitive to the type of changes that we were making to the translations, we additionally performed a focused manual evaluation (Callison-Burch et al., 2006).","{'title': '1 Otherwise', 'number': '5'}"
-"To do this, had bilingual speakers create word-level alignments for the first 150 and 250 sentence in the Spanish-English and French-English test corpora, as shown in Figure 3.","{'title': '1 Otherwise', 'number': '5'}"
-We were able to use these alignments to extract the translations of the Spanish and French words that we were applying our paraphrase method to.,"{'title': '1 Otherwise', 'number': '5'}"
-Knowing this correspondence between foreign phrases and their English counterparts allowed us to directly analyze whether translations that were being produced from paraphrases remained faithful to the meaning of the reference translation.,"{'title': '1 Otherwise', 'number': '5'}"
-When proThe article combats discrimination and inequality in the treatment of citizens for the reasons listed therein.,"{'title': '1 Otherwise', 'number': '5'}"
-The article combats discrimination and the different treatment of citizens for the reasons mentioned in the same.,"{'title': '1 Otherwise', 'number': '5'}"
-The article fights against uneven and the treatment of citizens for the reasons enshrined in the same.,"{'title': '1 Otherwise', 'number': '5'}"
-The article is countering discrimination and the unequal treatment of citizens for the reasons that in the same.,"{'title': '1 Otherwise', 'number': '5'}"
-"Figure 4: Judges were asked whether the highlighted phrase retained the same meaning as the highlighted phrase in the reference translation (top) ducing our translations using the Pharaoh decoder we employed its “trace” facility, which tells which source sentence span each target phrase was derived from.","{'title': '1 Otherwise', 'number': '5'}"
-This allowed us to identify which elements in the machine translated output corresponded to the paraphrased foreign phrase.,"{'title': '1 Otherwise', 'number': '5'}"
-We asked a monolingual judge whether the phrases in the machine translated output had the same meaning as of the reference phrase.,"{'title': '1 Otherwise', 'number': '5'}"
-This is illustrated in Figure 4.,"{'title': '1 Otherwise', 'number': '5'}"
-"In addition to judging the accuracy of 100 phrases for each of the translated sets, we measured how much our paraphrase method increased the coverage of the translation system.","{'title': '1 Otherwise', 'number': '5'}"
-"Because we focus on words that the system was previously unable to translate, the increase in coverage and the translation quality of the newly covered phrases are the two most relevant indicators as to the efficacy of the method.","{'title': '1 Otherwise', 'number': '5'}"
-"We produced translations under five conditions for each of our training corpora: a set of baseline translations without any additional entries in the phrase table, a condition where we added the translations of paraphrases for unseen source words along with paraphrase probabilities, a condition where we added the translations of paraphrases of multi-word phrases along with paraphrase probabilities, and two additional conditions where we added the translations of paraphrases of single and multi-word paraphrase without paraphrase probabilities.","{'title': '5 Results', 'number': '6'}"
-Table 2 gives the Bleu scores for each of these conditions.,"{'title': '5 Results', 'number': '6'}"
-"We were able to measure a translation improvement for all sizes of training corpora, under both the single word and multi-word conditions, except for the largest Spanish-English corpus.","{'title': '5 Results', 'number': '6'}"
-"For the single word condition, it would have been surprising if we had seen a decrease in Bleu score.","{'title': '5 Results', 'number': '6'}"
-Because we are translating words that were previously untranslatable it would be unlikely that we could do any worse.,"{'title': '5 Results', 'number': '6'}"
-"In the worst case we would be replacing one word that did not occur in the reference translation with another, and thus have no effect on Bleu.","{'title': '5 Results', 'number': '6'}"
-More interesting is the fact that by paraphrasing unseen multi-word units we get an increase in quality above and beyond the single word paraphrases.,"{'title': '5 Results', 'number': '6'}"
-"These multi-word units may not have been observed in the training data as a unit, but each of the component words may have been.","{'title': '5 Results', 'number': '6'}"
-"In this case translating a paraphrase would not be guaranteed to received an improved or identical Bleu score, as in the single word case.","{'title': '5 Results', 'number': '6'}"
-Thus the improved Bleu score is notable.,"{'title': '5 Results', 'number': '6'}"
-Table 3 shows that incorporating the paraphrase probability into the model’s feature functions plays a critical role.,"{'title': '5 Results', 'number': '6'}"
-"Without it, the multi-word paraphrases harm translation performance when compared to the baseline.","{'title': '5 Results', 'number': '6'}"
-We performed a manual evaluation by judging the accuracy of phrases for 100 paraphrased translations from each of the sets using the manual word alignments.1 Table 4 gives the percentage of time that each of the translations of paraphrases were judged to have the same meaning as the equivalent target phrase.,"{'title': '5 Results', 'number': '6'}"
-In the case of the translations of single word paraphrases for the Spanish accuracy ranged from just below 50% to just below 70%.,"{'title': '5 Results', 'number': '6'}"
-"This number is impressive in light of the fact that none of those items are correctly translated in the baseline model, which simply inserts the foreign language word.","{'title': '5 Results', 'number': '6'}"
-"As with the Bleu scores, the translations of multi-word paraphrases were judged to be more accurate than the translations of single word paraphrases.","{'title': '5 Results', 'number': '6'}"
-In performing the manual evaluation we were additionally able to determine how often Bleu was capable of measuring an actual improvement in translation.,"{'title': '5 Results', 'number': '6'}"
-"For those items judged to have the same meaning as the gold standard phrases we could track how many would have contributed to a higher Bleu score (that is, which of them were exactly the same as the reference translation phrase, or had some words in common with the reference translation phrase).","{'title': '5 Results', 'number': '6'}"
-"By counting how often a correct phrase would have contributed to an increased Bleu score, and how often it would fail to increase the Bleu score we were able to determine with what frequency Bleu was sensitive to our improvements.","{'title': '5 Results', 'number': '6'}"
-"We found that Bleu was insensitive to our translation improvements between 60-75% of the time, thus rewhich have translations in each of the SpanishEnglish training corpora after paraphrasing inforcing our belief that it is not an appropriate measure for translation improvements of this sort.","{'title': '5 Results', 'number': '6'}"
-"As illustrated in Figure 1, translation models suffer from sparse data.","{'title': '5 Results', 'number': '6'}"
-"When only a very small parallel corpus is available for training, translations are learned for very few of the unique phrases in a test set.","{'title': '5 Results', 'number': '6'}"
-"If we exclude 451 words worth of names, numbers, and foreign language text in 2,000 sentences that comprise the Spanish portion of the Europarl test set, then the number of unique n-grams in text are: 7,331 unigrams, 28,890 bigrams, 44,194 trigrams, and 48,259 4-grams.","{'title': '5 Results', 'number': '6'}"
-"Table 5 gives the percentage of these which have translations in each of the three training corpora, if we do not use paraphrasing.","{'title': '5 Results', 'number': '6'}"
-"In contrast after expanding the phrase table using the translations of paraphrases, the coverage of the unique test set phrases goes up dramatically (shown in Table 6).","{'title': '5 Results', 'number': '6'}"
-"For the first training corpus with 10,000 sentence pairs and roughly 200,000 words of text in each language, the coverage goes up from less than 50% of the vocabulary items being covered to 90%.","{'title': '5 Results', 'number': '6'}"
-"The coverage of unique 4-grams jumps from 3% to 16% – a level reached only after observing more than 100,000 sentence pairs, or roughly three million words of text, without using paraphrases.","{'title': '5 Results', 'number': '6'}"
-Previous research on trying to overcome data sparsity issues in statistical machine translation has largely focused on introducing morphological analysis as a way of reducing the number of types observed in a training text.,"{'title': '6 Related Work', 'number': '7'}"
-"For example, Nissen and Ney (2004) apply morphological analyzers to English and German and are able to reduce the amount of training data needed to reach a certain level of translation quality.","{'title': '6 Related Work', 'number': '7'}"
-Goldwater and McClosky (2005) find that stemming Czech and using lemmas improves the word-to-word correspondences when training Czech-English alignment models.,"{'title': '6 Related Work', 'number': '7'}"
-Koehn and Knight (2003) show how monolingual texts and parallel corpora can be used to figure out appropriate places to split German compounds.,"{'title': '6 Related Work', 'number': '7'}"
-Still other approaches focus on ways of acquiring data.,"{'title': '6 Related Work', 'number': '7'}"
-Resnik and Smith (2003) develop a method for gathering parallel corpora from the web.,"{'title': '6 Related Work', 'number': '7'}"
-Oard et al. (2003) describe various methods employed for quickly gathering resources to create a machine translation system for a language with no initial resources.,"{'title': '6 Related Work', 'number': '7'}"
-In this paper we have shown that significant gains in coverage and translation quality can be had by integrating paraphrases into statistical machine translation.,"{'title': '7 Discussion', 'number': '8'}"
-"In effect, paraphrases introduce some amount ofgeneralization into statistical machine translation.","{'title': '7 Discussion', 'number': '8'}"
-"Whereas before we relied on having observed a particular word or phrase in the training set in order to produce a translation of it, we are no longer tied to having seen every word in advance.","{'title': '7 Discussion', 'number': '8'}"
-We can exploit knowledge that is external to the translation model about what words have similar meanings and use that in the process of translation.,"{'title': '7 Discussion', 'number': '8'}"
-"This method is particularly pertinent to small data conditions, which are plagued by sparse data problems.","{'title': '7 Discussion', 'number': '8'}"
-"In future work, we plan to determine how much data is required to learn useful paraphrases.","{'title': '7 Discussion', 'number': '8'}"
-The scenario described in this paper was very favorable to creating high quality paraphrases.,"{'title': '7 Discussion', 'number': '8'}"
-"The large number of parallel corpora between Spanish and the other languages present in the Europarl corpus allowed us to generate high quality, in domain data.","{'title': '7 Discussion', 'number': '8'}"
-"While this is a realistic scenario, in that many new official languages have been added to the European Union, some of which do not yet have extensive parallel corpora, we realize that this may be a slightly idealized scenario.","{'title': '7 Discussion', 'number': '8'}"
-"Finally, we plan to formalize our targeted manual evaluation method, in the hopes of creating a evaluation methodology for machine translation that is more thorough and elucidating than Bleu.","{'title': '7 Discussion', 'number': '8'}"
-Thank you to Alexandra Birch and Stephanie Vandamme for creating the word alignments.,"{'title': 'Acknowledgments', 'number': '9'}"
+Parallel corpora are crucial for training SMT systems.,Introduction
+"However, for many language pairs they are available only in very limited quantities.",Introduction
+For these language pairs a huge portion of phrases encountered at run-time will be unknown.,Introduction
+We show how techniques from paraphrasing can be used to deal with these otherwise unknown source language phrases.,Introduction
+Our results show that augmenting a stateof-the-art SMT system with paraphrases leads to significantly improved coverage and translation quality.,Introduction
+"For a training corpus with 10,000 sentence pairs we increase the coverage of unique test set unigrams from 48% to 90%, with more than half of the newly covered items accurately translated, as opposed to none in current approaches.",Introduction
+"As with many other statistical natural language processing tasks, statistical machine translation (Brown et al., 1993) produces high quality results when ample training data is available.",Experiment/Discussion
+This is problematic for so called “low density” language pairs which do not have very large parallel corpora.,Experiment/Discussion
+"For example, when words occur infrequently in a parallel corpus parameter estimates for word-level alignments can be inaccurate, which can in turn lead to inaccurate phrase translations.",Experiment/Discussion
+Limited amounts of training data can further lead to a problem of low coverage in that many phrases encountered at run-time are not observed in the training data and therefore their translations will not be learned.,Experiment/Discussion
+Here we address the problem of unknown phrases.,Experiment/Discussion
+"Specifically we show that upon encountering an unknown source phrase, we can substitute a paraphrase for it and then proceed using the translation of that paraphrase.",Experiment/Discussion
+"We derive these paraphrases from resources that are external to the parallel corpus that the translation model is trained from, and we are able to exploit (potentially more abundant) parallel corpora from other language pairs to do so.",Experiment/Discussion
+In this paper we:,Experiment/Discussion
+"Statistical machine translation made considerable advances in translation quality with the introduction of phrase-based translation (Marcu and Wong, 2002; Koehn et al., 2003; Och and Ney, 2004).",Experiment/Discussion
+"By grams, and 4-grams from the Europarl Spanish test sentences for which translations were learned in increasingly large training corpora increasing the size of the basic unit of translation, phrase-based machine translation does away with many of the problems associated with the original word-based formulation of statistical machine translation (Brown et al., 1993).",Experiment/Discussion
+"For instance, with multiword units less re-ordering needs to occur since local dependencies are frequently captured.",Experiment/Discussion
+"For example, common adjective-noun alternations are memorized.",Experiment/Discussion
+"However, since this linguistic information is not explicitly and generatively encoded in the model, unseen adjective noun pairs may still be handled incorrectly.",Experiment/Discussion
+"Thus, having observed phrases in the past dramatically increases the chances that they will be translated correctly in the future.",Experiment/Discussion
+"However, for any given test set, a huge amount of training data has to be observed before translations are learned for a reasonable percentage of the test phrases.",Experiment/Discussion
+Figure 1 shows the extent of this problem.,Experiment/Discussion
+"For a training corpus containing 10,000 words translations will have been learned for only 10% of the unigrams (types, not tokens).",Experiment/Discussion
+"For a training corpus containing 100,000 words this increases to 30%.",Experiment/Discussion
+"It is not until nearly 10,000,000 words worth of training data have been analyzed that translation for more than 90% of the vocabulary items have been learned.",Experiment/Discussion
+"This problem is obviously compounded for higher-order n-grams (longer phrases), and for morphologically richer languages. phrases for the Spanish words encargarnos and usado along with their English translations which were automatically learned from the Europarl corpus Currently most statistical machine translation systems are simply unable to handle unknown words.",Experiment/Discussion
+There are two strategies that are generally employed when an unknown source word is encountered.,Experiment/Discussion
+"Either the source word is simply omitted when producing the translation, or alternatively it is passed through untranslated, which is a reasonable strategy if the unknown word happens to be a name (assuming that no transliteration need be done).",Experiment/Discussion
+Neither of these strategies is satisfying.,Experiment/Discussion
+"When a system is trained using 10,000 sentence pairs (roughly 200,000 words) there will be a number of words and phrases in a test sentence which it has not learned the translation of.",Experiment/Discussion
+"For example, the Spanish sentence Es positivo llegar a un acuerdo sobre los procedimientos, pero debemos encargarnos de que este sistema no sea susceptible de ser usado como arma politica. may translate as It is good reach an agreement on procedures, but we must encargarnos that this system is not susceptible to be usado as political weapon. what is more, the relevant cost dynamic is completely under control im Ÿbrigen ist die diesbezŸgliche kostenentwicklung völlig unter kontrolle wir sind es den steuerzahlern schuldig die kosten unter kontrolle zu haben we owe it to the taxpayers to keep in check the costs The strategy that we employ for dealing with unknown source language words is to substitute paraphrases of those words, and then translate the paraphrases.",Experiment/Discussion
+Table 1 gives examples of paraphrases and their translations.,Experiment/Discussion
+"If we had learned a translation of garantizar we could translate it instead of encargarnos, and similarly for utilizado instead of usado.",Experiment/Discussion
+Paraphrases are alternative ways of expressing the same information within one language.,Experiment/Discussion
+The automatic generation of paraphrases has been the focus of a significant amount of research lately.,Experiment/Discussion
+"Many methods for extracting paraphrases (Barzilay and McKeown, 2001; Pang et al., 2003) make use of monolingual parallel corpora, such as multiple translations of classic French novels into English, or the multiple reference translations used by many automatic evaluation metrics for machine translation.",Experiment/Discussion
+Bannard and Callison-Burch (2005) use bilingual parallel corpora to generate paraphrases.,Experiment/Discussion
+Paraphrases are identified by pivoting through phrases in another language.,Experiment/Discussion
+"The foreign language translations of an English phrase are identified, all occurrences of those foreign phrases are found, and all English phrases that they translate back to are treated as potential paraphrases of the original English phrase.",Experiment/Discussion
+Figure 2 illustrates how a German phrase can be used as a point of identification for English paraphrases in this way.,Experiment/Discussion
+The method defined in Bannard and CallisonBurch (2005) has several features that make it an ideal candidate for incorporation into statistical machine translation system.,Experiment/Discussion
+"Firstly, it can easily be applied to any language for which we have one or more parallel corpora.",Experiment/Discussion
+"Secondly, it defines a paraphrase probability, p(e2|e1), which can be incorporated into the probabilistic framework of SMT.",Experiment/Discussion
+"The paraphrase probability p(e2|e1) is defined in terms of two translation model probabilities: p(f|e1), the probability that the original English phrase e1 translates as a particular phrase f in the other language, and p(e2|f), the probability that the candidate paraphrase e2 translates as the foreign language phrase.",Experiment/Discussion
+"Since e1 can translate as multiple foreign language phrases, we marginalize f out: The translation model probabilities can be computed using any standard formulation from phrasebased machine translation.",Experiment/Discussion
+"For example, p(e2|f) can be calculated straightforwardly using maximum likelihood estimation by counting how often the phrases e and f were aligned in the parallel corpus: There is nothing that limits us to estimating paraphrases probabilities from a single parallel corpus.",Experiment/Discussion
+"We can extend the definition of the paraphrase probability to include multiple corpora, as follows: where c is a parallel corpus from a set of parallel corpora C. Thus multiple corpora may be used by summing over all paraphrase probabilities calculated from a single corpus (as in Equation 1) and normalized by the number of parallel corpora.",Experiment/Discussion
+We examined the application of paraphrases to deal with unknown phrases when translating from Spanish and French into English.,Experiment/Discussion
+"We used the publicly available Europarl multilingual parallel corpus (Koehn, 2005) to create six training corpora for the two language pairs, and used the standard Europarl development and test sets.",Experiment/Discussion
+"For a baseline system we produced a phrase-based statistical machine translation system based on the log-linear formulation described in (Och and Ney, 2002) The baseline model had a total of eight feature functions, hm(e, f): a language model probability, a phrase translation probability, a reverse phrase translation probability, lexical translation probability, a reverse lexical translation probability, a word penalty, a phrase penalty, and a distortion cost.",Experiment/Discussion
+"To set the weights, am, we performed minimum error rate training (Och, 2003) on the development set using Bleu (Papineni et al., 2002) as the objective function.",Experiment/Discussion
+The phrase translation probabilities were determined using maximum likelihood estimation over phrases induced from word-level alignments produced by performing Giza++ training on each of the three training corpora.,Experiment/Discussion
+"We used the Pharaoh beamsearch decoder (Koehn, 2004) to produce the translations after all of the model parameters had been set.",Experiment/Discussion
+"When the baseline system encountered unknown words in the test set, its behavior was simply to reproduce the foreign word in the translated output.",Experiment/Discussion
+"This is the default behavior for many systems, as noted in Section 2.1.",Experiment/Discussion
+We extracted all source language (Spanish and French) phrases up to length 10 from the test and development sets which did not have translations in phrase tables that were generated for the three training corpora.,Experiment/Discussion
+For each of these phrases we generated a list of paraphrases using all of the parallel corpora from Europarl aside from the Spanish-English and French-English corpora.,Experiment/Discussion
+"We used bitexts between Spanish and Danish, Dutch, Finnish, French, German, Italian, Portuguese, and Swedish to generate our Spanish paraphrases, and did similarly for the French paraphrases.",Experiment/Discussion
+"We manage the parallel corpora with a suffix array -based data structure (Callison-Burch et al., 2005).",Experiment/Discussion
+"We calculated paraphrase probabilities using the Bannard and CallisonBurch (2005) method, summarized in Equation 3.",Experiment/Discussion
+Source language phrases that included names and numbers were not paraphrased.,Experiment/Discussion
+"For each paraphrase that had translations in the phrase table, we added additional entries in the phrase table containing the original phrase and the paraphrase’s translations.",Experiment/Discussion
+"We augmented the baseline model by incorporating the paraphrase probability into an additional feature function which assigns values as follows: p(f2|f1) If phrase table entry (e, f1) is generated from (e, f2)",Experiment/Discussion
+"Just as we did in the baseline system, we performed minimum error rate training to set the weights of the nine feature functions in our translation model that exploits paraphrases.",Experiment/Discussion
+We tested the usefulness of the paraphrase feature function by performing an additional experiment where the phrase table was expanded but the paraphrase probability was omitted.,Experiment/Discussion
+"We evaluated the efficacy of using paraphrases in three ways: by calculating the Bleu score for the translated output, by measuring the increase in coverage when including paraphrases, and through a targeted manual evaluation of the phrasal translations of unseen phrases to determine how many of the newly covered phrases were accurately translated. were manually word-aligned.",Experiment/Discussion
+This allowed us to equate unseen phrases with their corresponding English phrase.,Experiment/Discussion
+In this case enumeradas with listed.,Experiment/Discussion
+"Although Bleu is currently the standard metric for MT evaluation, we believe that it may not meaningfully measure translation improvements in our setup.",Experiment/Discussion
+By substituting a paraphrase for an unknown source phrase there is a strong chance that its translation may also be a paraphrase of the equivalent target language phrase.,Experiment/Discussion
+Bleu relies on exact matches of n-grams in a reference translation.,Experiment/Discussion
+"Thus if our translation is a paraphrase of the reference, Bleu will fail to score it correctly.",Experiment/Discussion
+"Because Bleu is potentially insensitive to the type of changes that we were making to the translations, we additionally performed a focused manual evaluation (Callison-Burch et al., 2006).",Experiment/Discussion
+"To do this, had bilingual speakers create word-level alignments for the first 150 and 250 sentence in the Spanish-English and French-English test corpora, as shown in Figure 3.",Experiment/Discussion
+We were able to use these alignments to extract the translations of the Spanish and French words that we were applying our paraphrase method to.,Experiment/Discussion
+Knowing this correspondence between foreign phrases and their English counterparts allowed us to directly analyze whether translations that were being produced from paraphrases remained faithful to the meaning of the reference translation.,Experiment/Discussion
+When proThe article combats discrimination and inequality in the treatment of citizens for the reasons listed therein.,Experiment/Discussion
+The article combats discrimination and the different treatment of citizens for the reasons mentioned in the same.,Experiment/Discussion
+The article fights against uneven and the treatment of citizens for the reasons enshrined in the same.,Experiment/Discussion
+The article is countering discrimination and the unequal treatment of citizens for the reasons that in the same.,Experiment/Discussion
+"Figure 4: Judges were asked whether the highlighted phrase retained the same meaning as the highlighted phrase in the reference translation (top) ducing our translations using the Pharaoh decoder we employed its “trace” facility, which tells which source sentence span each target phrase was derived from.",Experiment/Discussion
+This allowed us to identify which elements in the machine translated output corresponded to the paraphrased foreign phrase.,Experiment/Discussion
+We asked a monolingual judge whether the phrases in the machine translated output had the same meaning as of the reference phrase.,Experiment/Discussion
+This is illustrated in Figure 4.,Experiment/Discussion
+"In addition to judging the accuracy of 100 phrases for each of the translated sets, we measured how much our paraphrase method increased the coverage of the translation system.",Experiment/Discussion
+"Because we focus on words that the system was previously unable to translate, the increase in coverage and the translation quality of the newly covered phrases are the two most relevant indicators as to the efficacy of the method.",Experiment/Discussion
+"We produced translations under five conditions for each of our training corpora: a set of baseline translations without any additional entries in the phrase table, a condition where we added the translations of paraphrases for unseen source words along with paraphrase probabilities, a condition where we added the translations of paraphrases of multi-word phrases along with paraphrase probabilities, and two additional conditions where we added the translations of paraphrases of single and multi-word paraphrase without paraphrase probabilities.",Experiment/Discussion
+Table 2 gives the Bleu scores for each of these conditions.,Experiment/Discussion
+"We were able to measure a translation improvement for all sizes of training corpora, under both the single word and multi-word conditions, except for the largest Spanish-English corpus.",Experiment/Discussion
+"For the single word condition, it would have been surprising if we had seen a decrease in Bleu score.",Experiment/Discussion
+Because we are translating words that were previously untranslatable it would be unlikely that we could do any worse.,Experiment/Discussion
+"In the worst case we would be replacing one word that did not occur in the reference translation with another, and thus have no effect on Bleu.",Experiment/Discussion
+More interesting is the fact that by paraphrasing unseen multi-word units we get an increase in quality above and beyond the single word paraphrases.,Experiment/Discussion
+"These multi-word units may not have been observed in the training data as a unit, but each of the component words may have been.",Experiment/Discussion
+"In this case translating a paraphrase would not be guaranteed to received an improved or identical Bleu score, as in the single word case.",Experiment/Discussion
+Thus the improved Bleu score is notable.,Experiment/Discussion
+Table 3 shows that incorporating the paraphrase probability into the model’s feature functions plays a critical role.,Experiment/Discussion
+"Without it, the multi-word paraphrases harm translation performance when compared to the baseline.",Experiment/Discussion
+We performed a manual evaluation by judging the accuracy of phrases for 100 paraphrased translations from each of the sets using the manual word alignments.1 Table 4 gives the percentage of time that each of the translations of paraphrases were judged to have the same meaning as the equivalent target phrase.,Experiment/Discussion
+In the case of the translations of single word paraphrases for the Spanish accuracy ranged from just below 50% to just below 70%.,Experiment/Discussion
+"This number is impressive in light of the fact that none of those items are correctly translated in the baseline model, which simply inserts the foreign language word.",Experiment/Discussion
+"As with the Bleu scores, the translations of multi-word paraphrases were judged to be more accurate than the translations of single word paraphrases.",Experiment/Discussion
+In performing the manual evaluation we were additionally able to determine how often Bleu was capable of measuring an actual improvement in translation.,Experiment/Discussion
+"For those items judged to have the same meaning as the gold standard phrases we could track how many would have contributed to a higher Bleu score (that is, which of them were exactly the same as the reference translation phrase, or had some words in common with the reference translation phrase).",Experiment/Discussion
+"By counting how often a correct phrase would have contributed to an increased Bleu score, and how often it would fail to increase the Bleu score we were able to determine with what frequency Bleu was sensitive to our improvements.",Experiment/Discussion
+"We found that Bleu was insensitive to our translation improvements between 60-75% of the time, thus rewhich have translations in each of the SpanishEnglish training corpora after paraphrasing inforcing our belief that it is not an appropriate measure for translation improvements of this sort.",Experiment/Discussion
+"As illustrated in Figure 1, translation models suffer from sparse data.",Experiment/Discussion
+"When only a very small parallel corpus is available for training, translations are learned for very few of the unique phrases in a test set.",Experiment/Discussion
+"If we exclude 451 words worth of names, numbers, and foreign language text in 2,000 sentences that comprise the Spanish portion of the Europarl test set, then the number of unique n-grams in text are: 7,331 unigrams, 28,890 bigrams, 44,194 trigrams, and 48,259 4-grams.",Experiment/Discussion
+"Table 5 gives the percentage of these which have translations in each of the three training corpora, if we do not use paraphrasing.",Experiment/Discussion
+"In contrast after expanding the phrase table using the translations of paraphrases, the coverage of the unique test set phrases goes up dramatically (shown in Table 6).",Experiment/Discussion
+"For the first training corpus with 10,000 sentence pairs and roughly 200,000 words of text in each language, the coverage goes up from less than 50% of the vocabulary items being covered to 90%.",Experiment/Discussion
+"The coverage of unique 4-grams jumps from 3% to 16% – a level reached only after observing more than 100,000 sentence pairs, or roughly three million words of text, without using paraphrases.",Experiment/Discussion
+Previous research on trying to overcome data sparsity issues in statistical machine translation has largely focused on introducing morphological analysis as a way of reducing the number of types observed in a training text.,Experiment/Discussion
+"For example, Nissen and Ney (2004) apply morphological analyzers to English and German and are able to reduce the amount of training data needed to reach a certain level of translation quality.",Experiment/Discussion
+Goldwater and McClosky (2005) find that stemming Czech and using lemmas improves the word-to-word correspondences when training Czech-English alignment models.,Experiment/Discussion
+Koehn and Knight (2003) show how monolingual texts and parallel corpora can be used to figure out appropriate places to split German compounds.,Experiment/Discussion
+Still other approaches focus on ways of acquiring data.,Experiment/Discussion
+Resnik and Smith (2003) develop a method for gathering parallel corpora from the web.,Experiment/Discussion
+Oard et al. (2003) describe various methods employed for quickly gathering resources to create a machine translation system for a language with no initial resources.,Experiment/Discussion
+In this paper we have shown that significant gains in coverage and translation quality can be had by integrating paraphrases into statistical machine translation.,Results/Conclusion
+"In effect, paraphrases introduce some amount ofgeneralization into statistical machine translation.",Results/Conclusion
+"Whereas before we relied on having observed a particular word or phrase in the training set in order to produce a translation of it, we are no longer tied to having seen every word in advance.",Results/Conclusion
+We can exploit knowledge that is external to the translation model about what words have similar meanings and use that in the process of translation.,Results/Conclusion
+"This method is particularly pertinent to small data conditions, which are plagued by sparse data problems.",Results/Conclusion
+"In future work, we plan to determine how much data is required to learn useful paraphrases.",Results/Conclusion
+The scenario described in this paper was very favorable to creating high quality paraphrases.,Results/Conclusion
+"The large number of parallel corpora between Spanish and the other languages present in the Europarl corpus allowed us to generate high quality, in domain data.",Results/Conclusion
+"While this is a realistic scenario, in that many new official languages have been added to the European Union, some of which do not yet have extensive parallel corpora, we realize that this may be a slightly idealized scenario.",Results/Conclusion
+"Finally, we plan to formalize our targeted manual evaluation method, in the hopes of creating a evaluation methodology for machine translation that is more thorough and elucidating than Bleu.",Results/Conclusion
+Thank you to Alexandra Birch and Stephanie Vandamme for creating the word alignments.,Results/Conclusion

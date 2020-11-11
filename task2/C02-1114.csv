@@ -1,161 +1,161 @@
 col1,col2
-This paper presents an unsupervised method forassembling semantic knowledge from a part-of speech tagged corpus using graph algorithms.,{}
-The graph model is built by linking pairs of words which participate in particular syntacticrelationships.,{}
-We focus on the symmetric relationship between pairs of nouns which occur to gether in lists.,{}
-"An incremental cluster-building algorithm using this part of the graph achieves82% accuracy at a lexical acquisition task, evaluated against WordNet classes.",{}
-The model naturally realises domain and corpus specific am biguities as distinct components in the graph surrounding an ambiguous word.,{}
-Semantic knowledge for particular domains isincreasingly important in NLP.,"{'title': 'Introduction', 'number': '1'}"
-"Many applications such as Word-Sense Disambiguation, In formation Extraction and Speech Recognitionall require lexicons.","{'title': 'Introduction', 'number': '1'}"
-"The coverage of handbuilt lexical resources such as WordNet (Fellbaum, 1998) has increased dramatically in re cent years, but leaves several problems andchallenges.","{'title': 'Introduction', 'number': '1'}"
-"Coverage is poor in many criti cal, rapidly changing domains such as current affairs, medicine and technology, where much time is still spent by human experts employed to recognise and classify new terms.","{'title': 'Introduction', 'number': '1'}"
-Mostlanguages remain poorly covered in compari son with English.,"{'title': 'Introduction', 'number': '1'}"
-Hand-built lexical resourceswhich cannot be automatically updated can of ten be simply misleading.,"{'title': 'Introduction', 'number': '1'}"
-"For example, using WordNet to recognise that the word apple refers to a fruit or a tree is a grave error in the many situations where this word refers to a computer manufacturer, a sense which WordNet does notcover.","{'title': 'Introduction', 'number': '1'}"
-"For NLP to reach a wider class of appli cations in practice, the ability to assemble andupdate appropriate semantic knowledge auto matically will be vital.","{'title': 'Introduction', 'number': '1'}"
-"This paper describes a method for arranging semantic information into a graph (Bolloba?s, 1998), where the nodes are words and the edges(also called links) represent relationships be tween words.","{'title': 'Introduction', 'number': '1'}"
-The paper is arranged as follows.,"{'title': 'Introduction', 'number': '1'}"
-Section 2 reviews previous work on semanticsimilarity and lexical acquisition.,"{'title': 'Introduction', 'number': '1'}"
-Section 3 de scribes how the graph model was built from the PoS-tagged British National Corpus.,"{'title': 'Introduction', 'number': '1'}"
-Section 4 describes a new incremental algorithm used to build categories of words step by step from thegraph model.,"{'title': 'Introduction', 'number': '1'}"
-"Section 5 demonstrates this algo rithm in action and evaluates the results againstWordNet classes, obtaining state-of-the-art re sults.","{'title': 'Introduction', 'number': '1'}"
-Section 6 describes how the graph modelcan be used to recognise when words are polysemous and to obtain groups of words represen tative of the different senses.,"{'title': 'Introduction', 'number': '1'}"
-Most work on automatic lexical acquisition has been based at some point on the notion of semantic similarity.,"{'title': 'Previous Work. ', 'number': '2'}"
-"The underlying claim is that words which are semantically similar occurwith similar distributions and in similar con texts (Miller and Charles, 1991).The main results to date in the field of au tomatic lexical acquisition are concerned withextracting lists of words reckoned to belong to gether in a particular category, such as vehicles or weapons (Riloff and Shepherd, 1997) (Roarkand Charniak, 1998).","{'title': 'Previous Work. ', 'number': '2'}"
-Roark and Charniak de scribe a ?generic algorithm?,"{'title': 'Previous Work. ', 'number': '2'}"
-"for extracting suchlists of similar words using the notion of seman tic similarity, as follows (Roark and Charniak, 1998, ?1).","{'title': 'Previous Work. ', 'number': '2'}"
-1.,"{'title': 'Previous Work. ', 'number': '2'}"
-"For a given category, choose a small.","{'title': 'Previous Work. ', 'number': '2'}"
-set of exemplars (or ?seed words?),"{'title': 'Previous Work. ', 'number': '2'}"
-2.,"{'title': 'Previous Work. ', 'number': '2'}"
-Count co-occurrence of words and.,"{'title': 'Previous Work. ', 'number': '2'}"
-seed words within a corpus these counts to select new seed words 4.,"{'title': 'Previous Work. ', 'number': '2'}"
-Return to step 2 and iterate n times.,"{'title': 'Previous Work. ', 'number': '2'}"
-5.,"{'title': 'Previous Work. ', 'number': '2'}"
-Use a figure of merit to rank words.,"{'title': 'Previous Work. ', 'number': '2'}"
-"for category membership and output a ranked list Algorithms of this type were used by Riloff and Shepherd (1997) and Roark and Charniak (1998), reporting accuracies of 17% and 35% respectively.","{'title': 'Previous Work. ', 'number': '2'}"
-"Like the algorithm we present in Section 5, the similarity measure (or ?figure ofmerit?)","{'title': 'Previous Work. ', 'number': '2'}"
-used in these cases was based on co occurrence in lists.,"{'title': 'Previous Work. ', 'number': '2'}"
-Both of these works evaluated their resultsby asking humans to judge whether items generated were appropriate members of the cate gories sought.,"{'title': 'Previous Work. ', 'number': '2'}"
-Riloff and Shepherd (1997) also give some credit for ?related words?,"{'title': 'Previous Work. ', 'number': '2'}"
-(for example crash might be regarded as being related to the category vehicles).,"{'title': 'Previous Work. ', 'number': '2'}"
-One problem with these techniques is the danger of ?infections?,"{'title': 'Previous Work. ', 'number': '2'}"
-"once any incorrect or out-of-category word has been admitted, theneighbours of this word are also likely to be ad mitted.","{'title': 'Previous Work. ', 'number': '2'}"
-In Section 4 we present an algorithmwhich goes some way towards reducing such in fections.,"{'title': 'Previous Work. ', 'number': '2'}"
-"The early results have been improved upon byRiloff and Jones (1999), where a ?mutual boot strapping?","{'title': 'Previous Work. ', 'number': '2'}"
-approach is used to extract words in particular semantic categories and expression patterns for recognising relationships betweenthese words for the purposes of information extraction.,"{'title': 'Previous Work. ', 'number': '2'}"
-The accuracy achieved in this experiment is sometimes as high as 78% and is there fore comparable to the results reported in this paper.,"{'title': 'Previous Work. ', 'number': '2'}"
-"Another way to obtain word-senses directly from corpora is to use clustering algorithms on feature-vectors (Lin, 1998; Schu?tze, 1998).Clustering techniques can also be used to discriminate between different senses of an ambiguous word.","{'title': 'Previous Work. ', 'number': '2'}"
-"A general problem for such cluster ing techniques lies in the question of how many clusters one should have, i.e. how many senses are appropriate for a particular word in a given domain (Manning and Schu?tze, 1999, Ch 14).","{'title': 'Previous Work. ', 'number': '2'}"
-"Lin?s approach to this problem (Lin, 1998) isto build a ?similarity tree?","{'title': 'Previous Work. ', 'number': '2'}"
-(using what is in ef fect a hierarchical clustering method) of words related to a target word (in this case the word duty).,"{'title': 'Previous Work. ', 'number': '2'}"
-Different senses of duty can be discerned as different sub-trees of this similarity tree.,"{'title': 'Previous Work. ', 'number': '2'}"
-Wepresent a new method for word-sense discrimi nation in Section 6.,"{'title': 'Previous Work. ', 'number': '2'}"
-PoS-tagged Corpus In this section we describe how a graph ? a collection of nodes and links ? was built to represent the relationships between nouns.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-Themodel was built using the British National Cor pus which is automatically tagged for parts of speech.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"Initially, grammatical relations between pairsof words were extracted.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-The relationships ex tracted were the following: ? Noun (assumed to be subject) Verb ? Verb Noun (assumed to be object) ? Adjective Noun?,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-Noun Noun (often the first noun is modify ing the second) ? Noun and/or Noun The last of these relationships often occurs when the pair of nouns is part of a list.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"Since lists are usually comprised of objects which are similar in some way, these relationships have been used to extract lists of nouns with similar properties (Riloff and Shepherd, 1997) (Roarkand Charniak, 1998).","{'title': 'Building a Graph from a. ', 'number': '3'}"
-In this paper we too focus on nouns co-occurring in lists.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"This is be cause the noun and/or noun relationship is the only symmetric relationship in our model, andsymmetric relationships are much easier to ma nipulate than asymmetric ones.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-Our full graph contains many directed links between words of different parts of speech.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-Initial experiments with this model show considerable promise but are at too early a stage to be reported upon yet.Thus the graph used in most of this paper repre sents only nouns.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"Each node represents a noun and two nodes have a link between them if they co-occur separated by the conjunctions and or or, and each link is weighted according to the number of times the co-occurrence is observed.Various cutoff functions were used to deter mine how many times a relationship must be observed to be counted as a link in the graph.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-"A well-behaved option was to take the top nneighbours of each word, where n could be determined by the user.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-In this way the link weighting scheme was reduced to a link-ranking scheme.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-One consequence of this decision was that links to more common words were preferred over links to rarer words.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"This decision may have effectively boosted precision at the expense of recall, because the preferred links are to fairlycommon and (probably) more stable words.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-Re search is need to reveal theoretically motivatedor experimentally optimal techniques for select ing the importance to assign to each link ? the choices made in this area so far are often of an ad hoc nature.,"{'title': 'Building a Graph from a. ', 'number': '3'}"
-"The graph used in the experiments described has 99,454 nodes (nouns) and 587,475 links.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-"There were roughly 400,000 different types tagged as nouns in the corpus, so the graph model represents about one quarter of these nouns, including most of the more common ones.","{'title': 'Building a Graph from a. ', 'number': '3'}"
-Extracting Categories of Similar Words In this section we describe a new algorithm for adding the ?most similar node?,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-to an existingcollection of nodes in a way which incremen tally builds a stable cluster.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-We rely entirelyupon the graph to deduce the relative importance of relationships.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"In particular, our algo rithm is designed to reduce so-called ?infections?(Roark and Charniak, 1998, ?3) where the inclu sion of an out-of-category word which happens to co-occur with one of the category words can significantly distort the final list.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-Here is the process we use to select and add the ?most similar node?,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"to a set of nodes: Definition 1 Let A be a set of nodes and let N(A), the neighbours of A, be the nodes which are linked to any a ? A.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-(So N(A) = ? a?AN(a).),"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-The best new node is taken to be the node b ? N(A)\A with the highest proportion of links to N(A).,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"More precisely, for each u ? N(A)\A, let the affinity between u and A be given by the ratio |N(u) ?N(A)| |N(u)| . The best new node b ? N(A) \ A is the node which maximises this affinity score.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-This algorithm has been built into an on-line demonstration where the user inputs a givenseed word and can then see the cluster of re lated words being gradually assembled.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-The algorithm is particularly effective atavoiding infections arising from spurious co occurrences and from ambiguity.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"Consider, forexample, the graph built around the word ap ple in Figure 6.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"Suppose that we start with the seed-list apple, orange, banana.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-However many times the string ?Apple and Novell?,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-"occurs in the corpus, the novell node will not be addedto this list because it doesn?t have a link to or ange, banana or any of their neighbours except for apple.","{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-One way to summarise the effect of this decision is that the algorithm adds words to clusters depending on type frequency rather than token frequency.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-This avoids spurious links due to (for example) particular idioms rather than geniune semantic similarity.,"{'title': 'An Incremental Algorithm for. ', 'number': '4'}"
-In this section we give examples of lexical cat egories extracted by our method and evaluatethem against the corresponding classes in Word Net.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-5.1 Methodology.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Our methodology is as follows.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Consider an intuitive category of objects such as musical instruments.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Define the ?WordNet class?,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-or ?WordNet category?,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-of musical instruments tobe the collection of synsets subsumed in Word Net by the musical instruments synset.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Take a ?protypical example?,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"of a musical instrument, such as piano.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The algorithm defined in (1) gives a way of finding the n nodes deemed to be most closely related to the piano node.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Thesecan then be checked to see if they are members of the WordNet class of musical instru ments.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-This method is easier to implement and less open to variation than human judgements.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"While WordNet or any other lexical resource isnot a perfect arbiter, it is hoped that this exper iment procedure is both reliable and repeatable.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"The ten classes of words chosen were crimes, places, tools, vehicles, musical instruments, clothes, diseases, body parts, academic subjects and foodstuffs.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The classes were chosen beforethe experiment was carried out so that the re sults could not be massaged to only use thoseclasses which gave good results.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"(The first 4 cat egories are also used by (Riloff and Shepherd, 1997) and (Roark and Charniak, 1998) and so were included for comparison.)","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"Having chosen these classes, 20 words were retrieved using asingle seed-word chosen from the class in ques tion.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-This list of words clearly depends on the seed word chosen.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"While we have tried to optimise this choice, it depends on the corpus and thethe model.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"The influence of semantic Proto type Theory (Rosch, 1988) is apparent in this process, a link we would like to investigate in more detail.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-It is possible to choose an optimal seed word for a particular category: it should be possible to compare these optimal seed wordswith the ?prototypes?,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"suggested by psychologi cal experiments (Mervis and Rosch, 1981).","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-5.2 Results.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The results for a list of ten classes and proto typical words are given in Table 1.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Words which are correct members of the classes sought arein Roman type: incorrect results are in italics.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The decision between correctness and in correctness was made on a strict basis for thesake of objectivity and to enable the repeata bility of the experiment: words which are in WordNet were counted as correct results only if they are actual members of the WordNet class in question.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"Thus brigandage is not regarded as a crime even though it is clearly an act ofwrongdoing, orchestra is not regarded as a musical instrument because it is a collection of in struments rather than a single instrument, etc. The only exceptions we have made are the terms wynd and planetology (marked in bold), whichare not in WordNet but are correct nonethe less.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"These conditions are at least as stringent as those of previous experiments, particularly those of Riloff and Shepherd (1997) who also give credit for words associated with but not belonging to a particular category.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"(It has been pointed out that many polysemous words may occur in several classes, making the task easier because for many words there are several classes which our algorithm would give credit for.)With these conditions, our algorithm re trieves only 36 incorrect terms out of a total of 200, giving an accuracy of 82%.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-5.3 Analysis.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"Our results are an order of magnitude better than those reported by Riloff and Shepherd (1997) and Roark and Charniak (1998), whoreport average accuracies of 17% and 35% re spectively.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-(Our results are also slightly better than those reported by Riloff and Jones (1999)).,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"Since the algorithms used are in many waysvery similar, this improvement demands expla nation.Some of the difference in accuracy can be at tributed to the corpora used.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"The experiments in (Riloff and Shepherd, 1997) were performed on the 500,000 word MUC-4 corpus, and those of (Roark and Charniak, 1998) were performedusing MUC-4 and the Wall Street Journal cor pus (some 30 million words).","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Our model was built using the British National Corpus (100 million words).,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"On the other hand, our modelwas built using only a part-of-speech tagged cor pus.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The high accuracy achieved thus questions the conclusion drawn by Roark and Charniak (1998) that ?parsing is invaluable?.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Our results clearly indicate that a large PoS-tagged corpusmay be much better for automatic lexical ac quisition than a small fully-parsed corpus.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"This claim could of course be tested by comparing techniques on the same corpus.To evaluate the advantage of using PoS infor mation, we compared the graph model with asimilarity thesaurus generated using Latent Se mantic Indexing (Manning and Schu?tze, 1999, Ch 15), a ?bag-of-words?","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"approach, on the samecorpus.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-The same number of nouns was re trieved for each class using the graph model and LSI.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"The LSI similarity thesaurus obtained an accuracy of 31%, much less than the graph model?s 82%.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"This is because LSI retrieves words which are related by context but are not in the same class: for example, the neighbours of piano found using LSI cosine-similarity on the BNC corpus include words such as composer,music, Bach, concerto and dance, which are re lated but certainly not in the same semantic class.The incremental clustering algorithm of Def inition (1) works well at preventing ?infections?","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-Class Seed Word Neighbours Produced by Graph Model crimes murder crime theft arson importuning incest fraud larceny parricideburglary vandalism indecency violence offences abuse brig andage manslaughter pillage rape robbery assault lewdness places park path village lane viewfield church square road avenue garden castle wynd garage house chapel drive crescent home place cathedral street tools screwdriver chisel naville nail shoulder knife drill matchstick morgenthau gizmo hand knee elbow mallet penknife gallie leg arm sickle bolster hammer vehicle conveyance train tram car driver passengers coach lorry truck aeroplane coons plane trailer boat taxi pedestrians vans vehicles jeep bus buses helicopter musical instruments piano fortepiano orchestra marimba clarsach violin cizek viola oboeflute horn bassoon culbone mandolin clarinet equiluz contra bass saxophone guitar cello clothes shirt chapeaubras cardigan trousers breeches skirt jeans boots pair shoes blouse dress hat waistcoat jumper sweater coat cravat tie leggings diseases typhoid malaria aids polio cancer disease atelectasis illnesses cholerahiv deaths diphtheria infections hepatitis tuberculosis cirrho sis diptheria bronchitis pneumonia measles dysentery body parts stomach head hips thighs neck shoulders chest back eyes toes breasts knees feet face belly buttocks haws ankles waist legs academic subjectsphysics astrophysics philosophy humanities art religion science politics astronomy sociology chemistry history theology eco nomics literature maths anthropology culture mathematics geography planetology foodstuffs cake macaroons confectioneries cream rolls sandwiches croissant buns scones cheese biscuit drinks pastries tea danish butter lemonade bread chocolate coffee milk Table 1: Classes of similar words given by the graph model.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-and keeping clusters within one particular class.,"{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"The notable exception is the tools class, where the word hand appears to introduce infection.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-"In conclusion, it is clear that the graph modelcombined with the incremental clustering algo rithm of Definition 1 performs better than mostprevious methods at the task of automatic lex ical acquisition.","{'title': 'Examples and Evaluation. ', 'number': '5'}"
-So far we have presented a graph model built upon noun co-occurrence which performs much better than previously reported methods at the task of automatic lexical acquisition.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"This isan important task, because assembling and tuning lexicons for specific NLP systems is increas ingly necessary.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"We now take a step furtherand present a simple method for not only as sembling words with similar meanings, but for empirically recognising when a word has several meanings.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-Recognising and resolving ambiguity is an important task in semantic processing.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"The traditional Word Sense Disambiguation(WSD) problem addresses only the ambiguityresolution part of the problem: compiling a suit able list of polysemous words and their possiblesenses is a task for which humans are tradition ally needed (Kilgarriff and Rosenzweig, 2000).This makes traditional WSD an intensively supervised and costly process.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Breadth of cover age does not in itself solve this problem: general lexical resources such as WordNet can provide too many senses many of which are rarely used in particular domains or corpora (Gale et al, 1992).The graph model presented in this paper suggests a new method for recognising relevant polysemy.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"We will need a small amount of termi nology from graph theory (Bolloba?s, 1998).","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Definition 2 (Bolloba?s, 1998, Ch 1 ?1) Let G = (V,E) be a graph, where V is the set of vertices (nodes) of G and E ? V ? V is the set of edges of G. ? Two nodes v1, vn are said to be connected if there exists a path {v1, v2, . . .","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-", vn?1, vn} such that (vj , vj+1) ? E for 1 ? j < n. ? Connectedness is an equivalence relation.?","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-The equivalence classes of the graph G un der this relation are called the components of G. We are now in a position to define the senses of a word as represented by a particular graph.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Definition 3 Let G be a graph of words closely related to a seed-word w, and let G \ w be the subgraph which results from the removal of the seed-node w. The connected components of the subgraph G \ w are the senses of the word w with respect to the graph G. As an illustrative example, consider the localgraph generated for the word apple (6).","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"The re moval of the apple node results in three separate components which represent the different senses of apple: fruit, trees, and computers.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-Definition 3 gives an extremely good model of the senses of apple found in the BNC.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-(In this case better than WordNet which does not contain the very common corporate meaning.)The intuitive notion of ambiguity being pre sented is as follows.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-An ambiguous word often connects otherwise unrelated areas of meaning.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Definition 3 recognises the ambiguity of apple because this word is linked to both banana and novell, words which otherwise have nothing to do with one another.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"It is well-known that any graph can be thought of as a collection of feature-vectors, forexample by taking the row-vectors in the adja cency matrix (Bolloba?s, 1998, Ch 2 ?3).","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-Theremight therefore be fundamental similarities be tween our approach and methods which rely on similarities between feature-vectors.Extra motivation for this technique is pro vided by Word-Sense Disambiguation.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Thestandard method for this task is to use hand labelled data to train a learning algorithm, which will often pick out particular words as Bayesian classifiers which indicate one sense or the other.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-(So if microsoft occurs in the same sentence as apple we might take this as evidence that apple is being used in the corporate sense.),"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"Clearly, the words in the different componentsin Diagram 6 can potentially be used as classi fiers for just this purpose, obviating the need fortime-consuming human annotation.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-This tech nique will be assessed and evaluated in future experiments.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-DemonstrationAn online version of the graph model and the in cremental clustering algorithm described in this paper are publicly available 1 for demonstrationpurposes and to allow users to observe the gen erality of our techniques.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-A sample output is included in Figure 6.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-Acknowledgements The authors would like to thank the anonymous reviewers whose comments were a great help inmaking this paper more focussed: any short comings remain entirely our own responsibility.,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
-"This research was supported in part by theResearch Collaboration between the NTT Communication Science Laboratories, Nippon Tele graph and Telephone Corporation and CSLI,Stanford University, and by EC/NSF grant IST 1999-11438 for the MUCHMORE project.","{'title': 'Recognising Polysemy. ', 'number': '6'}"
-2 1http://infomap.stanford.edu/graphs 2http://muchmore.dfki.deFigure 1: Automatically generated graph show ing the word apple and semantically related nouns,"{'title': 'Recognising Polysemy. ', 'number': '6'}"
+This paper presents an unsupervised method forassembling semantic knowledge from a part-of speech tagged corpus using graph algorithms.,Introduction
+The graph model is built by linking pairs of words which participate in particular syntacticrelationships.,Introduction
+We focus on the symmetric relationship between pairs of nouns which occur to gether in lists.,Introduction
+"An incremental cluster-building algorithm using this part of the graph achieves82% accuracy at a lexical acquisition task, evaluated against WordNet classes.",Introduction
+The model naturally realises domain and corpus specific am biguities as distinct components in the graph surrounding an ambiguous word.,Introduction
+Semantic knowledge for particular domains isincreasingly important in NLP.,Experiment/Discussion
+"Many applications such as Word-Sense Disambiguation, In formation Extraction and Speech Recognitionall require lexicons.",Experiment/Discussion
+"The coverage of handbuilt lexical resources such as WordNet (Fellbaum, 1998) has increased dramatically in re cent years, but leaves several problems andchallenges.",Experiment/Discussion
+"Coverage is poor in many criti cal, rapidly changing domains such as current affairs, medicine and technology, where much time is still spent by human experts employed to recognise and classify new terms.",Experiment/Discussion
+Mostlanguages remain poorly covered in compari son with English.,Experiment/Discussion
+Hand-built lexical resourceswhich cannot be automatically updated can of ten be simply misleading.,Experiment/Discussion
+"For example, using WordNet to recognise that the word apple refers to a fruit or a tree is a grave error in the many situations where this word refers to a computer manufacturer, a sense which WordNet does notcover.",Experiment/Discussion
+"For NLP to reach a wider class of appli cations in practice, the ability to assemble andupdate appropriate semantic knowledge auto matically will be vital.",Experiment/Discussion
+"This paper describes a method for arranging semantic information into a graph (Bolloba?s, 1998), where the nodes are words and the edges(also called links) represent relationships be tween words.",Experiment/Discussion
+The paper is arranged as follows.,Experiment/Discussion
+Section 2 reviews previous work on semanticsimilarity and lexical acquisition.,Experiment/Discussion
+Section 3 de scribes how the graph model was built from the PoS-tagged British National Corpus.,Experiment/Discussion
+Section 4 describes a new incremental algorithm used to build categories of words step by step from thegraph model.,Experiment/Discussion
+"Section 5 demonstrates this algo rithm in action and evaluates the results againstWordNet classes, obtaining state-of-the-art re sults.",Experiment/Discussion
+Section 6 describes how the graph modelcan be used to recognise when words are polysemous and to obtain groups of words represen tative of the different senses.,Experiment/Discussion
+Most work on automatic lexical acquisition has been based at some point on the notion of semantic similarity.,Experiment/Discussion
+"The underlying claim is that words which are semantically similar occurwith similar distributions and in similar con texts (Miller and Charles, 1991).The main results to date in the field of au tomatic lexical acquisition are concerned withextracting lists of words reckoned to belong to gether in a particular category, such as vehicles or weapons (Riloff and Shepherd, 1997) (Roarkand Charniak, 1998).",Experiment/Discussion
+Roark and Charniak de scribe a ?generic algorithm?,Experiment/Discussion
+"for extracting suchlists of similar words using the notion of seman tic similarity, as follows (Roark and Charniak, 1998, ?1).",Experiment/Discussion
+1.,Experiment/Discussion
+"For a given category, choose a small.",Experiment/Discussion
+set of exemplars (or ?seed words?),Experiment/Discussion
+2.,Experiment/Discussion
+Count co-occurrence of words and.,Experiment/Discussion
+seed words within a corpus these counts to select new seed words 4.,Experiment/Discussion
+Return to step 2 and iterate n times.,Experiment/Discussion
+5.,Experiment/Discussion
+Use a figure of merit to rank words.,Experiment/Discussion
+"for category membership and output a ranked list Algorithms of this type were used by Riloff and Shepherd (1997) and Roark and Charniak (1998), reporting accuracies of 17% and 35% respectively.",Experiment/Discussion
+"Like the algorithm we present in Section 5, the similarity measure (or ?figure ofmerit?)",Experiment/Discussion
+used in these cases was based on co occurrence in lists.,Experiment/Discussion
+Both of these works evaluated their resultsby asking humans to judge whether items generated were appropriate members of the cate gories sought.,Experiment/Discussion
+Riloff and Shepherd (1997) also give some credit for ?related words?,Experiment/Discussion
+(for example crash might be regarded as being related to the category vehicles).,Experiment/Discussion
+One problem with these techniques is the danger of ?infections?,Experiment/Discussion
+"once any incorrect or out-of-category word has been admitted, theneighbours of this word are also likely to be ad mitted.",Experiment/Discussion
+In Section 4 we present an algorithmwhich goes some way towards reducing such in fections.,Experiment/Discussion
+"The early results have been improved upon byRiloff and Jones (1999), where a ?mutual boot strapping?",Experiment/Discussion
+approach is used to extract words in particular semantic categories and expression patterns for recognising relationships betweenthese words for the purposes of information extraction.,Experiment/Discussion
+The accuracy achieved in this experiment is sometimes as high as 78% and is there fore comparable to the results reported in this paper.,Experiment/Discussion
+"Another way to obtain word-senses directly from corpora is to use clustering algorithms on feature-vectors (Lin, 1998; Schu?tze, 1998).Clustering techniques can also be used to discriminate between different senses of an ambiguous word.",Experiment/Discussion
+"A general problem for such cluster ing techniques lies in the question of how many clusters one should have, i.e. how many senses are appropriate for a particular word in a given domain (Manning and Schu?tze, 1999, Ch 14).",Experiment/Discussion
+"Lin?s approach to this problem (Lin, 1998) isto build a ?similarity tree?",Experiment/Discussion
+(using what is in ef fect a hierarchical clustering method) of words related to a target word (in this case the word duty).,Experiment/Discussion
+Different senses of duty can be discerned as different sub-trees of this similarity tree.,Experiment/Discussion
+Wepresent a new method for word-sense discrimi nation in Section 6.,Experiment/Discussion
+PoS-tagged Corpus In this section we describe how a graph ? a collection of nodes and links ? was built to represent the relationships between nouns.,Experiment/Discussion
+Themodel was built using the British National Cor pus which is automatically tagged for parts of speech.,Experiment/Discussion
+"Initially, grammatical relations between pairsof words were extracted.",Experiment/Discussion
+The relationships ex tracted were the following: ? Noun (assumed to be subject) Verb ? Verb Noun (assumed to be object) ? Adjective Noun?,Experiment/Discussion
+Noun Noun (often the first noun is modify ing the second) ? Noun and/or Noun The last of these relationships often occurs when the pair of nouns is part of a list.,Experiment/Discussion
+"Since lists are usually comprised of objects which are similar in some way, these relationships have been used to extract lists of nouns with similar properties (Riloff and Shepherd, 1997) (Roarkand Charniak, 1998).",Experiment/Discussion
+In this paper we too focus on nouns co-occurring in lists.,Experiment/Discussion
+"This is be cause the noun and/or noun relationship is the only symmetric relationship in our model, andsymmetric relationships are much easier to ma nipulate than asymmetric ones.",Experiment/Discussion
+Our full graph contains many directed links between words of different parts of speech.,Experiment/Discussion
+Initial experiments with this model show considerable promise but are at too early a stage to be reported upon yet.Thus the graph used in most of this paper repre sents only nouns.,Experiment/Discussion
+"Each node represents a noun and two nodes have a link between them if they co-occur separated by the conjunctions and or or, and each link is weighted according to the number of times the co-occurrence is observed.Various cutoff functions were used to deter mine how many times a relationship must be observed to be counted as a link in the graph.",Experiment/Discussion
+"A well-behaved option was to take the top nneighbours of each word, where n could be determined by the user.",Experiment/Discussion
+In this way the link weighting scheme was reduced to a link-ranking scheme.,Experiment/Discussion
+One consequence of this decision was that links to more common words were preferred over links to rarer words.,Experiment/Discussion
+"This decision may have effectively boosted precision at the expense of recall, because the preferred links are to fairlycommon and (probably) more stable words.",Experiment/Discussion
+Re search is need to reveal theoretically motivatedor experimentally optimal techniques for select ing the importance to assign to each link ? the choices made in this area so far are often of an ad hoc nature.,Experiment/Discussion
+"The graph used in the experiments described has 99,454 nodes (nouns) and 587,475 links.",Experiment/Discussion
+"There were roughly 400,000 different types tagged as nouns in the corpus, so the graph model represents about one quarter of these nouns, including most of the more common ones.",Experiment/Discussion
+Extracting Categories of Similar Words In this section we describe a new algorithm for adding the ?most similar node?,Experiment/Discussion
+to an existingcollection of nodes in a way which incremen tally builds a stable cluster.,Experiment/Discussion
+We rely entirelyupon the graph to deduce the relative importance of relationships.,Experiment/Discussion
+"In particular, our algo rithm is designed to reduce so-called ?infections?(Roark and Charniak, 1998, ?3) where the inclu sion of an out-of-category word which happens to co-occur with one of the category words can significantly distort the final list.",Experiment/Discussion
+Here is the process we use to select and add the ?most similar node?,Experiment/Discussion
+"to a set of nodes: Definition 1 Let A be a set of nodes and let N(A), the neighbours of A, be the nodes which are linked to any a ? A.",Experiment/Discussion
+(So N(A) = ? a?AN(a).),Experiment/Discussion
+The best new node is taken to be the node b ? N(A)\A with the highest proportion of links to N(A).,Experiment/Discussion
+"More precisely, for each u ? N(A)\A, let the affinity between u and A be given by the ratio |N(u) ?N(A)| |N(u)| . The best new node b ? N(A) \ A is the node which maximises this affinity score.",Experiment/Discussion
+This algorithm has been built into an on-line demonstration where the user inputs a givenseed word and can then see the cluster of re lated words being gradually assembled.,Experiment/Discussion
+The algorithm is particularly effective atavoiding infections arising from spurious co occurrences and from ambiguity.,Experiment/Discussion
+"Consider, forexample, the graph built around the word ap ple in Figure 6.",Experiment/Discussion
+"Suppose that we start with the seed-list apple, orange, banana.",Experiment/Discussion
+However many times the string ?Apple and Novell?,Experiment/Discussion
+"occurs in the corpus, the novell node will not be addedto this list because it doesn?t have a link to or ange, banana or any of their neighbours except for apple.",Experiment/Discussion
+One way to summarise the effect of this decision is that the algorithm adds words to clusters depending on type frequency rather than token frequency.,Experiment/Discussion
+This avoids spurious links due to (for example) particular idioms rather than geniune semantic similarity.,Experiment/Discussion
+In this section we give examples of lexical cat egories extracted by our method and evaluatethem against the corresponding classes in Word Net.,Results/Conclusion
+5.1 Methodology.,Results/Conclusion
+Our methodology is as follows.,Results/Conclusion
+Consider an intuitive category of objects such as musical instruments.,Results/Conclusion
+Define the ?WordNet class?,Results/Conclusion
+or ?WordNet category?,Results/Conclusion
+of musical instruments tobe the collection of synsets subsumed in Word Net by the musical instruments synset.,Results/Conclusion
+Take a ?protypical example?,Results/Conclusion
+"of a musical instrument, such as piano.",Results/Conclusion
+The algorithm defined in (1) gives a way of finding the n nodes deemed to be most closely related to the piano node.,Results/Conclusion
+Thesecan then be checked to see if they are members of the WordNet class of musical instru ments.,Results/Conclusion
+This method is easier to implement and less open to variation than human judgements.,Results/Conclusion
+"While WordNet or any other lexical resource isnot a perfect arbiter, it is hoped that this exper iment procedure is both reliable and repeatable.",Results/Conclusion
+"The ten classes of words chosen were crimes, places, tools, vehicles, musical instruments, clothes, diseases, body parts, academic subjects and foodstuffs.",Results/Conclusion
+The classes were chosen beforethe experiment was carried out so that the re sults could not be massaged to only use thoseclasses which gave good results.,Results/Conclusion
+"(The first 4 cat egories are also used by (Riloff and Shepherd, 1997) and (Roark and Charniak, 1998) and so were included for comparison.)",Results/Conclusion
+"Having chosen these classes, 20 words were retrieved using asingle seed-word chosen from the class in ques tion.",Results/Conclusion
+This list of words clearly depends on the seed word chosen.,Results/Conclusion
+"While we have tried to optimise this choice, it depends on the corpus and thethe model.",Results/Conclusion
+"The influence of semantic Proto type Theory (Rosch, 1988) is apparent in this process, a link we would like to investigate in more detail.",Results/Conclusion
+It is possible to choose an optimal seed word for a particular category: it should be possible to compare these optimal seed wordswith the ?prototypes?,Results/Conclusion
+"suggested by psychologi cal experiments (Mervis and Rosch, 1981).",Results/Conclusion
+5.2 Results.,Results/Conclusion
+The results for a list of ten classes and proto typical words are given in Table 1.,Results/Conclusion
+Words which are correct members of the classes sought arein Roman type: incorrect results are in italics.,Results/Conclusion
+The decision between correctness and in correctness was made on a strict basis for thesake of objectivity and to enable the repeata bility of the experiment: words which are in WordNet were counted as correct results only if they are actual members of the WordNet class in question.,Results/Conclusion
+"Thus brigandage is not regarded as a crime even though it is clearly an act ofwrongdoing, orchestra is not regarded as a musical instrument because it is a collection of in struments rather than a single instrument, etc. The only exceptions we have made are the terms wynd and planetology (marked in bold), whichare not in WordNet but are correct nonethe less.",Results/Conclusion
+"These conditions are at least as stringent as those of previous experiments, particularly those of Riloff and Shepherd (1997) who also give credit for words associated with but not belonging to a particular category.",Results/Conclusion
+"(It has been pointed out that many polysemous words may occur in several classes, making the task easier because for many words there are several classes which our algorithm would give credit for.)With these conditions, our algorithm re trieves only 36 incorrect terms out of a total of 200, giving an accuracy of 82%.",Results/Conclusion
+5.3 Analysis.,Results/Conclusion
+"Our results are an order of magnitude better than those reported by Riloff and Shepherd (1997) and Roark and Charniak (1998), whoreport average accuracies of 17% and 35% re spectively.",Results/Conclusion
+(Our results are also slightly better than those reported by Riloff and Jones (1999)).,Results/Conclusion
+"Since the algorithms used are in many waysvery similar, this improvement demands expla nation.Some of the difference in accuracy can be at tributed to the corpora used.",Results/Conclusion
+"The experiments in (Riloff and Shepherd, 1997) were performed on the 500,000 word MUC-4 corpus, and those of (Roark and Charniak, 1998) were performedusing MUC-4 and the Wall Street Journal cor pus (some 30 million words).",Results/Conclusion
+Our model was built using the British National Corpus (100 million words).,Results/Conclusion
+"On the other hand, our modelwas built using only a part-of-speech tagged cor pus.",Results/Conclusion
+The high accuracy achieved thus questions the conclusion drawn by Roark and Charniak (1998) that ?parsing is invaluable?.,Results/Conclusion
+Our results clearly indicate that a large PoS-tagged corpusmay be much better for automatic lexical ac quisition than a small fully-parsed corpus.,Results/Conclusion
+"This claim could of course be tested by comparing techniques on the same corpus.To evaluate the advantage of using PoS infor mation, we compared the graph model with asimilarity thesaurus generated using Latent Se mantic Indexing (Manning and Schu?tze, 1999, Ch 15), a ?bag-of-words?",Results/Conclusion
+"approach, on the samecorpus.",Results/Conclusion
+The same number of nouns was re trieved for each class using the graph model and LSI.,Results/Conclusion
+"The LSI similarity thesaurus obtained an accuracy of 31%, much less than the graph model?s 82%.",Results/Conclusion
+"This is because LSI retrieves words which are related by context but are not in the same class: for example, the neighbours of piano found using LSI cosine-similarity on the BNC corpus include words such as composer,music, Bach, concerto and dance, which are re lated but certainly not in the same semantic class.The incremental clustering algorithm of Def inition (1) works well at preventing ?infections?",Results/Conclusion
+Class Seed Word Neighbours Produced by Graph Model crimes murder crime theft arson importuning incest fraud larceny parricideburglary vandalism indecency violence offences abuse brig andage manslaughter pillage rape robbery assault lewdness places park path village lane viewfield church square road avenue garden castle wynd garage house chapel drive crescent home place cathedral street tools screwdriver chisel naville nail shoulder knife drill matchstick morgenthau gizmo hand knee elbow mallet penknife gallie leg arm sickle bolster hammer vehicle conveyance train tram car driver passengers coach lorry truck aeroplane coons plane trailer boat taxi pedestrians vans vehicles jeep bus buses helicopter musical instruments piano fortepiano orchestra marimba clarsach violin cizek viola oboeflute horn bassoon culbone mandolin clarinet equiluz contra bass saxophone guitar cello clothes shirt chapeaubras cardigan trousers breeches skirt jeans boots pair shoes blouse dress hat waistcoat jumper sweater coat cravat tie leggings diseases typhoid malaria aids polio cancer disease atelectasis illnesses cholerahiv deaths diphtheria infections hepatitis tuberculosis cirrho sis diptheria bronchitis pneumonia measles dysentery body parts stomach head hips thighs neck shoulders chest back eyes toes breasts knees feet face belly buttocks haws ankles waist legs academic subjectsphysics astrophysics philosophy humanities art religion science politics astronomy sociology chemistry history theology eco nomics literature maths anthropology culture mathematics geography planetology foodstuffs cake macaroons confectioneries cream rolls sandwiches croissant buns scones cheese biscuit drinks pastries tea danish butter lemonade bread chocolate coffee milk Table 1: Classes of similar words given by the graph model.,Results/Conclusion
+and keeping clusters within one particular class.,Results/Conclusion
+"The notable exception is the tools class, where the word hand appears to introduce infection.",Results/Conclusion
+"In conclusion, it is clear that the graph modelcombined with the incremental clustering algo rithm of Definition 1 performs better than mostprevious methods at the task of automatic lex ical acquisition.",Results/Conclusion
+So far we have presented a graph model built upon noun co-occurrence which performs much better than previously reported methods at the task of automatic lexical acquisition.,Results/Conclusion
+"This isan important task, because assembling and tuning lexicons for specific NLP systems is increas ingly necessary.",Results/Conclusion
+"We now take a step furtherand present a simple method for not only as sembling words with similar meanings, but for empirically recognising when a word has several meanings.",Results/Conclusion
+Recognising and resolving ambiguity is an important task in semantic processing.,Results/Conclusion
+"The traditional Word Sense Disambiguation(WSD) problem addresses only the ambiguityresolution part of the problem: compiling a suit able list of polysemous words and their possiblesenses is a task for which humans are tradition ally needed (Kilgarriff and Rosenzweig, 2000).This makes traditional WSD an intensively supervised and costly process.",Results/Conclusion
+"Breadth of cover age does not in itself solve this problem: general lexical resources such as WordNet can provide too many senses many of which are rarely used in particular domains or corpora (Gale et al, 1992).The graph model presented in this paper suggests a new method for recognising relevant polysemy.",Results/Conclusion
+"We will need a small amount of termi nology from graph theory (Bolloba?s, 1998).",Results/Conclusion
+"Definition 2 (Bolloba?s, 1998, Ch 1 ?1) Let G = (V,E) be a graph, where V is the set of vertices (nodes) of G and E ? V ? V is the set of edges of G. ? Two nodes v1, vn are said to be connected if there exists a path {v1, v2, . . .",Results/Conclusion
+", vn?1, vn} such that (vj , vj+1) ? E for 1 ? j < n. ? Connectedness is an equivalence relation.?",Results/Conclusion
+The equivalence classes of the graph G un der this relation are called the components of G. We are now in a position to define the senses of a word as represented by a particular graph.,Results/Conclusion
+"Definition 3 Let G be a graph of words closely related to a seed-word w, and let G \ w be the subgraph which results from the removal of the seed-node w. The connected components of the subgraph G \ w are the senses of the word w with respect to the graph G. As an illustrative example, consider the localgraph generated for the word apple (6).",Results/Conclusion
+"The re moval of the apple node results in three separate components which represent the different senses of apple: fruit, trees, and computers.",Results/Conclusion
+Definition 3 gives an extremely good model of the senses of apple found in the BNC.,Results/Conclusion
+(In this case better than WordNet which does not contain the very common corporate meaning.)The intuitive notion of ambiguity being pre sented is as follows.,Results/Conclusion
+An ambiguous word often connects otherwise unrelated areas of meaning.,Results/Conclusion
+"Definition 3 recognises the ambiguity of apple because this word is linked to both banana and novell, words which otherwise have nothing to do with one another.",Results/Conclusion
+"It is well-known that any graph can be thought of as a collection of feature-vectors, forexample by taking the row-vectors in the adja cency matrix (Bolloba?s, 1998, Ch 2 ?3).",Results/Conclusion
+Theremight therefore be fundamental similarities be tween our approach and methods which rely on similarities between feature-vectors.Extra motivation for this technique is pro vided by Word-Sense Disambiguation.,Results/Conclusion
+"Thestandard method for this task is to use hand labelled data to train a learning algorithm, which will often pick out particular words as Bayesian classifiers which indicate one sense or the other.",Results/Conclusion
+(So if microsoft occurs in the same sentence as apple we might take this as evidence that apple is being used in the corporate sense.),Results/Conclusion
+"Clearly, the words in the different componentsin Diagram 6 can potentially be used as classi fiers for just this purpose, obviating the need fortime-consuming human annotation.",Results/Conclusion
+This tech nique will be assessed and evaluated in future experiments.,Results/Conclusion
+DemonstrationAn online version of the graph model and the in cremental clustering algorithm described in this paper are publicly available 1 for demonstrationpurposes and to allow users to observe the gen erality of our techniques.,Results/Conclusion
+A sample output is included in Figure 6.,Results/Conclusion
+Acknowledgements The authors would like to thank the anonymous reviewers whose comments were a great help inmaking this paper more focussed: any short comings remain entirely our own responsibility.,Results/Conclusion
+"This research was supported in part by theResearch Collaboration between the NTT Communication Science Laboratories, Nippon Tele graph and Telephone Corporation and CSLI,Stanford University, and by EC/NSF grant IST 1999-11438 for the MUCHMORE project.",Results/Conclusion
+2 1http://infomap.stanford.edu/graphs 2http://muchmore.dfki.deFigure 1: Automatically generated graph show ing the word apple and semantically related nouns,Results/Conclusion

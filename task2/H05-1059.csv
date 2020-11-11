@@ -1,182 +1,182 @@
 col1,col2
-"This paper presents a bidirectional inference algorithm for sequence labeling problems such as part-of-speech tag ging, named entity recognition and text chunking.",{}
-The algorithm can enumerate all possible decomposition structures andfind the highest probability sequence together with the corresponding decomposi tion structure in polynomial time.,{}
-"We also present an efficient decoding algorithm based on the easiest-first strategy, which gives comparably good performance tofull bidirectional inference with significantly lower computational cost.",{}
-Exper imental results of part-of-speech tagging and text chunking show that the proposedbidirectional inference methods consis tently outperform unidirectional inference methods and bidirectional MEMMs give comparable performance to that achievedby state-of-the-art learning algorithms in cluding kernel support vector machines.,{}
-"The task of labeling sequence data such as part-of speech (POS) tagging, chunking (shallow parsing)and named entity recognition is one of the most im portant tasks in natural language processing.","{'title': 'Introduction', 'number': '1'}"
-"Conditional random fields (CRFs) (Lafferty et al,2001) have recently attracted much attention because they are free from so-called label bias prob lems which reportedly degrade the performance of sequential classification approaches like maximum entropy markov models (MEMMs).","{'title': 'Introduction', 'number': '1'}"
-"Although sequential classification approachescould suffer from label bias problems, they have sev eral advantages over CRFs.","{'title': 'Introduction', 'number': '1'}"
-One is the efficiencyof training.,"{'title': 'Introduction', 'number': '1'}"
-CRFs need to perform dynamic programming over the whole sentence in order to compute feature expectations in each iteration of numerical optimization.,"{'title': 'Introduction', 'number': '1'}"
-"Training, for instance, second order CRFs using a rich set of features can require prohibitive computational resources.","{'title': 'Introduction', 'number': '1'}"
-"Max-marginmethods for structured data share problems of com putational cost (Altun et al, 2003).Another advantage is that one can employ a variety of machine learning algorithms as the local classifier.","{'title': 'Introduction', 'number': '1'}"
-There is huge amount of work about developing classification algorithms that have high generalization performance in the machine learning community.,"{'title': 'Introduction', 'number': '1'}"
-Being able to incorporate such state-of-theart machine learning algorithms is important.,"{'title': 'Introduction', 'number': '1'}"
-"Indeed, sequential classification approaches with kernel support vector machines offer competitive per formance in POS tagging and chunking (Gimenez and Marquez, 2003; Kudo and Matsumoto, 2001).","{'title': 'Introduction', 'number': '1'}"
-One obvious way to improve the performance of sequential classification approaches is to enrich theinformation that the local classifiers can use.,"{'title': 'Introduction', 'number': '1'}"
-"In stan dard decomposition techniques, the local classifiers cannot use the information about future tags (e.g. the right-side tags in left-to-right decoding), which would be helpful in predicting the tag of the targetword.","{'title': 'Introduction', 'number': '1'}"
-"To make use of the information about future tags, Toutanova et al proposed a tagging algo rithm based on bidirectional dependency networks 467(Toutanova et al, 2003) and achieved the best ac curacy on POS tagging on the Wall Street Journal corpus.","{'title': 'Introduction', 'number': '1'}"
-"As they pointed out in their paper, however,their method potentially suffers from ?collusion?","{'title': 'Introduction', 'number': '1'}"
-ef fects which make the model lock onto conditionally consistent but jointly unlikely sequences.,"{'title': 'Introduction', 'number': '1'}"
-"In theirmodeling, the local classifiers can always use the in formation about future tags, but that could cause a double-counting effect of tag information.","{'title': 'Introduction', 'number': '1'}"
-In this paper we propose an alternative way of making use of future tags.,"{'title': 'Introduction', 'number': '1'}"
-Our inference method considers all possible ways of decomposition andchooses the ?best?,"{'title': 'Introduction', 'number': '1'}"
-"decomposition, so the informa tion about future tags is used only in appropriate situations.","{'title': 'Introduction', 'number': '1'}"
-"We also present a deterministic versionof the inference method and show their effective ness with experiments of English POS tagging and chunking, using standard evaluation sets.","{'title': 'Introduction', 'number': '1'}"
-The task of labeling sequence data is to find the se quence of tags t1...tn that maximizes the following probability given the observation o = o1...on P (t1...tn|o).,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-(1) Observations are typically words and their lexicalfeatures in the task of POS tagging.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Sequential clas sification approaches decompose the probability as follows, P (t1...tn|o) = n?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-i=1 p(ti|t1...ti?1o).,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-(2) This is the left-to-right decomposition.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"If we make a first-order markov assumption, the equation becomes P (t1...tn|o) = n?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-i=1 p(ti|ti?1o).,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-(3) Then we can employ a probabilistic classifier trained with the preceding tag and observations in order to obtain p(ti|ti?1o) for local classification.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"A common choice for the local probabilistic classifier is maximum entropy classifiers (Berger et al, 1996).","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-The best tag sequence can be efficiently computed by using a Viterbi decoding algorithm in polynomial time.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-t1 (a) t2 t3 o t1 (b) t2 t3 t1 (c) t2 t3 t1 (d) t2 t3 o o o Figure 1: Different structures for decomposition.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-The right-to-left decomposition is P (t1...tn|o) = n?,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-i=1 p(ti|ti+1o).,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-(4) These two ways of decomposition are widely usedin various tagging problems in natural language pro cessing.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-The issue with such decompositions is that you have only the information about the preceding(or following) tags when performing local classifi cation.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"From the viewpoint of local classification, we want to give the classifier as much information as possible because the information about neighboring tags is useful in general.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"As an example, consider the situation where we are going to annotate a three-word sentence withpart-of-speech tags.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Figure 1 shows the four possi ble ways of decomposition.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-They correspond to the following equations: (a) P (t1...t3|o) = P (t1|o)P (t2|t1o)P (t3|t2o) (5) (b) P (t1...t3|o) = P (t3|o)P (t2|t3o)P (t1|t2o) (6) (c) P (t1...t3|o) = P (t1|o)P (t3|o)P (t2|t3t1o) (7) (d) P (t1...t3|o) = P (t2|o)P (t1|t2o)P (t3|t2o) (8)(a) and (b) are the standard left-to-right and rightto-left decompositions.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Notice that in decomposi tion (c), the local classifier can use the information about the tags on both sides when deciding t2.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"If, for example, the second word is difficult to tag (e.g.an unknown word), we might as well take the de composition structure (c) because the local classifier 468 can use rich information when deciding the tag of the most difficult word.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"In general if we have ann-word sentence and adopt a first-order markov assumption, we have 2n?1 possible ways of decomposition because each of the n ? 1 edges in the cor responding graph has two directions (left-to-right or right-to-left).","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Our bidirectional inference method is to consider all possible decomposition structures and choose the ?best?,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-structure and tag sequence.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"We will show inthe next section that this is actually possible in poly nomial time by dynamic programming.As for the training, let us look at the equa tions of four different decompositions above.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"You can notice that there are only four types of local conditional probabilities: P (ti|ti?1o), P (ti|ti+1o), P (ti|ti?1ti+1o), and P (ti|o).This means that if we have these four types of lo cal classifiers, we can consider any decompositionstructures in the decoding stage.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-These local classi fiers can be obtained by training with corresponding neighboring tag information.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Training the first twotypes of classifiers is exactly the same as the training of popular left-to-right and right-to-left sequen tial classification models respectively.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"If we take a second-order markov assumption, we need to train 16 types of local classifiers because each of the four neighboring tags of a classificationtarget has two possibilities of availability.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"In gen eral, if we take a k-th order markov assumption, we need to train 22k types of local classifies.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-2.1 Polynomial Time Inference.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-This section describes an algorithm to find the de composition structure and tag sequence that give the highest probability.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"The algorithm for the first-order case is an adaptation of the algorithm for decodingthe best sequence on a bidirectional dependency net work introduced by (Toutanova et al, 2003), which originates from the Viterbi decoding algorithm for second-order markov models.Figure 2 shows a polynomial time decoding algorithm for our bidirectional inference.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"It enumer ates all possible decomposition structures and tag sequences by recursive function calls, and finds the highest probability sequence.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Polynomial time isachieved by caching.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Note that for each local clas sification, the function chooses the appropriate local function bestScore() { return bestScoreSub(n+2, ?end, end, end?, ?L,L?); } function bestScoreSub(i+1, ?ti?1, ti, ti+1?, ?di?1, di?)","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"{ // memorization if (cached(i+1, ?ti?1, ti, ti+1?, ?di?1, di?)) return cache(i+1, ?ti?1, ti, ti+1?, ?di?1, di?); // left boundary case if (i = -1) if (?ti?1, ti, ti+1?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"= ?start, start, start?)","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"return 1; else return 0; // recursive case P = localClassification(i, ?ti?1, ti, ti+1?, ?di?1, di?); return maxdi?2 maxti?2 P?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"bestScoreSub(i, ?ti?2, ti?1, ti?, ?di?2, di?1?); } function localClassification(i, ?ti?1, ti, ti+1?, ?di?1, di?)","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"{ if (di?1 = L & di = L) return P (ti|ti+1, o); if (di?1 = L & di = R) return P (ti|o); if (di?1 = R & di = L) return P (ti|ti?1ti+1, o); if (di?1 = R & di = R) return P (ti|ti?1, o); } Figure 2: Pseudo-code for bidirectional inference for the first-order conditional markov models.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-di is the direction of the edge between ti and ti+1.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-classifier by taking into account the directions of the adjacent edges of the classification target.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-The second-order case is similar but slightly morecomplex.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Figure 3 shows the algorithm.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"The recur sive function needs to consider the directions of the four adjacent edges of the classification target, and maintain the directions of the two neighboring edgesto enumerate all possible edge directions.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"In addi tion, the algorithm rules out cycles in the structure.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-2.2 Decoding with the Easiest-First Strategy.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-We presented a polynomial time decoding algorithm in the previous section.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"However, polynomial time is not low enough in practice.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Indeed, even the Viterbi decoding of second-order markov models for POS tagging is not practical unless some pruning methodis involved.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"The computational cost of the bidirec tional decoding algorithm presented in the previoussection is, of course, larger than that because it enu merates all possible directions of the edges on top of the enumeration of possible tag sequences.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"In this section we present a greedy version of the decoding method for bidirectional inference, which 469 function bestScore() { return bestScoreSub(n+3, ?end, end, end, end, end?, ?L,L, L, L?, ?L,L?); } function bestScoreSub(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?) { // to avoid cycles if (di?1 = di & di != d?i) return 0; // memorization if (cached(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?) return cache(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?); // left boundary case if (i = -2) if (?ti?2, ti?1, ti, ti+1, ti+2?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"= ?start, start, start, start, start?)","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"return 1; else return 0; // recursive case P = localClassification(i, ?ti?2, ti?1, ti, ti+1, ti+2?, ?d?i?1, di?1, di, d?i+1?); return maxd?","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-i?2 maxdi?3 maxti?3 P?,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"bestScoreSub(i+1, ?ti?3, ti?2, ti?1, titi+1?, ?d?i?2, di?2, di?1, d?i?, ?di?3, d?i?1?); } Figure 3: Pseudo-code for bidirectional inference for the second-order conditional markov models.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-di is the direction of the edge between ti and ti+1.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-d?i is the direction of the edge between ti?1 and ti+1.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-We omit the localClassification function because it is the obvious extension of that for the first-order case.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"is extremely simple and significantly more efficient than full bidirectional decoding.Instead of enumerating all possible decomposition structures, the algorithm determines the struc ture by adopting the easiest-first strategy.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-The whole decoding algorithm is given below.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-1.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Find the ?easiest?,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-word to tag..,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-2.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-Tag the word..,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-We assume in this paper that the ?easiest?,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-word to tag is the word for which the classifier outputs the highest probability.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"In finding the easiest word, we use the appropriate local classifier according to the availability of the neighboring tags.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Therefore,in the first iteration, we always use the local classi fiers trained with no contextual tag information (i.e.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-(P (ti|o)).,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"Then, for example, if t3 has been tagged in the first iteration in a three-word sentence, we use P (t2|t3o) to compute the probability for tagging t2 in the second iteration (as in Figure 1 (b)).","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"A naive implementation of this algorithm requires O(n2) invocations of local classifiers, where n is the number of the words in the sentence, because we need to update the probabilities over the words ateach iteration.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"However, a k-th order Markov as sumption obviously allows us to skip most of the probability updates, resulting in O(kn) invocations of local classifiers.","{'title': 'Bidirectional Inference. ', 'number': '2'}"
-This enables us to build a very efficient tagger.,"{'title': 'Bidirectional Inference. ', 'number': '2'}"
-"For local classifiers, we used a maximum entropy model which is a common choice for incorporating various types of features for classification problems in natural language processing (Berger et al, 1996).","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-Regularization is important in maximum entropy modeling to avoid overfitting to the training data.,"{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"For this purpose, we use the maximum entropy modeling with inequality constraints (Kazama andTsujii, 2003).","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"The model gives equally good per formance as the maximum entropy modeling with Gaussian priors (Chen and Rosenfeld, 1999), and the size of the resulting model is much smaller thanthat of Gaussian priors because most of the param eters become zero.","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"This characteristic enables us to easily handle the model data and carry out quick decoding, which is convenient when we repetitivelyperform experiments.","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"This modeling has one param eter to tune, which is called the width factor.","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-We tuned this parameter using the development data in each type of experiments.,"{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"470 Current word wi & ti Previous word wi?1 & ti Next word wi+1 & ti Bigram features wi?1, wi & ti wi, wi+1 & ti Previous tag ti?1 & ti Tag two back ti?2 & ti Next tag ti+1 & ti Tag two ahead ti+2 & ti Tag Bigrams ti?2, ti?1 & ti ti?1, ti+1 & ti ti+1, ti+2 & ti Tag Trigrams ti?2, ti?1, ti+1 & ti ti?1, ti+1, ti+2 & ti Tag 4-grams ti?2, ti?1, ti+1, ti+2 & ti Tag/Word ti?1, wi & ti combination ti+1, wi & ti ti?1, ti+1, wi & ti Prefix features prefixes of wi & ti (up to length 10) Suffix features suffixes of wi & ti (up to length 10) Lexical features whether wi has a hyphen & ti whether wi has a number & ti whether wi has a capital letter & ti whether wi is all capital & tiTable 1: Feature templates used in POS tagging ex periments.","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-Tags are parts-of-speech.,"{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-Tag featuresare not necessarily used in all the models.,"{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"For example, ?next tag?","{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-features cannot be used in left-to right models.,"{'title': 'Maximum Entropy Classifier. ', 'number': '3'}"
-"To evaluate the bidirectional inference methods pre sented in the previous sections, we ran experimentson POS tagging and text chunking with standard En glish data sets.","{'title': 'Experiments. ', 'number': '4'}"
-"Although achieving the best accuracy is not the primary purpose of this paper, we explored usefulfeature sets and parameter setting by using develop ment data in order to make the experiments realistic.","{'title': 'Experiments. ', 'number': '4'}"
-4.1 Part-of-speech tagging experiments.,"{'title': 'Experiments. ', 'number': '4'}"
-"We split the Penn Treebank corpus (Marcus et al, 1994) into training, development and test sets as in(Collins, 2002).","{'title': 'Experiments. ', 'number': '4'}"
-Sections 0-18 are used as the train ing set.,"{'title': 'Experiments. ', 'number': '4'}"
-"Sections 19-21 are the development set, andsections 22-24 are used as the test set.","{'title': 'Experiments. ', 'number': '4'}"
-"All the ex periments were carried out on the development set, except for the final accuracy report using the best setting.","{'title': 'Experiments. ', 'number': '4'}"
-"For features, we basically adopted the feature set Method Accuracy Speed (%) (tokens/sec) Left-to-right (Viterbi) 96.92 844 Right-to-left (Viterbi) 96.89 902 Dependency Networks 97.06 1,446 Easiest-last 96.58 2,360 Easiest-first 97.13 2,461 Full bidirectional 97.12 34Table 2: POS tagging accuracy and speed on the de velopment set.","{'title': 'Experiments. ', 'number': '4'}"
-Method Accuracy (%) Dep.,"{'title': 'Experiments. ', 'number': '4'}"
-"Networks (Toutanova et al, 2003) 97.24 Perceptron (Collins, 2002) 97.11 SVM (Gimenez and Marquez, 2003) 97.05 HMM (Brants, 2000) 96.48 Easiest-first 97.10 Full Bidirectional 97.15Table 3: POS tagging accuracy on the test set (Sec tions 22-24 of the WSJ, 5462 sentences).provided by (Toutanova et al, 2003) except for com plex features such as crude company-name detectionfeatures because they are specific to the Penn Tree bank and we could not find the exact implementation details.","{'title': 'Experiments. ', 'number': '4'}"
-Table 1 lists the feature templates used in our experiments.,"{'title': 'Experiments. ', 'number': '4'}"
-"We tested the proposed bidirectional methods,conventional unidirectional methods and the bidirec tional dependency network proposed by Toutanova (Toutanova et al, 2003) for comparison.","{'title': 'Experiments. ', 'number': '4'}"
-1.,"{'title': 'Experiments. ', 'number': '4'}"
-All the models are second-order.,"{'title': 'Experiments. ', 'number': '4'}"
-Table 2 shows the accuracy and tagging speed on the developmentdata 2.,"{'title': 'Experiments. ', 'number': '4'}"
-Bidirectional inference methods clearly out performed unidirectional methods.,"{'title': 'Experiments. ', 'number': '4'}"
-Note that the easiest-first decoding method achieves equally good performance as full bidirectional inference.,"{'title': 'Experiments. ', 'number': '4'}"
-"Table 2 also shows that the easiest-last strategy, where weselect and tag the most difficult word at each itera tion, is clearly a bad strategy.An example of easiest-first decoding is given be low: 1For dependency network and full bidirectional decoding, we conducted pruning because the computational cost was too large to perform exhaustive search.","{'title': 'Experiments. ', 'number': '4'}"
-We pruned a tag candidate if the zero-th order probability of the candidate P (ti|o) was lower than one hundredth of the zero-th order probability of the most likely tag at the token.,"{'title': 'Experiments. ', 'number': '4'}"
-2Tagging speed was measured on a server with an AMD Opteron 2.4GHz CPU.,"{'title': 'Experiments. ', 'number': '4'}"
-"471 The/DT/4 company/NN/7 had/VBD/11sought/VBN/14 increases/NNS/13 total ing/VBG/12 $/$/2 80.3/CD/5 million/CD/8 ,/,/1 or/CC/6 22/CD/9 %/NN/10 ././3 Each token represents Word/PoS/DecodingOrder.","{'title': 'Experiments. ', 'number': '4'}"
-"Typically, punctuations and articles are tagged first.","{'title': 'Experiments. ', 'number': '4'}"
-Verbs are usually tagged in later stages because their tags are likely to be ambiguous.,"{'title': 'Experiments. ', 'number': '4'}"
-We applied our bidirectional inference methods to the test data.,"{'title': 'Experiments. ', 'number': '4'}"
-The results are shown in Table 3.,"{'title': 'Experiments. ', 'number': '4'}"
-The table also summarizes the accuracies achieved by several other research efforts.,"{'title': 'Experiments. ', 'number': '4'}"
-"The best accuracyis 97.24% achieved by bidirectional dependency net works (Toutanova et al, 2003) with a richer set of features that are carefully designed for the corpus.","{'title': 'Experiments. ', 'number': '4'}"
-"A perceptron algorithm gives 97.11% (Collins, 2002).","{'title': 'Experiments. ', 'number': '4'}"
-Gimenez and Marquez achieve 97.05% with support vector machines (SVMs).,"{'title': 'Experiments. ', 'number': '4'}"
-This result indicates thatbidirectional inference with maximum entropy mod eling can achieve comparable performance to other state-of-the-art POS tagging methods.,"{'title': 'Experiments. ', 'number': '4'}"
-4.2 Chunking Experiments.,"{'title': 'Experiments. ', 'number': '4'}"
-The task of chunking is to find non-recursive phrases in a sentence.,"{'title': 'Experiments. ', 'number': '4'}"
-"For example, a chunker segments the sentence ?He reckons the current account deficit willnarrow to only 1.8 billion in September?","{'title': 'Experiments. ', 'number': '4'}"
-"into the fol lowing, [NP He] [VP reckons] [NP the current accountdeficit] [VP will narrow] [PP to] [NP only 1.8 bil lion] [PP in] [NP September] .We can regard chunking as a tagging task by con verting chunks into tags on tokens.","{'title': 'Experiments. ', 'number': '4'}"
-"There are severalways of representing text chunks (Sang and Veen stra, 1999).","{'title': 'Experiments. ', 'number': '4'}"
-"We tested the Start/End representation in addition to the popular IOB2 representation since local classifiers can have fine-grained informationon the neighboring tags in the Start/End represen tation.For training and testing, we used the data set pro vided for the CoNLL-2000 shared task.","{'title': 'Experiments. ', 'number': '4'}"
-"The training set consists of section 15-18 of the WSJ corpus, and the test set is section 20.","{'title': 'Experiments. ', 'number': '4'}"
-"In addition, we made the development set from section 21 3.","{'title': 'Experiments. ', 'number': '4'}"
-We basically adopted the feature set provided in 3We used the Perl script provided on http://ilk.kub.nl/?,"{'title': 'Experiments. ', 'number': '4'}"
-"sabine/chunklink/ Current word wi & ti Previous word wi?1 & ti Word two back wi?2 & ti Next word wi+1 & ti Word two ahead wi+2 & ti Bigram features wi?2, wi?1 & ti wi?1, wi & ti wi, wi+1 & ti wi+1, wi+2 & ti Current POS pi & ti Previous POS pi?1 & ti POS two back pi?2 & ti Next POS pi+1 & ti POS two ahead pi+2 & ti Bigram POS features pi?2, pi?1 & ti pi?1, pi & ti pi, pi+1 & ti pi+1, pi+2 & ti Trigram POS features pi?2, pi?1, pi & ti pi?1, pi, pi+1 & ti pi, pi+1, pi+2 & ti Previous tag ti?1 & ti Tag two back ti?2 & ti Next tag ti+1 & ti Tag two ahead ti+2 & ti Bigram tag features ti?2, ti?1 & ti ti?1, ti+1 & ti ti+1, ti+2 & tiTable 4: Feature templates used in chunking experi ments.(Collins, 2002) and used POS-trigrams as well.","{'title': 'Experiments. ', 'number': '4'}"
-Ta ble 4 lists the features used in chunking experiments.,"{'title': 'Experiments. ', 'number': '4'}"
-"Table 5 shows the results on the development set.Again, bidirectional methods exhibit better perfor mance than unidirectional methods.","{'title': 'Experiments. ', 'number': '4'}"
-The differenceis bigger with the Start/End representation.,"{'title': 'Experiments. ', 'number': '4'}"
-"Depen dency networks did not work well for this chunking task, especially with the Start/End representation.","{'title': 'Experiments. ', 'number': '4'}"
-We applied the best model on the development set in each chunk representation type to the test data.,"{'title': 'Experiments. ', 'number': '4'}"
-Table 6 summarizes the performance on thetest set.,"{'title': 'Experiments. ', 'number': '4'}"
-"Our bidirectional methods achieved F scores of 93.63 and 93.70, which are better than the best F-score (93.48) of the CoNLL-2000 shared task (Sang and Buchholz, 2000) and comparable to those achieved by other state-of-the-art methods.","{'title': 'Experiments. ', 'number': '4'}"
-There are some reports that one can improve the performance of unidirectional models by combiningoutputs of multiple taggers.,"{'title': 'Discussion. ', 'number': '5'}"
-"Shen et al (2003) re ported a 4.9% error reduction of supertagging by 472 Representation Method Order Recall Precision F-score Speed (tokens/sec) IOB2 Left-to-right 1 93.17 93.05 93.11 1,775 2 93.13 92.90 93.01 989 Right-to-left 1 92.92 92.82 92.87 1,635 2 92.92 92.74 92.87 927 Dependency Networks 1 92.71 92.91 92.81 2,534 2 92.61 92.95 92.78 1,893 Easiest-first 1 93.17 93.04 93.11 2,441 2 93.35 93.32 93.33 1,248 Full Bidirectional 1 93.29 93.14 93.21 712 2 93.26 93.12 93.19 48 Start/End Left-to-right 1 92.98 92.69 92.83 861 2 92.96 92.67 92.81 439 Right-to-left 1 92.92 92.83 92.87 887 2 92.89 92.74 92.82 451 Dependency Networks 1 87.10 89.56 88.32 1,894 2 87.16 89.44 88.28 331 Easiest-first 1 93.33 92.95 93.14 1,950 2 93.31 92.95 93.13 1,016 Full Bidirectional 1 93.52 93.26 93.39 392 2 93.44 93.20 93.32 4 Table 5: Chunking F-scores on the development set.","{'title': 'Discussion. ', 'number': '5'}"
-"Method Recall Precision F-score SVM (Kudoh and Matsumoto, 2000) 93.51 93.45 93.48 SVM voting (Kudo and Matsumoto, 2001) 93.92 93.89 93.91 Regularized Winnow (with basic features) (Zhang et al, 2002) 93.60 93.54 93.57 Perceptron (Carreras and Marquez, 2003) 93.29 94.19 93.74 Easiest-first (IOB2, second-order) 93.59 93.68 93.63 Full Bidirectional (Start/End, first-order) 93.70 93.65 93.70 Table 6: Chunking F-scores on the test set (Section 20 of the WSJ, 2012 sentences).pairwise voting between left-to-right and right-to left taggers.","{'title': 'Discussion. ', 'number': '5'}"
-Kudo et al (2001) attained performance improvement in chunking by conducting weighted voting of multiple SVMs trained with distinct chunk representations.,"{'title': 'Discussion. ', 'number': '5'}"
-The biggest difference between ourapproach and such voting methods is that the lo cal classifier in our bidirectional inference methodscan have rich information for decision.,"{'title': 'Discussion. ', 'number': '5'}"
-"Also, vot ing methods generally need many tagging processes to be run on a sentence, which makes it difficult to build a fast tagger.Our algorithm can be seen as an ensemble classi fier by which we choose the highest probability oneamong the different taggers with all possible decom position structures.","{'title': 'Discussion. ', 'number': '5'}"
-"Although choosing the highest probability one is seemingly natural and one of the simplest ways for combining the outputs of differenttaggers, one could use a different method (e.g. sum ming the probabilities over the outputs which share the same label sequence).","{'title': 'Discussion. ', 'number': '5'}"
-Investigating the methods for combination should be an interesting direction of future work.,"{'title': 'Discussion. ', 'number': '5'}"
-"As for the computational cost for training, our methods require us to train 22n types of classifiers when we adopt an nth order markov assumption.","{'title': 'Discussion. ', 'number': '5'}"
-Inmany cases a second-order model is sufficient because further increase of n has little impact on per formance.,"{'title': 'Discussion. ', 'number': '5'}"
-"Thus the training typically takes four or 16 times as much time as it would take for training a single unidirectional tagger, which looks somewhatexpensive.","{'title': 'Discussion. ', 'number': '5'}"
-"However, because each type of classi fier can be trained independently, the training can be performed completely in parallel and run with the same amount of memory as that for training a single classifier.","{'title': 'Discussion. ', 'number': '5'}"
-This advantage contrasts with the case for CRFs which requires substantial amount ofmemory and computational cost if one tries to incor porate higher-order features about tag sequences.,"{'title': 'Discussion. ', 'number': '5'}"
-Tagging speed is another important factor inbuilding a practical tagger for large-scale text min 473 ing.,"{'title': 'Discussion. ', 'number': '5'}"
-"Our inference algorithm with the easiest-first strategy needs no Viterbi decoding unlike MEMMs and CRFs, and makes it possible to perform very fast tagging with high precision.","{'title': 'Discussion. ', 'number': '5'}"
-"We have presented a bidirectional inference algo rithm for sequence labeling problems such as POStagging, named entity recognition and text chunking.","{'title': 'Conclusion. ', 'number': '6'}"
-The algorithm can enumerate all possible decomposition structures and find the highest prob ability sequence together with the corresponding decomposition structure in polynomial time.,"{'title': 'Conclusion. ', 'number': '6'}"
-"Wehave also presented an efficient bidirectional infer ence algorithm based on the easiest-first strategy,which gives comparable performance to full bidirectional inference with significantly lower compu tational cost.","{'title': 'Conclusion. ', 'number': '6'}"
-Experimental results of POS tagging and textchunking show that the proposed bidirectional inference methods consistently outperform unidi rectional inference methods and our bidirectional MEMMs give comparable performance to thatachieved by state-of-the-art learning algorithms in cluding kernel support vector machines.,"{'title': 'Conclusion. ', 'number': '6'}"
-"A natural extension of this work is to replace the maximum entropy modeling, which was used asthe local classifiers, with other machine learning algorithms.","{'title': 'Conclusion. ', 'number': '6'}"
-Support vector machines with appropri ate kernels is a good candidate because they havegood generalization performance as a single classi fier.,"{'title': 'Conclusion. ', 'number': '6'}"
-"Although SVMs do not output probabilities, theeasiest-first method would be easily applied by considering the margins output by SVMs as the confi dence of local classification.","{'title': 'Conclusion. ', 'number': '6'}"
+"This paper presents a bidirectional inference algorithm for sequence labeling problems such as part-of-speech tag ging, named entity recognition and text chunking.",Introduction
+The algorithm can enumerate all possible decomposition structures andfind the highest probability sequence together with the corresponding decomposi tion structure in polynomial time.,Introduction
+"We also present an efficient decoding algorithm based on the easiest-first strategy, which gives comparably good performance tofull bidirectional inference with significantly lower computational cost.",Introduction
+Exper imental results of part-of-speech tagging and text chunking show that the proposedbidirectional inference methods consis tently outperform unidirectional inference methods and bidirectional MEMMs give comparable performance to that achievedby state-of-the-art learning algorithms in cluding kernel support vector machines.,Introduction
+"The task of labeling sequence data such as part-of speech (POS) tagging, chunking (shallow parsing)and named entity recognition is one of the most im portant tasks in natural language processing.",Experiment/Discussion
+"Conditional random fields (CRFs) (Lafferty et al,2001) have recently attracted much attention because they are free from so-called label bias prob lems which reportedly degrade the performance of sequential classification approaches like maximum entropy markov models (MEMMs).",Experiment/Discussion
+"Although sequential classification approachescould suffer from label bias problems, they have sev eral advantages over CRFs.",Experiment/Discussion
+One is the efficiencyof training.,Experiment/Discussion
+CRFs need to perform dynamic programming over the whole sentence in order to compute feature expectations in each iteration of numerical optimization.,Experiment/Discussion
+"Training, for instance, second order CRFs using a rich set of features can require prohibitive computational resources.",Experiment/Discussion
+"Max-marginmethods for structured data share problems of com putational cost (Altun et al, 2003).Another advantage is that one can employ a variety of machine learning algorithms as the local classifier.",Experiment/Discussion
+There is huge amount of work about developing classification algorithms that have high generalization performance in the machine learning community.,Experiment/Discussion
+Being able to incorporate such state-of-theart machine learning algorithms is important.,Experiment/Discussion
+"Indeed, sequential classification approaches with kernel support vector machines offer competitive per formance in POS tagging and chunking (Gimenez and Marquez, 2003; Kudo and Matsumoto, 2001).",Experiment/Discussion
+One obvious way to improve the performance of sequential classification approaches is to enrich theinformation that the local classifiers can use.,Experiment/Discussion
+"In stan dard decomposition techniques, the local classifiers cannot use the information about future tags (e.g. the right-side tags in left-to-right decoding), which would be helpful in predicting the tag of the targetword.",Experiment/Discussion
+"To make use of the information about future tags, Toutanova et al proposed a tagging algo rithm based on bidirectional dependency networks 467(Toutanova et al, 2003) and achieved the best ac curacy on POS tagging on the Wall Street Journal corpus.",Experiment/Discussion
+"As they pointed out in their paper, however,their method potentially suffers from ?collusion?",Experiment/Discussion
+ef fects which make the model lock onto conditionally consistent but jointly unlikely sequences.,Experiment/Discussion
+"In theirmodeling, the local classifiers can always use the in formation about future tags, but that could cause a double-counting effect of tag information.",Experiment/Discussion
+In this paper we propose an alternative way of making use of future tags.,Experiment/Discussion
+Our inference method considers all possible ways of decomposition andchooses the ?best?,Experiment/Discussion
+"decomposition, so the informa tion about future tags is used only in appropriate situations.",Experiment/Discussion
+"We also present a deterministic versionof the inference method and show their effective ness with experiments of English POS tagging and chunking, using standard evaluation sets.",Experiment/Discussion
+The task of labeling sequence data is to find the se quence of tags t1...tn that maximizes the following probability given the observation o = o1...on P (t1...tn|o).,Experiment/Discussion
+(1) Observations are typically words and their lexicalfeatures in the task of POS tagging.,Experiment/Discussion
+"Sequential clas sification approaches decompose the probability as follows, P (t1...tn|o) = n?",Experiment/Discussion
+i=1 p(ti|t1...ti?1o).,Experiment/Discussion
+(2) This is the left-to-right decomposition.,Experiment/Discussion
+"If we make a first-order markov assumption, the equation becomes P (t1...tn|o) = n?",Experiment/Discussion
+i=1 p(ti|ti?1o).,Experiment/Discussion
+(3) Then we can employ a probabilistic classifier trained with the preceding tag and observations in order to obtain p(ti|ti?1o) for local classification.,Experiment/Discussion
+"A common choice for the local probabilistic classifier is maximum entropy classifiers (Berger et al, 1996).",Experiment/Discussion
+The best tag sequence can be efficiently computed by using a Viterbi decoding algorithm in polynomial time.,Experiment/Discussion
+t1 (a) t2 t3 o t1 (b) t2 t3 t1 (c) t2 t3 t1 (d) t2 t3 o o o Figure 1: Different structures for decomposition.,Experiment/Discussion
+The right-to-left decomposition is P (t1...tn|o) = n?,Experiment/Discussion
+i=1 p(ti|ti+1o).,Experiment/Discussion
+(4) These two ways of decomposition are widely usedin various tagging problems in natural language pro cessing.,Experiment/Discussion
+The issue with such decompositions is that you have only the information about the preceding(or following) tags when performing local classifi cation.,Experiment/Discussion
+"From the viewpoint of local classification, we want to give the classifier as much information as possible because the information about neighboring tags is useful in general.",Experiment/Discussion
+"As an example, consider the situation where we are going to annotate a three-word sentence withpart-of-speech tags.",Experiment/Discussion
+Figure 1 shows the four possi ble ways of decomposition.,Experiment/Discussion
+They correspond to the following equations: (a) P (t1...t3|o) = P (t1|o)P (t2|t1o)P (t3|t2o) (5) (b) P (t1...t3|o) = P (t3|o)P (t2|t3o)P (t1|t2o) (6) (c) P (t1...t3|o) = P (t1|o)P (t3|o)P (t2|t3t1o) (7) (d) P (t1...t3|o) = P (t2|o)P (t1|t2o)P (t3|t2o) (8)(a) and (b) are the standard left-to-right and rightto-left decompositions.,Experiment/Discussion
+"Notice that in decomposi tion (c), the local classifier can use the information about the tags on both sides when deciding t2.",Experiment/Discussion
+"If, for example, the second word is difficult to tag (e.g.an unknown word), we might as well take the de composition structure (c) because the local classifier 468 can use rich information when deciding the tag of the most difficult word.",Experiment/Discussion
+"In general if we have ann-word sentence and adopt a first-order markov assumption, we have 2n?1 possible ways of decomposition because each of the n ? 1 edges in the cor responding graph has two directions (left-to-right or right-to-left).",Experiment/Discussion
+Our bidirectional inference method is to consider all possible decomposition structures and choose the ?best?,Experiment/Discussion
+structure and tag sequence.,Experiment/Discussion
+"We will show inthe next section that this is actually possible in poly nomial time by dynamic programming.As for the training, let us look at the equa tions of four different decompositions above.",Experiment/Discussion
+"You can notice that there are only four types of local conditional probabilities: P (ti|ti?1o), P (ti|ti+1o), P (ti|ti?1ti+1o), and P (ti|o).This means that if we have these four types of lo cal classifiers, we can consider any decompositionstructures in the decoding stage.",Experiment/Discussion
+These local classi fiers can be obtained by training with corresponding neighboring tag information.,Experiment/Discussion
+Training the first twotypes of classifiers is exactly the same as the training of popular left-to-right and right-to-left sequen tial classification models respectively.,Experiment/Discussion
+"If we take a second-order markov assumption, we need to train 16 types of local classifiers because each of the four neighboring tags of a classificationtarget has two possibilities of availability.",Experiment/Discussion
+"In gen eral, if we take a k-th order markov assumption, we need to train 22k types of local classifies.",Experiment/Discussion
+2.1 Polynomial Time Inference.,Experiment/Discussion
+This section describes an algorithm to find the de composition structure and tag sequence that give the highest probability.,Experiment/Discussion
+"The algorithm for the first-order case is an adaptation of the algorithm for decodingthe best sequence on a bidirectional dependency net work introduced by (Toutanova et al, 2003), which originates from the Viterbi decoding algorithm for second-order markov models.Figure 2 shows a polynomial time decoding algorithm for our bidirectional inference.",Experiment/Discussion
+"It enumer ates all possible decomposition structures and tag sequences by recursive function calls, and finds the highest probability sequence.",Experiment/Discussion
+Polynomial time isachieved by caching.,Experiment/Discussion
+"Note that for each local clas sification, the function chooses the appropriate local function bestScore() { return bestScoreSub(n+2, ?end, end, end?, ?L,L?); } function bestScoreSub(i+1, ?ti?1, ti, ti+1?, ?di?1, di?)",Experiment/Discussion
+"{ // memorization if (cached(i+1, ?ti?1, ti, ti+1?, ?di?1, di?)) return cache(i+1, ?ti?1, ti, ti+1?, ?di?1, di?); // left boundary case if (i = -1) if (?ti?1, ti, ti+1?",Experiment/Discussion
+"= ?start, start, start?)",Experiment/Discussion
+"return 1; else return 0; // recursive case P = localClassification(i, ?ti?1, ti, ti+1?, ?di?1, di?); return maxdi?2 maxti?2 P?",Experiment/Discussion
+"bestScoreSub(i, ?ti?2, ti?1, ti?, ?di?2, di?1?); } function localClassification(i, ?ti?1, ti, ti+1?, ?di?1, di?)",Experiment/Discussion
+"{ if (di?1 = L & di = L) return P (ti|ti+1, o); if (di?1 = L & di = R) return P (ti|o); if (di?1 = R & di = L) return P (ti|ti?1ti+1, o); if (di?1 = R & di = R) return P (ti|ti?1, o); } Figure 2: Pseudo-code for bidirectional inference for the first-order conditional markov models.",Experiment/Discussion
+di is the direction of the edge between ti and ti+1.,Experiment/Discussion
+classifier by taking into account the directions of the adjacent edges of the classification target.,Experiment/Discussion
+The second-order case is similar but slightly morecomplex.,Experiment/Discussion
+Figure 3 shows the algorithm.,Experiment/Discussion
+"The recur sive function needs to consider the directions of the four adjacent edges of the classification target, and maintain the directions of the two neighboring edgesto enumerate all possible edge directions.",Experiment/Discussion
+"In addi tion, the algorithm rules out cycles in the structure.",Experiment/Discussion
+2.2 Decoding with the Easiest-First Strategy.,Experiment/Discussion
+We presented a polynomial time decoding algorithm in the previous section.,Experiment/Discussion
+"However, polynomial time is not low enough in practice.",Experiment/Discussion
+"Indeed, even the Viterbi decoding of second-order markov models for POS tagging is not practical unless some pruning methodis involved.",Experiment/Discussion
+"The computational cost of the bidirec tional decoding algorithm presented in the previoussection is, of course, larger than that because it enu merates all possible directions of the edges on top of the enumeration of possible tag sequences.",Experiment/Discussion
+"In this section we present a greedy version of the decoding method for bidirectional inference, which 469 function bestScore() { return bestScoreSub(n+3, ?end, end, end, end, end?, ?L,L, L, L?, ?L,L?); } function bestScoreSub(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?) { // to avoid cycles if (di?1 = di & di != d?i) return 0; // memorization if (cached(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?) return cache(i+2, ?ti?2, ti?1, ti, ti+1ti+2?, ?d?i?1, di?1, di, d?i+1?, ?di?2, d?i?); // left boundary case if (i = -2) if (?ti?2, ti?1, ti, ti+1, ti+2?",Experiment/Discussion
+"= ?start, start, start, start, start?)",Experiment/Discussion
+"return 1; else return 0; // recursive case P = localClassification(i, ?ti?2, ti?1, ti, ti+1, ti+2?, ?d?i?1, di?1, di, d?i+1?); return maxd?",Experiment/Discussion
+i?2 maxdi?3 maxti?3 P?,Experiment/Discussion
+"bestScoreSub(i+1, ?ti?3, ti?2, ti?1, titi+1?, ?d?i?2, di?2, di?1, d?i?, ?di?3, d?i?1?); } Figure 3: Pseudo-code for bidirectional inference for the second-order conditional markov models.",Experiment/Discussion
+di is the direction of the edge between ti and ti+1.,Experiment/Discussion
+d?i is the direction of the edge between ti?1 and ti+1.,Experiment/Discussion
+We omit the localClassification function because it is the obvious extension of that for the first-order case.,Experiment/Discussion
+"is extremely simple and significantly more efficient than full bidirectional decoding.Instead of enumerating all possible decomposition structures, the algorithm determines the struc ture by adopting the easiest-first strategy.",Experiment/Discussion
+The whole decoding algorithm is given below.,Experiment/Discussion
+1.,Experiment/Discussion
+Find the ?easiest?,Experiment/Discussion
+word to tag..,Experiment/Discussion
+2.,Experiment/Discussion
+Tag the word..,Experiment/Discussion
+We assume in this paper that the ?easiest?,Experiment/Discussion
+word to tag is the word for which the classifier outputs the highest probability.,Experiment/Discussion
+"In finding the easiest word, we use the appropriate local classifier according to the availability of the neighboring tags.",Experiment/Discussion
+"Therefore,in the first iteration, we always use the local classi fiers trained with no contextual tag information (i.e.",Experiment/Discussion
+(P (ti|o)).,Experiment/Discussion
+"Then, for example, if t3 has been tagged in the first iteration in a three-word sentence, we use P (t2|t3o) to compute the probability for tagging t2 in the second iteration (as in Figure 1 (b)).",Experiment/Discussion
+"A naive implementation of this algorithm requires O(n2) invocations of local classifiers, where n is the number of the words in the sentence, because we need to update the probabilities over the words ateach iteration.",Experiment/Discussion
+"However, a k-th order Markov as sumption obviously allows us to skip most of the probability updates, resulting in O(kn) invocations of local classifiers.",Experiment/Discussion
+This enables us to build a very efficient tagger.,Experiment/Discussion
+"For local classifiers, we used a maximum entropy model which is a common choice for incorporating various types of features for classification problems in natural language processing (Berger et al, 1996).",Experiment/Discussion
+Regularization is important in maximum entropy modeling to avoid overfitting to the training data.,Experiment/Discussion
+"For this purpose, we use the maximum entropy modeling with inequality constraints (Kazama andTsujii, 2003).",Experiment/Discussion
+"The model gives equally good per formance as the maximum entropy modeling with Gaussian priors (Chen and Rosenfeld, 1999), and the size of the resulting model is much smaller thanthat of Gaussian priors because most of the param eters become zero.",Experiment/Discussion
+"This characteristic enables us to easily handle the model data and carry out quick decoding, which is convenient when we repetitivelyperform experiments.",Experiment/Discussion
+"This modeling has one param eter to tune, which is called the width factor.",Experiment/Discussion
+We tuned this parameter using the development data in each type of experiments.,Experiment/Discussion
+"470 Current word wi & ti Previous word wi?1 & ti Next word wi+1 & ti Bigram features wi?1, wi & ti wi, wi+1 & ti Previous tag ti?1 & ti Tag two back ti?2 & ti Next tag ti+1 & ti Tag two ahead ti+2 & ti Tag Bigrams ti?2, ti?1 & ti ti?1, ti+1 & ti ti+1, ti+2 & ti Tag Trigrams ti?2, ti?1, ti+1 & ti ti?1, ti+1, ti+2 & ti Tag 4-grams ti?2, ti?1, ti+1, ti+2 & ti Tag/Word ti?1, wi & ti combination ti+1, wi & ti ti?1, ti+1, wi & ti Prefix features prefixes of wi & ti (up to length 10) Suffix features suffixes of wi & ti (up to length 10) Lexical features whether wi has a hyphen & ti whether wi has a number & ti whether wi has a capital letter & ti whether wi is all capital & tiTable 1: Feature templates used in POS tagging ex periments.",Experiment/Discussion
+Tags are parts-of-speech.,Experiment/Discussion
+Tag featuresare not necessarily used in all the models.,Experiment/Discussion
+"For example, ?next tag?",Experiment/Discussion
+features cannot be used in left-to right models.,Experiment/Discussion
+"To evaluate the bidirectional inference methods pre sented in the previous sections, we ran experimentson POS tagging and text chunking with standard En glish data sets.",Experiment/Discussion
+"Although achieving the best accuracy is not the primary purpose of this paper, we explored usefulfeature sets and parameter setting by using develop ment data in order to make the experiments realistic.",Experiment/Discussion
+4.1 Part-of-speech tagging experiments.,Experiment/Discussion
+"We split the Penn Treebank corpus (Marcus et al, 1994) into training, development and test sets as in(Collins, 2002).",Experiment/Discussion
+Sections 0-18 are used as the train ing set.,Experiment/Discussion
+"Sections 19-21 are the development set, andsections 22-24 are used as the test set.",Experiment/Discussion
+"All the ex periments were carried out on the development set, except for the final accuracy report using the best setting.",Experiment/Discussion
+"For features, we basically adopted the feature set Method Accuracy Speed (%) (tokens/sec) Left-to-right (Viterbi) 96.92 844 Right-to-left (Viterbi) 96.89 902 Dependency Networks 97.06 1,446 Easiest-last 96.58 2,360 Easiest-first 97.13 2,461 Full bidirectional 97.12 34Table 2: POS tagging accuracy and speed on the de velopment set.",Experiment/Discussion
+Method Accuracy (%) Dep.,Experiment/Discussion
+"Networks (Toutanova et al, 2003) 97.24 Perceptron (Collins, 2002) 97.11 SVM (Gimenez and Marquez, 2003) 97.05 HMM (Brants, 2000) 96.48 Easiest-first 97.10 Full Bidirectional 97.15Table 3: POS tagging accuracy on the test set (Sec tions 22-24 of the WSJ, 5462 sentences).provided by (Toutanova et al, 2003) except for com plex features such as crude company-name detectionfeatures because they are specific to the Penn Tree bank and we could not find the exact implementation details.",Experiment/Discussion
+Table 1 lists the feature templates used in our experiments.,Experiment/Discussion
+"We tested the proposed bidirectional methods,conventional unidirectional methods and the bidirec tional dependency network proposed by Toutanova (Toutanova et al, 2003) for comparison.",Experiment/Discussion
+1.,Experiment/Discussion
+All the models are second-order.,Experiment/Discussion
+Table 2 shows the accuracy and tagging speed on the developmentdata 2.,Experiment/Discussion
+Bidirectional inference methods clearly out performed unidirectional methods.,Experiment/Discussion
+Note that the easiest-first decoding method achieves equally good performance as full bidirectional inference.,Experiment/Discussion
+"Table 2 also shows that the easiest-last strategy, where weselect and tag the most difficult word at each itera tion, is clearly a bad strategy.An example of easiest-first decoding is given be low: 1For dependency network and full bidirectional decoding, we conducted pruning because the computational cost was too large to perform exhaustive search.",Experiment/Discussion
+We pruned a tag candidate if the zero-th order probability of the candidate P (ti|o) was lower than one hundredth of the zero-th order probability of the most likely tag at the token.,Experiment/Discussion
+2Tagging speed was measured on a server with an AMD Opteron 2.4GHz CPU.,Experiment/Discussion
+"471 The/DT/4 company/NN/7 had/VBD/11sought/VBN/14 increases/NNS/13 total ing/VBG/12 $/$/2 80.3/CD/5 million/CD/8 ,/,/1 or/CC/6 22/CD/9 %/NN/10 ././3 Each token represents Word/PoS/DecodingOrder.",Experiment/Discussion
+"Typically, punctuations and articles are tagged first.",Experiment/Discussion
+Verbs are usually tagged in later stages because their tags are likely to be ambiguous.,Experiment/Discussion
+We applied our bidirectional inference methods to the test data.,Experiment/Discussion
+The results are shown in Table 3.,Experiment/Discussion
+The table also summarizes the accuracies achieved by several other research efforts.,Experiment/Discussion
+"The best accuracyis 97.24% achieved by bidirectional dependency net works (Toutanova et al, 2003) with a richer set of features that are carefully designed for the corpus.",Experiment/Discussion
+"A perceptron algorithm gives 97.11% (Collins, 2002).",Experiment/Discussion
+Gimenez and Marquez achieve 97.05% with support vector machines (SVMs).,Experiment/Discussion
+This result indicates thatbidirectional inference with maximum entropy mod eling can achieve comparable performance to other state-of-the-art POS tagging methods.,Experiment/Discussion
+4.2 Chunking Experiments.,Experiment/Discussion
+The task of chunking is to find non-recursive phrases in a sentence.,Experiment/Discussion
+"For example, a chunker segments the sentence ?He reckons the current account deficit willnarrow to only 1.8 billion in September?",Experiment/Discussion
+"into the fol lowing, [NP He] [VP reckons] [NP the current accountdeficit] [VP will narrow] [PP to] [NP only 1.8 bil lion] [PP in] [NP September] .We can regard chunking as a tagging task by con verting chunks into tags on tokens.",Experiment/Discussion
+"There are severalways of representing text chunks (Sang and Veen stra, 1999).",Experiment/Discussion
+"We tested the Start/End representation in addition to the popular IOB2 representation since local classifiers can have fine-grained informationon the neighboring tags in the Start/End represen tation.For training and testing, we used the data set pro vided for the CoNLL-2000 shared task.",Experiment/Discussion
+"The training set consists of section 15-18 of the WSJ corpus, and the test set is section 20.",Experiment/Discussion
+"In addition, we made the development set from section 21 3.",Experiment/Discussion
+We basically adopted the feature set provided in 3We used the Perl script provided on http://ilk.kub.nl/?,Experiment/Discussion
+"sabine/chunklink/ Current word wi & ti Previous word wi?1 & ti Word two back wi?2 & ti Next word wi+1 & ti Word two ahead wi+2 & ti Bigram features wi?2, wi?1 & ti wi?1, wi & ti wi, wi+1 & ti wi+1, wi+2 & ti Current POS pi & ti Previous POS pi?1 & ti POS two back pi?2 & ti Next POS pi+1 & ti POS two ahead pi+2 & ti Bigram POS features pi?2, pi?1 & ti pi?1, pi & ti pi, pi+1 & ti pi+1, pi+2 & ti Trigram POS features pi?2, pi?1, pi & ti pi?1, pi, pi+1 & ti pi, pi+1, pi+2 & ti Previous tag ti?1 & ti Tag two back ti?2 & ti Next tag ti+1 & ti Tag two ahead ti+2 & ti Bigram tag features ti?2, ti?1 & ti ti?1, ti+1 & ti ti+1, ti+2 & tiTable 4: Feature templates used in chunking experi ments.(Collins, 2002) and used POS-trigrams as well.",Experiment/Discussion
+Ta ble 4 lists the features used in chunking experiments.,Experiment/Discussion
+"Table 5 shows the results on the development set.Again, bidirectional methods exhibit better perfor mance than unidirectional methods.",Experiment/Discussion
+The differenceis bigger with the Start/End representation.,Experiment/Discussion
+"Depen dency networks did not work well for this chunking task, especially with the Start/End representation.",Experiment/Discussion
+We applied the best model on the development set in each chunk representation type to the test data.,Experiment/Discussion
+Table 6 summarizes the performance on thetest set.,Experiment/Discussion
+"Our bidirectional methods achieved F scores of 93.63 and 93.70, which are better than the best F-score (93.48) of the CoNLL-2000 shared task (Sang and Buchholz, 2000) and comparable to those achieved by other state-of-the-art methods.",Experiment/Discussion
+There are some reports that one can improve the performance of unidirectional models by combiningoutputs of multiple taggers.,Results/Conclusion
+"Shen et al (2003) re ported a 4.9% error reduction of supertagging by 472 Representation Method Order Recall Precision F-score Speed (tokens/sec) IOB2 Left-to-right 1 93.17 93.05 93.11 1,775 2 93.13 92.90 93.01 989 Right-to-left 1 92.92 92.82 92.87 1,635 2 92.92 92.74 92.87 927 Dependency Networks 1 92.71 92.91 92.81 2,534 2 92.61 92.95 92.78 1,893 Easiest-first 1 93.17 93.04 93.11 2,441 2 93.35 93.32 93.33 1,248 Full Bidirectional 1 93.29 93.14 93.21 712 2 93.26 93.12 93.19 48 Start/End Left-to-right 1 92.98 92.69 92.83 861 2 92.96 92.67 92.81 439 Right-to-left 1 92.92 92.83 92.87 887 2 92.89 92.74 92.82 451 Dependency Networks 1 87.10 89.56 88.32 1,894 2 87.16 89.44 88.28 331 Easiest-first 1 93.33 92.95 93.14 1,950 2 93.31 92.95 93.13 1,016 Full Bidirectional 1 93.52 93.26 93.39 392 2 93.44 93.20 93.32 4 Table 5: Chunking F-scores on the development set.",Results/Conclusion
+"Method Recall Precision F-score SVM (Kudoh and Matsumoto, 2000) 93.51 93.45 93.48 SVM voting (Kudo and Matsumoto, 2001) 93.92 93.89 93.91 Regularized Winnow (with basic features) (Zhang et al, 2002) 93.60 93.54 93.57 Perceptron (Carreras and Marquez, 2003) 93.29 94.19 93.74 Easiest-first (IOB2, second-order) 93.59 93.68 93.63 Full Bidirectional (Start/End, first-order) 93.70 93.65 93.70 Table 6: Chunking F-scores on the test set (Section 20 of the WSJ, 2012 sentences).pairwise voting between left-to-right and right-to left taggers.",Results/Conclusion
+Kudo et al (2001) attained performance improvement in chunking by conducting weighted voting of multiple SVMs trained with distinct chunk representations.,Results/Conclusion
+The biggest difference between ourapproach and such voting methods is that the lo cal classifier in our bidirectional inference methodscan have rich information for decision.,Results/Conclusion
+"Also, vot ing methods generally need many tagging processes to be run on a sentence, which makes it difficult to build a fast tagger.Our algorithm can be seen as an ensemble classi fier by which we choose the highest probability oneamong the different taggers with all possible decom position structures.",Results/Conclusion
+"Although choosing the highest probability one is seemingly natural and one of the simplest ways for combining the outputs of differenttaggers, one could use a different method (e.g. sum ming the probabilities over the outputs which share the same label sequence).",Results/Conclusion
+Investigating the methods for combination should be an interesting direction of future work.,Results/Conclusion
+"As for the computational cost for training, our methods require us to train 22n types of classifiers when we adopt an nth order markov assumption.",Results/Conclusion
+Inmany cases a second-order model is sufficient because further increase of n has little impact on per formance.,Results/Conclusion
+"Thus the training typically takes four or 16 times as much time as it would take for training a single unidirectional tagger, which looks somewhatexpensive.",Results/Conclusion
+"However, because each type of classi fier can be trained independently, the training can be performed completely in parallel and run with the same amount of memory as that for training a single classifier.",Results/Conclusion
+This advantage contrasts with the case for CRFs which requires substantial amount ofmemory and computational cost if one tries to incor porate higher-order features about tag sequences.,Results/Conclusion
+Tagging speed is another important factor inbuilding a practical tagger for large-scale text min 473 ing.,Results/Conclusion
+"Our inference algorithm with the easiest-first strategy needs no Viterbi decoding unlike MEMMs and CRFs, and makes it possible to perform very fast tagging with high precision.",Results/Conclusion
+"We have presented a bidirectional inference algo rithm for sequence labeling problems such as POStagging, named entity recognition and text chunking.",Results/Conclusion
+The algorithm can enumerate all possible decomposition structures and find the highest prob ability sequence together with the corresponding decomposition structure in polynomial time.,Results/Conclusion
+"Wehave also presented an efficient bidirectional infer ence algorithm based on the easiest-first strategy,which gives comparable performance to full bidirectional inference with significantly lower compu tational cost.",Results/Conclusion
+Experimental results of POS tagging and textchunking show that the proposed bidirectional inference methods consistently outperform unidi rectional inference methods and our bidirectional MEMMs give comparable performance to thatachieved by state-of-the-art learning algorithms in cluding kernel support vector machines.,Results/Conclusion
+"A natural extension of this work is to replace the maximum entropy modeling, which was used asthe local classifiers, with other machine learning algorithms.",Results/Conclusion
+Support vector machines with appropri ate kernels is a good candidate because they havegood generalization performance as a single classi fier.,Results/Conclusion
+"Although SVMs do not output probabilities, theeasiest-first method would be easily applied by considering the margins output by SVMs as the confi dence of local classification.",Results/Conclusion

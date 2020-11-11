@@ -1,74 +1,74 @@
 col1,col2
-"Tree substitution grammars (TSGs) offer many advantages over context-free grammars (CFGs), but are hard to learn.",{}
-Past approaches have resorted to heuristics.,{}
-"In this paper, we learn a TSG using Gibbs sampling with a nonparametric prior to control subtree size.",{}
-The learned grammars perform significantly better than heuristically extracted ones on parsing accuracy.,{}
-"Tree substition grammars (TSGs) have potential advantages over regular context-free grammars (CFGs), but there is no obvious way to learn these grammars.","{'title': '1 Introduction', 'number': '1'}"
-"In particular, learning procedures are not able to take direct advantage of manually annotated corpora like the Penn Treebank, which are not marked for derivations and thus assume a standard CFG.","{'title': '1 Introduction', 'number': '1'}"
-"Since different TSG derivations can produce the same parse tree, learning procedures must guess the derivations, the number of which is exponential in the tree size.","{'title': '1 Introduction', 'number': '1'}"
-"This compels heuristic methods of subtree extraction, or maximum likelihood estimators which tend to extract large subtrees that overfit the training data.","{'title': '1 Introduction', 'number': '1'}"
-These problems are common in natural language processing tasks that search for a hidden segmentation.,"{'title': '1 Introduction', 'number': '1'}"
-"Recently, many groups have had success using Gibbs sampling to address the complexity issue and nonparametric priors to address the overfitting problem (DeNero et al., 2008; Goldwater et al., 2009).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper we apply these techniques to learn a tree substitution grammar, evaluate it on the Wall Street Journal parsing task, and compare it to previous work.","{'title': '1 Introduction', 'number': '1'}"
-"TSGs extend CFGs (and their probabilistic counterparts, which concern us here) by allowing nonterminals to be rewritten as subtrees of arbitrary size.","{'title': '2 Model', 'number': '2'}"
-"Although nonterminal rewrites are still context-free, in practice TSGs can loosen the independence assumptions of CFGs because larger rules capture more context.","{'title': '2 Model', 'number': '2'}"
-This is simpler than the complex independence and backoff decisions of Markovized grammars.,"{'title': '2 Model', 'number': '2'}"
-"Furthermore, subtrees with terminal symbols can be viewed as learning dependencies among the words in the subtree, obviating the need for the manual specification (Magerman, 1995) or automatic inference (Chiang and Bikel, 2002) of lexical dependencies.","{'title': '2 Model', 'number': '2'}"
-"Following standard notation for PCFGs, the probability of a derivation d in the grammar is given as where each r is a rule used in the derivation.","{'title': '2 Model', 'number': '2'}"
-"Under a regular CFG, each parse tree uniquely idenfifies a derivation.","{'title': '2 Model', 'number': '2'}"
-"In contrast, multiple derivations in a TSG can produce the same parse; obtaining the parse probability requires a summation over all derivations that could have produced it.","{'title': '2 Model', 'number': '2'}"
-This disconnect between parses and derivations complicates both inference and learning.,"{'title': '2 Model', 'number': '2'}"
-"The inference (parsing) task for TSGs is NP-hard (Sima’an, 1996), and in practice the most probable parse is approximated (1) by sampling from the derivation forest or (2) from the top k derivations.","{'title': '2 Model', 'number': '2'}"
-Grammar learning is more difficult as well.,"{'title': '2 Model', 'number': '2'}"
-"CFGs are usually trained on treebanks, especially the Wall Street Journal (WSJ) portion of the Penn Treebank.","{'title': '2 Model', 'number': '2'}"
-"Once the model is defined, relevant events can simply be counted in the training data.","{'title': '2 Model', 'number': '2'}"
-"In contrast, there are no treebanks annotated with TSG derivations, and a treebank parse tree of n nodes is ambiguous among 2n possible derivations.","{'title': '2 Model', 'number': '2'}"
-"One solution would be to manually annotate a treebank with TSG derivations, but in addition to being expensive, this task requires one to know what the grammar actually is.","{'title': '2 Model', 'number': '2'}"
-Part of the thinking motivating TSGs is to let the data determine the best set of subtrees.,"{'title': '2 Model', 'number': '2'}"
-"One approach to grammar-learning is DataOriented Parsing (DOP), whose strategy is to simply take all subtrees in the training data as the grammar (Bod, 1993).","{'title': '2 Model', 'number': '2'}"
-"Bod (2001) did this, approximating “all subtrees” by extracting from the Treebank 400K random subtrees for each subtree height ranging from two to fourteen, and compared the performance of that grammar to that of a heuristically pruned “minimal subset” of it.","{'title': '2 Model', 'number': '2'}"
-"The latter’s performance was quite good, achieving 90.8% F1 score1 on section 23 of the WSJ.","{'title': '2 Model', 'number': '2'}"
-"This approach is unsatisfying in some ways, however.","{'title': '2 Model', 'number': '2'}"
-Instead of heuristic extraction we would prefer a model that explained the subtrees found in the grammar.,"{'title': '2 Model', 'number': '2'}"
-"Furthermore, it seems unlikely that subtrees with ten or so lexical items will be useful on average at test time (Bod did not report how often larger trees are used, but did report that including subtrees with up to twelve lexical items improved parser performance).","{'title': '2 Model', 'number': '2'}"
-We expect there to be fewer large subtrees than small ones.,"{'title': '2 Model', 'number': '2'}"
-"Repeating Bod’s grammar extraction experiment, this is indeed what we find when comparing these two grammars (Figure 1).","{'title': '2 Model', 'number': '2'}"
-"In summary, we would like a principled (modelbased) means of determining from the data which set of subtrees should be added to our grammar, and we would like to do so in a manner that prefers smaller subtrees but permits larger ones if the data warrants it.","{'title': '2 Model', 'number': '2'}"
-"This type of requirement is common in NLP tasks that require searching for a hidden segmentation, and in the following sections we apply it to learning a TSG from the Penn Treebank.","{'title': '2 Model', 'number': '2'}"
-"prior2 For an excellent introduction to collapsed Gibbs sampling with a DP prior, we refer the reader to Appendix A of Goldwater et al. (2009), which we follow closely here.","{'title': '2 Model', 'number': '2'}"
-Our training data is a set of parse trees T that we assume was produced by an unknown TSG g with probability Pr(T |g).,"{'title': '2 Model', 'number': '2'}"
-"Using Bayes’ rule, we can compute the probability of a particular hypothesized grammar as Pr(g) is a distribution over grammars that expresses our a priori preference for g. We use a set of Dirichlet Process (DP) priors (Ferguson, 1973), one for each nonterminal X E N, the set of nonterminals in the grammar.","{'title': '2 Model', 'number': '2'}"
-"A sample from a DP is a distribution over events in an infinite sample space (in our case, potential subtrees in a TSG) which takes two parameters, a base measure and a concentration parameter: The base measure GX defines the probability of a subtree t as the product of the PCFG rules r E t that constitute it and a geometric distribution Pr$ over the number of those rules, thus encoding a preference for smaller subtrees.3 The parameter α contributes to the probability that previously unseen subtrees will be sampled.","{'title': '2 Model', 'number': '2'}"
-All DPs share parameters p$ and α.,"{'title': '2 Model', 'number': '2'}"
-An entire grammar is then given as g = {gX : X E N}.,"{'title': '2 Model', 'number': '2'}"
-We emphasize that no head information is used by the sampler.,"{'title': '2 Model', 'number': '2'}"
-"Rather than explicitly consider each segmentation of the parse trees (which would define a TSG and its associated parameters), we use a collapsed Gibbs sampler to integrate over all possible grammars and sample directly from the posterior.","{'title': '2 Model', 'number': '2'}"
-This is based on the Chinese Restaurant Process (CRP) representation of the DP.,"{'title': '2 Model', 'number': '2'}"
-The Gibbs sampler is an iterative procedure.,"{'title': '2 Model', 'number': '2'}"
-"At initialization, each parse tree in the corpus is annotated with a specific derivation by marking each node in the tree with a binary flag.","{'title': '2 Model', 'number': '2'}"
-"This flag indicates whether the subtree rooted at that node (a height one CFG rule, at minimum) is part of the subtree containing its parent.","{'title': '2 Model', 'number': '2'}"
-"The Gibbs sampler considers every non-terminal, non-root node c of each parse tree in turn, freezing the rest of the training data and randomly choosing whether to join the subtrees above c and rooted at c (outcome h1) or to split them (outcome h2) according to the probability ratio φ(h1)/(φ(h1) + φ(h2)), where φ assigns a probability to each of the outcomes (Figure 2).","{'title': '2 Model', 'number': '2'}"
-Let sub(n) denote the subtree above and including node n and sub(n) the subtree rooted at n; o is a binary operator that forms a single subtree from two adjacent ones.,"{'title': '2 Model', 'number': '2'}"
-The outcome probabilities are: where t = sub(c) o sub(c).,"{'title': '2 Model', 'number': '2'}"
-"Under the CRP, the subtree probability θ(t) is a function of the current state of the rest of the training corpus, the appropriate base measure Groot(t), and the concentration parameter α: where zt is the multiset of subtrees in the frozen portion of the training corpus sharing the same root as t, and countzt(t) is the count of subtree t among them.","{'title': '2 Model', 'number': '2'}"
-"We used the standard split for the Wall Street Journal portion of the Treebank, training on sections 2 to 21, and reporting results on sentences with no more than forty words from section 23.","{'title': '3 Experiments', 'number': '3'}"
-We compare with three other grammars.,"{'title': '3 Experiments', 'number': '3'}"
-"We note two differences in our work that explain the large difference in scores for the minimal grammar from those reported by Bod: (1) we did not implement the smoothed “mismatch parsing”, which permits lexical leaves of subtrees to act as wildcards, and (2) we approximate the most probable parse with the top single derivation instead of the top 1,000.","{'title': '3 Experiments', 'number': '3'}"
-Rule probabilities for all grammars were set with relative frequency.,"{'title': '3 Experiments', 'number': '3'}"
-The Gibbs sampler was initialized with the spinal grammar derivations.,"{'title': '3 Experiments', 'number': '3'}"
-"We construct sampled grammars in two ways: by summing all subtree counts from the derivation states of the first i sampling iterations together with counts from the Treebank CFG rules (denoted (α, p$,≤i)), and by taking the counts only from iteration i (denoted (α, p$, i)).","{'title': '3 Experiments', 'number': '3'}"
-Our standard CKY parser and Gibbs sampler were both written in Perl.,"{'title': '3 Experiments', 'number': '3'}"
-"TSG subtrees were flattened to CFG rules and reconstructed afterward, with identical mappings favoring the most probable rule.","{'title': '3 Experiments', 'number': '3'}"
-"For pruning, we binned nonterminals according to input span and degree of binarization, keeping the ten highest scoring items in each bin. the significantly larger “minimal subset” grammar.","{'title': '3 Experiments', 'number': '3'}"
-The sampled grammars outperform all of them.,"{'title': '3 Experiments', 'number': '3'}"
-"Nearly all of the rules of the best single iteration sampled grammar (100, 0.8, 500) are lexicalized (50,820 of 60,633), and almost half of them have a height greater than one (27,328).","{'title': '3 Experiments', 'number': '3'}"
-"Constructing sampled grammars by summing across iterations improved over this in all cases, but at the expense of a much larger grammar.","{'title': '3 Experiments', 'number': '3'}"
-"Figure 3 shows a histogram of subtree size taken from the counts of the subtrees (by token, not type) actually used in parsing WSJ§23.","{'title': '3 Experiments', 'number': '3'}"
-"Parsing with the “minimal subset” grammar uses highly lexicalized subtrees, but they do not improve accuracy.","{'title': '3 Experiments', 'number': '3'}"
-"We examined sentence-level F1 scores and found that the use of larger subtrees did correlate with accuracy; however, the low overall accuracy (and the fact that there are so many of these large subtrees available in the grammar) suggests that such rules are overfit.","{'title': '3 Experiments', 'number': '3'}"
-"In contrast, the histogram of subtree sizes used in parsing with the sampled grammar matches the shape of the histogram from the grammar itself.","{'title': '3 Experiments', 'number': '3'}"
-Gibbs sampling with a DP prior chooses smaller but more general rules.,"{'title': '3 Experiments', 'number': '3'}"
-Collapsed Gibbs sampling with a DP prior fits nicely with the task of learning a TSG.,"{'title': '4 Summary', 'number': '4'}"
-"The sampled grammars are model-based, are simple to specify and extract, and take the expected shape over subtree size.","{'title': '4 Summary', 'number': '4'}"
-"They substantially outperform heuristically extracted grammars from previous work as well as our novel spinal grammar, and can do so with many fewer rules.","{'title': '4 Summary', 'number': '4'}"
-Acknowledgments This work was supported by NSF grants IIS-0546554 and ITR-0428020.,"{'title': '4 Summary', 'number': '4'}"
+"Tree substitution grammars (TSGs) offer many advantages over context-free grammars (CFGs), but are hard to learn.",Introduction
+Past approaches have resorted to heuristics.,Introduction
+"In this paper, we learn a TSG using Gibbs sampling with a nonparametric prior to control subtree size.",Introduction
+The learned grammars perform significantly better than heuristically extracted ones on parsing accuracy.,Introduction
+"Tree substition grammars (TSGs) have potential advantages over regular context-free grammars (CFGs), but there is no obvious way to learn these grammars.",Experiment/Discussion
+"In particular, learning procedures are not able to take direct advantage of manually annotated corpora like the Penn Treebank, which are not marked for derivations and thus assume a standard CFG.",Experiment/Discussion
+"Since different TSG derivations can produce the same parse tree, learning procedures must guess the derivations, the number of which is exponential in the tree size.",Experiment/Discussion
+"This compels heuristic methods of subtree extraction, or maximum likelihood estimators which tend to extract large subtrees that overfit the training data.",Experiment/Discussion
+These problems are common in natural language processing tasks that search for a hidden segmentation.,Experiment/Discussion
+"Recently, many groups have had success using Gibbs sampling to address the complexity issue and nonparametric priors to address the overfitting problem (DeNero et al., 2008; Goldwater et al., 2009).",Experiment/Discussion
+"In this paper we apply these techniques to learn a tree substitution grammar, evaluate it on the Wall Street Journal parsing task, and compare it to previous work.",Experiment/Discussion
+"TSGs extend CFGs (and their probabilistic counterparts, which concern us here) by allowing nonterminals to be rewritten as subtrees of arbitrary size.",Experiment/Discussion
+"Although nonterminal rewrites are still context-free, in practice TSGs can loosen the independence assumptions of CFGs because larger rules capture more context.",Experiment/Discussion
+This is simpler than the complex independence and backoff decisions of Markovized grammars.,Experiment/Discussion
+"Furthermore, subtrees with terminal symbols can be viewed as learning dependencies among the words in the subtree, obviating the need for the manual specification (Magerman, 1995) or automatic inference (Chiang and Bikel, 2002) of lexical dependencies.",Experiment/Discussion
+"Following standard notation for PCFGs, the probability of a derivation d in the grammar is given as where each r is a rule used in the derivation.",Experiment/Discussion
+"Under a regular CFG, each parse tree uniquely idenfifies a derivation.",Experiment/Discussion
+"In contrast, multiple derivations in a TSG can produce the same parse; obtaining the parse probability requires a summation over all derivations that could have produced it.",Experiment/Discussion
+This disconnect between parses and derivations complicates both inference and learning.,Experiment/Discussion
+"The inference (parsing) task for TSGs is NP-hard (Sima’an, 1996), and in practice the most probable parse is approximated (1) by sampling from the derivation forest or (2) from the top k derivations.",Experiment/Discussion
+Grammar learning is more difficult as well.,Experiment/Discussion
+"CFGs are usually trained on treebanks, especially the Wall Street Journal (WSJ) portion of the Penn Treebank.",Experiment/Discussion
+"Once the model is defined, relevant events can simply be counted in the training data.",Experiment/Discussion
+"In contrast, there are no treebanks annotated with TSG derivations, and a treebank parse tree of n nodes is ambiguous among 2n possible derivations.",Experiment/Discussion
+"One solution would be to manually annotate a treebank with TSG derivations, but in addition to being expensive, this task requires one to know what the grammar actually is.",Experiment/Discussion
+Part of the thinking motivating TSGs is to let the data determine the best set of subtrees.,Experiment/Discussion
+"One approach to grammar-learning is DataOriented Parsing (DOP), whose strategy is to simply take all subtrees in the training data as the grammar (Bod, 1993).",Experiment/Discussion
+"Bod (2001) did this, approximating “all subtrees” by extracting from the Treebank 400K random subtrees for each subtree height ranging from two to fourteen, and compared the performance of that grammar to that of a heuristically pruned “minimal subset” of it.",Experiment/Discussion
+"The latter’s performance was quite good, achieving 90.8% F1 score1 on section 23 of the WSJ.",Experiment/Discussion
+"This approach is unsatisfying in some ways, however.",Experiment/Discussion
+Instead of heuristic extraction we would prefer a model that explained the subtrees found in the grammar.,Experiment/Discussion
+"Furthermore, it seems unlikely that subtrees with ten or so lexical items will be useful on average at test time (Bod did not report how often larger trees are used, but did report that including subtrees with up to twelve lexical items improved parser performance).",Experiment/Discussion
+We expect there to be fewer large subtrees than small ones.,Experiment/Discussion
+"Repeating Bod’s grammar extraction experiment, this is indeed what we find when comparing these two grammars (Figure 1).",Experiment/Discussion
+"In summary, we would like a principled (modelbased) means of determining from the data which set of subtrees should be added to our grammar, and we would like to do so in a manner that prefers smaller subtrees but permits larger ones if the data warrants it.",Experiment/Discussion
+"This type of requirement is common in NLP tasks that require searching for a hidden segmentation, and in the following sections we apply it to learning a TSG from the Penn Treebank.",Experiment/Discussion
+"prior2 For an excellent introduction to collapsed Gibbs sampling with a DP prior, we refer the reader to Appendix A of Goldwater et al. (2009), which we follow closely here.",Experiment/Discussion
+Our training data is a set of parse trees T that we assume was produced by an unknown TSG g with probability Pr(T |g).,Experiment/Discussion
+"Using Bayes’ rule, we can compute the probability of a particular hypothesized grammar as Pr(g) is a distribution over grammars that expresses our a priori preference for g. We use a set of Dirichlet Process (DP) priors (Ferguson, 1973), one for each nonterminal X E N, the set of nonterminals in the grammar.",Experiment/Discussion
+"A sample from a DP is a distribution over events in an infinite sample space (in our case, potential subtrees in a TSG) which takes two parameters, a base measure and a concentration parameter: The base measure GX defines the probability of a subtree t as the product of the PCFG rules r E t that constitute it and a geometric distribution Pr$ over the number of those rules, thus encoding a preference for smaller subtrees.3 The parameter α contributes to the probability that previously unseen subtrees will be sampled.",Experiment/Discussion
+All DPs share parameters p$ and α.,Experiment/Discussion
+An entire grammar is then given as g = {gX : X E N}.,Experiment/Discussion
+We emphasize that no head information is used by the sampler.,Experiment/Discussion
+"Rather than explicitly consider each segmentation of the parse trees (which would define a TSG and its associated parameters), we use a collapsed Gibbs sampler to integrate over all possible grammars and sample directly from the posterior.",Experiment/Discussion
+This is based on the Chinese Restaurant Process (CRP) representation of the DP.,Experiment/Discussion
+The Gibbs sampler is an iterative procedure.,Experiment/Discussion
+"At initialization, each parse tree in the corpus is annotated with a specific derivation by marking each node in the tree with a binary flag.",Experiment/Discussion
+"This flag indicates whether the subtree rooted at that node (a height one CFG rule, at minimum) is part of the subtree containing its parent.",Experiment/Discussion
+"The Gibbs sampler considers every non-terminal, non-root node c of each parse tree in turn, freezing the rest of the training data and randomly choosing whether to join the subtrees above c and rooted at c (outcome h1) or to split them (outcome h2) according to the probability ratio φ(h1)/(φ(h1) + φ(h2)), where φ assigns a probability to each of the outcomes (Figure 2).",Experiment/Discussion
+Let sub(n) denote the subtree above and including node n and sub(n) the subtree rooted at n; o is a binary operator that forms a single subtree from two adjacent ones.,Experiment/Discussion
+The outcome probabilities are: where t = sub(c) o sub(c).,Experiment/Discussion
+"Under the CRP, the subtree probability θ(t) is a function of the current state of the rest of the training corpus, the appropriate base measure Groot(t), and the concentration parameter α: where zt is the multiset of subtrees in the frozen portion of the training corpus sharing the same root as t, and countzt(t) is the count of subtree t among them.",Experiment/Discussion
+"We used the standard split for the Wall Street Journal portion of the Treebank, training on sections 2 to 21, and reporting results on sentences with no more than forty words from section 23.",Results/Conclusion
+We compare with three other grammars.,Results/Conclusion
+"We note two differences in our work that explain the large difference in scores for the minimal grammar from those reported by Bod: (1) we did not implement the smoothed “mismatch parsing”, which permits lexical leaves of subtrees to act as wildcards, and (2) we approximate the most probable parse with the top single derivation instead of the top 1,000.",Results/Conclusion
+Rule probabilities for all grammars were set with relative frequency.,Results/Conclusion
+The Gibbs sampler was initialized with the spinal grammar derivations.,Results/Conclusion
+"We construct sampled grammars in two ways: by summing all subtree counts from the derivation states of the first i sampling iterations together with counts from the Treebank CFG rules (denoted (α, p$,≤i)), and by taking the counts only from iteration i (denoted (α, p$, i)).",Results/Conclusion
+Our standard CKY parser and Gibbs sampler were both written in Perl.,Results/Conclusion
+"TSG subtrees were flattened to CFG rules and reconstructed afterward, with identical mappings favoring the most probable rule.",Results/Conclusion
+"For pruning, we binned nonterminals according to input span and degree of binarization, keeping the ten highest scoring items in each bin. the significantly larger “minimal subset” grammar.",Results/Conclusion
+The sampled grammars outperform all of them.,Results/Conclusion
+"Nearly all of the rules of the best single iteration sampled grammar (100, 0.8, 500) are lexicalized (50,820 of 60,633), and almost half of them have a height greater than one (27,328).",Results/Conclusion
+"Constructing sampled grammars by summing across iterations improved over this in all cases, but at the expense of a much larger grammar.",Results/Conclusion
+"Figure 3 shows a histogram of subtree size taken from the counts of the subtrees (by token, not type) actually used in parsing WSJ§23.",Results/Conclusion
+"Parsing with the “minimal subset” grammar uses highly lexicalized subtrees, but they do not improve accuracy.",Results/Conclusion
+"We examined sentence-level F1 scores and found that the use of larger subtrees did correlate with accuracy; however, the low overall accuracy (and the fact that there are so many of these large subtrees available in the grammar) suggests that such rules are overfit.",Results/Conclusion
+"In contrast, the histogram of subtree sizes used in parsing with the sampled grammar matches the shape of the histogram from the grammar itself.",Results/Conclusion
+Gibbs sampling with a DP prior chooses smaller but more general rules.,Results/Conclusion
+Collapsed Gibbs sampling with a DP prior fits nicely with the task of learning a TSG.,Results/Conclusion
+"The sampled grammars are model-based, are simple to specify and extract, and take the expected shape over subtree size.",Results/Conclusion
+"They substantially outperform heuristically extracted grammars from previous work as well as our novel spinal grammar, and can do so with many fewer rules.",Results/Conclusion
+Acknowledgments This work was supported by NSF grants IIS-0546554 and ITR-0428020.,Results/Conclusion

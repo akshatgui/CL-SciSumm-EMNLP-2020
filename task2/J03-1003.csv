@@ -1,350 +1,350 @@
 col1,col2
-This article describes a new approach to the generation of referring expressions.,{}
-We propose to formalize a scene (consisting of a set of objects with various properties and relations) as a labeled directed graph and describe content selection (which properties to include in a referring expression) as a subgraph construction problem.,{}
-Cost functions are used to guide the search process and to give preference to some solutions over others.,{}
-"The current approach has four main advantages: (1) Graph structures have been studied extensively, and by moving to a graph perspective we get direct access to the many theories and algorithms for dealing with graphs; (2) many existing generation algorithms can be reformulated in terms of graphs, and this enhances comparison and integration of the various approaches; (3) the graph perspective allows us to solve a number of problems that have plagued earlier algorithms for the generation of referring expressions; and (4) the combined use of graphs and cost functions paves the way for an integration of rule-based generation techniques with more recent stochastic approaches.",{}
-This article describes a new approach to the generation of referring expressions.,"{'title': '', 'number': '1'}"
-We propose to formalize a scene (consisting of a set of objects with various properties and relations) as a labeled directed graph and describe content selection (which properties to include in a referring expression) as a subgraph construction problem.,"{'title': '', 'number': '1'}"
-Cost functions are used to guide the search process and to give preference to some solutions over others.,"{'title': '', 'number': '1'}"
-"The current approach has four main advantages: (1) Graph structures have been studied extensively, and by moving to a graph perspective we get direct access to the many theories and algorithms for dealing with graphs; (2) many existing generation algorithms can be reformulated in terms of graphs, and this enhances comparison and integration of the various approaches; (3) the graph perspective allows us to solve a number of problems that have plagued earlier algorithms for the generation of referring expressions; and (4) the combined use of graphs and cost functions paves the way for an integration of rule-based generation techniques with more recent stochastic approaches.","{'title': '', 'number': '1'}"
-"The generation of referring expressions is one of the most common tasks in natural language generation and has been addressed by many researchers in the past two decades, including Appelt (1985), Reiter (1990), Dale and Haddock (1991), Dale (1992), Dale and Reiter (1995), Horacek (1997), Stone and Webber (1998), Krahmer and Theune (1998, 2002), Bateman (1999), and van Deemter (2000, 2002).","{'title': '1.', 'number': '2'}"
-"In this article, we present a general, graph-theoretic approach to the generation of referring expressions.","{'title': '1.', 'number': '2'}"
-"We propose to formalize a scene (i.e., a domain of objects and their properties and relations) as a labeled directed graph and describe the content selection problem (which properties and relations to include in a description for an object?) as a subgraph construction problem.","{'title': '1.', 'number': '2'}"
-The graph perspective has four main advantages.,"{'title': '1.', 'number': '2'}"
-"(1) There are many attractive and well-understood algorithms for dealing with graph structures (see, e.g., Gibbons [1985], Cormen, Leiserson, and Rivest [1990], or Chartrand and Oellermann [1993]).","{'title': '1.', 'number': '2'}"
-"In this article, we describe a straightforward branch and bound algorithm for finding the relevant subgraphs in which cost functions are used to guide the search process.","{'title': '1.', 'number': '2'}"
-"(2) By defining different cost functions for the graph perspective, we can simulate (and improve) some of the well-known algorithms for the generation of referring expressions mentioned above.","{'title': '1.', 'number': '2'}"
-This facilitates the formal comparison of these algorithms and makes it easier to transfer results from one algorithm to another.,"{'title': '1.', 'number': '2'}"
-(3) The graph perspective provides a clean solution for some problems that have plagued earlier algorithms.,"{'title': '1.', 'number': '2'}"
-"For instance, the generation of relational expressions (i.e., referring expressions that include references to other objects) is enhanced by the fact that both properties and relations are formalized in the same way, namely, as edges in a graph.","{'title': '1.', 'number': '2'}"
-"(4) The combined use of graphs and cost functions paves the way for a natural integration of traditional rule-based approaches to generating referring expressions and more recent statistical approaches, such as Langkilde and Knight (1998) and Malouf (2000), in a single algorithm.","{'title': '1.', 'number': '2'}"
-The outline of this article is as follows.,"{'title': '1.', 'number': '2'}"
-"In Section 2 the content selection problem for generating referring expressions is explained, and some well-known solutions to the problem are discussed.","{'title': '1.', 'number': '2'}"
-"In Section 3, we describe how scenes can be modeled as labeled directed graphs and show how content selection can be formalized as a subgraph construction problem.","{'title': '1.', 'number': '2'}"
-"Section 4 contains a sketch of the basic generation algorithm, which is illustrated with a worked example.","{'title': '1.', 'number': '2'}"
-In Section 5 various ways to formalize cost functions are discussed and compared.,"{'title': '1.', 'number': '2'}"
-We end with some concluding remarks and a discussion of future research directions in Section 6.,"{'title': '1.', 'number': '2'}"
-"There are many different algorithms for the generation of referring expressions, each with its own objectives: Some aim at producing the shortest possible description (e.g., Dale’s [1992] full brevity algorithm), others focus on psychological realism (e.g., Dale and Reiter’s [1995] incremental algorithm) or realistic output (e.g., Horacek 1997).","{'title': '2.', 'number': '3'}"
-The degree of detail in which the various algorithms are described differs considerably.,"{'title': '2.', 'number': '3'}"
-"Some algorithms are fully formalized and come with explicit characterizations of their complexity (e.g., Dale and Reiter 1995; van Deemter 2000); others are more conceptual and concentrate on exploring new directions (e.g., Stone and Webber 1998).","{'title': '2.', 'number': '3'}"
-"Despite such differences, most algorithms deal with the same problem definition.","{'title': '2.', 'number': '3'}"
-They take as input a single object v (the target object) for which a referring expression is to be generated and a set of objects (the distractors) from which the target object needs to be distinguished (we use the terminology from Dale and Reiter [1995]).,"{'title': '2.', 'number': '3'}"
-The task of the algorithm is to determine which set of properties is needed to single out the target object v from the distractors.,"{'title': '2.', 'number': '3'}"
-This is known as the content determination problem for referring expressions.,"{'title': '2.', 'number': '3'}"
-On the basis of this set of properties a distinguishing description for v can be generated.,"{'title': '2.', 'number': '3'}"
-"Most algorithms do not address the surface realization problem (how the selected properties should be realized in natural language) in much detail; it is usually assumed that once the content for a referring expression has been determined, a standard realizer such as KPML (Bateman 1997) or SURGE (Elhaded and Robin 1997) can convert the meaning representation to natural language.","{'title': '2.', 'number': '3'}"
-Consider the example scene in Figure 1.,"{'title': '2.', 'number': '3'}"
-"In this scene, as in any other scene, we see a finite domain of entities D with properties P. In this particular scene, D = {d1,d2,d3,d4} is the set of entities and P = { dog, cat, brown, black+white, large, small } is the set of properties.","{'title': '2.', 'number': '3'}"
-A scene is usually represented as a database (or knowledge base) listing the properties of each element in D. Thus: d1: dog (d1) small (d1) brown (d1) d2: dog (d2) large (d2) brown (d2) d3: dog (d3) large (d3) black+white (d3) d4: cat (d4) small (d4) brown (d4) A simple example scene consisting of some domestic animals.,"{'title': '2.', 'number': '3'}"
-"In what is probably the key reference on the topic, Dale and Reiter (1995) describe and discuss a number of algorithms for the generation of referring expressions.","{'title': '2.', 'number': '3'}"
-One of these is the full brevity algorithm (originally due to Dale 1992).,"{'title': '2.', 'number': '3'}"
-This algorithm first tries to generate a distinguishing description for the target object v using one single property.,"{'title': '2.', 'number': '3'}"
-"If this fails, it considers all possible combinations of two properties to see if any of these suffices for the generation of a distinguishing description, and so on.","{'title': '2.', 'number': '3'}"
-"It is readily seen that this algorithm will output the shortest possible description, if one exists.","{'title': '2.', 'number': '3'}"
-Suppose the full brevity algorithm is used to generate a description for d1 in Figure 1.,"{'title': '2.', 'number': '3'}"
-"There is no single property that distinguishes the target object d1 from the distractors {d2, d3, d4}.","{'title': '2.', 'number': '3'}"
-"But when considering all pairs of properties the algorithm will find that one such pair rules out all distractors, namely, small and dog; “the small dog” is a successful and minimal distinguishing description for d1.","{'title': '2.', 'number': '3'}"
-Dale and Reiter point out that the full brevity algorithm is both computationally infeasible (NP hard) and psychologically unrealistic.,"{'title': '2.', 'number': '3'}"
-They offer the incremental algorithm as an alternative.,"{'title': '2.', 'number': '3'}"
-"The incremental algorithm considers properties for selection in a predetermined order, based on the idea that human speakers and listeners prefer certain kinds of properties (or attributes) when describing objects from a given domain.","{'title': '2.', 'number': '3'}"
-"For instance, when discussing domestic animals, it seems likely that a human speaker would first describe an animal by its type (is it a dog? is it a cat?).","{'title': '2.', 'number': '3'}"
-"If that does not suffice, first absolute attributes like color are tried, followed by relative ones such as size.","{'title': '2.', 'number': '3'}"
-"In sum: The list of preferred attributes for our example domain would be ( type, color, size ).","{'title': '2.', 'number': '3'}"
-"Essentially, the incremental algorithm iterates through this list, and for each property it encounters, it determines whether adding this property to the properties selected so far would rule out any of the remaining distractors.","{'title': '2.', 'number': '3'}"
-"If so, it is included in the list of selected properties.","{'title': '2.', 'number': '3'}"
-"There is one exception to this general strategy: Type information is always included, even if it rules out no distractors.","{'title': '2.', 'number': '3'}"
-The algorithm stops when all distractors are ruled out (success) or when the end of the list of preferred attributes is reached (failure).,"{'title': '2.', 'number': '3'}"
-"Suppose we apply the incremental algorithm to d1 from Figure 1 with ( type, color, size ) as preferred attributes.","{'title': '2.', 'number': '3'}"
-The type of d1 listed in the database is dog.,"{'title': '2.', 'number': '3'}"
-This property is selected (since type information is always selected).,"{'title': '2.', 'number': '3'}"
-It rules out d4 (which is a cat).,"{'title': '2.', 'number': '3'}"
-Next we consider the color of d1; the animal is brown.,"{'title': '2.', 'number': '3'}"
-This property rules out d3 (which is a black and white dog) and is selected.,"{'title': '2.', 'number': '3'}"
-"Finally, we consider the size of our target object, which is small.","{'title': '2.', 'number': '3'}"
-This properly rules out the remaining distractor d2 (which is a large brown dog) and hence is included as well.,"{'title': '2.', 'number': '3'}"
-"At this point, all distractors are ruled out (success!","{'title': '2.', 'number': '3'}"
-"), and the set of selected properties is {dog, brown, small}, which a linguistic realizer might express as “the small brown dog.” This is a successful distinguishing description but not a minimal one: The property brown is, strictly speaking, made redundant by the later inclusion of the property small.","{'title': '2.', 'number': '3'}"
-"Since there is no backtracking in the incremental algorithm however, every selected property is realized (hence “incremental”).","{'title': '2.', 'number': '3'}"
-"This aspect is largely responsible for the computational efficiency of the algorithm (it has a polynomial complexity), but Dale and Reiter (1995, page 248) also claim that it is “psychologically realistic.” They point out that sometimes people may describe an object as “the white bird” even though the simpler “the bird” would have been sufficient (cf.","{'title': '2.', 'number': '3'}"
-"Pechmann [1989]; see, however, Krahmer and Theune [2002] for discussion).","{'title': '2.', 'number': '3'}"
-"Even though there are various useful and interesting algorithms for the generation of referring expressions, a number of open questions remain.","{'title': '2.', 'number': '3'}"
-Recently there has been an increased interest in statistical approaches to natural language generation.,"{'title': '2.', 'number': '3'}"
-"For example, Malouf (2000) has shown that large corpora can be used to determine the order of realization of sequences of prenominal adjectives.","{'title': '2.', 'number': '3'}"
-"It is unclear how such statistical work on generation can be combined with older, rule-based work such as the algorithms just discussed.","{'title': '2.', 'number': '3'}"
-"In addition, many algorithms still have difficulties with the generation of relational descriptions (descriptions that include references to other objects to single out the target object from its distractors).","{'title': '2.', 'number': '3'}"
-"To illustrate the problem, consider the scene depicted in Figure 2.","{'title': '2.', 'number': '3'}"
-"In this scene we again see a finite domain of entities D with certain properties P. Here, D = {d1, d2, d3, d4} is the set of entities, and P = { dog, doghouse, small, large, brown, white } is the set of properties.","{'title': '2.', 'number': '3'}"
-Clearly no algorithm can generate a distinguishing description referring to d1 on this basis.,"{'title': '2.', 'number': '3'}"
-"Intuitively, d1 can be distinguished from d2 only using its relation to the doghouse d3.","{'title': '2.', 'number': '3'}"
-"To facilitate this we extend the scene description with a set of relations R = { left of, right of, contain, in }.","{'title': '2.', 'number': '3'}"
-A few algorithms have been developed that address the issue of relational descriptions.,"{'title': '2.', 'number': '3'}"
-"The earliest is from Dale and Haddock (1992), who offer an extension of the full brevity algorithm.","{'title': '2.', 'number': '3'}"
-"The Dale and Haddock algorithm has a problem with infinite recursions; it may produce descriptions like “the dog in the doghouse that contains a dog that is inside a doghouse....” Dale and Haddock, somewhat ad hoc, solve this problem by stipulating that a property or relation may be used only once.","{'title': '2.', 'number': '3'}"
-Krahmer and Theune (2002) (see also Theune [2000]) describe an extension of the incremental algorithm that allows for relational descriptions.,"{'title': '2.', 'number': '3'}"
-"Their extension suffers from what may be called the problem of forced incrementality: When a first relation fails to rule out all remaining distractors, additional relations will be tried incrementally.","{'title': '2.', 'number': '3'}"
-"Although it could be argued that incremental selection of properties is psychologically plausible, it seems less plausible for relations.","{'title': '2.', 'number': '3'}"
-It is unlikely that someone would describe an A graph representation of the scene in Figure 2. object as “the dog next to the tree in front of the garage” in a situation in which “the dog in front of the garage” would suffice.,"{'title': '2.', 'number': '3'}"
-"As we shall argue, the graph perspective provides a clean solution for these problems.","{'title': '2.', 'number': '3'}"
-"In the previous section we saw that a scene can be described in terms of a domain of entities D with properties P and relations R. Such a scene can be represented as a labeled directed graph (see, e.g., Wilson [1996] for a gentle introduction or Berge [1985] for a more specialized one).","{'title': '3.', 'number': '4'}"
-"Let L = P U R be the set of labels with P and R disjoint (i.e., P fl R = 0).","{'title': '3.', 'number': '4'}"
-"Then G = (VG, EG) is a labeled directed graph, where VG C D is the set of vertices (or nodes) and EG C VG x L x VG is the set of labeled directed edges (or arcs).","{'title': '3.', 'number': '4'}"
-"Where this can be done without creating confusion, the graph subscript is omitted.","{'title': '3.', 'number': '4'}"
-Throughout this article we use the following notations.,"{'title': '3.', 'number': '4'}"
-"If G = (V, E) is a graph and e = (v, l, w) an edge (with l E L), then the extension of G with e, denoted as G + e, is the graph (V U {v, w}, E U {e}).","{'title': '3.', 'number': '4'}"
-"Moreover, with EG(v, w) we refer to the set of edges in EG from v to w; that is, EG(v, w) = {e E EG  |e = (v, l, w), for l E L}.","{'title': '3.', 'number': '4'}"
-"The scene given in Figure 2, for example, can now be represented by the graph in Figure 3.","{'title': '3.', 'number': '4'}"
-"This graph models the respective spatial relations between the two chihuahuas, between the two doghouses, and between each dog and the nearest doghouse.","{'title': '3.', 'number': '4'}"
-"For the sake of transparency we have not modeled the relations between the dogs and the distant doghouses (i.e., between d1 and d4 and between d2 and d3).","{'title': '3.', 'number': '4'}"
-(It is worth stressing that adding these edges would not result in different outcomes in the discussion below).,"{'title': '3.', 'number': '4'}"
-"Note that properties (such as dog) are always modeled as loops, Some graphs for referring expressions, with circles around the intended referent. that is, as edges that start and end in the same vertex.","{'title': '3.', 'number': '4'}"
-"Relations may have different start and end vertices, but they do not have to (consider potentially reflexive relations such as shave).","{'title': '3.', 'number': '4'}"
-"Finally, note that the graph sometimes contains properties of various levels of specificity (e.g., chihuahua and dog).","{'title': '3.', 'number': '4'}"
-This aspect of scene graphs will be further discussed in Section 5.,"{'title': '3.', 'number': '4'}"
-Now the content determination problem for referring expressions can be formulated as a graph construction problem.,"{'title': '3.', 'number': '4'}"
-"To decide which information to include in a referring expression for an object v E V, we construct a connected directed labeled graph over the set of labels L and an arbitrary set of vertices, but including v. A graph is connected iff there is a path (a list of vertices in which each vertex has an edge from itself to the next vertex) between each pair of vertices.","{'title': '3.', 'number': '4'}"
-"Informally, we say that a vertex (“the intended referent”) from a graph H refers to a given entity in the scene graph G iff the graph H can be “placed over” the scene graph G in such a way that the vertex being referred to is “placed over” the vertex of the given entity in G and each edge from H with label l can be “placed over” an edge from G with the same label.","{'title': '3.', 'number': '4'}"
-"Furthermore, a vertex-graph pair is distinguishing iff it refers to exactly one vertex in the scene graph.","{'title': '3.', 'number': '4'}"
-"Consider the three vertex-graph pairs in Figure 4, in which circled vertices stand for the intended referent.","{'title': '3.', 'number': '4'}"
-"Graph (i) refers to all vertices of the graph in Figure 3 (every object in the scene is next to some other object), graph (ii) can refer to both d1 and d2, and graph (iii) is distinguishing in that it can refer only to d1.","{'title': '3.', 'number': '4'}"
-"Note that the graphs might be realized as something next to something else, a chihuahua, and the dog in the doghouse, respectively.","{'title': '3.', 'number': '4'}"
-Here we concentrate on the generation of distinguishing vertex-graph pairs.,"{'title': '3.', 'number': '4'}"
-"Formally, the notion that a graph H = (VH, EH) can be “placed over” another graph G = ft, EG) corresponds to the notion of a subgraph isomorphism (see, e.g., Three distinguishing vertex-graph pairs referring to d1 in Figure 3.","{'title': '3.', 'number': '4'}"
-Read and Corneil [1977] for an overview).,"{'title': '3.', 'number': '4'}"
-"H can be “placed over” G iff there exists a subgraph G' = (VG,, EG,) of G such that H is isomorphic to G'.","{'title': '3.', 'number': '4'}"
-"H is isomorphic to G' iff there exists a bijection 7r: VH → VG, such that for all vertices v,w E VH and all l E L: (v, l, w) E EH �* (7r.v,l, 7r.w) E EG In words: The bijective function 7r maps all the vertices in H to corresponding vertices in G' in such a way that any edge with label l between vertices v and w in H is matched with an edge with the same label between the G' counterparts of v and w (i.e., 7r.v and 7r.w, respectively).","{'title': '3.', 'number': '4'}"
-"When H is isomorphic to some subgraph of G by an isomorphism 7r, we write H C,r G. Given a graph H and a vertex v in H, and a graph G and a vertex w in G, we define that the pair (v, H) refers to the pair (w, G) iff H is connected and H C,r G and 7r.v = w. Furthermore, (v, H) uniquely refers to (w, G) (i.e., (v, H) is distinguishing) iff (v, H) refers to (w, G) and there is no vertex w' in G different from w such that (v, H) refers to (w', G).","{'title': '3.', 'number': '4'}"
-"The problem considered in this article can now be formalized as follows: Given a graph G and a vertex w in G, find a pair (v, H) such that (v, H) uniquely refers to (w, G).","{'title': '3.', 'number': '4'}"
-"Consider, for instance, the task of finding a pair (v,H) that uniquely refers to the vertex labeled d1 in Figure 3.","{'title': '3.', 'number': '4'}"
-"It is easily seen that there are a number of such pairs, three of which are depicted in Figure 5.","{'title': '3.', 'number': '4'}"
-We would like to have a mechanism that allows us to give certain solutions to this kind of task preference over other solutions.,"{'title': '3.', 'number': '4'}"
-For this purpose we shall use cost functions.,"{'title': '3.', 'number': '4'}"
-"In general, a cost function is a function that assigns to each subgraph of a scene graph a non-negative number.","{'title': '3.', 'number': '4'}"
-"As we shall see, by defining cost functions in different ways, we can mimic various algorithms for the generation of referring expressions known from the literature.","{'title': '3.', 'number': '4'}"
-"The basic decision problem for subgraph isomorphism (i.e., testing whether a graph H is isomorphic to a subgraph of G) is known to be NP-complete (see, e.g., Garey and Johnson [1979]).","{'title': '3.', 'number': '4'}"
-"Here we are interested in connected H, but unfortunately that restriction does not reduce the theoretical complexity.","{'title': '3.', 'number': '4'}"
-Note that this characterization of the worst-case complexity holds for graphs in which all edges have the same label; in that case each edge from H can potentially be matched to any edge from G. The bestcase complexity is given when each edge is uniquely labeled.,"{'title': '3.', 'number': '4'}"
-"In practice, the situation will most often be somewhere between these extremes.","{'title': '3.', 'number': '4'}"
-"In general, we can say that the more diverse the labeling of edges in the graph of a particular scene is, the sooner a distinguishing vertex-graph pair will be found.","{'title': '3.', 'number': '4'}"
-It is worth pointing out that there are various alternatives to full subgraph isomorphism that have a lower complexity.,"{'title': '3.', 'number': '4'}"
-"For instance, as soon as an upper bound K is defined on the number of edges in a distinguishing graph, the problem loses its intractability (for relatively small K) and becomes solvable, in the worst case, in polynomial O(nK) time, where n is number of edges in the graph G. Restricting the problem in such a way is rather harmless for our current purposes, as it prohibits the generation only of distinguishing descriptions with more than K properties, and for all practical purposes K can be small (referring expressions usually express a limited number of properties).","{'title': '3.', 'number': '4'}"
-"Defining an upper bound K, however, does have a disadvantage: We lose completeness (see van Deemter [2002]).","{'title': '3.', 'number': '4'}"
-"In particular, the algorithm will fail for objects that can be uniquely described only with K + 1 (or more) edges.","{'title': '3.', 'number': '4'}"
-"Of course, one could argue that in such cases objects should be distinguished using other means (e.g., by pointing).","{'title': '3.', 'number': '4'}"
-"Nevertheless, it is worthwhile to look for classes of graphs for which the subgraph isomorphism problem can be solved more efficiently, without postulating upper bounds.","{'title': '3.', 'number': '4'}"
-"For instance, if G and H are planar (simple) graphs the problem can be solved in time linear in the number of vertices of G (Eppstein 1999).","{'title': '3.', 'number': '4'}"
-"Basically, a planar graph is one that can be drawn on a plane in such a way that there are no crossing edges (thus, for instance, the graph in Figure 3 is planar, as is any graph with only four vertices).","{'title': '3.', 'number': '4'}"
-"In general, there is no a priori reason to assume that our scene representations will be planar.","{'title': '3.', 'number': '4'}"
-Yet every nonplanar graph can be modified into a closely related planar one.,"{'title': '3.', 'number': '4'}"
-We briefly address planarization of scene graphs in the Appendix.,"{'title': '3.', 'number': '4'}"
-A final alternative is worth mentioning.,"{'title': '3.', 'number': '4'}"
-The general approach to the problem of subgraph isomorphism detection assumes that both graphs are given on-line.,"{'title': '3.', 'number': '4'}"
-"For our current purposes, however, it may happen that the scene graph is fixed and known beforehand, and only the referring graph is unknown and given on-line.","{'title': '3.', 'number': '4'}"
-"Messmer and Bunke (1995, 1998) describe a method that converts the known graph (or model graph, as they call it) into a decision tree.","{'title': '3.', 'number': '4'}"
-"At run time, the input graph is classified by the decision tree, which detects subgraph isomorphisms.","{'title': '3.', 'number': '4'}"
-"The disadvantage of this approach is that the decision tree may contain, in the worst case, an exponential number of nodes.","{'title': '3.', 'number': '4'}"
-But the main advantage is that the complexity of the new subgraph isomorphism algorithm is only quadratic in the number of vertices of the input referring graph.,"{'title': '3.', 'number': '4'}"
-"Note that with this approach we do not lose information from the scene graph, nor do we lose completeness.","{'title': '3.', 'number': '4'}"
-"In sum, the basic approach to subgraph isomorphisms is NP-complete, but there exist various reformulations of the problem that can be solved more efficiently.","{'title': '3.', 'number': '4'}"
-"Deciding which (combination) of these is the most suitable in practice, however, is beyond the scope of this article.","{'title': '3.', 'number': '4'}"
-"Finally, it is worth stressing that the NP-completeness is due to the presence of edges representing relations between different vertices.","{'title': '3.', 'number': '4'}"
-"If we restrict the approach to properties (looping edges), testing for subgraph isomorphisms becomes trivial.","{'title': '3.', 'number': '4'}"
-In this section we give a high-level sketch of the graph-based generation algorithm.,"{'title': '4.', 'number': '5'}"
-"The algorithm (called makeReferringExpression) consists of two main components, a subgraph construction algorithm (called findGraph) and a subgraph isomorphism testing algorithm (called matchGraphs).","{'title': '4.', 'number': '5'}"
-For expository reasons we do not address optimization strategies (but see Section 6).,"{'title': '4.', 'number': '5'}"
-"We assume that a scene graph G = (VG, EG) is given.","{'title': '4.', 'number': '5'}"
-The algorithm systematically tries all relevant subgraphs H of the scene graph G by starting with the subgraph containing only the vertex v (the target object) and expanding it recursively by trying to add edges from G that are adjacent to the subgraph H constructed up to that point.,"{'title': '4.', 'number': '5'}"
-In this way we know that the results will be a connected subgraph.,"{'title': '4.', 'number': '5'}"
-We refer to this set of adjacent edges as the H neighbors in G (denoted as G.neighbors(H)).,"{'title': '4.', 'number': '5'}"
-"Formally: The algorithm returns the cheapest (least expensive) distinguishing subgraph H that refers to v, if such a distinguishing graph exists; otherwise it returns the undefined null graph -L. We use cost functions to guide the search process and to give preference to some solutions over others.","{'title': '4.', 'number': '5'}"
-"If H = (VH, EH) is a subgraph of G, then the costs of H, denoted as cost(H), can be given by summing over the costs associated with the vertices and edges of H. Formally: In fact, this is only one possible way to define a cost function.","{'title': '4.', 'number': '5'}"
-The only hard requirement cost functions have to fulfill is monotonicity.,"{'title': '4.', 'number': '5'}"
-"That is, adding an edge e to a graph G should never result in a graph cheaper than G. Formally: dG' C G de E EG: cost(G') < cost(G' + e) The monotonicity assumption helps reduce the search space, since extensions of subgraphs with a cost greater than the best subgraph found up to that point can safely be ignored.","{'title': '4.', 'number': '5'}"
-"Naturally, the costs of the undefined graph (cost(-L)) are not defined.","{'title': '4.', 'number': '5'}"
-It is worth stressing that the cost function is global: It determines the costs of entire graphs.,"{'title': '4.', 'number': '5'}"
-This implies that the cheapest distinguishing graph is not necessarily the smallest distinguishing graph; a graph consisting of two or more edges may be cheaper than a graph containing one expensive edge.,"{'title': '4.', 'number': '5'}"
-We now illustrate the algorithm with an example.,"{'title': '4.', 'number': '5'}"
-Suppose the scene graph G is as given in Figure 3 and that we want to generate a referring expression for object d1 Sketch of the main function (makeReferringExpression) and the subgraph construction function (findGraph). in this graph.,"{'title': '4.', 'number': '5'}"
-Let us assume for the sake of illustration that the cost function is defined in such a way that adding a vertex or an edge always costs one point.,"{'title': '4.', 'number': '5'}"
-"Thus, for each v E VH and for each e E EH: cost(v) = cost(e) = 1.","{'title': '4.', 'number': '5'}"
-(In the next section we describe a number of more interesting cost functions and discuss the impact these have on the output of the algorithm.),"{'title': '4.', 'number': '5'}"
-We call the function makeReferringExpression (given in Figure 6) with d1 as parameter.,"{'title': '4.', 'number': '5'}"
-"In this function the variable bestGraph (for the best solution found up to that point) is initialized as the null graph (there is no best solution yet), and the variable H (for the distinguishing subgraph under construction) is initialized as the graph containing only vertex d1 (i.e., (i) in Figure 7).","{'title': '4.', 'number': '5'}"
-"Then the function findGraph (see also Figure 6) is called, with parameters d1, bestGraph, and H. To begin with, whether a first non-null bestGraph has been found is checked and, if one has, whether the costs of H (the graph under construction) are higher than the costs of the bestGraph found up to that point.","{'title': '4.', 'number': '5'}"
-"If the costs of H are higher, it is not worth extending H since, due to the monotonicity constraint, it will never end up being cheaper than the current bestGraph.","{'title': '4.', 'number': '5'}"
-"During the first iteration we have no non-null bestGraph, so we continue.","{'title': '4.', 'number': '5'}"
-Next the set of distractors is calculated.,"{'title': '4.', 'number': '5'}"
-"In terms of the graph perspective, this is the set of vertices in the scene graph G (other than the target vertex v) to which the graph H refers.","{'title': '4.', 'number': '5'}"
-"It is easily seen that the initial value of H refers to every vertex in G. Hence, as one would expect, the initial set of distractors is VG\{d1} = {d2,d3,d4}.","{'title': '4.', 'number': '5'}"
-Then the current set of distractors is checked to determine whether it is empty.,"{'title': '4.', 'number': '5'}"
-"If it is, we have managed to find a distinguishing graph, which is subsequently stored in the variable bestGraph.","{'title': '4.', 'number': '5'}"
-"In the first iteration, this is obviously not the case, and we continue, recursively trying to extend H by adding Three values for H in the generation process for d1. adjacent (neighboring) edges until either a distinguishing graph has been constructed (all distractors are ruled out) or the costs of H exceed the costs of the bestGraph found so far.","{'title': '4.', 'number': '5'}"
-"While bestGraph is still the null graph, the algorithm continues until H is a distinguishing graph.","{'title': '4.', 'number': '5'}"
-Which is the first distinguishing graph to be found (if more than one exists) depends on the order in which the adjacent edges are tried (see also Section 5.1).,"{'title': '4.', 'number': '5'}"
-Suppose for the sake of argument that the first distinguishing graph to be found is (ii) in Figure 7.,"{'title': '4.', 'number': '5'}"
-This graph is returned and stored in bestGraph.,"{'title': '4.', 'number': '5'}"
-The costs associated with this graph are five points (two vertices and three edges).,"{'title': '4.', 'number': '5'}"
-At this stage in the generation process only graphs with costs lower than five points are worth investigating.,"{'title': '4.', 'number': '5'}"
-"In fact, there are only a few distinguishing graphs that cost less than this.","{'title': '4.', 'number': '5'}"
-"After a number of iterations the algorithm will find the cheapest solution (given this particular, simple definition of the cost function), which is (iii) in Figure 7.","{'title': '4.', 'number': '5'}"
-That this distinguishing graph does not include type information does not necessarily mean that such information should not be realized.,"{'title': '4.', 'number': '5'}"
-"It means only that type information is, strictly speaking, not necessary to distinguish the intended referent from the distractors.","{'title': '4.', 'number': '5'}"
-We return to this issue in Section 5.2.,"{'title': '4.', 'number': '5'}"
-"Figure 8 sketches the part of the algorithm that tests for subgraph isomorphism, matchGraphs.","{'title': '4.', 'number': '5'}"
-This function is called each time the distractor set is calculated.,"{'title': '4.', 'number': '5'}"
-"It tests whether the pair (v,H) can refer to (w, G), or put differently, it checks whether there exists an isomorphism 7r such that H Cπ G with 7r.v = w. The function matchGraphs first determines whether the looping edges starting from vertex v match those of w. If EH(v, v) is not a subset of EG(w,w) (e.g., v is a dog and w is a doghouse), we can immediately discard the matching.","{'title': '4.', 'number': '5'}"
-Otherwise we start with the matching 7r.v = w and try to expand it recursively.,"{'title': '4.', 'number': '5'}"
-At each recursion step a fresh and as yet unmatched vertex y from VH is selected that is adjacent to one of the vertices in the current domain of 7r (notated dom(7r)).,"{'title': '4.', 'number': '5'}"
-For each y we calculate the set Z of possible vertices in G to which y can be Sketch of the function testing for subgraph isomorphism (matchGraphs). matched.,"{'title': '4.', 'number': '5'}"
-This set consists of all the vertices in G that have the same looping edges as y and the same edges to and from other vertices in the domain of the current matching function 7r.,"{'title': '4.', 'number': '5'}"
-"Formally: (The H.neighbors(y) are the vertices in H that are adjacent to y, that is, those vertices that are connected to y by an edge.)","{'title': '4.', 'number': '5'}"
-"The matching can now possibly be extended with 7r.y = z, for each z ∈ Z.","{'title': '4.', 'number': '5'}"
-The algorithm then branches over all these possibilities.,"{'title': '4.', 'number': '5'}"
-"Once a mapping 7r has been found that has exactly as many elements as H has vertices, we have found a subgraph isomorphism.","{'title': '4.', 'number': '5'}"
-"If there are still unmatched vertices in H, or if all possible extensions with vertex y have been checked and no matching can be found, the test for subgraph isomorphism has failed.","{'title': '4.', 'number': '5'}"
-"The algorithm outlined in Figures 6 and 8 has been implemented in Java 2 (J2SE, version 1.4).","{'title': '4.', 'number': '5'}"
-"The implemented version of the algorithm is actually more efficient than the sketch suggests, because various calculations need not be repeated in each iteration (the set of distractors and the set G.neighbors(H), for example).","{'title': '4.', 'number': '5'}"
-"In addition, the user has the possibility of specifying the cost function in whatever way he or she sees fit.","{'title': '4.', 'number': '5'}"
-A full-fledged performance analysis of the current implementation is beyond the scope of this article.,"{'title': '4.', 'number': '5'}"
-"Such an analysis would be complicated by the fact that there are many kinds of graphs (dense, sparse, (un)connected, etc.","{'title': '4.', 'number': '5'}"
-"), and the performance results will vary with the properties of the scene graph.","{'title': '4.', 'number': '5'}"
-"If the scene graph is fully connected, finding distinguishing graphs is much harder then when it is fully unconnected.","{'title': '4.', 'number': '5'}"
-"Nevertheless, to give the reader some insight into the performance of the implementation, we applied it to seven test scene graphs of a specific form.","{'title': '4.', 'number': '5'}"
-The first is our running example: the graph in Figure 3.,"{'title': '4.', 'number': '5'}"
-"The other six are obtained by scaling up this graph and permutating (plus, if necessary, adding) properties to make sure that each object can be uniquely described.","{'title': '4.', 'number': '5'}"
-This implies that only the first test graph is fully connected.,"{'title': '4.', 'number': '5'}"
-"The other graphs consist of n4 connected subgraphs, where n is the number of vertices in the graph.","{'title': '4.', 'number': '5'}"
-"Thus, the bigger graphs are relatively less complex than the smaller ones.","{'title': '4.', 'number': '5'}"
-"Each graph consists of 4n looping edges (representing properties) and 3n nonlooping edges (representing spatial relations), again with n the number of vertices.","{'title': '4.', 'number': '5'}"
-The test was performed on a Windows 2000 PC with a 900 mHz AMD Athlon Processor and 128 Mb RAM.,"{'title': '4.', 'number': '5'}"
-The results are given in Table 1.,"{'title': '4.', 'number': '5'}"
-We measured the system time right before and right after the call of the main function makeReferringExpression.,"{'title': '4.', 'number': '5'}"
-"We computed the differences between these two times for a number of target objects from the scene graphs (4 and 8 objects for the first two graphs, 16 for the remaining ones).","{'title': '4.', 'number': '5'}"
-Note that this measurement does not include the time Java requires for initialization or background activities such as garbage collection.,"{'title': '4.', 'number': '5'}"
-"Table 1 shows that even for the larger graphs, the program is able to find minimal distinguishing graphs relatively quickly.","{'title': '4.', 'number': '5'}"
-"The current implementation is a straightforward one (see also Section 6), so optimization, possibly in combination with heuristics, is likely to show further improvements in performance.","{'title': '4.', 'number': '5'}"
-"The algorithm described in the previous section (with the uniform cost function assigning one point to each edge and vertex) can be seen as a generalization of Dale’s (1992) full brevity algorithm, in the sense that there is a guarantee that the algorithm will output the shortest possible description, if one exists.","{'title': '5.', 'number': '6'}"
-"It is also an extension of the full brevity algorithm, since it allows for relational descriptions.","{'title': '5.', 'number': '6'}"
-"In this respect it is comparable to the Dale and Haddock (1991) algorithm, granted that here the problems with infinite recursions do not arise, since a particular edge is either present in a graph or not.","{'title': '5.', 'number': '6'}"
-"Moreover, the approach is fully general and applies to n-ary relations (and relation/property combinations) as well.","{'title': '5.', 'number': '6'}"
-It is worth noting that Dale’s (1992) greedy heuristic algorithm (also discussed in Dale and Reiter [1995]) can be cast in the graph framework as well.,"{'title': '5.', 'number': '6'}"
-"In fact, this would give us a handle on the order in which different adjacent edges could be tried.","{'title': '5.', 'number': '6'}"
-"The edges associated with the intended referent should be sorted on their descriptive power, which is inversely proportional to the number of occurrences of that particular edge in the scene graph.","{'title': '5.', 'number': '6'}"
-"The algorithm then adds the most discriminating edge (i.e., the one removing most distractors) first.","{'title': '5.', 'number': '6'}"
-"If there are various equally distinguishing edges, the cheapest one is added.","{'title': '5.', 'number': '6'}"
-This process is then repeated until a distinguishing graph is found.,"{'title': '5.', 'number': '6'}"
-"In fact, such a greedy strategy could be used to produce a first nonminimal distinguishing graph.","{'title': '5.', 'number': '6'}"
-"Subsequently we could call findGraph with this graph as initial value of bestGraph, instead of the null graph ⊥.","{'title': '5.', 'number': '6'}"
-"In this way, we would be able to find minimal graphs more efficiently.","{'title': '5.', 'number': '6'}"
-The characteristic properties of Dale and Reiter’s (1995) incremental algorithm can be incorporated into the graph framework as follows.,"{'title': '5.', 'number': '6'}"
-"First, the list of preferred attributes can be modeled in terms of the cost function: All type edges should be cheaper than all other edges.","{'title': '5.', 'number': '6'}"
-"In fact, (basic level, see below) type edges could be free.","{'title': '5.', 'number': '6'}"
-"Moreover, the edges corresponding to absolute properties (color) should cost less than those corresponding to relative ones (size).","{'title': '5.', 'number': '6'}"
-"This gives us exactly the effect of having a list of preferred attributes ( type, color, size ).","{'title': '5.', 'number': '6'}"
-It also implies that the type of an object is always included if it is in any way distinguishing.,"{'title': '5.', 'number': '6'}"
-That by itself does not guarantee that type is always included.,"{'title': '5.', 'number': '6'}"
-The incremental nature of the incremental algorithm can be obtained by ordering edges with respect to their costs.,"{'title': '5.', 'number': '6'}"
-"Now the cheapest edges (i.e, those expressing type information) should be tried first, and more expensive edges should be tried later.","{'title': '5.', 'number': '6'}"
-"In addition, the algorithm should terminate as soon as it has found a distinguishing graph.","{'title': '5.', 'number': '6'}"
-"This would guarantee that bargain type loops are always included, and the algorithm would output (iii) from Figure 4 instead of (iii) from Another characteristic property of the original incremental algorithm (not discussed in section 2) is the use of a subsumption hierarchy.","{'title': '5.', 'number': '6'}"
-"A chihuahua, for instance, can be referred to as either a chihuahua or a dog.","{'title': '5.', 'number': '6'}"
-"The latter has a special status and is called the basic level value (see, e.g., Rosch [1978]).","{'title': '5.', 'number': '6'}"
-"According to Dale and Reiter (1995) and Reiter (1990), human speakers have a general preference for basic level values and move to more specific (subsumed) values only if these are more informative.","{'title': '5.', 'number': '6'}"
-This notion of a subsumption hierarchy can be modeled using the cost function.,"{'title': '5.', 'number': '6'}"
-"For a given attribute, the basic level edges should be assigned the lowest costs, and those farthest away from the basic level edge should have the highest costs.","{'title': '5.', 'number': '6'}"
-This implies that adding an edge labeled dog is cheaper than adding an edge labeled chihuahua.,"{'title': '5.', 'number': '6'}"
-Hence a chihuahua edge will be selected only when there are fewer (or less expensive) additional edges required to construct a distinguishing graph than would be the case for a graph including a dog edge.,"{'title': '5.', 'number': '6'}"
-"Note that (assuming that the scene representation is well defined) a distinguishing graph can never contain both a dog and a chihuahua edge, since there will always be a cheaper distinguishing graph omitting one of the two edges.","{'title': '5.', 'number': '6'}"
-"In sum, we can recast the incremental algorithm quite easily in terms of graphs.","{'title': '5.', 'number': '6'}"
-The original incremental algorithm operates only on properties (looped edges in graph terminology).,"{'title': '5.', 'number': '6'}"
-"Recall that when all edges in a scene graph are of the looping variety, testing for subgraph isomorphism becomes trivial.","{'title': '5.', 'number': '6'}"
-The graph-theoretical reformulation of the incremental algorithm does not fully exploit the possibilities offered by the graph framework and the use of cost functions.,"{'title': '5.', 'number': '6'}"
-"First, from the graph-theoretical perspective, the generation of relational descriptions poses no problems.","{'title': '5.', 'number': '6'}"
-"Note that the use of a cost function to simulate subsumption hierarchies for properties carries over directly to relations; for instance, the costs of adding an edge labeled next to should be less than those of adding one labeled left of or right of.","{'title': '5.', 'number': '6'}"
-"Hence, next to will be preferred, unless using left of or right of requires fewer (or less expensive) additional edges for the construction of a distinguishing graph.","{'title': '5.', 'number': '6'}"
-Another advantage of the way the graphbased algorithm models the list of preferred attributes is that finer-grained distinctions can be made than can with the incremental algorithm.,"{'title': '5.', 'number': '6'}"
-"In particular, we are not forced to say that values of the attribute type are always cheaper than values of the attribute color.","{'title': '5.', 'number': '6'}"
-"Instead of assigning costs to attributes, we can assign costs to values of attributes.","{'title': '5.', 'number': '6'}"
-"This gives us the freedom to assign edges labeled with a common color value (e.g., brown) a lower cost than edges labeled with obscure type values, such as Polish owczarek nizinny sheepdog.","{'title': '5.', 'number': '6'}"
-This implies that it will be cheaper to construct a distinguishing graph referring to an object using two cheap edges (the brown dog) than with one particularly expensive edge (the Polish owczarek nizinny sheepdog).,"{'title': '5.', 'number': '6'}"
-Various aspects of other algorithms can be captured in the graph-based algorithm as well.,"{'title': '5.', 'number': '6'}"
-"To further illustrate the flexibility of the graph perspective, we briefly discuss two such aspects.","{'title': '5.', 'number': '6'}"
-5.3.1 Plurals.,"{'title': '5.', 'number': '6'}"
-Van Deemter’s (2000) proposal to generate distinguishing plural descriptions (such as the dogs) can be modeled using graphs in the following way.,"{'title': '5.', 'number': '6'}"
-"Van Deemter’s algorithm takes as input a set of target objects, which, in our case, translates into a set of vertices W from the scene graph (W C_ VG).","{'title': '5.', 'number': '6'}"
-"Now the algorithm tries to generate a vertex-graph pair (v, H) that uniquely refers to (W, G).","{'title': '5.', 'number': '6'}"
-The definition of “uniquely referring graphs” has to be generalized slightly to accommodate plurals.,"{'title': '5.', 'number': '6'}"
-"The constructed subgraph should refer to each of the vertices in the set W, but not to any of the vertices in the scene graph outside this set.","{'title': '5.', 'number': '6'}"
-"Formally, (v, H) uniquely refers to (W, G) iff H is connected, and for each w E W there is a bijection π such that H Cπ G, with π.v = w and there is no w' E G\W such that (v, H) refers to (w', G).","{'title': '5.', 'number': '6'}"
-Observe that the singular case defined in Section 4 is obtained by restricting W to singleton sets.,"{'title': '5.', 'number': '6'}"
-"In this way, the basic algorithm can generate both singular and plural distinguishing descriptions.","{'title': '5.', 'number': '6'}"
-5.3.2 Context and Salience.,"{'title': '5.', 'number': '6'}"
-An object that has been mentioned in recent context is linguistically salient and hence can often be referred to using fewer properties; an animal that is first described as “the large black dog with the hanging ears” may subsequently be referred to using an anaphoric description such as “the dog.” Krahmer and Theune (2002) model this phenomenon by assigning salience weights (sws) to objects.,"{'title': '5.', 'number': '6'}"
-"For this purpose they use a version of centering theory (Grosz, Joshi, and Weinstein 1995) augmented with a recency effect essentially due to Haji˘cov´a (1993).","{'title': '5.', 'number': '6'}"
-Krahmer and Theune then define the set of distractors as the set of objects with a salience weight higher than or equal to that of the target object.,"{'title': '5.', 'number': '6'}"
-"In terms of the graphtheoretical framework, this would go as follows.","{'title': '5.', 'number': '6'}"
-"First, we assign salience weights to the vertices in the scene graph using the salience weights definition proposed by Krahmer and Theune.","{'title': '5.', 'number': '6'}"
-"Subsequently, in the sketch of the basic algorithm (Figure 6), the set of distractors should be redefined as follows: In I n E VG n matchGraphs(v, H, n, G) n n =� v n sw(n) > sw(v)} That is, the distractor set is restricted to those vertices n in the scene graph G that currently are at least as salient as the target object v. For target objects that are linguistically salient, this will typically lead to a reduction of the distractor set.","{'title': '5.', 'number': '6'}"
-"Consequently, distinguishing graphs for these target objects will generally be smaller than those for nonsalient objects.","{'title': '5.', 'number': '6'}"
-"Moreover, we will be able to find distinguishing graphs for a salient object v relatively fast, since we already have a distinguishing graph (constructed for the first definite reference to v) and we can use this graph as our initial value of bestGraph.","{'title': '5.', 'number': '6'}"
-"One of the important open questions in natural language generation is how the common rule-based approaches to generation can be combined with recent insights from statistical natural language processing (see, e.g., Langkilde and Knight [1998] and Malouf [2000] for partial answers).","{'title': '5.', 'number': '6'}"
-The approach proposed in this article makes it possible to combine graph reformulations of well-known rule-based generation algorithms with stochastic cost functions (the result resembles a Markov model).,"{'title': '5.', 'number': '6'}"
-Such a cost function could be derived from a sufficiently large corpus.,"{'title': '5.', 'number': '6'}"
-"For instance, as a first approximation we could define the costs of adding an edge e in terms of the probability P(e) that e occurs in a distinguishing description (estimated by counting occurrences): Thus, properties that occur frequently are cheap; properties that are relatively rare are expensive.","{'title': '5.', 'number': '6'}"
-"In this way, we would probably derive that polish owczarek nizinny sheepdog indeed costs more (and is thus less likely to be selected) than brown.","{'title': '5.', 'number': '6'}"
-"Even though this first approximation already has some interesting consequences, it is probably not enough to obtain a plausible and useful cost function.","{'title': '5.', 'number': '6'}"
-"For instance, it is unlikely that the co-occurrence of edges is fully independent; a husky is likely to be white, and a chihuahua is not.","{'title': '5.', 'number': '6'}"
-Such dependencies are not modeled by the definition given above.,"{'title': '5.', 'number': '6'}"
-"In addition, properties referring to size such as small and large probably occur more often in a corpus than properties referring to colors such as brown or yellow, which at first sight appears to run counter to the earlier observation that speakers generally prefer absolute properties over relative ones.","{'title': '5.', 'number': '6'}"
-"The reason for this, however, is probably that there are simply fewer ways to describe the size than there are to describe the color of objects.","{'title': '5.', 'number': '6'}"
-Searching for a more sophisticated method of defining stochastic cost functions is therefore an interesting line of future research.,"{'title': '5.', 'number': '6'}"
-"In this article, we have presented a new approach to the content determination problem for referring expressions.","{'title': '5.', 'number': '6'}"
-"We proposed to model scenes as labeled directed graphs, in which objects are represented as vertices and the properties and relations of these objects are represented as edges.","{'title': '5.', 'number': '6'}"
-The problem of finding a referring expression for an object is treated as finding a subgraph of the scene graph that is isomorphic to the intended referent but not to any other object.,"{'title': '5.', 'number': '6'}"
-"The theoretical complexity of this reformulation of the content determination problem is NP-complete, but there exist various restrictions (planar graphs, decision trees for fixed scene graphs, upper bound to the number of edges in a distinguishing graph) that have a polynomial complexity.","{'title': '5.', 'number': '6'}"
-"We have described a general and fully implemented algorithm, based on the subgraph isomorphism idea, consisting of two main functions: one that constructs referring graphs and one that tests for subgraph isomorphisms.","{'title': '5.', 'number': '6'}"
-Cost functions are used to guide the search process and to give preference to some solutions over others.,"{'title': '5.', 'number': '6'}"
-"Optimization has not been the focus of this article, but we came across various heuristic strategies that would speed up the algorithm.","{'title': '5.', 'number': '6'}"
-"For instance, we can try edges in the order determined by the cost function (from cheap to more expensive), and we can use a greedy algorithm to find a first distinguishing graph quickly.","{'title': '5.', 'number': '6'}"
-"In general, one of the advantages of the graph perspective is that many efficient algorithms for dealing with graph structures are known.","{'title': '5.', 'number': '6'}"
-"We can use those algorithms to formulate more efficient versions of the subgraph construction component (perhaps using the method of Tarjan [1972]; see also Sedgewick [1988]) and of the subgraph isomorphism testing component (e.g., using the aforementioned approach of Messmer and Bunke [1995, 1998]).","{'title': '5.', 'number': '6'}"
-The graph perspective has a number of attractive properties.,"{'title': '5.', 'number': '6'}"
-"(1) By reformulating the content determination problem as a graph construction problem, we can directly apply the many techniques and algorithms for dealing with graph structures.","{'title': '5.', 'number': '6'}"
-"(2) The use of cost functions allows us to model different search methods, each restricting the search space in its own way.","{'title': '5.', 'number': '6'}"
-"By defining cost functions in different ways, we can mimic and extend various well-known algorithms from the literature (see also Krahmer, van Erk, and Verleg [2001]).","{'title': '5.', 'number': '6'}"
-(3) The generation of relational descriptions is straightforward; the problems that plague some other algorithms for the generation of relational descriptions do not arise.,"{'title': '5.', 'number': '6'}"
-"Moreover, the approach to relations proposed here is fully general: It applies to all n-ary relations, not just binary ones.","{'title': '5.', 'number': '6'}"
-(4) The use of cost functions paves the way for integrating statistical information directly into the generation process.,"{'title': '5.', 'number': '6'}"
-"In fact, performing experiments with various ways to estimate stochastic cost functions from corpora is one path for future research that we have identified.","{'title': '5.', 'number': '6'}"
-"Besides looking for graph-based optimizations and performing experiments with stochastic cost functions, there are three other lines for future research we would like to mention.","{'title': '5.', 'number': '6'}"
-The first concerns the construction of scene graphs.,"{'title': '5.', 'number': '6'}"
-How should the decision be made as to which aspects of a scene to represent in the graph?,"{'title': '5.', 'number': '6'}"
-"Naturally, the algorithm can only refer to entities that are modeled in the scene graph, but representing every possible object in a single graph will lead to an explosion of edges and vertices.","{'title': '5.', 'number': '6'}"
-Perhaps some notion of focus of attention can be used to restrict the scene graph.,"{'title': '5.', 'number': '6'}"
-It would also be interesting to look for automatic methods for the construction of scene graphs.,"{'title': '5.', 'number': '6'}"
-"We might use computer vision algorithms (see, e.g., Faugeras [1993]), which are often graph-based themselves, for this purpose.","{'title': '5.', 'number': '6'}"
-"For example, Bauckhage et al. (1999) describe an assembly system in which computer vision is used to convert a workspace with various building blocks into a labeled directed scene graph.","{'title': '5.', 'number': '6'}"
-Note that this approach is also able to deal with dynamic scenes; it can track changes in the workspace (which is required for handling the assembly process).,"{'title': '5.', 'number': '6'}"
-Another issue that we have not discussed in much detail is linguistic realization.,"{'title': '5.', 'number': '6'}"
-How should the information contained in a referring graph be expressed in natural language?,"{'title': '5.', 'number': '6'}"
-"So far, we have assumed that a distinguishing graph can simply be constructed first and subsequently fed into a realization engine.","{'title': '5.', 'number': '6'}"
-"There may, however, be certain dependencies between content selection and realization (see, e.g., Horacek [1997] and Krahmer and Theune [2002]).","{'title': '5.', 'number': '6'}"
-One way to take these dependencies into account would be to reformulate the cost function in such a way that it promotes graphs that can easily be realized and punishes graphs that are more difficult to realize.,"{'title': '5.', 'number': '6'}"
-A final aspect of the graph model that deserves further investigation is based on the fact that we can look at a graph such as that in Figure 3 as a Kripke model.,"{'title': '5.', 'number': '6'}"
-Kripke models are used in model-theoretic semantics for modal logics.,"{'title': '5.', 'number': '6'}"
-The advantage of looking at graphs such as that in Figure 3 as Kripke models is that we can use tools from modal logic to reason about these structures.,"{'title': '5.', 'number': '6'}"
-"For example, we can reformulate the problem of determining the content of a distinguishing description in terms of hybrid logic (see, e.g., Blackburn [2000]) as follows: @iϕ ∧ Aj(i =� j — _@jϕ) In words: When we want to refer to vertex i, we are looking for that distinguishing formula ϕ that is true of (“at”) i but not of any j different from i.","{'title': '5.', 'number': '6'}"
-One advantage of this logical perspective is that logical properties that are not covered by most generation algorithms (such as not having a certain property; see van Deemter [2002]) fit in very well with this perspective.,"{'title': '5.', 'number': '6'}"
-"Planar graphs may be relevant for our current purposes, since subgraph isomorphism can be tested more efficiently on planar graphs than on arbitrary graphs.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"There are two ways in which a nonplanar graph G can be turned into a planar one G' (see Liebers [2001] for a recent overview of planarization algorithms): Either the graph G can be pruned (using vertex or edge deletion) or it can be extended (for instance, using vertex splitting or by inserting vertices at crossings).","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"A disadvantage of the extension approach is that we lose the intuitive one-to-one correspondence between potential target objects and vertices in the scene graph, since the additional vertices only serve the purpose of planarizing the graph and do not represent objects in a scene.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-A disadvantage of the pruning approach is that we lose information.,"{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"The presence of a cost function, however, is potentially very useful, since it allows us to avoid eliminating comparatively cheap (and thus more frequently selected) edges.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"Here, for the sake of illustration, we briefly describe a weighted greedy pruning algorithm that turns an arbitrary scene graph G = (VG, EG) with n vertices and m edges into a planar graph G' = (VG,, EGI) with n vertices and at most m edges.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"We start from the graph G' = (VG, OG), where OG is the set of looping edges from the scene graph, that is, OG = UvEVG EG(v,v).","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"Next we order the remaining edges from the scene graph RG = EG\OG with respect to their costs; the cheapest one comes first, the more expensive ones come later, in order of increasing expense.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"For each e E RG, we check whether G' + e is planar (e.g., using the algorithm from Hopcroft and Tarjan [1974]).","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-"If it is, e is added to EGI.","{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-The algorithm terminates when RG = 0.,"{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-The result is a maximal planar subgraph G' of the scene graph G that differs from G only possibly in the deletion of certain relatively expensive nonlooping (relational) edges.,"{'title': 'Appendix: Planarizing Scene Graphs', 'number': '7'}"
-We would like to thank Dennis van Oort and Denis Gerritsen for their help in the implementation and Alexander Koller and Kees van Deemter for some very useful discussions.,"{'title': 'Acknowledgments', 'number': '8'}"
-"Thanks are also due to Paul Piwek, Mari¨et Theune, Ielka van der Sluis, and the anonymous reviewers for helpful comments on an earlier version of this article.","{'title': 'Acknowledgments', 'number': '8'}"
+This article describes a new approach to the generation of referring expressions.,Introduction
+We propose to formalize a scene (consisting of a set of objects with various properties and relations) as a labeled directed graph and describe content selection (which properties to include in a referring expression) as a subgraph construction problem.,Introduction
+Cost functions are used to guide the search process and to give preference to some solutions over others.,Introduction
+"The current approach has four main advantages: (1) Graph structures have been studied extensively, and by moving to a graph perspective we get direct access to the many theories and algorithms for dealing with graphs; (2) many existing generation algorithms can be reformulated in terms of graphs, and this enhances comparison and integration of the various approaches; (3) the graph perspective allows us to solve a number of problems that have plagued earlier algorithms for the generation of referring expressions; and (4) the combined use of graphs and cost functions paves the way for an integration of rule-based generation techniques with more recent stochastic approaches.",Introduction
+This article describes a new approach to the generation of referring expressions.,Experiment/Discussion
+We propose to formalize a scene (consisting of a set of objects with various properties and relations) as a labeled directed graph and describe content selection (which properties to include in a referring expression) as a subgraph construction problem.,Experiment/Discussion
+Cost functions are used to guide the search process and to give preference to some solutions over others.,Experiment/Discussion
+"The current approach has four main advantages: (1) Graph structures have been studied extensively, and by moving to a graph perspective we get direct access to the many theories and algorithms for dealing with graphs; (2) many existing generation algorithms can be reformulated in terms of graphs, and this enhances comparison and integration of the various approaches; (3) the graph perspective allows us to solve a number of problems that have plagued earlier algorithms for the generation of referring expressions; and (4) the combined use of graphs and cost functions paves the way for an integration of rule-based generation techniques with more recent stochastic approaches.",Experiment/Discussion
+"The generation of referring expressions is one of the most common tasks in natural language generation and has been addressed by many researchers in the past two decades, including Appelt (1985), Reiter (1990), Dale and Haddock (1991), Dale (1992), Dale and Reiter (1995), Horacek (1997), Stone and Webber (1998), Krahmer and Theune (1998, 2002), Bateman (1999), and van Deemter (2000, 2002).",Experiment/Discussion
+"In this article, we present a general, graph-theoretic approach to the generation of referring expressions.",Experiment/Discussion
+"We propose to formalize a scene (i.e., a domain of objects and their properties and relations) as a labeled directed graph and describe the content selection problem (which properties and relations to include in a description for an object?) as a subgraph construction problem.",Experiment/Discussion
+The graph perspective has four main advantages.,Experiment/Discussion
+"(1) There are many attractive and well-understood algorithms for dealing with graph structures (see, e.g., Gibbons [1985], Cormen, Leiserson, and Rivest [1990], or Chartrand and Oellermann [1993]).",Experiment/Discussion
+"In this article, we describe a straightforward branch and bound algorithm for finding the relevant subgraphs in which cost functions are used to guide the search process.",Experiment/Discussion
+"(2) By defining different cost functions for the graph perspective, we can simulate (and improve) some of the well-known algorithms for the generation of referring expressions mentioned above.",Experiment/Discussion
+This facilitates the formal comparison of these algorithms and makes it easier to transfer results from one algorithm to another.,Experiment/Discussion
+(3) The graph perspective provides a clean solution for some problems that have plagued earlier algorithms.,Experiment/Discussion
+"For instance, the generation of relational expressions (i.e., referring expressions that include references to other objects) is enhanced by the fact that both properties and relations are formalized in the same way, namely, as edges in a graph.",Experiment/Discussion
+"(4) The combined use of graphs and cost functions paves the way for a natural integration of traditional rule-based approaches to generating referring expressions and more recent statistical approaches, such as Langkilde and Knight (1998) and Malouf (2000), in a single algorithm.",Experiment/Discussion
+The outline of this article is as follows.,Experiment/Discussion
+"In Section 2 the content selection problem for generating referring expressions is explained, and some well-known solutions to the problem are discussed.",Experiment/Discussion
+"In Section 3, we describe how scenes can be modeled as labeled directed graphs and show how content selection can be formalized as a subgraph construction problem.",Experiment/Discussion
+"Section 4 contains a sketch of the basic generation algorithm, which is illustrated with a worked example.",Experiment/Discussion
+In Section 5 various ways to formalize cost functions are discussed and compared.,Experiment/Discussion
+We end with some concluding remarks and a discussion of future research directions in Section 6.,Experiment/Discussion
+"There are many different algorithms for the generation of referring expressions, each with its own objectives: Some aim at producing the shortest possible description (e.g., Dale’s [1992] full brevity algorithm), others focus on psychological realism (e.g., Dale and Reiter’s [1995] incremental algorithm) or realistic output (e.g., Horacek 1997).",Experiment/Discussion
+The degree of detail in which the various algorithms are described differs considerably.,Experiment/Discussion
+"Some algorithms are fully formalized and come with explicit characterizations of their complexity (e.g., Dale and Reiter 1995; van Deemter 2000); others are more conceptual and concentrate on exploring new directions (e.g., Stone and Webber 1998).",Experiment/Discussion
+"Despite such differences, most algorithms deal with the same problem definition.",Experiment/Discussion
+They take as input a single object v (the target object) for which a referring expression is to be generated and a set of objects (the distractors) from which the target object needs to be distinguished (we use the terminology from Dale and Reiter [1995]).,Experiment/Discussion
+The task of the algorithm is to determine which set of properties is needed to single out the target object v from the distractors.,Experiment/Discussion
+This is known as the content determination problem for referring expressions.,Experiment/Discussion
+On the basis of this set of properties a distinguishing description for v can be generated.,Experiment/Discussion
+"Most algorithms do not address the surface realization problem (how the selected properties should be realized in natural language) in much detail; it is usually assumed that once the content for a referring expression has been determined, a standard realizer such as KPML (Bateman 1997) or SURGE (Elhaded and Robin 1997) can convert the meaning representation to natural language.",Experiment/Discussion
+Consider the example scene in Figure 1.,Experiment/Discussion
+"In this scene, as in any other scene, we see a finite domain of entities D with properties P. In this particular scene, D = {d1,d2,d3,d4} is the set of entities and P = { dog, cat, brown, black+white, large, small } is the set of properties.",Experiment/Discussion
+A scene is usually represented as a database (or knowledge base) listing the properties of each element in D. Thus: d1: dog (d1) small (d1) brown (d1) d2: dog (d2) large (d2) brown (d2) d3: dog (d3) large (d3) black+white (d3) d4: cat (d4) small (d4) brown (d4) A simple example scene consisting of some domestic animals.,Experiment/Discussion
+"In what is probably the key reference on the topic, Dale and Reiter (1995) describe and discuss a number of algorithms for the generation of referring expressions.",Experiment/Discussion
+One of these is the full brevity algorithm (originally due to Dale 1992).,Experiment/Discussion
+This algorithm first tries to generate a distinguishing description for the target object v using one single property.,Experiment/Discussion
+"If this fails, it considers all possible combinations of two properties to see if any of these suffices for the generation of a distinguishing description, and so on.",Experiment/Discussion
+"It is readily seen that this algorithm will output the shortest possible description, if one exists.",Experiment/Discussion
+Suppose the full brevity algorithm is used to generate a description for d1 in Figure 1.,Experiment/Discussion
+"There is no single property that distinguishes the target object d1 from the distractors {d2, d3, d4}.",Experiment/Discussion
+"But when considering all pairs of properties the algorithm will find that one such pair rules out all distractors, namely, small and dog; “the small dog” is a successful and minimal distinguishing description for d1.",Experiment/Discussion
+Dale and Reiter point out that the full brevity algorithm is both computationally infeasible (NP hard) and psychologically unrealistic.,Experiment/Discussion
+They offer the incremental algorithm as an alternative.,Experiment/Discussion
+"The incremental algorithm considers properties for selection in a predetermined order, based on the idea that human speakers and listeners prefer certain kinds of properties (or attributes) when describing objects from a given domain.",Experiment/Discussion
+"For instance, when discussing domestic animals, it seems likely that a human speaker would first describe an animal by its type (is it a dog? is it a cat?).",Experiment/Discussion
+"If that does not suffice, first absolute attributes like color are tried, followed by relative ones such as size.",Experiment/Discussion
+"In sum: The list of preferred attributes for our example domain would be ( type, color, size ).",Experiment/Discussion
+"Essentially, the incremental algorithm iterates through this list, and for each property it encounters, it determines whether adding this property to the properties selected so far would rule out any of the remaining distractors.",Experiment/Discussion
+"If so, it is included in the list of selected properties.",Experiment/Discussion
+"There is one exception to this general strategy: Type information is always included, even if it rules out no distractors.",Experiment/Discussion
+The algorithm stops when all distractors are ruled out (success) or when the end of the list of preferred attributes is reached (failure).,Experiment/Discussion
+"Suppose we apply the incremental algorithm to d1 from Figure 1 with ( type, color, size ) as preferred attributes.",Experiment/Discussion
+The type of d1 listed in the database is dog.,Experiment/Discussion
+This property is selected (since type information is always selected).,Experiment/Discussion
+It rules out d4 (which is a cat).,Experiment/Discussion
+Next we consider the color of d1; the animal is brown.,Experiment/Discussion
+This property rules out d3 (which is a black and white dog) and is selected.,Experiment/Discussion
+"Finally, we consider the size of our target object, which is small.",Experiment/Discussion
+This properly rules out the remaining distractor d2 (which is a large brown dog) and hence is included as well.,Experiment/Discussion
+"At this point, all distractors are ruled out (success!",Experiment/Discussion
+"), and the set of selected properties is {dog, brown, small}, which a linguistic realizer might express as “the small brown dog.” This is a successful distinguishing description but not a minimal one: The property brown is, strictly speaking, made redundant by the later inclusion of the property small.",Experiment/Discussion
+"Since there is no backtracking in the incremental algorithm however, every selected property is realized (hence “incremental”).",Experiment/Discussion
+"This aspect is largely responsible for the computational efficiency of the algorithm (it has a polynomial complexity), but Dale and Reiter (1995, page 248) also claim that it is “psychologically realistic.” They point out that sometimes people may describe an object as “the white bird” even though the simpler “the bird” would have been sufficient (cf.",Experiment/Discussion
+"Pechmann [1989]; see, however, Krahmer and Theune [2002] for discussion).",Experiment/Discussion
+"Even though there are various useful and interesting algorithms for the generation of referring expressions, a number of open questions remain.",Experiment/Discussion
+Recently there has been an increased interest in statistical approaches to natural language generation.,Experiment/Discussion
+"For example, Malouf (2000) has shown that large corpora can be used to determine the order of realization of sequences of prenominal adjectives.",Experiment/Discussion
+"It is unclear how such statistical work on generation can be combined with older, rule-based work such as the algorithms just discussed.",Experiment/Discussion
+"In addition, many algorithms still have difficulties with the generation of relational descriptions (descriptions that include references to other objects to single out the target object from its distractors).",Experiment/Discussion
+"To illustrate the problem, consider the scene depicted in Figure 2.",Experiment/Discussion
+"In this scene we again see a finite domain of entities D with certain properties P. Here, D = {d1, d2, d3, d4} is the set of entities, and P = { dog, doghouse, small, large, brown, white } is the set of properties.",Experiment/Discussion
+Clearly no algorithm can generate a distinguishing description referring to d1 on this basis.,Experiment/Discussion
+"Intuitively, d1 can be distinguished from d2 only using its relation to the doghouse d3.",Experiment/Discussion
+"To facilitate this we extend the scene description with a set of relations R = { left of, right of, contain, in }.",Experiment/Discussion
+A few algorithms have been developed that address the issue of relational descriptions.,Experiment/Discussion
+"The earliest is from Dale and Haddock (1992), who offer an extension of the full brevity algorithm.",Experiment/Discussion
+"The Dale and Haddock algorithm has a problem with infinite recursions; it may produce descriptions like “the dog in the doghouse that contains a dog that is inside a doghouse....” Dale and Haddock, somewhat ad hoc, solve this problem by stipulating that a property or relation may be used only once.",Experiment/Discussion
+Krahmer and Theune (2002) (see also Theune [2000]) describe an extension of the incremental algorithm that allows for relational descriptions.,Experiment/Discussion
+"Their extension suffers from what may be called the problem of forced incrementality: When a first relation fails to rule out all remaining distractors, additional relations will be tried incrementally.",Experiment/Discussion
+"Although it could be argued that incremental selection of properties is psychologically plausible, it seems less plausible for relations.",Experiment/Discussion
+It is unlikely that someone would describe an A graph representation of the scene in Figure 2. object as “the dog next to the tree in front of the garage” in a situation in which “the dog in front of the garage” would suffice.,Experiment/Discussion
+"As we shall argue, the graph perspective provides a clean solution for these problems.",Experiment/Discussion
+"In the previous section we saw that a scene can be described in terms of a domain of entities D with properties P and relations R. Such a scene can be represented as a labeled directed graph (see, e.g., Wilson [1996] for a gentle introduction or Berge [1985] for a more specialized one).",Experiment/Discussion
+"Let L = P U R be the set of labels with P and R disjoint (i.e., P fl R = 0).",Experiment/Discussion
+"Then G = (VG, EG) is a labeled directed graph, where VG C D is the set of vertices (or nodes) and EG C VG x L x VG is the set of labeled directed edges (or arcs).",Experiment/Discussion
+"Where this can be done without creating confusion, the graph subscript is omitted.",Experiment/Discussion
+Throughout this article we use the following notations.,Experiment/Discussion
+"If G = (V, E) is a graph and e = (v, l, w) an edge (with l E L), then the extension of G with e, denoted as G + e, is the graph (V U {v, w}, E U {e}).",Experiment/Discussion
+"Moreover, with EG(v, w) we refer to the set of edges in EG from v to w; that is, EG(v, w) = {e E EG  |e = (v, l, w), for l E L}.",Experiment/Discussion
+"The scene given in Figure 2, for example, can now be represented by the graph in Figure 3.",Experiment/Discussion
+"This graph models the respective spatial relations between the two chihuahuas, between the two doghouses, and between each dog and the nearest doghouse.",Experiment/Discussion
+"For the sake of transparency we have not modeled the relations between the dogs and the distant doghouses (i.e., between d1 and d4 and between d2 and d3).",Experiment/Discussion
+(It is worth stressing that adding these edges would not result in different outcomes in the discussion below).,Experiment/Discussion
+"Note that properties (such as dog) are always modeled as loops, Some graphs for referring expressions, with circles around the intended referent. that is, as edges that start and end in the same vertex.",Experiment/Discussion
+"Relations may have different start and end vertices, but they do not have to (consider potentially reflexive relations such as shave).",Experiment/Discussion
+"Finally, note that the graph sometimes contains properties of various levels of specificity (e.g., chihuahua and dog).",Experiment/Discussion
+This aspect of scene graphs will be further discussed in Section 5.,Experiment/Discussion
+Now the content determination problem for referring expressions can be formulated as a graph construction problem.,Experiment/Discussion
+"To decide which information to include in a referring expression for an object v E V, we construct a connected directed labeled graph over the set of labels L and an arbitrary set of vertices, but including v. A graph is connected iff there is a path (a list of vertices in which each vertex has an edge from itself to the next vertex) between each pair of vertices.",Experiment/Discussion
+"Informally, we say that a vertex (“the intended referent”) from a graph H refers to a given entity in the scene graph G iff the graph H can be “placed over” the scene graph G in such a way that the vertex being referred to is “placed over” the vertex of the given entity in G and each edge from H with label l can be “placed over” an edge from G with the same label.",Experiment/Discussion
+"Furthermore, a vertex-graph pair is distinguishing iff it refers to exactly one vertex in the scene graph.",Experiment/Discussion
+"Consider the three vertex-graph pairs in Figure 4, in which circled vertices stand for the intended referent.",Experiment/Discussion
+"Graph (i) refers to all vertices of the graph in Figure 3 (every object in the scene is next to some other object), graph (ii) can refer to both d1 and d2, and graph (iii) is distinguishing in that it can refer only to d1.",Experiment/Discussion
+"Note that the graphs might be realized as something next to something else, a chihuahua, and the dog in the doghouse, respectively.",Experiment/Discussion
+Here we concentrate on the generation of distinguishing vertex-graph pairs.,Experiment/Discussion
+"Formally, the notion that a graph H = (VH, EH) can be “placed over” another graph G = ft, EG) corresponds to the notion of a subgraph isomorphism (see, e.g., Three distinguishing vertex-graph pairs referring to d1 in Figure 3.",Experiment/Discussion
+Read and Corneil [1977] for an overview).,Experiment/Discussion
+"H can be “placed over” G iff there exists a subgraph G' = (VG,, EG,) of G such that H is isomorphic to G'.",Experiment/Discussion
+"H is isomorphic to G' iff there exists a bijection 7r: VH → VG, such that for all vertices v,w E VH and all l E L: (v, l, w) E EH �* (7r.v,l, 7r.w) E EG In words: The bijective function 7r maps all the vertices in H to corresponding vertices in G' in such a way that any edge with label l between vertices v and w in H is matched with an edge with the same label between the G' counterparts of v and w (i.e., 7r.v and 7r.w, respectively).",Experiment/Discussion
+"When H is isomorphic to some subgraph of G by an isomorphism 7r, we write H C,r G. Given a graph H and a vertex v in H, and a graph G and a vertex w in G, we define that the pair (v, H) refers to the pair (w, G) iff H is connected and H C,r G and 7r.v = w. Furthermore, (v, H) uniquely refers to (w, G) (i.e., (v, H) is distinguishing) iff (v, H) refers to (w, G) and there is no vertex w' in G different from w such that (v, H) refers to (w', G).",Experiment/Discussion
+"The problem considered in this article can now be formalized as follows: Given a graph G and a vertex w in G, find a pair (v, H) such that (v, H) uniquely refers to (w, G).",Experiment/Discussion
+"Consider, for instance, the task of finding a pair (v,H) that uniquely refers to the vertex labeled d1 in Figure 3.",Experiment/Discussion
+"It is easily seen that there are a number of such pairs, three of which are depicted in Figure 5.",Experiment/Discussion
+We would like to have a mechanism that allows us to give certain solutions to this kind of task preference over other solutions.,Experiment/Discussion
+For this purpose we shall use cost functions.,Experiment/Discussion
+"In general, a cost function is a function that assigns to each subgraph of a scene graph a non-negative number.",Experiment/Discussion
+"As we shall see, by defining cost functions in different ways, we can mimic various algorithms for the generation of referring expressions known from the literature.",Experiment/Discussion
+"The basic decision problem for subgraph isomorphism (i.e., testing whether a graph H is isomorphic to a subgraph of G) is known to be NP-complete (see, e.g., Garey and Johnson [1979]).",Experiment/Discussion
+"Here we are interested in connected H, but unfortunately that restriction does not reduce the theoretical complexity.",Experiment/Discussion
+Note that this characterization of the worst-case complexity holds for graphs in which all edges have the same label; in that case each edge from H can potentially be matched to any edge from G. The bestcase complexity is given when each edge is uniquely labeled.,Experiment/Discussion
+"In practice, the situation will most often be somewhere between these extremes.",Experiment/Discussion
+"In general, we can say that the more diverse the labeling of edges in the graph of a particular scene is, the sooner a distinguishing vertex-graph pair will be found.",Experiment/Discussion
+It is worth pointing out that there are various alternatives to full subgraph isomorphism that have a lower complexity.,Experiment/Discussion
+"For instance, as soon as an upper bound K is defined on the number of edges in a distinguishing graph, the problem loses its intractability (for relatively small K) and becomes solvable, in the worst case, in polynomial O(nK) time, where n is number of edges in the graph G. Restricting the problem in such a way is rather harmless for our current purposes, as it prohibits the generation only of distinguishing descriptions with more than K properties, and for all practical purposes K can be small (referring expressions usually express a limited number of properties).",Experiment/Discussion
+"Defining an upper bound K, however, does have a disadvantage: We lose completeness (see van Deemter [2002]).",Experiment/Discussion
+"In particular, the algorithm will fail for objects that can be uniquely described only with K + 1 (or more) edges.",Experiment/Discussion
+"Of course, one could argue that in such cases objects should be distinguished using other means (e.g., by pointing).",Experiment/Discussion
+"Nevertheless, it is worthwhile to look for classes of graphs for which the subgraph isomorphism problem can be solved more efficiently, without postulating upper bounds.",Experiment/Discussion
+"For instance, if G and H are planar (simple) graphs the problem can be solved in time linear in the number of vertices of G (Eppstein 1999).",Experiment/Discussion
+"Basically, a planar graph is one that can be drawn on a plane in such a way that there are no crossing edges (thus, for instance, the graph in Figure 3 is planar, as is any graph with only four vertices).",Experiment/Discussion
+"In general, there is no a priori reason to assume that our scene representations will be planar.",Experiment/Discussion
+Yet every nonplanar graph can be modified into a closely related planar one.,Experiment/Discussion
+We briefly address planarization of scene graphs in the Appendix.,Experiment/Discussion
+A final alternative is worth mentioning.,Experiment/Discussion
+The general approach to the problem of subgraph isomorphism detection assumes that both graphs are given on-line.,Experiment/Discussion
+"For our current purposes, however, it may happen that the scene graph is fixed and known beforehand, and only the referring graph is unknown and given on-line.",Experiment/Discussion
+"Messmer and Bunke (1995, 1998) describe a method that converts the known graph (or model graph, as they call it) into a decision tree.",Experiment/Discussion
+"At run time, the input graph is classified by the decision tree, which detects subgraph isomorphisms.",Experiment/Discussion
+"The disadvantage of this approach is that the decision tree may contain, in the worst case, an exponential number of nodes.",Experiment/Discussion
+But the main advantage is that the complexity of the new subgraph isomorphism algorithm is only quadratic in the number of vertices of the input referring graph.,Experiment/Discussion
+"Note that with this approach we do not lose information from the scene graph, nor do we lose completeness.",Experiment/Discussion
+"In sum, the basic approach to subgraph isomorphisms is NP-complete, but there exist various reformulations of the problem that can be solved more efficiently.",Experiment/Discussion
+"Deciding which (combination) of these is the most suitable in practice, however, is beyond the scope of this article.",Experiment/Discussion
+"Finally, it is worth stressing that the NP-completeness is due to the presence of edges representing relations between different vertices.",Experiment/Discussion
+"If we restrict the approach to properties (looping edges), testing for subgraph isomorphisms becomes trivial.",Experiment/Discussion
+In this section we give a high-level sketch of the graph-based generation algorithm.,Experiment/Discussion
+"The algorithm (called makeReferringExpression) consists of two main components, a subgraph construction algorithm (called findGraph) and a subgraph isomorphism testing algorithm (called matchGraphs).",Experiment/Discussion
+For expository reasons we do not address optimization strategies (but see Section 6).,Experiment/Discussion
+"We assume that a scene graph G = (VG, EG) is given.",Experiment/Discussion
+The algorithm systematically tries all relevant subgraphs H of the scene graph G by starting with the subgraph containing only the vertex v (the target object) and expanding it recursively by trying to add edges from G that are adjacent to the subgraph H constructed up to that point.,Experiment/Discussion
+In this way we know that the results will be a connected subgraph.,Experiment/Discussion
+We refer to this set of adjacent edges as the H neighbors in G (denoted as G.neighbors(H)).,Experiment/Discussion
+"Formally: The algorithm returns the cheapest (least expensive) distinguishing subgraph H that refers to v, if such a distinguishing graph exists; otherwise it returns the undefined null graph -L. We use cost functions to guide the search process and to give preference to some solutions over others.",Experiment/Discussion
+"If H = (VH, EH) is a subgraph of G, then the costs of H, denoted as cost(H), can be given by summing over the costs associated with the vertices and edges of H. Formally: In fact, this is only one possible way to define a cost function.",Experiment/Discussion
+The only hard requirement cost functions have to fulfill is monotonicity.,Experiment/Discussion
+"That is, adding an edge e to a graph G should never result in a graph cheaper than G. Formally: dG' C G de E EG: cost(G') < cost(G' + e) The monotonicity assumption helps reduce the search space, since extensions of subgraphs with a cost greater than the best subgraph found up to that point can safely be ignored.",Experiment/Discussion
+"Naturally, the costs of the undefined graph (cost(-L)) are not defined.",Experiment/Discussion
+It is worth stressing that the cost function is global: It determines the costs of entire graphs.,Experiment/Discussion
+This implies that the cheapest distinguishing graph is not necessarily the smallest distinguishing graph; a graph consisting of two or more edges may be cheaper than a graph containing one expensive edge.,Experiment/Discussion
+We now illustrate the algorithm with an example.,Experiment/Discussion
+Suppose the scene graph G is as given in Figure 3 and that we want to generate a referring expression for object d1 Sketch of the main function (makeReferringExpression) and the subgraph construction function (findGraph). in this graph.,Experiment/Discussion
+Let us assume for the sake of illustration that the cost function is defined in such a way that adding a vertex or an edge always costs one point.,Experiment/Discussion
+"Thus, for each v E VH and for each e E EH: cost(v) = cost(e) = 1.",Experiment/Discussion
+(In the next section we describe a number of more interesting cost functions and discuss the impact these have on the output of the algorithm.),Experiment/Discussion
+We call the function makeReferringExpression (given in Figure 6) with d1 as parameter.,Experiment/Discussion
+"In this function the variable bestGraph (for the best solution found up to that point) is initialized as the null graph (there is no best solution yet), and the variable H (for the distinguishing subgraph under construction) is initialized as the graph containing only vertex d1 (i.e., (i) in Figure 7).",Experiment/Discussion
+"Then the function findGraph (see also Figure 6) is called, with parameters d1, bestGraph, and H. To begin with, whether a first non-null bestGraph has been found is checked and, if one has, whether the costs of H (the graph under construction) are higher than the costs of the bestGraph found up to that point.",Experiment/Discussion
+"If the costs of H are higher, it is not worth extending H since, due to the monotonicity constraint, it will never end up being cheaper than the current bestGraph.",Experiment/Discussion
+"During the first iteration we have no non-null bestGraph, so we continue.",Experiment/Discussion
+Next the set of distractors is calculated.,Experiment/Discussion
+"In terms of the graph perspective, this is the set of vertices in the scene graph G (other than the target vertex v) to which the graph H refers.",Experiment/Discussion
+"It is easily seen that the initial value of H refers to every vertex in G. Hence, as one would expect, the initial set of distractors is VG\{d1} = {d2,d3,d4}.",Experiment/Discussion
+Then the current set of distractors is checked to determine whether it is empty.,Experiment/Discussion
+"If it is, we have managed to find a distinguishing graph, which is subsequently stored in the variable bestGraph.",Experiment/Discussion
+"In the first iteration, this is obviously not the case, and we continue, recursively trying to extend H by adding Three values for H in the generation process for d1. adjacent (neighboring) edges until either a distinguishing graph has been constructed (all distractors are ruled out) or the costs of H exceed the costs of the bestGraph found so far.",Experiment/Discussion
+"While bestGraph is still the null graph, the algorithm continues until H is a distinguishing graph.",Experiment/Discussion
+Which is the first distinguishing graph to be found (if more than one exists) depends on the order in which the adjacent edges are tried (see also Section 5.1).,Experiment/Discussion
+Suppose for the sake of argument that the first distinguishing graph to be found is (ii) in Figure 7.,Experiment/Discussion
+This graph is returned and stored in bestGraph.,Experiment/Discussion
+The costs associated with this graph are five points (two vertices and three edges).,Experiment/Discussion
+At this stage in the generation process only graphs with costs lower than five points are worth investigating.,Experiment/Discussion
+"In fact, there are only a few distinguishing graphs that cost less than this.",Experiment/Discussion
+"After a number of iterations the algorithm will find the cheapest solution (given this particular, simple definition of the cost function), which is (iii) in Figure 7.",Experiment/Discussion
+That this distinguishing graph does not include type information does not necessarily mean that such information should not be realized.,Experiment/Discussion
+"It means only that type information is, strictly speaking, not necessary to distinguish the intended referent from the distractors.",Experiment/Discussion
+We return to this issue in Section 5.2.,Experiment/Discussion
+"Figure 8 sketches the part of the algorithm that tests for subgraph isomorphism, matchGraphs.",Experiment/Discussion
+This function is called each time the distractor set is calculated.,Experiment/Discussion
+"It tests whether the pair (v,H) can refer to (w, G), or put differently, it checks whether there exists an isomorphism 7r such that H Cπ G with 7r.v = w. The function matchGraphs first determines whether the looping edges starting from vertex v match those of w. If EH(v, v) is not a subset of EG(w,w) (e.g., v is a dog and w is a doghouse), we can immediately discard the matching.",Experiment/Discussion
+Otherwise we start with the matching 7r.v = w and try to expand it recursively.,Experiment/Discussion
+At each recursion step a fresh and as yet unmatched vertex y from VH is selected that is adjacent to one of the vertices in the current domain of 7r (notated dom(7r)).,Experiment/Discussion
+For each y we calculate the set Z of possible vertices in G to which y can be Sketch of the function testing for subgraph isomorphism (matchGraphs). matched.,Experiment/Discussion
+This set consists of all the vertices in G that have the same looping edges as y and the same edges to and from other vertices in the domain of the current matching function 7r.,Experiment/Discussion
+"Formally: (The H.neighbors(y) are the vertices in H that are adjacent to y, that is, those vertices that are connected to y by an edge.)",Experiment/Discussion
+"The matching can now possibly be extended with 7r.y = z, for each z ∈ Z.",Experiment/Discussion
+The algorithm then branches over all these possibilities.,Experiment/Discussion
+"Once a mapping 7r has been found that has exactly as many elements as H has vertices, we have found a subgraph isomorphism.",Experiment/Discussion
+"If there are still unmatched vertices in H, or if all possible extensions with vertex y have been checked and no matching can be found, the test for subgraph isomorphism has failed.",Experiment/Discussion
+"The algorithm outlined in Figures 6 and 8 has been implemented in Java 2 (J2SE, version 1.4).",Experiment/Discussion
+"The implemented version of the algorithm is actually more efficient than the sketch suggests, because various calculations need not be repeated in each iteration (the set of distractors and the set G.neighbors(H), for example).",Experiment/Discussion
+"In addition, the user has the possibility of specifying the cost function in whatever way he or she sees fit.",Experiment/Discussion
+A full-fledged performance analysis of the current implementation is beyond the scope of this article.,Experiment/Discussion
+"Such an analysis would be complicated by the fact that there are many kinds of graphs (dense, sparse, (un)connected, etc.",Experiment/Discussion
+"), and the performance results will vary with the properties of the scene graph.",Experiment/Discussion
+"If the scene graph is fully connected, finding distinguishing graphs is much harder then when it is fully unconnected.",Experiment/Discussion
+"Nevertheless, to give the reader some insight into the performance of the implementation, we applied it to seven test scene graphs of a specific form.",Experiment/Discussion
+The first is our running example: the graph in Figure 3.,Experiment/Discussion
+"The other six are obtained by scaling up this graph and permutating (plus, if necessary, adding) properties to make sure that each object can be uniquely described.",Experiment/Discussion
+This implies that only the first test graph is fully connected.,Experiment/Discussion
+"The other graphs consist of n4 connected subgraphs, where n is the number of vertices in the graph.",Experiment/Discussion
+"Thus, the bigger graphs are relatively less complex than the smaller ones.",Experiment/Discussion
+"Each graph consists of 4n looping edges (representing properties) and 3n nonlooping edges (representing spatial relations), again with n the number of vertices.",Experiment/Discussion
+The test was performed on a Windows 2000 PC with a 900 mHz AMD Athlon Processor and 128 Mb RAM.,Experiment/Discussion
+The results are given in Table 1.,Experiment/Discussion
+We measured the system time right before and right after the call of the main function makeReferringExpression.,Experiment/Discussion
+"We computed the differences between these two times for a number of target objects from the scene graphs (4 and 8 objects for the first two graphs, 16 for the remaining ones).",Experiment/Discussion
+Note that this measurement does not include the time Java requires for initialization or background activities such as garbage collection.,Experiment/Discussion
+"Table 1 shows that even for the larger graphs, the program is able to find minimal distinguishing graphs relatively quickly.",Experiment/Discussion
+"The current implementation is a straightforward one (see also Section 6), so optimization, possibly in combination with heuristics, is likely to show further improvements in performance.",Experiment/Discussion
+"The algorithm described in the previous section (with the uniform cost function assigning one point to each edge and vertex) can be seen as a generalization of Dale’s (1992) full brevity algorithm, in the sense that there is a guarantee that the algorithm will output the shortest possible description, if one exists.",Experiment/Discussion
+"It is also an extension of the full brevity algorithm, since it allows for relational descriptions.",Experiment/Discussion
+"In this respect it is comparable to the Dale and Haddock (1991) algorithm, granted that here the problems with infinite recursions do not arise, since a particular edge is either present in a graph or not.",Experiment/Discussion
+"Moreover, the approach is fully general and applies to n-ary relations (and relation/property combinations) as well.",Experiment/Discussion
+It is worth noting that Dale’s (1992) greedy heuristic algorithm (also discussed in Dale and Reiter [1995]) can be cast in the graph framework as well.,Experiment/Discussion
+"In fact, this would give us a handle on the order in which different adjacent edges could be tried.",Experiment/Discussion
+"The edges associated with the intended referent should be sorted on their descriptive power, which is inversely proportional to the number of occurrences of that particular edge in the scene graph.",Experiment/Discussion
+"The algorithm then adds the most discriminating edge (i.e., the one removing most distractors) first.",Experiment/Discussion
+"If there are various equally distinguishing edges, the cheapest one is added.",Experiment/Discussion
+This process is then repeated until a distinguishing graph is found.,Experiment/Discussion
+"In fact, such a greedy strategy could be used to produce a first nonminimal distinguishing graph.",Experiment/Discussion
+"Subsequently we could call findGraph with this graph as initial value of bestGraph, instead of the null graph ⊥.",Experiment/Discussion
+"In this way, we would be able to find minimal graphs more efficiently.",Experiment/Discussion
+The characteristic properties of Dale and Reiter’s (1995) incremental algorithm can be incorporated into the graph framework as follows.,Experiment/Discussion
+"First, the list of preferred attributes can be modeled in terms of the cost function: All type edges should be cheaper than all other edges.",Experiment/Discussion
+"In fact, (basic level, see below) type edges could be free.",Experiment/Discussion
+"Moreover, the edges corresponding to absolute properties (color) should cost less than those corresponding to relative ones (size).",Experiment/Discussion
+"This gives us exactly the effect of having a list of preferred attributes ( type, color, size ).",Experiment/Discussion
+It also implies that the type of an object is always included if it is in any way distinguishing.,Experiment/Discussion
+That by itself does not guarantee that type is always included.,Experiment/Discussion
+The incremental nature of the incremental algorithm can be obtained by ordering edges with respect to their costs.,Experiment/Discussion
+"Now the cheapest edges (i.e, those expressing type information) should be tried first, and more expensive edges should be tried later.",Experiment/Discussion
+"In addition, the algorithm should terminate as soon as it has found a distinguishing graph.",Experiment/Discussion
+"This would guarantee that bargain type loops are always included, and the algorithm would output (iii) from Figure 4 instead of (iii) from Another characteristic property of the original incremental algorithm (not discussed in section 2) is the use of a subsumption hierarchy.",Experiment/Discussion
+"A chihuahua, for instance, can be referred to as either a chihuahua or a dog.",Experiment/Discussion
+"The latter has a special status and is called the basic level value (see, e.g., Rosch [1978]).",Experiment/Discussion
+"According to Dale and Reiter (1995) and Reiter (1990), human speakers have a general preference for basic level values and move to more specific (subsumed) values only if these are more informative.",Experiment/Discussion
+This notion of a subsumption hierarchy can be modeled using the cost function.,Experiment/Discussion
+"For a given attribute, the basic level edges should be assigned the lowest costs, and those farthest away from the basic level edge should have the highest costs.",Experiment/Discussion
+This implies that adding an edge labeled dog is cheaper than adding an edge labeled chihuahua.,Experiment/Discussion
+Hence a chihuahua edge will be selected only when there are fewer (or less expensive) additional edges required to construct a distinguishing graph than would be the case for a graph including a dog edge.,Experiment/Discussion
+"Note that (assuming that the scene representation is well defined) a distinguishing graph can never contain both a dog and a chihuahua edge, since there will always be a cheaper distinguishing graph omitting one of the two edges.",Experiment/Discussion
+"In sum, we can recast the incremental algorithm quite easily in terms of graphs.",Experiment/Discussion
+The original incremental algorithm operates only on properties (looped edges in graph terminology).,Experiment/Discussion
+"Recall that when all edges in a scene graph are of the looping variety, testing for subgraph isomorphism becomes trivial.",Experiment/Discussion
+The graph-theoretical reformulation of the incremental algorithm does not fully exploit the possibilities offered by the graph framework and the use of cost functions.,Experiment/Discussion
+"First, from the graph-theoretical perspective, the generation of relational descriptions poses no problems.",Experiment/Discussion
+"Note that the use of a cost function to simulate subsumption hierarchies for properties carries over directly to relations; for instance, the costs of adding an edge labeled next to should be less than those of adding one labeled left of or right of.",Experiment/Discussion
+"Hence, next to will be preferred, unless using left of or right of requires fewer (or less expensive) additional edges for the construction of a distinguishing graph.",Experiment/Discussion
+Another advantage of the way the graphbased algorithm models the list of preferred attributes is that finer-grained distinctions can be made than can with the incremental algorithm.,Experiment/Discussion
+"In particular, we are not forced to say that values of the attribute type are always cheaper than values of the attribute color.",Experiment/Discussion
+"Instead of assigning costs to attributes, we can assign costs to values of attributes.",Experiment/Discussion
+"This gives us the freedom to assign edges labeled with a common color value (e.g., brown) a lower cost than edges labeled with obscure type values, such as Polish owczarek nizinny sheepdog.",Experiment/Discussion
+This implies that it will be cheaper to construct a distinguishing graph referring to an object using two cheap edges (the brown dog) than with one particularly expensive edge (the Polish owczarek nizinny sheepdog).,Experiment/Discussion
+Various aspects of other algorithms can be captured in the graph-based algorithm as well.,Experiment/Discussion
+"To further illustrate the flexibility of the graph perspective, we briefly discuss two such aspects.",Experiment/Discussion
+5.3.1 Plurals.,Experiment/Discussion
+Van Deemter’s (2000) proposal to generate distinguishing plural descriptions (such as the dogs) can be modeled using graphs in the following way.,Experiment/Discussion
+"Van Deemter’s algorithm takes as input a set of target objects, which, in our case, translates into a set of vertices W from the scene graph (W C_ VG).",Experiment/Discussion
+"Now the algorithm tries to generate a vertex-graph pair (v, H) that uniquely refers to (W, G).",Experiment/Discussion
+The definition of “uniquely referring graphs” has to be generalized slightly to accommodate plurals.,Experiment/Discussion
+"The constructed subgraph should refer to each of the vertices in the set W, but not to any of the vertices in the scene graph outside this set.",Experiment/Discussion
+"Formally, (v, H) uniquely refers to (W, G) iff H is connected, and for each w E W there is a bijection π such that H Cπ G, with π.v = w and there is no w' E G\W such that (v, H) refers to (w', G).",Experiment/Discussion
+Observe that the singular case defined in Section 4 is obtained by restricting W to singleton sets.,Experiment/Discussion
+"In this way, the basic algorithm can generate both singular and plural distinguishing descriptions.",Experiment/Discussion
+5.3.2 Context and Salience.,Experiment/Discussion
+An object that has been mentioned in recent context is linguistically salient and hence can often be referred to using fewer properties; an animal that is first described as “the large black dog with the hanging ears” may subsequently be referred to using an anaphoric description such as “the dog.” Krahmer and Theune (2002) model this phenomenon by assigning salience weights (sws) to objects.,Experiment/Discussion
+"For this purpose they use a version of centering theory (Grosz, Joshi, and Weinstein 1995) augmented with a recency effect essentially due to Haji˘cov´a (1993).",Experiment/Discussion
+Krahmer and Theune then define the set of distractors as the set of objects with a salience weight higher than or equal to that of the target object.,Experiment/Discussion
+"In terms of the graphtheoretical framework, this would go as follows.",Experiment/Discussion
+"First, we assign salience weights to the vertices in the scene graph using the salience weights definition proposed by Krahmer and Theune.",Experiment/Discussion
+"Subsequently, in the sketch of the basic algorithm (Figure 6), the set of distractors should be redefined as follows: In I n E VG n matchGraphs(v, H, n, G) n n =� v n sw(n) > sw(v)} That is, the distractor set is restricted to those vertices n in the scene graph G that currently are at least as salient as the target object v. For target objects that are linguistically salient, this will typically lead to a reduction of the distractor set.",Experiment/Discussion
+"Consequently, distinguishing graphs for these target objects will generally be smaller than those for nonsalient objects.",Experiment/Discussion
+"Moreover, we will be able to find distinguishing graphs for a salient object v relatively fast, since we already have a distinguishing graph (constructed for the first definite reference to v) and we can use this graph as our initial value of bestGraph.",Experiment/Discussion
+"One of the important open questions in natural language generation is how the common rule-based approaches to generation can be combined with recent insights from statistical natural language processing (see, e.g., Langkilde and Knight [1998] and Malouf [2000] for partial answers).",Experiment/Discussion
+The approach proposed in this article makes it possible to combine graph reformulations of well-known rule-based generation algorithms with stochastic cost functions (the result resembles a Markov model).,Experiment/Discussion
+Such a cost function could be derived from a sufficiently large corpus.,Experiment/Discussion
+"For instance, as a first approximation we could define the costs of adding an edge e in terms of the probability P(e) that e occurs in a distinguishing description (estimated by counting occurrences): Thus, properties that occur frequently are cheap; properties that are relatively rare are expensive.",Experiment/Discussion
+"In this way, we would probably derive that polish owczarek nizinny sheepdog indeed costs more (and is thus less likely to be selected) than brown.",Experiment/Discussion
+"Even though this first approximation already has some interesting consequences, it is probably not enough to obtain a plausible and useful cost function.",Experiment/Discussion
+"For instance, it is unlikely that the co-occurrence of edges is fully independent; a husky is likely to be white, and a chihuahua is not.",Experiment/Discussion
+Such dependencies are not modeled by the definition given above.,Experiment/Discussion
+"In addition, properties referring to size such as small and large probably occur more often in a corpus than properties referring to colors such as brown or yellow, which at first sight appears to run counter to the earlier observation that speakers generally prefer absolute properties over relative ones.",Experiment/Discussion
+"The reason for this, however, is probably that there are simply fewer ways to describe the size than there are to describe the color of objects.",Experiment/Discussion
+Searching for a more sophisticated method of defining stochastic cost functions is therefore an interesting line of future research.,Experiment/Discussion
+"In this article, we have presented a new approach to the content determination problem for referring expressions.",Experiment/Discussion
+"We proposed to model scenes as labeled directed graphs, in which objects are represented as vertices and the properties and relations of these objects are represented as edges.",Experiment/Discussion
+The problem of finding a referring expression for an object is treated as finding a subgraph of the scene graph that is isomorphic to the intended referent but not to any other object.,Experiment/Discussion
+"The theoretical complexity of this reformulation of the content determination problem is NP-complete, but there exist various restrictions (planar graphs, decision trees for fixed scene graphs, upper bound to the number of edges in a distinguishing graph) that have a polynomial complexity.",Experiment/Discussion
+"We have described a general and fully implemented algorithm, based on the subgraph isomorphism idea, consisting of two main functions: one that constructs referring graphs and one that tests for subgraph isomorphisms.",Experiment/Discussion
+Cost functions are used to guide the search process and to give preference to some solutions over others.,Experiment/Discussion
+"Optimization has not been the focus of this article, but we came across various heuristic strategies that would speed up the algorithm.",Experiment/Discussion
+"For instance, we can try edges in the order determined by the cost function (from cheap to more expensive), and we can use a greedy algorithm to find a first distinguishing graph quickly.",Experiment/Discussion
+"In general, one of the advantages of the graph perspective is that many efficient algorithms for dealing with graph structures are known.",Experiment/Discussion
+"We can use those algorithms to formulate more efficient versions of the subgraph construction component (perhaps using the method of Tarjan [1972]; see also Sedgewick [1988]) and of the subgraph isomorphism testing component (e.g., using the aforementioned approach of Messmer and Bunke [1995, 1998]).",Experiment/Discussion
+The graph perspective has a number of attractive properties.,Experiment/Discussion
+"(1) By reformulating the content determination problem as a graph construction problem, we can directly apply the many techniques and algorithms for dealing with graph structures.",Experiment/Discussion
+"(2) The use of cost functions allows us to model different search methods, each restricting the search space in its own way.",Experiment/Discussion
+"By defining cost functions in different ways, we can mimic and extend various well-known algorithms from the literature (see also Krahmer, van Erk, and Verleg [2001]).",Experiment/Discussion
+(3) The generation of relational descriptions is straightforward; the problems that plague some other algorithms for the generation of relational descriptions do not arise.,Experiment/Discussion
+"Moreover, the approach to relations proposed here is fully general: It applies to all n-ary relations, not just binary ones.",Experiment/Discussion
+(4) The use of cost functions paves the way for integrating statistical information directly into the generation process.,Experiment/Discussion
+"In fact, performing experiments with various ways to estimate stochastic cost functions from corpora is one path for future research that we have identified.",Experiment/Discussion
+"Besides looking for graph-based optimizations and performing experiments with stochastic cost functions, there are three other lines for future research we would like to mention.",Experiment/Discussion
+The first concerns the construction of scene graphs.,Experiment/Discussion
+How should the decision be made as to which aspects of a scene to represent in the graph?,Experiment/Discussion
+"Naturally, the algorithm can only refer to entities that are modeled in the scene graph, but representing every possible object in a single graph will lead to an explosion of edges and vertices.",Experiment/Discussion
+Perhaps some notion of focus of attention can be used to restrict the scene graph.,Experiment/Discussion
+It would also be interesting to look for automatic methods for the construction of scene graphs.,Experiment/Discussion
+"We might use computer vision algorithms (see, e.g., Faugeras [1993]), which are often graph-based themselves, for this purpose.",Experiment/Discussion
+"For example, Bauckhage et al. (1999) describe an assembly system in which computer vision is used to convert a workspace with various building blocks into a labeled directed scene graph.",Experiment/Discussion
+Note that this approach is also able to deal with dynamic scenes; it can track changes in the workspace (which is required for handling the assembly process).,Experiment/Discussion
+Another issue that we have not discussed in much detail is linguistic realization.,Experiment/Discussion
+How should the information contained in a referring graph be expressed in natural language?,Experiment/Discussion
+"So far, we have assumed that a distinguishing graph can simply be constructed first and subsequently fed into a realization engine.",Experiment/Discussion
+"There may, however, be certain dependencies between content selection and realization (see, e.g., Horacek [1997] and Krahmer and Theune [2002]).",Experiment/Discussion
+One way to take these dependencies into account would be to reformulate the cost function in such a way that it promotes graphs that can easily be realized and punishes graphs that are more difficult to realize.,Experiment/Discussion
+A final aspect of the graph model that deserves further investigation is based on the fact that we can look at a graph such as that in Figure 3 as a Kripke model.,Experiment/Discussion
+Kripke models are used in model-theoretic semantics for modal logics.,Experiment/Discussion
+The advantage of looking at graphs such as that in Figure 3 as Kripke models is that we can use tools from modal logic to reason about these structures.,Experiment/Discussion
+"For example, we can reformulate the problem of determining the content of a distinguishing description in terms of hybrid logic (see, e.g., Blackburn [2000]) as follows: @iϕ ∧ Aj(i =� j — _@jϕ) In words: When we want to refer to vertex i, we are looking for that distinguishing formula ϕ that is true of (“at”) i but not of any j different from i.",Experiment/Discussion
+One advantage of this logical perspective is that logical properties that are not covered by most generation algorithms (such as not having a certain property; see van Deemter [2002]) fit in very well with this perspective.,Experiment/Discussion
+"Planar graphs may be relevant for our current purposes, since subgraph isomorphism can be tested more efficiently on planar graphs than on arbitrary graphs.",Results/Conclusion
+"There are two ways in which a nonplanar graph G can be turned into a planar one G' (see Liebers [2001] for a recent overview of planarization algorithms): Either the graph G can be pruned (using vertex or edge deletion) or it can be extended (for instance, using vertex splitting or by inserting vertices at crossings).",Results/Conclusion
+"A disadvantage of the extension approach is that we lose the intuitive one-to-one correspondence between potential target objects and vertices in the scene graph, since the additional vertices only serve the purpose of planarizing the graph and do not represent objects in a scene.",Results/Conclusion
+A disadvantage of the pruning approach is that we lose information.,Results/Conclusion
+"The presence of a cost function, however, is potentially very useful, since it allows us to avoid eliminating comparatively cheap (and thus more frequently selected) edges.",Results/Conclusion
+"Here, for the sake of illustration, we briefly describe a weighted greedy pruning algorithm that turns an arbitrary scene graph G = (VG, EG) with n vertices and m edges into a planar graph G' = (VG,, EGI) with n vertices and at most m edges.",Results/Conclusion
+"We start from the graph G' = (VG, OG), where OG is the set of looping edges from the scene graph, that is, OG = UvEVG EG(v,v).",Results/Conclusion
+"Next we order the remaining edges from the scene graph RG = EG\OG with respect to their costs; the cheapest one comes first, the more expensive ones come later, in order of increasing expense.",Results/Conclusion
+"For each e E RG, we check whether G' + e is planar (e.g., using the algorithm from Hopcroft and Tarjan [1974]).",Results/Conclusion
+"If it is, e is added to EGI.",Results/Conclusion
+The algorithm terminates when RG = 0.,Results/Conclusion
+The result is a maximal planar subgraph G' of the scene graph G that differs from G only possibly in the deletion of certain relatively expensive nonlooping (relational) edges.,Results/Conclusion
+We would like to thank Dennis van Oort and Denis Gerritsen for their help in the implementation and Alexander Koller and Kees van Deemter for some very useful discussions.,Results/Conclusion
+"Thanks are also due to Paul Piwek, Mari¨et Theune, Ielka van der Sluis, and the anonymous reviewers for helpful comments on an earlier version of this article.",Results/Conclusion

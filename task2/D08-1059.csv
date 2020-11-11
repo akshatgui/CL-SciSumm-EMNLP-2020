@@ -1,167 +1,167 @@
 col1,col2
-"Graph-based and transition-based approaches to dependency parsing adopt very different views of the problem, each view having its own strengths and limitations.",{}
-We study both approaches under the framework of beamsearch.,{}
-"By developing a graph-based and a transition-based dependency parser, we show that a beam-search decoder is a competitive choice for both methods.",{}
-"More importantly, we propose a beam-search-based parser that combines both graph-based and transitionbased parsing into a single system for training and decoding, showing that it outperforms both the pure graph-based and the pure transition-based parsers.",{}
-"Testing on the English and Chinese Penn Treebank data, the combined system gave state-of-the-art accuraof respectively.",{}
-"Graph-based (McDonald et al., 2005; McDonald and Pereira, 2006; Carreras et al., 2006) and transition-based (Yamada and Matsumoto, 2003; Nivre et al., 2006) parsing algorithms offer two different approaches to data-driven dependency parsing.","{'title': '1 Introduction', 'number': '1'}"
-"Given an input sentence, a graph-based algorithm finds the highest scoring parse tree from all possible outputs, scoring each complete tree, while a transition-based algorithm builds a parse by a sequence of actions, scoring each action individually.","{'title': '1 Introduction', 'number': '1'}"
-"The terms “graph-based” and “transition-based” were used by McDonald and Nivre (2007) to describe the difference between MSTParser (McDonald and Pereira, 2006), which is a graph-based parser with an exhaustive search decoder, and MaltParser (Nivre et al., 2006), which is a transition-based parser with a greedy search decoder.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we do not differentiate graph-based and transitionbased parsers by their search algorithms: a graphbased parser can use an approximate decoder while a transition-based parser is not necessarily deterministic.","{'title': '1 Introduction', 'number': '1'}"
-"To make the concepts clear, we classify the two types of parser by the following two criteria: By this classification, beam-search can be applied to both graph-based and transition-based parsers.","{'title': '1 Introduction', 'number': '1'}"
-"Representative of each method, MSTParser and MaltParser gave comparable accuracies in the CoNLL-X shared task (Buchholz and Marsi, 2006).","{'title': '1 Introduction', 'number': '1'}"
-"However, they make different types of errors, which can be seen as a reflection of their theoretical differences (McDonald and Nivre, 2007).","{'title': '1 Introduction', 'number': '1'}"
-"MSTParser has the strength of exact inference, but its choice of features is constrained by the requirement of efficient dynamic programming.","{'title': '1 Introduction', 'number': '1'}"
-"MaltParser is deterministic, yet its comparatively larger feature range is an advantage.","{'title': '1 Introduction', 'number': '1'}"
-"By comparing the two, three interesting research questions arise: (1) how to increase the flexibility in defining features for graph-based parsing; (2) how to add search to transition-based parsing; and (3) how to combine the two parsing approaches so that the strengths of each are utilized.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we study these questions under one framework: beam-search.","{'title': '1 Introduction', 'number': '1'}"
-"Beam-search has been successful in many NLP tasks (Koehn et al., 2003; Collins and Roark, 2004), and can achieve accuracy that is close to exact inference.","{'title': '1 Introduction', 'number': '1'}"
-"Moreover, a beamsearch decoder does not impose restrictions on the search problem in the way that an exact inference decoder typically does, such as requiring the “optimal subproblem” property for dynamic programming, and therefore enables a comparatively wider range of features for a statistical system.","{'title': '1 Introduction', 'number': '1'}"
-We develop three parsers.,"{'title': '1 Introduction', 'number': '1'}"
-"Firstly, using the same features as MSTParser, we develop a graph-based parser to examine the accuracy loss from beamsearch compared to exact-search, and the accuracy gain from extra features that are hard to encode for exact inference.","{'title': '1 Introduction', 'number': '1'}"
-Our conclusion is that beamsearch is a competitive choice for graph-based parsing.,"{'title': '1 Introduction', 'number': '1'}"
-"Secondly, using the transition actions from MaltParser, we build a transition-based parser and show that search has a positive effect on its accuracy compared to deterministic parsing.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, we show that by using a beam-search decoder, we are able to combine graph-based and transition-based parsing into a single system, with the combined system significantly outperforming each individual system.","{'title': '1 Introduction', 'number': '1'}"
-"In experiments with the English and Chinese Penn Treebank data, the combined parser gave 92.1% and 86.2% accuracy, respectively, which are comparable to the best parsing results for these data sets, while the Chinese accuracy outperforms the previous best reported by 1.8%.","{'title': '1 Introduction', 'number': '1'}"
-"In line with previous work on dependency parsing using the Penn Treebank, we focus on projective dependency parsing.","{'title': '1 Introduction', 'number': '1'}"
-"Following MSTParser (McDonald et al., 2005; McDonald and Pereira, 2006), we define the graphVariables: agenda – the beam for state items item – partial parse tree output – a set of output items index, prev – word indexes Input: x – POS-tagged input sentence.","{'title': '2 The graph-based parser', 'number': '2'}"
-Initialization: agenda = [“”] put the best items from output to agenda Output: the best item in agenda based parsing problem as finding the highest scoring tree y from all possible outputs given an input x: where GEN(x) denotes the set of possible parses for the input x.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"To repeat our earlier comments, in this paper we do not consider the method of finding the arg max to be part of the definition of graph-based parsing, only the fact that the dependency graph itself is being scored, and factored into scores attached to the dependency links.","{'title': '2 The graph-based parser', 'number': '2'}"
-The score of an output parse y is given by a linear model: where 4b(y) is the global feature vector from y and w is the weight vector of the model.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"We use the discriminative perceptron learning algorithm (Collins, 2002; McDonald et al., 2005) to train the values of w. The algorithm is shown in Figure 1.","{'title': '2 The graph-based parser', 'number': '2'}"
-"Averaging parameters is a way to reduce overfitting for perceptron training (Collins, 2002), and is applied to all our experiments.","{'title': '2 The graph-based parser', 'number': '2'}"
-"While the MSTParser uses exact-inference (Eisner, 1996), we apply beam-search to decoding.","{'title': '2 The graph-based parser', 'number': '2'}"
-"This is done by extending the deterministic Covington algorithm for projective dependency parsing (Covington, 2001).","{'title': '2 The graph-based parser', 'number': '2'}"
-"As shown in Figure 2, the decoder works incrementally, building a state item (i.e. partial parse tree) word by word.","{'title': '2 The graph-based parser', 'number': '2'}"
-"When each word is processed, links are added between the current word and its predecessors.","{'title': '2 The graph-based parser', 'number': '2'}"
-"Beam-search is applied by keeping the B best items in the agenda at each processing stage, while partial candidates are compared by scores from the graph-based model, according to partial graph up to the current word.","{'title': '2 The graph-based parser', 'number': '2'}"
-"Before decoding starts, the agenda contains an empty sentence.","{'title': '2 The graph-based parser', 'number': '2'}"
-"At each processing stage, existing partial candidates from the agenda are extended in all possible ways according to the Covington algorithm.","{'title': '2 The graph-based parser', 'number': '2'}"
-The top B newly generated candidates are then put to the agenda.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"After all input words are processed, the best candidate output from the agenda is taken as the final output.","{'title': '2 The graph-based parser', 'number': '2'}"
-The projectivity of the output dependency trees is guaranteed by the incremental Covington process.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"The time complexity of this algorithm is O(n2), where n is the length of the input sentence.","{'title': '2 The graph-based parser', 'number': '2'}"
-"During training, the “early update” strategy of Collins and Roark (2004) is used: when the correct state item falls out of the beam at any stage, parsing is stopped immediately, and the model is updated using the current best partial item.","{'title': '2 The graph-based parser', 'number': '2'}"
-"The intuition is to improve learning by avoiding irrelevant information: when all the items in the current agenda are incorrect, further parsing steps will be irrelevant because the correct partial output no longer exists in the candidate ranking.","{'title': '2 The graph-based parser', 'number': '2'}"
-"Table 1 shows the feature templates from the MSTParser (McDonald and Pereira, 2006), which are defined in terms of the context of a word, its parent and its sibling.","{'title': '2 The graph-based parser', 'number': '2'}"
-"To give more templates, features from templates 1 – 5 are also conjoined with the link direction and distance, while features from template 6 are also conjoined with the direction and distance between the child and its sibling.","{'title': '2 The graph-based parser', 'number': '2'}"
-Here “distance” refers to the difference between word indexes.,"{'title': '2 The graph-based parser', 'number': '2'}"
-We apply all these feature templates to the graph-based parser.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"In addition, we define two extra feature templates (Table 2) that capture information about grandchildren and arity (i.e. the number of children to the left or right).","{'title': '2 The graph-based parser', 'number': '2'}"
-These features are not conjoined with information about direction and distance.,"{'title': '2 The graph-based parser', 'number': '2'}"
-"They are difficult to include in an efficient dynamic programming decoder, but easy to include in a beam-search decoder.","{'title': '2 The graph-based parser', 'number': '2'}"
-"We develop our transition-based parser using the transition model of the MaltParser (Nivre et al., 2006), which is characterized by the use of a stack and four transition actions: Shift, ArcRight, ArcLeft and Reduce.","{'title': '3 The transition-based parser', 'number': '3'}"
-"An input sentence is processed from left to right, with an index maintained for the current word.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Initially empty, the stack is used throughout the parsing process to store unfinished words, which are the words before the current word that may still be linked with the current or a future word.","{'title': '3 The transition-based parser', 'number': '3'}"
-The Shift action pushes the current word to the stack and moves the current index to the next word.,"{'title': '3 The transition-based parser', 'number': '3'}"
-"The ArcRight action adds a dependency link from the stack top to the current word (i.e. the stack top becomes the parent of the current word), pushes the current word on to the stack, and moves the current index to the next word.","{'title': '3 The transition-based parser', 'number': '3'}"
-"The ArcLeft action adds a dependency link from the current word to the stack top, and pops the stack.","{'title': '3 The transition-based parser', 'number': '3'}"
-The Reduce action pops the stack.,"{'title': '3 The transition-based parser', 'number': '3'}"
-"Among the four transition actions, Shift and ArcRight push a word on to the stack while ArcLeft and Reduce pop the stack; Shift and ArcRight read the next input word while ArcLeft and ArcRight add a link to the output.","{'title': '3 The transition-based parser', 'number': '3'}"
-"By repeated application of these actions, the parser reads through the input and builds a parse tree.","{'title': '3 The transition-based parser', 'number': '3'}"
-The MaltParser works deterministically.,"{'title': '3 The transition-based parser', 'number': '3'}"
-"At each step, it makes a single decision and chooses one of the four transition actions according to the current context, including the next input words, the stack and the existing links.","{'title': '3 The transition-based parser', 'number': '3'}"
-"As illustrated in Figure 3, the contextual information consists of the top of stack (ST), the parent (STP) of ST, the leftmost (STLC) and rightmost child (STRC) of ST, the current word (N0), the next three words from the input (N1, N2, N3) and the leftmost child of N0 (N0LC).","{'title': '3 The transition-based parser', 'number': '3'}"
-"Given the context s, the next action T is decided as follows: where ACTION = {Shift, ArcRight, ArcLeft, Reduce}.","{'title': '3 The transition-based parser', 'number': '3'}"
-"One drawback of deterministic parsing is error propagation, since once an incorrect action is made, the output parse will be incorrect regardless of the subsequent actions.","{'title': '3 The transition-based parser', 'number': '3'}"
-"To reduce such error propagation, a parser can keep track of multiple candidate outputs and avoid making decisions too early.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Suppose that the parser builds a set of candidates GEN(x) for the input x, the best output F(x) can be decided by considering all actions: Here T0 represents one action in the sequence (act(y)) by which y is built, and sT' represents the corresponding context when T0 is taken.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Our transition-based algorithm keeps B different sequences of actions in the agenda, and chooses the one having the overall best score as the final parse.","{'title': '3 The transition-based parser', 'number': '3'}"
-Pseudo code for the decoding algorithm is shown in Figure 4.,"{'title': '3 The transition-based parser', 'number': '3'}"
-"Here each state item contains a partial parse tree as well as a stack configuration, and state items are built incrementally by transition actions.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Initially the stack is empty, and the agenda contains an empty sentence.","{'title': '3 The transition-based parser', 'number': '3'}"
-"At each processing stage, one transition action is applied to existing state items as a step to build the final parse.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Unlike the MaltParser, which makes a decision at each stage, our transitionbased parser applies all possible actions to each existing state item in the agenda to generate new items; then from all the newly generated items, it takes the B with the highest overall score and puts them onto the agenda.","{'title': '3 The transition-based parser', 'number': '3'}"
-"In this way, some ambiguity is retained for future resolution.","{'title': '3 The transition-based parser', 'number': '3'}"
-Note that the number of transition actions needed to build different parse trees can vary.,"{'title': '3 The transition-based parser', 'number': '3'}"
-"For example, the three-word sentence “A B C” can be parsed by the sequence of three actions “Shift ArcRight ArcRight” (B modifies A; C modifies B) or the sequence of four actions “Shift ArcLeft Shift ArcRight” (both A and C modifies B).","{'title': '3 The transition-based parser', 'number': '3'}"
-"To ensure that all final state items are built by the same number of transition actions, we require that the final state transfer the best items from output to agenda Output: the best item in agenda items must 1) have fully-built parse trees; and 2) have only one root word left on the stack.","{'title': '3 The transition-based parser', 'number': '3'}"
-"In this way, popping actions should be made even after a complete parse tree is built, if the stack still contains more than one word.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Now because each word excluding the root must be pushed to the stack once and popped off once during the parsing process, the number of actions Inputs: training examples (xi, yi) Initialization: set w� = 0 needed to parse a sentence is always 2n − 1, where n is the length of the sentence.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Therefore, the decoder has linear time complexity, given a fixed beam size.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Because the same transition actions as the MaltParser are used to build each item, the projectivity of the output dependency tree is ensured.","{'title': '3 The transition-based parser', 'number': '3'}"
-"We use a linear model to score each transition action, given a context: N0t, but not STwt or STwN0w), we combine features manually.","{'title': '3 The transition-based parser', 'number': '3'}"
-"As with the graph-based parser, we use the discriminative perceptron (Collins, 2002) to train the transition-based model (see Figure 5).","{'title': '3 The transition-based parser', 'number': '3'}"
-"It is worth noticing that, in contrast to MaltParser, which trains each action decision individually, our training algorithm globally optimizes all action decisions for a parse.","{'title': '3 The transition-based parser', 'number': '3'}"
-"Again, “early update” and averaging parameters are applied to the training process.","{'title': '3 The transition-based parser', 'number': '3'}"
-The graph-based and transition-based approaches adopt very different views of dependency parsing.,"{'title': '4 The combined parser', 'number': '4'}"
-McDonald and Nivre (2007) showed that the MSTParser and MaltParser produce different errors.,"{'title': '4 The combined parser', 'number': '4'}"
-"This observation suggests a combined approach: by using both graph-based information and transition-based information, parsing accuracy can be improved.","{'title': '4 The combined parser', 'number': '4'}"
-The beam-search framework we have developed facilitates such a combination.,"{'title': '4 The combined parser', 'number': '4'}"
-Our graph-based and transition-based parsers share many similarities.,"{'title': '4 The combined parser', 'number': '4'}"
-"Both build a parse tree incrementally, keeping an agenda of comparable state items.","{'title': '4 The combined parser', 'number': '4'}"
-"Both rank state items by their current scores, and use the averaged perceptron with early update for training.","{'title': '4 The combined parser', 'number': '4'}"
-"The key differences are the scoring models and incremental parsing processes they use, which must be addressed when combining the parsers.","{'title': '4 The combined parser', 'number': '4'}"
-"Firstly, we combine the graph-based and the transition-based score models simply by summation.","{'title': '4 The combined parser', 'number': '4'}"
-This is possible because both models are global and linear.,"{'title': '4 The combined parser', 'number': '4'}"
-"In particular, the transition-based model can be written as: If we take ET0∈act(y) Φ(T0, sT0) as the global feature vector ΦT(y), we have: which has the same form as the graph-based model: ScoreG(y) = ΦG(y) · ~wG We therefore combine the two models to give: Concatenating the feature vectors ΦG(y) and ΦT(y) to give a global feature vector ΦC(y), and the weight vectors ~wG and ~wT to give a weight vector ~wC, the combined model can be written as: which is a linear model with exactly the same form as both sub-models, and can be trained with the perceptron algorithm in Figure 1.","{'title': '4 The combined parser', 'number': '4'}"
-"Because the global feature vectors from the sub models are concatenated, the feature set for the combined model is the union of the sub model feature sets.","{'title': '4 The combined parser', 'number': '4'}"
-"Second, the transition-based decoder can be used for the combined system.","{'title': '4 The combined parser', 'number': '4'}"
-Both the graph-based decoder in Figure 2 and the transition-based decoder in Figure 4 construct a parse tree incrementally.,"{'title': '4 The combined parser', 'number': '4'}"
-"However, the graph-based decoder works on a per-word basis, adding links without using transition actions, and so is not appropriate for the combined model.","{'title': '4 The combined parser', 'number': '4'}"
-"The transition-based algorithm, on the other hand, uses state items which contain partial parse trees, and so provides all the information needed by the graph-based parser (i.e. dependency graphs), and hence the combined system.","{'title': '4 The combined parser', 'number': '4'}"
-"In summary, we build the combined parser by using a global linear model, the union of feature templates and the decoder from the transition-based parser.","{'title': '4 The combined parser', 'number': '4'}"
-We evaluate the parsers using the English and Chinese Penn Treebank corpora.,"{'title': '5 Experiments', 'number': '5'}"
-The English data is prepared by following McDonald et al. (2005).,"{'title': '5 Experiments', 'number': '5'}"
-"Bracketed sentences from the Penn Treebank (PTB) 3 are split into training, development and test sets as shown in Table 4, and then translated into dependency structures using the head-finding rules from Yamada and Matsumoto (2003).","{'title': '5 Experiments', 'number': '5'}"
-"Before parsing, POS tags are assigned to the input sentence using our reimplementation of the POStagger from Collins (2002).","{'title': '5 Experiments', 'number': '5'}"
-"Like McDonald et al. (2005), we evaluate the parsing accuracy by the precision of lexical heads (the percentage of input words, excluding punctuation, that have been assigned the correct parent) and by the percentage of complete matches, in which all words excluding punctuation have been assigned the correct parent.","{'title': '5 Experiments', 'number': '5'}"
-"Since the beam size affects all three parsers, we study its influence first; here we show the effect on the transition-based parser.","{'title': '5 Experiments', 'number': '5'}"
-"Figure 6 shows different accuracy curves using the development data, each with a different beam size B.","{'title': '5 Experiments', 'number': '5'}"
-"The X-axis represents the number of training iterations, and the Y-axis the precision of lexical heads.","{'title': '5 Experiments', 'number': '5'}"
-"The parsing accuracy generally increases as the beam size increases, while the quantity of increase becomes very small when B becomes large enough.","{'title': '5 Experiments', 'number': '5'}"
-"The decoding times after the first training iteration are 10.2s, 27.3s, 45.5s, 79.0s, 145.4s, 261.3s and 469.5s, respectively, when B = 1, 2, 4, 8, 16, 32, 64.","{'title': '5 Experiments', 'number': '5'}"
-"In the rest of the experiments, we set B = 64 in order to obtain the highest possible accuracy.","{'title': '5 Experiments', 'number': '5'}"
-"When B = 1, the transition-based parser becomes a deterministic parser.","{'title': '5 Experiments', 'number': '5'}"
-"By comparing the curves when B = 1 and B = 2, we can see that, while the use of search reduces the parsing speed, it improves the quality of the output parses.","{'title': '5 Experiments', 'number': '5'}"
-"Therefore, beam-search is a reasonable choice for transitionbased parsing.","{'title': '5 Experiments', 'number': '5'}"
-"The test accuracies are shown in Table 5, where each row represents a parsing model.","{'title': '5 Experiments', 'number': '5'}"
-"Rows “MSTParser 1/2” show the first-order (using feature templates 1 – 5 from Table 1) (McDonald et al., 2005) and secondorder (using all feature templates from Table 1) (McDonald and Pereira, 2006) MSTParsers, as reported by the corresponding papers.","{'title': '5 Experiments', 'number': '5'}"
-"Rows “Graph [M]” and “Graph [MA]” represent our graph-based parser using features from Table 1 and Table 1 + Table 2, respectively; row “Transition” represents our transition-based parser; and rows “Combined [TM]” and “Combined [TMA]” represent our combined parser using features from Table 3 + Table 1 and Table 3 + Table 1 + Table 2, respectively.","{'title': '5 Experiments', 'number': '5'}"
-"Columns “Word” and “Complete” show the precision of lexical heads and complete matches, respectively.","{'title': '5 Experiments', 'number': '5'}"
-"As can be seen from the table, beam-search reduced the head word accuracy from 91.5%/42.1% (“MSTParser 2”) to 91.2%/40.8% (“Graph [M]”) with the same features as exact-inference.","{'title': '5 Experiments', 'number': '5'}"
-"However, with only two extra feature templates from Table 2, which are not conjoined with direction or distance information, the accuracy is improved to 91.4%/42.5% (“Graph [MA]”).","{'title': '5 Experiments', 'number': '5'}"
-"This improvement can be seen as a benefit of beam-search, which allows the definition of more global features.","{'title': '5 Experiments', 'number': '5'}"
-The combined parser is tested with various sets of features.,"{'title': '5 Experiments', 'number': '5'}"
-"Using only graph-based features in Table 1, it gave 88.6% accuracy, which is much lower than 91.2% from the graph-based parser using the same features (“Graph [M]”).","{'title': '5 Experiments', 'number': '5'}"
-This can be explained by the difference between the decoders.,"{'title': '5 Experiments', 'number': '5'}"
-"In particular, the graph-based model is unable to score the actions “Reduce” and “Shift”, since they do not modify the parse tree.","{'title': '5 Experiments', 'number': '5'}"
-"Nevertheless, the score serves as a reference for the effect of additional features in the combined parser.","{'title': '5 Experiments', 'number': '5'}"
-"Using both transition-based features and graphbased features from the MSTParser (“Combined [TM]”), the combined parser achieved 92.0% perword accuracy, which is significantly higher than the pure graph-based and transition-based parsers.","{'title': '5 Experiments', 'number': '5'}"
-"Additional graph-based features further improved the accuracy to 92.1%/45.5%, which is the best among all the parsers compared.1 We use the Penn Chinese Treebank (CTB) 5 for experimental data.","{'title': '5 Experiments', 'number': '5'}"
-"Following Duan et al. (2007), we 1A recent paper, Koo et al.","{'title': '5 Experiments', 'number': '5'}"
-"(2008) reported parent-prediction accuracy of 92.0% using a graph-based parser with a different (larger) set of features (Carreras, 2007).","{'title': '5 Experiments', 'number': '5'}"
-"By applying separate word cluster information, Koo et al. (2008) improved the accuracy to 93.2%, which is the best known accuracy on the PTB data.","{'title': '5 Experiments', 'number': '5'}"
-"We excluded these from Table 5 because our work is not concerned with the use of such additional knowledge. split the corpus into training, development and test data as shown in Table 6, and use the head-finding rules in Table 8 in the Appendix to turn the bracketed sentences into dependency structures.","{'title': '5 Experiments', 'number': '5'}"
-"Most of the head-finding rules are from Sun and Jurafsky (2004), while we added rules to handle NN and FRAG, and a default rule to use the rightmost node as the head for the constituent that are not listed.","{'title': '5 Experiments', 'number': '5'}"
-"Like Duan et al. (2007), we use gold-standard POS-tags for the input.","{'title': '5 Experiments', 'number': '5'}"
-"The parsing accuracy is evaluated by the percentage of non-root words that have been assigned the correct head, the percentage of correctly identified root words, and the percentage of complete matches, all excluding punctuation.","{'title': '5 Experiments', 'number': '5'}"
-The accuracies are shown in Table 7.,"{'title': '5 Experiments', 'number': '5'}"
-"Rows “Graph [MA]”, “Transition”, “Combined [TM]” and “Combined [TMA]” show our models in the same way as for the English experiments from Section 5.2.","{'title': '5 Experiments', 'number': '5'}"
-"Row “Duan 2007” represents the transition-based model from Duan et al. (2007), which applies beamsearch to the deterministic model from Yamada and Matsumoto (2003), and achieved the previous best accuracy on the data.","{'title': '5 Experiments', 'number': '5'}"
-Our observations on parsing Chinese are essentially the same as for English.,"{'title': '5 Experiments', 'number': '5'}"
-Our combined parser outperforms both the pure graph-based and the pure transition-based parsers.,"{'title': '5 Experiments', 'number': '5'}"
-It gave the best accuracy we are aware of for dependency parsing using CTB.,"{'title': '5 Experiments', 'number': '5'}"
-Our graph-based parser is derived from the work of McDonald and Pereira (2006).,"{'title': '6 Related work', 'number': '6'}"
-"Instead of performing exact inference by dynamic programming, we incorporated the linear model and feature templates from McDonald and Pereira (2006) into our beam-search framework, while adding new global features.","{'title': '6 Related work', 'number': '6'}"
-"Nakagawa (2007) and Hall (2007) also showed the effectiveness of global features in improving the accuracy of graph-based parsing, using the approximate Gibbs sampling method and a reranking approach, respectively.","{'title': '6 Related work', 'number': '6'}"
-Our transition-based parser is derived from the deterministic parser of Nivre et al. (2006).,"{'title': '6 Related work', 'number': '6'}"
-"We incorporated the transition process into our beamsearch framework, in order to study the influence of search on this algorithm.","{'title': '6 Related work', 'number': '6'}"
-"Existing efforts to add search to deterministic parsing include Sagae and Lavie (2006b), which applied best-first search to constituent parsing, and Johansson and Nugues (2006) and Duan et al. (2007), which applied beamsearch to dependency parsing.","{'title': '6 Related work', 'number': '6'}"
-"All three methods estimate the probability of each transition action, and score a state item by the product of the probabilities of all its corresponding actions.","{'title': '6 Related work', 'number': '6'}"
-"But different from our transition-based parser, which trains all transitions for a parse globally, these models train the probability of each action separately.","{'title': '6 Related work', 'number': '6'}"
-"Based on the work of Johansson and Nugues (2006), Johansson and Nugues (2007) studied global training with an approximated large-margin algorithm.","{'title': '6 Related work', 'number': '6'}"
-"This model is the most similar to our transition-based model, while the differences include the choice of learning and decoding algorithms, the definition of feature templates and our application of the “early update” strategy.","{'title': '6 Related work', 'number': '6'}"
-Our combined parser makes the biggest contribution of this paper.,"{'title': '6 Related work', 'number': '6'}"
-"In contrast to the models above, it includes both graph-based and transition-based components.","{'title': '6 Related work', 'number': '6'}"
-"An existing method to combine multiple parsing algorithms is the ensemble approach (Sagae and Lavie, 2006a), which was reported to be useful in improving dependency parsing (Hall et al., 2007).","{'title': '6 Related work', 'number': '6'}"
-"A more recent approach (Nivre and McDonald, 2008) combined MSTParser and MaltParser by using the output of one parser for features in the other.","{'title': '6 Related work', 'number': '6'}"
-Both Hall et al. (2007) and Nivre and McDonald (2008) can be seen as methods to combine separately defined models.,"{'title': '6 Related work', 'number': '6'}"
-"In contrast, our parser combines two components in a single model, in which all parameters are trained consistently.","{'title': '6 Related work', 'number': '6'}"
-"We developed a graph-based and a transition-based projective dependency parser using beam-search, demonstrating that beam-search is a competitive choice for both parsing approaches.","{'title': '7 Conclusion and future work', 'number': '7'}"
-"We then combined the two parsers into a single system, using discriminative perceptron training and beam-search decoding.","{'title': '7 Conclusion and future work', 'number': '7'}"
-"The appealing aspect of the combined parser is the incorporation of two largely different views of the parsing problem, thus increasing the information available to a single statistical parser, and thereby significantly increasing the accuracy.","{'title': '7 Conclusion and future work', 'number': '7'}"
-"When tested using both English and Chinese dependency data, the combined parser was highly competitive compared to the best systems in the literature.","{'title': '7 Conclusion and future work', 'number': '7'}"
-"The idea of combining different approaches to the same problem using beam-search and a global model could be applied to other parsing tasks, such as constituent parsing, and possibly other NLP tasks.","{'title': '7 Conclusion and future work', 'number': '7'}"
-This work is supported by the ORS and Clarendon Fund.,"{'title': 'Acknowledgements', 'number': '8'}"
-We thank the anonymous reviewers for their detailed comments.,"{'title': 'Acknowledgements', 'number': '8'}"
+"Graph-based and transition-based approaches to dependency parsing adopt very different views of the problem, each view having its own strengths and limitations.",Introduction
+We study both approaches under the framework of beamsearch.,Introduction
+"By developing a graph-based and a transition-based dependency parser, we show that a beam-search decoder is a competitive choice for both methods.",Introduction
+"More importantly, we propose a beam-search-based parser that combines both graph-based and transitionbased parsing into a single system for training and decoding, showing that it outperforms both the pure graph-based and the pure transition-based parsers.",Introduction
+"Testing on the English and Chinese Penn Treebank data, the combined system gave state-of-the-art accuraof respectively.",Introduction
+"Graph-based (McDonald et al., 2005; McDonald and Pereira, 2006; Carreras et al., 2006) and transition-based (Yamada and Matsumoto, 2003; Nivre et al., 2006) parsing algorithms offer two different approaches to data-driven dependency parsing.",Experiment/Discussion
+"Given an input sentence, a graph-based algorithm finds the highest scoring parse tree from all possible outputs, scoring each complete tree, while a transition-based algorithm builds a parse by a sequence of actions, scoring each action individually.",Experiment/Discussion
+"The terms “graph-based” and “transition-based” were used by McDonald and Nivre (2007) to describe the difference between MSTParser (McDonald and Pereira, 2006), which is a graph-based parser with an exhaustive search decoder, and MaltParser (Nivre et al., 2006), which is a transition-based parser with a greedy search decoder.",Experiment/Discussion
+"In this paper, we do not differentiate graph-based and transitionbased parsers by their search algorithms: a graphbased parser can use an approximate decoder while a transition-based parser is not necessarily deterministic.",Experiment/Discussion
+"To make the concepts clear, we classify the two types of parser by the following two criteria: By this classification, beam-search can be applied to both graph-based and transition-based parsers.",Experiment/Discussion
+"Representative of each method, MSTParser and MaltParser gave comparable accuracies in the CoNLL-X shared task (Buchholz and Marsi, 2006).",Experiment/Discussion
+"However, they make different types of errors, which can be seen as a reflection of their theoretical differences (McDonald and Nivre, 2007).",Experiment/Discussion
+"MSTParser has the strength of exact inference, but its choice of features is constrained by the requirement of efficient dynamic programming.",Experiment/Discussion
+"MaltParser is deterministic, yet its comparatively larger feature range is an advantage.",Experiment/Discussion
+"By comparing the two, three interesting research questions arise: (1) how to increase the flexibility in defining features for graph-based parsing; (2) how to add search to transition-based parsing; and (3) how to combine the two parsing approaches so that the strengths of each are utilized.",Experiment/Discussion
+"In this paper, we study these questions under one framework: beam-search.",Experiment/Discussion
+"Beam-search has been successful in many NLP tasks (Koehn et al., 2003; Collins and Roark, 2004), and can achieve accuracy that is close to exact inference.",Experiment/Discussion
+"Moreover, a beamsearch decoder does not impose restrictions on the search problem in the way that an exact inference decoder typically does, such as requiring the “optimal subproblem” property for dynamic programming, and therefore enables a comparatively wider range of features for a statistical system.",Experiment/Discussion
+We develop three parsers.,Experiment/Discussion
+"Firstly, using the same features as MSTParser, we develop a graph-based parser to examine the accuracy loss from beamsearch compared to exact-search, and the accuracy gain from extra features that are hard to encode for exact inference.",Experiment/Discussion
+Our conclusion is that beamsearch is a competitive choice for graph-based parsing.,Experiment/Discussion
+"Secondly, using the transition actions from MaltParser, we build a transition-based parser and show that search has a positive effect on its accuracy compared to deterministic parsing.",Experiment/Discussion
+"Finally, we show that by using a beam-search decoder, we are able to combine graph-based and transition-based parsing into a single system, with the combined system significantly outperforming each individual system.",Experiment/Discussion
+"In experiments with the English and Chinese Penn Treebank data, the combined parser gave 92.1% and 86.2% accuracy, respectively, which are comparable to the best parsing results for these data sets, while the Chinese accuracy outperforms the previous best reported by 1.8%.",Experiment/Discussion
+"In line with previous work on dependency parsing using the Penn Treebank, we focus on projective dependency parsing.",Experiment/Discussion
+"Following MSTParser (McDonald et al., 2005; McDonald and Pereira, 2006), we define the graphVariables: agenda – the beam for state items item – partial parse tree output – a set of output items index, prev – word indexes Input: x – POS-tagged input sentence.",Experiment/Discussion
+Initialization: agenda = [“”] put the best items from output to agenda Output: the best item in agenda based parsing problem as finding the highest scoring tree y from all possible outputs given an input x: where GEN(x) denotes the set of possible parses for the input x.,Experiment/Discussion
+"To repeat our earlier comments, in this paper we do not consider the method of finding the arg max to be part of the definition of graph-based parsing, only the fact that the dependency graph itself is being scored, and factored into scores attached to the dependency links.",Experiment/Discussion
+The score of an output parse y is given by a linear model: where 4b(y) is the global feature vector from y and w is the weight vector of the model.,Experiment/Discussion
+"We use the discriminative perceptron learning algorithm (Collins, 2002; McDonald et al., 2005) to train the values of w. The algorithm is shown in Figure 1.",Experiment/Discussion
+"Averaging parameters is a way to reduce overfitting for perceptron training (Collins, 2002), and is applied to all our experiments.",Experiment/Discussion
+"While the MSTParser uses exact-inference (Eisner, 1996), we apply beam-search to decoding.",Experiment/Discussion
+"This is done by extending the deterministic Covington algorithm for projective dependency parsing (Covington, 2001).",Experiment/Discussion
+"As shown in Figure 2, the decoder works incrementally, building a state item (i.e. partial parse tree) word by word.",Experiment/Discussion
+"When each word is processed, links are added between the current word and its predecessors.",Experiment/Discussion
+"Beam-search is applied by keeping the B best items in the agenda at each processing stage, while partial candidates are compared by scores from the graph-based model, according to partial graph up to the current word.",Experiment/Discussion
+"Before decoding starts, the agenda contains an empty sentence.",Experiment/Discussion
+"At each processing stage, existing partial candidates from the agenda are extended in all possible ways according to the Covington algorithm.",Experiment/Discussion
+The top B newly generated candidates are then put to the agenda.,Experiment/Discussion
+"After all input words are processed, the best candidate output from the agenda is taken as the final output.",Experiment/Discussion
+The projectivity of the output dependency trees is guaranteed by the incremental Covington process.,Experiment/Discussion
+"The time complexity of this algorithm is O(n2), where n is the length of the input sentence.",Experiment/Discussion
+"During training, the “early update” strategy of Collins and Roark (2004) is used: when the correct state item falls out of the beam at any stage, parsing is stopped immediately, and the model is updated using the current best partial item.",Experiment/Discussion
+"The intuition is to improve learning by avoiding irrelevant information: when all the items in the current agenda are incorrect, further parsing steps will be irrelevant because the correct partial output no longer exists in the candidate ranking.",Experiment/Discussion
+"Table 1 shows the feature templates from the MSTParser (McDonald and Pereira, 2006), which are defined in terms of the context of a word, its parent and its sibling.",Experiment/Discussion
+"To give more templates, features from templates 1 – 5 are also conjoined with the link direction and distance, while features from template 6 are also conjoined with the direction and distance between the child and its sibling.",Experiment/Discussion
+Here “distance” refers to the difference between word indexes.,Experiment/Discussion
+We apply all these feature templates to the graph-based parser.,Experiment/Discussion
+"In addition, we define two extra feature templates (Table 2) that capture information about grandchildren and arity (i.e. the number of children to the left or right).",Experiment/Discussion
+These features are not conjoined with information about direction and distance.,Experiment/Discussion
+"They are difficult to include in an efficient dynamic programming decoder, but easy to include in a beam-search decoder.",Experiment/Discussion
+"We develop our transition-based parser using the transition model of the MaltParser (Nivre et al., 2006), which is characterized by the use of a stack and four transition actions: Shift, ArcRight, ArcLeft and Reduce.",Experiment/Discussion
+"An input sentence is processed from left to right, with an index maintained for the current word.",Experiment/Discussion
+"Initially empty, the stack is used throughout the parsing process to store unfinished words, which are the words before the current word that may still be linked with the current or a future word.",Experiment/Discussion
+The Shift action pushes the current word to the stack and moves the current index to the next word.,Experiment/Discussion
+"The ArcRight action adds a dependency link from the stack top to the current word (i.e. the stack top becomes the parent of the current word), pushes the current word on to the stack, and moves the current index to the next word.",Experiment/Discussion
+"The ArcLeft action adds a dependency link from the current word to the stack top, and pops the stack.",Experiment/Discussion
+The Reduce action pops the stack.,Experiment/Discussion
+"Among the four transition actions, Shift and ArcRight push a word on to the stack while ArcLeft and Reduce pop the stack; Shift and ArcRight read the next input word while ArcLeft and ArcRight add a link to the output.",Experiment/Discussion
+"By repeated application of these actions, the parser reads through the input and builds a parse tree.",Experiment/Discussion
+The MaltParser works deterministically.,Experiment/Discussion
+"At each step, it makes a single decision and chooses one of the four transition actions according to the current context, including the next input words, the stack and the existing links.",Experiment/Discussion
+"As illustrated in Figure 3, the contextual information consists of the top of stack (ST), the parent (STP) of ST, the leftmost (STLC) and rightmost child (STRC) of ST, the current word (N0), the next three words from the input (N1, N2, N3) and the leftmost child of N0 (N0LC).",Experiment/Discussion
+"Given the context s, the next action T is decided as follows: where ACTION = {Shift, ArcRight, ArcLeft, Reduce}.",Experiment/Discussion
+"One drawback of deterministic parsing is error propagation, since once an incorrect action is made, the output parse will be incorrect regardless of the subsequent actions.",Experiment/Discussion
+"To reduce such error propagation, a parser can keep track of multiple candidate outputs and avoid making decisions too early.",Experiment/Discussion
+"Suppose that the parser builds a set of candidates GEN(x) for the input x, the best output F(x) can be decided by considering all actions: Here T0 represents one action in the sequence (act(y)) by which y is built, and sT' represents the corresponding context when T0 is taken.",Experiment/Discussion
+"Our transition-based algorithm keeps B different sequences of actions in the agenda, and chooses the one having the overall best score as the final parse.",Experiment/Discussion
+Pseudo code for the decoding algorithm is shown in Figure 4.,Experiment/Discussion
+"Here each state item contains a partial parse tree as well as a stack configuration, and state items are built incrementally by transition actions.",Experiment/Discussion
+"Initially the stack is empty, and the agenda contains an empty sentence.",Experiment/Discussion
+"At each processing stage, one transition action is applied to existing state items as a step to build the final parse.",Experiment/Discussion
+"Unlike the MaltParser, which makes a decision at each stage, our transitionbased parser applies all possible actions to each existing state item in the agenda to generate new items; then from all the newly generated items, it takes the B with the highest overall score and puts them onto the agenda.",Experiment/Discussion
+"In this way, some ambiguity is retained for future resolution.",Experiment/Discussion
+Note that the number of transition actions needed to build different parse trees can vary.,Experiment/Discussion
+"For example, the three-word sentence “A B C” can be parsed by the sequence of three actions “Shift ArcRight ArcRight” (B modifies A; C modifies B) or the sequence of four actions “Shift ArcLeft Shift ArcRight” (both A and C modifies B).",Experiment/Discussion
+"To ensure that all final state items are built by the same number of transition actions, we require that the final state transfer the best items from output to agenda Output: the best item in agenda items must 1) have fully-built parse trees; and 2) have only one root word left on the stack.",Experiment/Discussion
+"In this way, popping actions should be made even after a complete parse tree is built, if the stack still contains more than one word.",Experiment/Discussion
+"Now because each word excluding the root must be pushed to the stack once and popped off once during the parsing process, the number of actions Inputs: training examples (xi, yi) Initialization: set w� = 0 needed to parse a sentence is always 2n − 1, where n is the length of the sentence.",Experiment/Discussion
+"Therefore, the decoder has linear time complexity, given a fixed beam size.",Experiment/Discussion
+"Because the same transition actions as the MaltParser are used to build each item, the projectivity of the output dependency tree is ensured.",Experiment/Discussion
+"We use a linear model to score each transition action, given a context: N0t, but not STwt or STwN0w), we combine features manually.",Experiment/Discussion
+"As with the graph-based parser, we use the discriminative perceptron (Collins, 2002) to train the transition-based model (see Figure 5).",Experiment/Discussion
+"It is worth noticing that, in contrast to MaltParser, which trains each action decision individually, our training algorithm globally optimizes all action decisions for a parse.",Experiment/Discussion
+"Again, “early update” and averaging parameters are applied to the training process.",Experiment/Discussion
+The graph-based and transition-based approaches adopt very different views of dependency parsing.,Experiment/Discussion
+McDonald and Nivre (2007) showed that the MSTParser and MaltParser produce different errors.,Experiment/Discussion
+"This observation suggests a combined approach: by using both graph-based information and transition-based information, parsing accuracy can be improved.",Experiment/Discussion
+The beam-search framework we have developed facilitates such a combination.,Experiment/Discussion
+Our graph-based and transition-based parsers share many similarities.,Experiment/Discussion
+"Both build a parse tree incrementally, keeping an agenda of comparable state items.",Experiment/Discussion
+"Both rank state items by their current scores, and use the averaged perceptron with early update for training.",Experiment/Discussion
+"The key differences are the scoring models and incremental parsing processes they use, which must be addressed when combining the parsers.",Experiment/Discussion
+"Firstly, we combine the graph-based and the transition-based score models simply by summation.",Experiment/Discussion
+This is possible because both models are global and linear.,Experiment/Discussion
+"In particular, the transition-based model can be written as: If we take ET0∈act(y) Φ(T0, sT0) as the global feature vector ΦT(y), we have: which has the same form as the graph-based model: ScoreG(y) = ΦG(y) · ~wG We therefore combine the two models to give: Concatenating the feature vectors ΦG(y) and ΦT(y) to give a global feature vector ΦC(y), and the weight vectors ~wG and ~wT to give a weight vector ~wC, the combined model can be written as: which is a linear model with exactly the same form as both sub-models, and can be trained with the perceptron algorithm in Figure 1.",Experiment/Discussion
+"Because the global feature vectors from the sub models are concatenated, the feature set for the combined model is the union of the sub model feature sets.",Experiment/Discussion
+"Second, the transition-based decoder can be used for the combined system.",Experiment/Discussion
+Both the graph-based decoder in Figure 2 and the transition-based decoder in Figure 4 construct a parse tree incrementally.,Experiment/Discussion
+"However, the graph-based decoder works on a per-word basis, adding links without using transition actions, and so is not appropriate for the combined model.",Experiment/Discussion
+"The transition-based algorithm, on the other hand, uses state items which contain partial parse trees, and so provides all the information needed by the graph-based parser (i.e. dependency graphs), and hence the combined system.",Experiment/Discussion
+"In summary, we build the combined parser by using a global linear model, the union of feature templates and the decoder from the transition-based parser.",Experiment/Discussion
+We evaluate the parsers using the English and Chinese Penn Treebank corpora.,Experiment/Discussion
+The English data is prepared by following McDonald et al. (2005).,Experiment/Discussion
+"Bracketed sentences from the Penn Treebank (PTB) 3 are split into training, development and test sets as shown in Table 4, and then translated into dependency structures using the head-finding rules from Yamada and Matsumoto (2003).",Experiment/Discussion
+"Before parsing, POS tags are assigned to the input sentence using our reimplementation of the POStagger from Collins (2002).",Experiment/Discussion
+"Like McDonald et al. (2005), we evaluate the parsing accuracy by the precision of lexical heads (the percentage of input words, excluding punctuation, that have been assigned the correct parent) and by the percentage of complete matches, in which all words excluding punctuation have been assigned the correct parent.",Experiment/Discussion
+"Since the beam size affects all three parsers, we study its influence first; here we show the effect on the transition-based parser.",Experiment/Discussion
+"Figure 6 shows different accuracy curves using the development data, each with a different beam size B.",Experiment/Discussion
+"The X-axis represents the number of training iterations, and the Y-axis the precision of lexical heads.",Experiment/Discussion
+"The parsing accuracy generally increases as the beam size increases, while the quantity of increase becomes very small when B becomes large enough.",Experiment/Discussion
+"The decoding times after the first training iteration are 10.2s, 27.3s, 45.5s, 79.0s, 145.4s, 261.3s and 469.5s, respectively, when B = 1, 2, 4, 8, 16, 32, 64.",Experiment/Discussion
+"In the rest of the experiments, we set B = 64 in order to obtain the highest possible accuracy.",Experiment/Discussion
+"When B = 1, the transition-based parser becomes a deterministic parser.",Experiment/Discussion
+"By comparing the curves when B = 1 and B = 2, we can see that, while the use of search reduces the parsing speed, it improves the quality of the output parses.",Experiment/Discussion
+"Therefore, beam-search is a reasonable choice for transitionbased parsing.",Experiment/Discussion
+"The test accuracies are shown in Table 5, where each row represents a parsing model.",Experiment/Discussion
+"Rows “MSTParser 1/2” show the first-order (using feature templates 1 – 5 from Table 1) (McDonald et al., 2005) and secondorder (using all feature templates from Table 1) (McDonald and Pereira, 2006) MSTParsers, as reported by the corresponding papers.",Experiment/Discussion
+"Rows “Graph [M]” and “Graph [MA]” represent our graph-based parser using features from Table 1 and Table 1 + Table 2, respectively; row “Transition” represents our transition-based parser; and rows “Combined [TM]” and “Combined [TMA]” represent our combined parser using features from Table 3 + Table 1 and Table 3 + Table 1 + Table 2, respectively.",Experiment/Discussion
+"Columns “Word” and “Complete” show the precision of lexical heads and complete matches, respectively.",Experiment/Discussion
+"As can be seen from the table, beam-search reduced the head word accuracy from 91.5%/42.1% (“MSTParser 2”) to 91.2%/40.8% (“Graph [M]”) with the same features as exact-inference.",Experiment/Discussion
+"However, with only two extra feature templates from Table 2, which are not conjoined with direction or distance information, the accuracy is improved to 91.4%/42.5% (“Graph [MA]”).",Experiment/Discussion
+"This improvement can be seen as a benefit of beam-search, which allows the definition of more global features.",Experiment/Discussion
+The combined parser is tested with various sets of features.,Experiment/Discussion
+"Using only graph-based features in Table 1, it gave 88.6% accuracy, which is much lower than 91.2% from the graph-based parser using the same features (“Graph [M]”).",Experiment/Discussion
+This can be explained by the difference between the decoders.,Experiment/Discussion
+"In particular, the graph-based model is unable to score the actions “Reduce” and “Shift”, since they do not modify the parse tree.",Experiment/Discussion
+"Nevertheless, the score serves as a reference for the effect of additional features in the combined parser.",Experiment/Discussion
+"Using both transition-based features and graphbased features from the MSTParser (“Combined [TM]”), the combined parser achieved 92.0% perword accuracy, which is significantly higher than the pure graph-based and transition-based parsers.",Experiment/Discussion
+"Additional graph-based features further improved the accuracy to 92.1%/45.5%, which is the best among all the parsers compared.1 We use the Penn Chinese Treebank (CTB) 5 for experimental data.",Experiment/Discussion
+"Following Duan et al. (2007), we 1A recent paper, Koo et al.",Experiment/Discussion
+"(2008) reported parent-prediction accuracy of 92.0% using a graph-based parser with a different (larger) set of features (Carreras, 2007).",Experiment/Discussion
+"By applying separate word cluster information, Koo et al. (2008) improved the accuracy to 93.2%, which is the best known accuracy on the PTB data.",Experiment/Discussion
+"We excluded these from Table 5 because our work is not concerned with the use of such additional knowledge. split the corpus into training, development and test data as shown in Table 6, and use the head-finding rules in Table 8 in the Appendix to turn the bracketed sentences into dependency structures.",Experiment/Discussion
+"Most of the head-finding rules are from Sun and Jurafsky (2004), while we added rules to handle NN and FRAG, and a default rule to use the rightmost node as the head for the constituent that are not listed.",Experiment/Discussion
+"Like Duan et al. (2007), we use gold-standard POS-tags for the input.",Experiment/Discussion
+"The parsing accuracy is evaluated by the percentage of non-root words that have been assigned the correct head, the percentage of correctly identified root words, and the percentage of complete matches, all excluding punctuation.",Experiment/Discussion
+The accuracies are shown in Table 7.,Experiment/Discussion
+"Rows “Graph [MA]”, “Transition”, “Combined [TM]” and “Combined [TMA]” show our models in the same way as for the English experiments from Section 5.2.",Experiment/Discussion
+"Row “Duan 2007” represents the transition-based model from Duan et al. (2007), which applies beamsearch to the deterministic model from Yamada and Matsumoto (2003), and achieved the previous best accuracy on the data.",Experiment/Discussion
+Our observations on parsing Chinese are essentially the same as for English.,Experiment/Discussion
+Our combined parser outperforms both the pure graph-based and the pure transition-based parsers.,Experiment/Discussion
+It gave the best accuracy we are aware of for dependency parsing using CTB.,Experiment/Discussion
+Our graph-based parser is derived from the work of McDonald and Pereira (2006).,Experiment/Discussion
+"Instead of performing exact inference by dynamic programming, we incorporated the linear model and feature templates from McDonald and Pereira (2006) into our beam-search framework, while adding new global features.",Experiment/Discussion
+"Nakagawa (2007) and Hall (2007) also showed the effectiveness of global features in improving the accuracy of graph-based parsing, using the approximate Gibbs sampling method and a reranking approach, respectively.",Experiment/Discussion
+Our transition-based parser is derived from the deterministic parser of Nivre et al. (2006).,Experiment/Discussion
+"We incorporated the transition process into our beamsearch framework, in order to study the influence of search on this algorithm.",Experiment/Discussion
+"Existing efforts to add search to deterministic parsing include Sagae and Lavie (2006b), which applied best-first search to constituent parsing, and Johansson and Nugues (2006) and Duan et al. (2007), which applied beamsearch to dependency parsing.",Experiment/Discussion
+"All three methods estimate the probability of each transition action, and score a state item by the product of the probabilities of all its corresponding actions.",Experiment/Discussion
+"But different from our transition-based parser, which trains all transitions for a parse globally, these models train the probability of each action separately.",Experiment/Discussion
+"Based on the work of Johansson and Nugues (2006), Johansson and Nugues (2007) studied global training with an approximated large-margin algorithm.",Experiment/Discussion
+"This model is the most similar to our transition-based model, while the differences include the choice of learning and decoding algorithms, the definition of feature templates and our application of the “early update” strategy.",Experiment/Discussion
+Our combined parser makes the biggest contribution of this paper.,Experiment/Discussion
+"In contrast to the models above, it includes both graph-based and transition-based components.",Experiment/Discussion
+"An existing method to combine multiple parsing algorithms is the ensemble approach (Sagae and Lavie, 2006a), which was reported to be useful in improving dependency parsing (Hall et al., 2007).",Experiment/Discussion
+"A more recent approach (Nivre and McDonald, 2008) combined MSTParser and MaltParser by using the output of one parser for features in the other.",Experiment/Discussion
+Both Hall et al. (2007) and Nivre and McDonald (2008) can be seen as methods to combine separately defined models.,Experiment/Discussion
+"In contrast, our parser combines two components in a single model, in which all parameters are trained consistently.",Experiment/Discussion
+"We developed a graph-based and a transition-based projective dependency parser using beam-search, demonstrating that beam-search is a competitive choice for both parsing approaches.",Results/Conclusion
+"We then combined the two parsers into a single system, using discriminative perceptron training and beam-search decoding.",Results/Conclusion
+"The appealing aspect of the combined parser is the incorporation of two largely different views of the parsing problem, thus increasing the information available to a single statistical parser, and thereby significantly increasing the accuracy.",Results/Conclusion
+"When tested using both English and Chinese dependency data, the combined parser was highly competitive compared to the best systems in the literature.",Results/Conclusion
+"The idea of combining different approaches to the same problem using beam-search and a global model could be applied to other parsing tasks, such as constituent parsing, and possibly other NLP tasks.",Results/Conclusion
+This work is supported by the ORS and Clarendon Fund.,Results/Conclusion
+We thank the anonymous reviewers for their detailed comments.,Results/Conclusion

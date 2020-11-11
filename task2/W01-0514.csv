@@ -1,227 +1,227 @@
 col1,col2
-"This paper describes a method for linear text segmentation that is more accurate or at least as accurate as state-of-the-art methods (Utiyama and Isahara, 2001; Choi, 2000a).",{}
-Inter-sentence similarity is estimated by latent semantic analysis (LSA).,{}
-Boundary locations are discovered by divisive clustering.,{}
-Test results show LSA is a more accurate similarity measure than the,{}
-"The aim of linear text segmentation is to partition a document into blocks, such that each segment is coherent and consecutive segments are about different topics.","{'title': '1 Introduction', 'number': '1'}"
-"This procedure is useful in information retrieval (Hearst and Plaunt, 1993; Hearst, 1994; Yaari, 1997; Reynar, 1999), summarisation (Reynar, 1998), text understanding, anaphora resolution (Kozima, 1993), language modelling (Morris and Hirst, 1991; Beeferman et al., 1997) and text navigation (Choi, 2000b).","{'title': '1 Introduction', 'number': '1'}"
-This paper presents a new algorithm for segmenting written text.,"{'title': '1 Introduction', 'number': '1'}"
-The method builds on previous work by Choi (2000a).,"{'title': '1 Introduction', 'number': '1'}"
-The primary distinction is the use of latent semantic analysis (LSA) in formulating the similarity matrix.,"{'title': '1 Introduction', 'number': '1'}"
-"We discovered that (1) LSA is a more accurate measure of similarity than the cosine metric, (2) stemming does not always improve segmentation accuracy and (3) ranking is crucial to cosine but not LSA.","{'title': '1 Introduction', 'number': '1'}"
-A text segmentation algorithm has three main parts.,"{'title': '2 Background', 'number': '2'}"
-"First, the input text is divided into elementary blocks.","{'title': '2 Background', 'number': '2'}"
-"Second, a similarity metric identifies blocks that are about the same topic.","{'title': '2 Background', 'number': '2'}"
-"Finally, topic boundaries are discovered by a clustering algorithm.","{'title': '2 Background', 'number': '2'}"
-"An elementary block is the smallest text segment that can describe an entire topic, e.g. sentences (Ponte and Croft, 1997), paragraphs (Yaari, 1997) and arbitrary-sized segments (Hearst, 1994).","{'title': '2 Background', 'number': '2'}"
-"Linguistic theories (Chafe, 1979; Longacre, 1979; Kieras, 1982) and work in information retrieval (Salton et al., 1993; Kaszkiel and Zobel, 1997) suggest a coherent text segment is represented by paragraphs.","{'title': '2 Background', 'number': '2'}"
-"We argue that a paragraph can address multiple topics and is motivated by content, writing style and presentation.","{'title': '2 Background', 'number': '2'}"
-"Thus, a topic segment is a collection of sentences.","{'title': '2 Background', 'number': '2'}"
-"This view is supported by previous work in text segmentation (Ponte and Croft, 1997; Choi, 2000a).","{'title': '2 Background', 'number': '2'}"
-A similarity metric estimates the likelihood of two segments describing the same topic.,"{'title': '2 Background', 'number': '2'}"
-Existing methods fall into one of two categories.,"{'title': '2 Background', 'number': '2'}"
-"Lexical cohesion methods stem from the work of Halliday and Hasan (1976), in which a coherent topic segment is believed to contain parts with similar vocabulary.","{'title': '2 Background', 'number': '2'}"
-"Implementations of this use word stem repetition (Youmans, 1991; Reynar, 1994; Ponte and Croft, 1997), context vectors (Hearst, 1994; Yaari, 1997; Kaufmann, 1999; Eichmann et al., 1999; Choi, 2000a), entity repetition (Kan et al., 1998), thesaurus relations (Morris and Hirst, 1991), spreading activation over dictionary (Kozima, 1993), a word distance model (Beeferman et al., 1997) or a word frequency model (Reynar, 1999; Utiyama and Isahara, 2001) to detect cohesion.","{'title': '2 Background', 'number': '2'}"
-"These methods are typically applied in information retrieval (Hearst, 1994; Reynar, 1998) to segment written text.","{'title': '2 Background', 'number': '2'}"
-"Multi-source methods use cue phrases, prosodic features, ellipsis, anaphora, syntactic features, language models and lexical cohesion metrics to detect topic boundaries.","{'title': '2 Background', 'number': '2'}"
-"Features are combined using decision trees (Miike et al., 1994; Kurohashi and Nagao, 1994; Litman and Passonneau, 1995), probabilistic models (Hajime et al., 1998) and maximum entropy models (Beeferman et al., 1997; Reynar, 1998).","{'title': '2 Background', 'number': '2'}"
-The aim is to improve segmentation accuracy by combining multiple indicators of topic shift.,"{'title': '2 Background', 'number': '2'}"
-"These methods are typically applied in topic detection and tracking (Allan et al., 1998) to segment transcribed text and broadcast news stories.","{'title': '2 Background', 'number': '2'}"
-Topic boundaries are discovered by merging consecutive elementary blocks that are about the same topic.,"{'title': '2 Background', 'number': '2'}"
-"Existing algorithms used a sliding window (Hearst, 1994), lexical chains (Morris, 1988; Kan et al., 1998), dynamic programming (Ponte and Croft, 1997; Heinonen, 1998; Utiyama and Isahara, 2001), agglomerative clustering (Yaari, 1997) and divisive clustering (Reynar, 1994; Choi, 2000a) to determine the optimal segmentation.","{'title': '2 Background', 'number': '2'}"
-"The main difficulty in clustering is automatic termination, i.e. determining the number of topic boundaries in a document.","{'title': '2 Background', 'number': '2'}"
-"The input to our algorithm is a list of tokenised sentences S = {81,..,8}.","{'title': '3 A new method', 'number': '3'}"
-"Content words are identified by removing punctuation marks and stopwords from S. A term frequency vector f, is then constructed for each sentence i. fij denotes the number of times content word j occurs in s,.","{'title': '3 A new method', 'number': '3'}"
-"The C99 algorithm (Choi, 2000a) uses the cosine metric (van Rijsbergen, 1979) (eq.","{'title': '3 A new method', 'number': '3'}"
-"1) to compute a nxn similarity matrix M for S. represents the similarity between s, and si.","{'title': '3 A new method', 'number': '3'}"
-"The assumption is, two sentences with similar word usage are likely to be about the same topic.","{'title': '3 A new method', 'number': '3'}"
-This idea has two main problems.,"{'title': '3 A new method', 'number': '3'}"
-"First, the estimate is inaccurate for short passages.","{'title': '3 A new method', 'number': '3'}"
-"Second, synonyms are considered negative evidence, e.g. car E s, and automobile E si implies s, and si are dissimilar.","{'title': '3 A new method', 'number': '3'}"
-The first problem was addressed by replacing with its rank Rii (eq.,"{'title': '3 A new method', 'number': '3'}"
-"2, r defines the local context).","{'title': '3 A new method', 'number': '3'}"
-"The idea is, the difference in magnitude is inaccurate, thus one can only use the order as evidence for segmentation.","{'title': '3 A new method', 'number': '3'}"
-"Consider X = {xl,x2,x3} = {1,3,6} as the length of three objects.","{'title': '3 A new method', 'number': '3'}"
-"If X was measured with an ordinary ruler, one can conclude that x2 is three times longer than x1.","{'title': '3 A new method', 'number': '3'}"
-"This is a quantitative analysis of X, i.e. the quantity is significant.","{'title': '3 A new method', 'number': '3'}"
-"However, if the ruler was warped, but the order of the markings is preserved, one can only conclude that x1 < x2 < x3.","{'title': '3 A new method', 'number': '3'}"
-"This is a qualitative analysis of X, i.e. the order is significant but the relative value has no meaning.","{'title': '3 A new method', 'number': '3'}"
-This is a more robust interpretation of X.,"{'title': '3 A new method', 'number': '3'}"
-"The second problem was addressed by applying a stemming algorithm (Porter, 1980) to S, such that syntactically motivated inflections are placed in an equivalent class.","{'title': '3 A new method', 'number': '3'}"
-"For example, cooking, cooked, cooks, cooker are all instances of the class cook.","{'title': '3 A new method', 'number': '3'}"
-"Unlike morphological analysers (Koskenniemi, 1983, for example), a stemming algorithm does not identify the morphemes.","{'title': '3 A new method', 'number': '3'}"
-"Its simply removes common affixes from a word, e.g. combines, combine —> combin, depart, department —> depart.","{'title': '3 A new method', 'number': '3'}"
-"Thus, similar surface forms are considered positive evidence in the similarity estimate.","{'title': '3 A new method', 'number': '3'}"
-We propose that latent semantic analysis offers a better solution to the term matching problem.,"{'title': '3 A new method', 'number': '3'}"
-"LSA (Deerwester et al., 1990) stems from work in information retrieval, where the main difficulty is formulating a similarity metric that associates a user query with the relevant documents in a database.","{'title': '3 A new method', 'number': '3'}"
-The basic keyword search approach retrieves all documents which contain some or all of the query terms.,"{'title': '3 A new method', 'number': '3'}"
-This is inaccurate since the same concept may be described using different terms.,"{'title': '3 A new method', 'number': '3'}"
-"To circumvent this, Jing and Croft (1994) developed an association thesaurus for matching semantically related words.","{'title': '3 A new method', 'number': '3'}"
-Xu and Croft (1996) offered a trainable method call local context analysis (LCA) which replaces each query term with frequently cooccurring words.,"{'title': '3 A new method', 'number': '3'}"
-"Roughly speaking, LCA computes a word co-occurrence matrix C for a training corpus.","{'title': '3 A new method', 'number': '3'}"
-A threshold is then applied such that large values in C are replaced by 1 and other values become 0.,"{'title': '3 A new method', 'number': '3'}"
-"Each row C, can be considered as a feature vector for word i.","{'title': '3 A new method', 'number': '3'}"
-The meaning of a text is approximated by the sum of the word feature vectors.,"{'title': '3 A new method', 'number': '3'}"
-"Similarity between two texts is estimated by the distance between the corresponding feature vectors (Ponte and Croft, 1997, for details).","{'title': '3 A new method', 'number': '3'}"
-LSA is a classification approach to query expansion.,"{'title': '3 A new method', 'number': '3'}"
-The method is similar to LCA in that the &quot;meaning&quot; of a word w is represented by its relation to other words.,"{'title': '3 A new method', 'number': '3'}"
-"The primary distinction is, LSA applies principle components analysis to a word similarity matrix to identify the best features for distinguishing dissimilar words.","{'title': '3 A new method', 'number': '3'}"
-"Like LCA, the meaning of a text is computed as the sum of the word feature vectors.","{'title': '3 A new method', 'number': '3'}"
-Text similarity is measured by the cosine of the corresponding feature vectors.,"{'title': '3 A new method', 'number': '3'}"
-"LSA has been shown to match human similarity judgements on a wide range of tasks (Landauer and Dumais, 1997; Wolfe et al., 1998; Wiemer-Hastings et al., 1999, for example).","{'title': '3 A new method', 'number': '3'}"
-"LSA is trained on a set of texts A = Y1, ..., with vocabulary twi, turd-.","{'title': '3 A new method', 'number': '3'}"
-"Anxm matrix A is calculated, in which, A,i is the number of times to, occurs in Si.","{'title': '3 A new method', 'number': '3'}"
-"The values are scaled according to a general form of inverse document frequency, Singular value decomposition, or SVD (Golub and van Loan, 1989) is then applied to yield B = UEVT, where XT denotes the transposed matrix of X.","{'title': '3 A new method', 'number': '3'}"
-"The columns of U and V are the eigenvectors of BBT and BTB, respectively.","{'title': '3 A new method', 'number': '3'}"
-"The diagonal values of E are the corresponding singular values, i.e. the non-negative square roots of the eigenvalues of BBT.","{'title': '3 A new method', 'number': '3'}"
-These are sorted in descending order.,"{'title': '3 A new method', 'number': '3'}"
-"BBT is a word similarity matrix, where the &quot;meaning&quot; of a word to, is expressed in terms of its dot-product with all other words {w1, 1.07,}.","{'title': '3 A new method', 'number': '3'}"
-"As a classification problem, the eigenvectors in U are the principle axes for distinguishing the word feature vectors, or rows, in BBT.","{'title': '3 A new method', 'number': '3'}"
-"In other words, the first k columns of U, or Ak, is the best approximation of BBT in k—dimensional space.","{'title': '3 A new method', 'number': '3'}"
-Ak is the k—dimensional LSA space for A.,"{'title': '3 A new method', 'number': '3'}"
-"The i—th row in Ak, or Ak(i), is the LSA feature vector for word to,.","{'title': '3 A new method', 'number': '3'}"
-Applying SVD to W has three main benefits.,"{'title': '3 A new method', 'number': '3'}"
-"First, Ak is a concise representation of W. Thus, storage and computational complexity of the similarity metric is reduced.","{'title': '3 A new method', 'number': '3'}"
-"Second, words which occur in similar contexts are represented by similar feature vectors in Ak.","{'title': '3 A new method', 'number': '3'}"
-"Finally, noise in W is removed by simply omitting the less salient dimensions in U.","{'title': '3 A new method', 'number': '3'}"
-"A sentence s, is represented by its term frequency vector A, where Li is the frequency of term j in s,.","{'title': '3 A new method', 'number': '3'}"
-"Given Ak, the &quot;meaning&quot; of s, is computed by eq.","{'title': '3 A new method', 'number': '3'}"
-3.,"{'title': '3 A new method', 'number': '3'}"
-"Informally, s, is represented by the sum of the LSA feature vectors.","{'title': '3 A new method', 'number': '3'}"
-Inter-sentence similarity is estimated by the cosine of the corresponding X (eq.,"{'title': '3 A new method', 'number': '3'}"
-"4, Azk is the k—th element in Ai).","{'title': '3 A new method', 'number': '3'}"
-"Since Ak is derived from the co-occurrence matrix A, the size of each training text Si E A is crucial to its performance.","{'title': '3 A new method', 'number': '3'}"
-Work in information retrieval uses Sz = document since the aim is to distinguish entire texts.,"{'title': '3 A new method', 'number': '3'}"
-Sz = paragraph is popular in psychology experiments.,"{'title': '3 A new method', 'number': '3'}"
-"However, we suspect the segmentation task may benefit from Sz = sentence.","{'title': '3 A new method', 'number': '3'}"
-"Thus, two training corpora were derived from the Brown Corpus (Marcus et al., 1993).","{'title': '3 A new method', 'number': '3'}"
-Annotations were first removed to leave a set of tokenised raw text (1.2 million tokens).,"{'title': '3 A new method', 'number': '3'}"
-"This was partitioned into 35,000 paragraphs or 104,000 sentences, as two training corpora.","{'title': '3 A new method', 'number': '3'}"
-The parameter k adjusts the accuracy of Ak.,"{'title': '3 A new method', 'number': '3'}"
-A large k implies minor differences in the feature space are significant.,"{'title': '3 A new method', 'number': '3'}"
-"Thus, they should be taken into account in the formulation of Ak.","{'title': '3 A new method', 'number': '3'}"
-This is appropriate when the vocabulary is small and there is sufficient training data.,"{'title': '3 A new method', 'number': '3'}"
-A small k is used when A is sparse and the values in A are inaccurate.,"{'title': '3 A new method', 'number': '3'}"
-"Once the similarity matrix M is calculated for the input text S, the image ranking procedure in C99 is then applied to obtain a rank matrix R (see eq.","{'title': '3 A new method', 'number': '3'}"
-2).,"{'title': '3 A new method', 'number': '3'}"
-Rzi is the proportion of neighbours of Mzi with a lower value than Mzi.,"{'title': '3 A new method', 'number': '3'}"
-The motivation for applying image ranking in the new algorithm is to test whether a quantitative or qualitative interpretation of the similarity values has any impact on segmentation accuracy.,"{'title': '3 A new method', 'number': '3'}"
-The hypothesis is that LSA similarity values are more accurate than cosine similarity values.,"{'title': '3 A new method', 'number': '3'}"
-"Thus, image ranking should have a smaller impact on LSA than the cosine metric.","{'title': '3 A new method', 'number': '3'}"
-"The input matrix X can either be the similarity matrix M or the rank matrix R, depending on whether ranking is applied to M. Topic boundaries are identified by the divisive clustering procedure in C99.","{'title': '3 A new method', 'number': '3'}"
-"A topic segment tk is defined by its start and end sentences, sz and si, or its range tk = [i, j].","{'title': '3 A new method', 'number': '3'}"
-"The number of intersentence similarity values in tk is O(tk) = Itk12, i.e.","{'title': '3 A new method', 'number': '3'}"
-(j — j ± 1)2.,"{'title': '3 A new method', 'number': '3'}"
-"The sum of the values in tk is /3(tk) = EzEt.1 k E.Ebk X Thus, the average inter-sentence similarity value for a segmentation T = {t,, ...,t} is defined as, The divisive clustering algorithm begins by considering the entire input document S as a coherent topic segment.","{'title': '3 A new method', 'number': '3'}"
-"This is partitioned into two segments T = ftl, t21 at a sentence boundary that maximises [IT, i.e. the most prominent topic boundary.","{'title': '3 A new method', 'number': '3'}"
-The recursive procedure proceeds until S can no longer be subdivided.,"{'title': '3 A new method', 'number': '3'}"
-The optimal segmentation is signalled by a sharp change in [IT.,"{'title': '3 A new method', 'number': '3'}"
-"For implementation details and optimisations, see (Choi, 2000a).","{'title': '3 A new method', 'number': '3'}"
-"The following experiments aim to establish the relationship between linguistic processes (stemming, ranking, cosine metric, LSA) and segmentation error rate.","{'title': '4 Evaluation', 'number': '4'}"
-"The test procedure is based on that presented in (Choi, 2000a) which was derived from work in TDT (Allan et al., 1998) and previous experiments in text segmentation (Reynar, 1998, 71-73).","{'title': '4 Evaluation', 'number': '4'}"
-The task is to find the most prominent topic boundaries in a concatenated text.,"{'title': '4 Evaluation', 'number': '4'}"
-"The accuracy of a segmentation algorithm is assessed by the experiment package' described in (Choi, 2000a).","{'title': '4 Evaluation', 'number': '4'}"
-A test sample is a concatenation of ten text segments.,"{'title': '4 Evaluation', 'number': '4'}"
-"Each segment is the first n sentences of a randomly selected document from a subset2 of the Brown corpus (Marcus et al., 1993).","{'title': '4 Evaluation', 'number': '4'}"
-Table 1 presents the corpus statistics.,"{'title': '4 Evaluation', 'number': '4'}"
-"A sample is characterised by the range of n. Ti,j is a set of samples with i <n <j.","{'title': '4 Evaluation', 'number': '4'}"
-T is the union of the other four test sets.,"{'title': '4 Evaluation', 'number': '4'}"
-"Segmentation accuracy is measured by the metric proposed in (Beeferman et al., 1999).","{'title': '4 Evaluation', 'number': '4'}"
-"Let Tr and Tp be the reference segmentation and that proposed by an automatic procedure. k is the average segment length in T. p(samelTr, k) and p(diffiTr, k) refer to the likelihood of sentence sz and sz±k belonging to the same and different topic segment(s) in Tk p(samelTr, Tp, diff, k) is the probability of a miss, i.e. sz and sz±k are about different topics in Tk but they belong to the same topic segment in T. p(difflTr, Tp, same, k) is the probability of false alarm, i.e. two sentences are about the same topic in Tr but they belong to different segments in T. Equation 5 combines these four measures to calculate p(errorlTr, Tp, k), the probability of segmentation errors.","{'title': '4 Evaluation', 'number': '4'}"
-"The error rate of an algorithm is computed as the average of p(errorlTr, Tp, k) for a test set.","{'title': '4 Evaluation', 'number': '4'}"
-"A low error rate implies high segmentation accuracy. p(diffl , Tp , same, k)p(samelTr, k) This test procedure is not perfect.","{'title': '4 Evaluation', 'number': '4'}"
-"First, assessing the accuracy of an algorithm in an artificial task is inferior to a test that uses human segmented text.","{'title': '4 Evaluation', 'number': '4'}"
-"However, this approach does allow us to conduct a large-scale comparative study on similarity metrics which focuses on text similarity rather than topic boundary detection.","{'title': '4 Evaluation', 'number': '4'}"
-"Second, the error metric favours texts with short topic segments.","{'title': '4 Evaluation', 'number': '4'}"
-Segmentation errors within a segment which is smaller than k are not always detected correctly.,"{'title': '4 Evaluation', 'number': '4'}"
-"Thus, an algorithm is assessed using texts with different ranges of segment length.","{'title': '4 Evaluation', 'number': '4'}"
-"Although the metric is not perfect, it is significantly more accurate than the popular precision/recall metric which ignores near misses.","{'title': '4 Evaluation', 'number': '4'}"
-"Furthermore, the method is sufficiently accurate for this comparative study.","{'title': '4 Evaluation', 'number': '4'}"
-Five degenerate algorithms define the baseline for the experiments.,"{'title': '4 Evaluation', 'number': '4'}"
-Be partitions a document into e = 10 segments of equal length.,"{'title': '4 Evaluation', 'number': '4'}"
-"Br, does not propose any boundaries.","{'title': '4 Evaluation', 'number': '4'}"
-"B,„ assumes all potential boundaries are topic boundaries.","{'title': '4 Evaluation', 'number': '4'}"
-Bb randomly selects b = 10 boundaries.,"{'title': '4 Evaluation', 'number': '4'}"
-B? randomly selects any number of boundaries as real boundaries.,"{'title': '4 Evaluation', 'number': '4'}"
-"Details about Bb and B? are described in (Choi, 2000a).","{'title': '4 Evaluation', 'number': '4'}"
-Table 2 shows Be performed best with an average error rate of 42%.,"{'title': '4 Evaluation', 'number': '4'}"
-This is the baseline for algorithms that find the e most prominent topic boundaries.,"{'title': '4 Evaluation', 'number': '4'}"
-"B? serves as the baseline for methods that determines the optimal segmentation, i.e. the number of topic segments in a text.","{'title': '4 Evaluation', 'number': '4'}"
-"The aim is to relate stemming, ranking and the termination procedure in C99 with segmentation accuracy.","{'title': '4 Evaluation', 'number': '4'}"
-"The algorithm used in this experiment is identical to that presented in (Choi, 2000a) except tokens such as -- and - are recognised as punctuation marks and removed during pre-processing.","{'title': '4 Evaluation', 'number': '4'}"
-Test results show this modification reduces error rate by 1%.,"{'title': '4 Evaluation', 'number': '4'}"
-"An analysis of the original algorithm reveals that non-word tokens introduce errors since they are converted into a null string by the stemming algorithm (Porter, 1980).","{'title': '4 Evaluation', 'number': '4'}"
-This implementation of C99 has three parameters.,"{'title': '4 Evaluation', 'number': '4'}"
-+r implies ranking is applied to the similarity matrix prior to divisive clustering.,"{'title': '4 Evaluation', 'number': '4'}"
-+s shows the stemming algorithm is used in preprocessing.,"{'title': '4 Evaluation', 'number': '4'}"
-"+b means the algorithm finds the 10 most prominent topic boundaries, i.e. the automatic termination procedure is inactive.","{'title': '4 Evaluation', 'number': '4'}"
-Test results (table 3) show ranking is crucial to C99.,"{'title': '4 Evaluation', 'number': '4'}"
-"There is a 10% difference between row 3 and 6 for T. This confirms the cosine metric is inaccurate for short text segments but the order between values, or rank, is significant.","{'title': '4 Evaluation', 'number': '4'}"
-Future experiments will establish the relationship between segment size and accuracy.,"{'title': '4 Evaluation', 'number': '4'}"
-Stemming is generally believed to improve segmentation accuracy.,"{'title': '4 Evaluation', 'number': '4'}"
-This is confirmed by the experiment results.,"{'title': '4 Evaluation', 'number': '4'}"
-"However, we discovered that the process can introduce errors when segmenting short segments.","{'title': '4 Evaluation', 'number': '4'}"
-"There is a 0.7% difference between row 1 and 3 for T3,5.","{'title': '4 Evaluation', 'number': '4'}"
-"Finally, the termination strategy in C99 is not effective for short topic segments.","{'title': '4 Evaluation', 'number': '4'}"
-"There is a 6.3% improvement between row 1 and 2 for T3,5.","{'title': '4 Evaluation', 'number': '4'}"
-"However, its performance for larger segments is exceptional (0.6% difference between row 1 and 2 for T).","{'title': '4 Evaluation', 'number': '4'}"
-"The aim is to establish the relationship between LSA dimensionality, training data and accuracy.","{'title': '4 Evaluation', 'number': '4'}"
-"Our new algorithm, CWM, was used in this experiment.","{'title': '4 Evaluation', 'number': '4'}"
-The method is identical to C99 except the stemming algorithm has been disabled and LSA is used in the formulation of the similarity matrix.,"{'title': '4 Evaluation', 'number': '4'}"
-Ten LSA spaces were examined.,"{'title': '4 Evaluation', 'number': '4'}"
-"Each space is characterised by the training data and its dimensionality. s and p imply the LSA space was trained on sentences and paragraphs, respectively.","{'title': '4 Evaluation', 'number': '4'}"
-"The values {100, 200, 300, 400, 500} represent the dimensionality of the trained space.","{'title': '4 Evaluation', 'number': '4'}"
-"For instance, &quot;p, 400&quot; is a 400-dimensional space that was trained on paragraphs.","{'title': '4 Evaluation', 'number': '4'}"
-"Like C99, +r implies ranking is applied to the similarity matrix.","{'title': '4 Evaluation', 'number': '4'}"
-+b means CWM finds the ten most prominent boundaries.,"{'title': '4 Evaluation', 'number': '4'}"
-Let ji be the column average.,"{'title': '4 Evaluation', 'number': '4'}"
-Test results (table 4) show ranked LSA (column 4) has the lowest error rate.,"{'title': '4 Evaluation', 'number': '4'}"
-The raw values (column 1 and 3) performed well.,"{'title': '4 Evaluation', 'number': '4'}"
-The 1% difference in accuracy implies the termination strategy works well with LSA.,"{'title': '4 Evaluation', 'number': '4'}"
-"However, the same method is not applicable to the ranked LSA values (see column 2).","{'title': '4 Evaluation', 'number': '4'}"
-The results in column 3 highlights the relationship between LSA space and error rate.,"{'title': '4 Evaluation', 'number': '4'}"
-"On average, a LSA space that was trained on paragraphs ([2(p) = 11.8%) out-performed one that was trained on sentences (p(s) = 15.6%).","{'title': '4 Evaluation', 'number': '4'}"
-This shows similarity is well modelled by word co-occurrence in paragraphs.,"{'title': '4 Evaluation', 'number': '4'}"
-"It also suggests that although sentences are good for identifying words about the same topic, paragraphs are better for finding dissimilar words.","{'title': '4 Evaluation', 'number': '4'}"
-"Intuitively speaking, large feature vectors are expected to generate more accurate similarity values.","{'title': '4 Evaluation', 'number': '4'}"
-"Thus, segmentation accuracy should improve with dimensionality.","{'title': '4 Evaluation', 'number': '4'}"
-The figures in column 3 show high dimensionality increases error rate.,"{'title': '4 Evaluation', 'number': '4'}"
-"However, the figures in column 4 suggest the contrary.","{'title': '4 Evaluation', 'number': '4'}"
-This implies high dimensionality improves the ranking of LSA values but is detrimental to value accuracy.,"{'title': '4 Evaluation', 'number': '4'}"
-Table 5 presents a summary of experiment results.,"{'title': '4 Evaluation', 'number': '4'}"
-"C99 and C99b are the algorithms described in (Choi, 2000a).","{'title': '4 Evaluation', 'number': '4'}"
-"C99b,, is the same as C99b except ranking has been disabled.","{'title': '4 Evaluation', 'number': '4'}"
-The 11% difference between the two shows ranking is crucial to the cosine metric.,"{'title': '4 Evaluation', 'number': '4'}"
-"U00 and U00b are the word frequency methods proposed in (Utiyama and Isahara, 2001).","{'title': '4 Evaluation', 'number': '4'}"
-CWM is the new method described in this paper.,"{'title': '4 Evaluation', 'number': '4'}"
-All versions of the algorithm use a LSA space that was trained on paragraphs.,"{'title': '4 Evaluation', 'number': '4'}"
-CWM1 is identical to C99b except the stemming algorithm has been disabled and it uses A500 to measure similarity.,"{'title': '4 Evaluation', 'number': '4'}"
-The results show it is more accurate than previous methods.,"{'title': '4 Evaluation', 'number': '4'}"
-CWM2 is the same algorithm but ranking has been disabled.,"{'title': '4 Evaluation', 'number': '4'}"
-The 5% difference between this and CWM1 implies ranking does improve accuracy.,"{'title': '4 Evaluation', 'number': '4'}"
-"Finally, CWM3 is a variant of CWM2 which uses A100 to measure similarity.","{'title': '4 Evaluation', 'number': '4'}"
-"The 11% difference between this and C99b,_, shows LSA is more accurate than the cosine metric.","{'title': '4 Evaluation', 'number': '4'}"
-"The significance of our results has been confirmed by both t-test and KS-test (Press et al., 1992).","{'title': '4 Evaluation', 'number': '4'}"
-A series of experiments were conducted to establish the relationship between linguistic processes and segmentation accuracy.,"{'title': '5 Conclusions', 'number': '5'}"
-"C99 (Choi, 2000a) was used as the test bench.","{'title': '5 Conclusions', 'number': '5'}"
-"In the first set of experiments, its stemming algorithm, ranking procedure and automatic termination method were systematically disabled to determine the contribution of each process to overall performance.","{'title': '5 Conclusions', 'number': '5'}"
-"We discovered that, first, stemming generally improves accuracy unless the topic segments are short (3 to 5 sentences).","{'title': '5 Conclusions', 'number': '5'}"
-"Second, ranking plays a vital role in C99.","{'title': '5 Conclusions', 'number': '5'}"
-It reduces error rate by half (22% to 10%).,"{'title': '5 Conclusions', 'number': '5'}"
-"Finally, the termination procedure in C99 is effective (0.6% difference).","{'title': '5 Conclusions', 'number': '5'}"
-The method works particularly well on long topic segments (> 6 sentences).,"{'title': '5 Conclusions', 'number': '5'}"
-The second set of experiments focused on LSA as a similarity metric.,"{'title': '5 Conclusions', 'number': '5'}"
-The cosine metric in C99 was replaced by LSA.,"{'title': '5 Conclusions', 'number': '5'}"
-Ten different LSA spaces were examined.,"{'title': '5 Conclusions', 'number': '5'}"
-We discovered that LSA is twice as accurate as the cosine metric.,"{'title': '5 Conclusions', 'number': '5'}"
-The results also showed vocabulary difference between paragraphs is a good feature for training a similarity metric.,"{'title': '5 Conclusions', 'number': '5'}"
-"Further investigation into the relationship between ranking, LSA dimensionality and error rate revealed that LSA values become less accurate as more dimensions are incorporated into the feature vectors.","{'title': '5 Conclusions', 'number': '5'}"
-This implies the training data is noisy.,"{'title': '5 Conclusions', 'number': '5'}"
-"However, with ranking, error rate decreases.","{'title': '5 Conclusions', 'number': '5'}"
-This shows the order of LSA values becomes more accurate when more features are used.,"{'title': '5 Conclusions', 'number': '5'}"
-Future work will focus on document specific LSA and the termination strategy of the new algorithm.,"{'title': '5 Conclusions', 'number': '5'}"
-Test results have shown the termination procedure in C99 works well on LSA similarity values but not on the ranked values.,"{'title': '5 Conclusions', 'number': '5'}"
-We suspect the threshold selection method has to be modified.,"{'title': '5 Conclusions', 'number': '5'}"
-"In terms of clustering, dynamic programming approaches (Ponte and Croft, 1997; Utiyama and Isahara, 2001, for example) will be examined.","{'title': '5 Conclusions', 'number': '5'}"
-"Finally, a LSA procedure for computing document specific similarity values will be evaluated.","{'title': '5 Conclusions', 'number': '5'}"
-Thanks are due to the anonymous reviewers for their invaluable comments; Masao Utiyama and Hitoshi Isahara for providing the U00 algorithm and detailed results; Marti Hearst for guidance on the evaluation problem; Mary McGee Wood for support and HCRC for making this work possible.,"{'title': 'Acknowledgements', 'number': '6'}"
+"This paper describes a method for linear text segmentation that is more accurate or at least as accurate as state-of-the-art methods (Utiyama and Isahara, 2001; Choi, 2000a).",Introduction
+Inter-sentence similarity is estimated by latent semantic analysis (LSA).,Introduction
+Boundary locations are discovered by divisive clustering.,Introduction
+Test results show LSA is a more accurate similarity measure than the,Introduction
+"The aim of linear text segmentation is to partition a document into blocks, such that each segment is coherent and consecutive segments are about different topics.",Experiment/Discussion
+"This procedure is useful in information retrieval (Hearst and Plaunt, 1993; Hearst, 1994; Yaari, 1997; Reynar, 1999), summarisation (Reynar, 1998), text understanding, anaphora resolution (Kozima, 1993), language modelling (Morris and Hirst, 1991; Beeferman et al., 1997) and text navigation (Choi, 2000b).",Experiment/Discussion
+This paper presents a new algorithm for segmenting written text.,Experiment/Discussion
+The method builds on previous work by Choi (2000a).,Experiment/Discussion
+The primary distinction is the use of latent semantic analysis (LSA) in formulating the similarity matrix.,Experiment/Discussion
+"We discovered that (1) LSA is a more accurate measure of similarity than the cosine metric, (2) stemming does not always improve segmentation accuracy and (3) ranking is crucial to cosine but not LSA.",Experiment/Discussion
+A text segmentation algorithm has three main parts.,Experiment/Discussion
+"First, the input text is divided into elementary blocks.",Experiment/Discussion
+"Second, a similarity metric identifies blocks that are about the same topic.",Experiment/Discussion
+"Finally, topic boundaries are discovered by a clustering algorithm.",Experiment/Discussion
+"An elementary block is the smallest text segment that can describe an entire topic, e.g. sentences (Ponte and Croft, 1997), paragraphs (Yaari, 1997) and arbitrary-sized segments (Hearst, 1994).",Experiment/Discussion
+"Linguistic theories (Chafe, 1979; Longacre, 1979; Kieras, 1982) and work in information retrieval (Salton et al., 1993; Kaszkiel and Zobel, 1997) suggest a coherent text segment is represented by paragraphs.",Experiment/Discussion
+"We argue that a paragraph can address multiple topics and is motivated by content, writing style and presentation.",Experiment/Discussion
+"Thus, a topic segment is a collection of sentences.",Experiment/Discussion
+"This view is supported by previous work in text segmentation (Ponte and Croft, 1997; Choi, 2000a).",Experiment/Discussion
+A similarity metric estimates the likelihood of two segments describing the same topic.,Experiment/Discussion
+Existing methods fall into one of two categories.,Experiment/Discussion
+"Lexical cohesion methods stem from the work of Halliday and Hasan (1976), in which a coherent topic segment is believed to contain parts with similar vocabulary.",Experiment/Discussion
+"Implementations of this use word stem repetition (Youmans, 1991; Reynar, 1994; Ponte and Croft, 1997), context vectors (Hearst, 1994; Yaari, 1997; Kaufmann, 1999; Eichmann et al., 1999; Choi, 2000a), entity repetition (Kan et al., 1998), thesaurus relations (Morris and Hirst, 1991), spreading activation over dictionary (Kozima, 1993), a word distance model (Beeferman et al., 1997) or a word frequency model (Reynar, 1999; Utiyama and Isahara, 2001) to detect cohesion.",Experiment/Discussion
+"These methods are typically applied in information retrieval (Hearst, 1994; Reynar, 1998) to segment written text.",Experiment/Discussion
+"Multi-source methods use cue phrases, prosodic features, ellipsis, anaphora, syntactic features, language models and lexical cohesion metrics to detect topic boundaries.",Experiment/Discussion
+"Features are combined using decision trees (Miike et al., 1994; Kurohashi and Nagao, 1994; Litman and Passonneau, 1995), probabilistic models (Hajime et al., 1998) and maximum entropy models (Beeferman et al., 1997; Reynar, 1998).",Experiment/Discussion
+The aim is to improve segmentation accuracy by combining multiple indicators of topic shift.,Experiment/Discussion
+"These methods are typically applied in topic detection and tracking (Allan et al., 1998) to segment transcribed text and broadcast news stories.",Experiment/Discussion
+Topic boundaries are discovered by merging consecutive elementary blocks that are about the same topic.,Experiment/Discussion
+"Existing algorithms used a sliding window (Hearst, 1994), lexical chains (Morris, 1988; Kan et al., 1998), dynamic programming (Ponte and Croft, 1997; Heinonen, 1998; Utiyama and Isahara, 2001), agglomerative clustering (Yaari, 1997) and divisive clustering (Reynar, 1994; Choi, 2000a) to determine the optimal segmentation.",Experiment/Discussion
+"The main difficulty in clustering is automatic termination, i.e. determining the number of topic boundaries in a document.",Experiment/Discussion
+"The input to our algorithm is a list of tokenised sentences S = {81,..,8}.",Experiment/Discussion
+"Content words are identified by removing punctuation marks and stopwords from S. A term frequency vector f, is then constructed for each sentence i. fij denotes the number of times content word j occurs in s,.",Experiment/Discussion
+"The C99 algorithm (Choi, 2000a) uses the cosine metric (van Rijsbergen, 1979) (eq.",Experiment/Discussion
+"1) to compute a nxn similarity matrix M for S. represents the similarity between s, and si.",Experiment/Discussion
+"The assumption is, two sentences with similar word usage are likely to be about the same topic.",Experiment/Discussion
+This idea has two main problems.,Experiment/Discussion
+"First, the estimate is inaccurate for short passages.",Experiment/Discussion
+"Second, synonyms are considered negative evidence, e.g. car E s, and automobile E si implies s, and si are dissimilar.",Experiment/Discussion
+The first problem was addressed by replacing with its rank Rii (eq.,Experiment/Discussion
+"2, r defines the local context).",Experiment/Discussion
+"The idea is, the difference in magnitude is inaccurate, thus one can only use the order as evidence for segmentation.",Experiment/Discussion
+"Consider X = {xl,x2,x3} = {1,3,6} as the length of three objects.",Experiment/Discussion
+"If X was measured with an ordinary ruler, one can conclude that x2 is three times longer than x1.",Experiment/Discussion
+"This is a quantitative analysis of X, i.e. the quantity is significant.",Experiment/Discussion
+"However, if the ruler was warped, but the order of the markings is preserved, one can only conclude that x1 < x2 < x3.",Experiment/Discussion
+"This is a qualitative analysis of X, i.e. the order is significant but the relative value has no meaning.",Experiment/Discussion
+This is a more robust interpretation of X.,Experiment/Discussion
+"The second problem was addressed by applying a stemming algorithm (Porter, 1980) to S, such that syntactically motivated inflections are placed in an equivalent class.",Experiment/Discussion
+"For example, cooking, cooked, cooks, cooker are all instances of the class cook.",Experiment/Discussion
+"Unlike morphological analysers (Koskenniemi, 1983, for example), a stemming algorithm does not identify the morphemes.",Experiment/Discussion
+"Its simply removes common affixes from a word, e.g. combines, combine —> combin, depart, department —> depart.",Experiment/Discussion
+"Thus, similar surface forms are considered positive evidence in the similarity estimate.",Experiment/Discussion
+We propose that latent semantic analysis offers a better solution to the term matching problem.,Experiment/Discussion
+"LSA (Deerwester et al., 1990) stems from work in information retrieval, where the main difficulty is formulating a similarity metric that associates a user query with the relevant documents in a database.",Experiment/Discussion
+The basic keyword search approach retrieves all documents which contain some or all of the query terms.,Experiment/Discussion
+This is inaccurate since the same concept may be described using different terms.,Experiment/Discussion
+"To circumvent this, Jing and Croft (1994) developed an association thesaurus for matching semantically related words.",Experiment/Discussion
+Xu and Croft (1996) offered a trainable method call local context analysis (LCA) which replaces each query term with frequently cooccurring words.,Experiment/Discussion
+"Roughly speaking, LCA computes a word co-occurrence matrix C for a training corpus.",Experiment/Discussion
+A threshold is then applied such that large values in C are replaced by 1 and other values become 0.,Experiment/Discussion
+"Each row C, can be considered as a feature vector for word i.",Experiment/Discussion
+The meaning of a text is approximated by the sum of the word feature vectors.,Experiment/Discussion
+"Similarity between two texts is estimated by the distance between the corresponding feature vectors (Ponte and Croft, 1997, for details).",Experiment/Discussion
+LSA is a classification approach to query expansion.,Experiment/Discussion
+The method is similar to LCA in that the &quot;meaning&quot; of a word w is represented by its relation to other words.,Experiment/Discussion
+"The primary distinction is, LSA applies principle components analysis to a word similarity matrix to identify the best features for distinguishing dissimilar words.",Experiment/Discussion
+"Like LCA, the meaning of a text is computed as the sum of the word feature vectors.",Experiment/Discussion
+Text similarity is measured by the cosine of the corresponding feature vectors.,Experiment/Discussion
+"LSA has been shown to match human similarity judgements on a wide range of tasks (Landauer and Dumais, 1997; Wolfe et al., 1998; Wiemer-Hastings et al., 1999, for example).",Experiment/Discussion
+"LSA is trained on a set of texts A = Y1, ..., with vocabulary twi, turd-.",Experiment/Discussion
+"Anxm matrix A is calculated, in which, A,i is the number of times to, occurs in Si.",Experiment/Discussion
+"The values are scaled according to a general form of inverse document frequency, Singular value decomposition, or SVD (Golub and van Loan, 1989) is then applied to yield B = UEVT, where XT denotes the transposed matrix of X.",Experiment/Discussion
+"The columns of U and V are the eigenvectors of BBT and BTB, respectively.",Experiment/Discussion
+"The diagonal values of E are the corresponding singular values, i.e. the non-negative square roots of the eigenvalues of BBT.",Experiment/Discussion
+These are sorted in descending order.,Experiment/Discussion
+"BBT is a word similarity matrix, where the &quot;meaning&quot; of a word to, is expressed in terms of its dot-product with all other words {w1, 1.07,}.",Experiment/Discussion
+"As a classification problem, the eigenvectors in U are the principle axes for distinguishing the word feature vectors, or rows, in BBT.",Experiment/Discussion
+"In other words, the first k columns of U, or Ak, is the best approximation of BBT in k—dimensional space.",Experiment/Discussion
+Ak is the k—dimensional LSA space for A.,Experiment/Discussion
+"The i—th row in Ak, or Ak(i), is the LSA feature vector for word to,.",Experiment/Discussion
+Applying SVD to W has three main benefits.,Experiment/Discussion
+"First, Ak is a concise representation of W. Thus, storage and computational complexity of the similarity metric is reduced.",Experiment/Discussion
+"Second, words which occur in similar contexts are represented by similar feature vectors in Ak.",Experiment/Discussion
+"Finally, noise in W is removed by simply omitting the less salient dimensions in U.",Experiment/Discussion
+"A sentence s, is represented by its term frequency vector A, where Li is the frequency of term j in s,.",Experiment/Discussion
+"Given Ak, the &quot;meaning&quot; of s, is computed by eq.",Experiment/Discussion
+3.,Experiment/Discussion
+"Informally, s, is represented by the sum of the LSA feature vectors.",Experiment/Discussion
+Inter-sentence similarity is estimated by the cosine of the corresponding X (eq.,Experiment/Discussion
+"4, Azk is the k—th element in Ai).",Experiment/Discussion
+"Since Ak is derived from the co-occurrence matrix A, the size of each training text Si E A is crucial to its performance.",Experiment/Discussion
+Work in information retrieval uses Sz = document since the aim is to distinguish entire texts.,Experiment/Discussion
+Sz = paragraph is popular in psychology experiments.,Experiment/Discussion
+"However, we suspect the segmentation task may benefit from Sz = sentence.",Experiment/Discussion
+"Thus, two training corpora were derived from the Brown Corpus (Marcus et al., 1993).",Experiment/Discussion
+Annotations were first removed to leave a set of tokenised raw text (1.2 million tokens).,Experiment/Discussion
+"This was partitioned into 35,000 paragraphs or 104,000 sentences, as two training corpora.",Experiment/Discussion
+The parameter k adjusts the accuracy of Ak.,Experiment/Discussion
+A large k implies minor differences in the feature space are significant.,Experiment/Discussion
+"Thus, they should be taken into account in the formulation of Ak.",Experiment/Discussion
+This is appropriate when the vocabulary is small and there is sufficient training data.,Experiment/Discussion
+A small k is used when A is sparse and the values in A are inaccurate.,Experiment/Discussion
+"Once the similarity matrix M is calculated for the input text S, the image ranking procedure in C99 is then applied to obtain a rank matrix R (see eq.",Experiment/Discussion
+2).,Experiment/Discussion
+Rzi is the proportion of neighbours of Mzi with a lower value than Mzi.,Experiment/Discussion
+The motivation for applying image ranking in the new algorithm is to test whether a quantitative or qualitative interpretation of the similarity values has any impact on segmentation accuracy.,Experiment/Discussion
+The hypothesis is that LSA similarity values are more accurate than cosine similarity values.,Experiment/Discussion
+"Thus, image ranking should have a smaller impact on LSA than the cosine metric.",Experiment/Discussion
+"The input matrix X can either be the similarity matrix M or the rank matrix R, depending on whether ranking is applied to M. Topic boundaries are identified by the divisive clustering procedure in C99.",Experiment/Discussion
+"A topic segment tk is defined by its start and end sentences, sz and si, or its range tk = [i, j].",Experiment/Discussion
+"The number of intersentence similarity values in tk is O(tk) = Itk12, i.e.",Experiment/Discussion
+(j — j ± 1)2.,Experiment/Discussion
+"The sum of the values in tk is /3(tk) = EzEt.1 k E.Ebk X Thus, the average inter-sentence similarity value for a segmentation T = {t,, ...,t} is defined as, The divisive clustering algorithm begins by considering the entire input document S as a coherent topic segment.",Experiment/Discussion
+"This is partitioned into two segments T = ftl, t21 at a sentence boundary that maximises [IT, i.e. the most prominent topic boundary.",Experiment/Discussion
+The recursive procedure proceeds until S can no longer be subdivided.,Experiment/Discussion
+The optimal segmentation is signalled by a sharp change in [IT.,Experiment/Discussion
+"For implementation details and optimisations, see (Choi, 2000a).",Experiment/Discussion
+"The following experiments aim to establish the relationship between linguistic processes (stemming, ranking, cosine metric, LSA) and segmentation error rate.",Experiment/Discussion
+"The test procedure is based on that presented in (Choi, 2000a) which was derived from work in TDT (Allan et al., 1998) and previous experiments in text segmentation (Reynar, 1998, 71-73).",Experiment/Discussion
+The task is to find the most prominent topic boundaries in a concatenated text.,Experiment/Discussion
+"The accuracy of a segmentation algorithm is assessed by the experiment package' described in (Choi, 2000a).",Experiment/Discussion
+A test sample is a concatenation of ten text segments.,Experiment/Discussion
+"Each segment is the first n sentences of a randomly selected document from a subset2 of the Brown corpus (Marcus et al., 1993).",Experiment/Discussion
+Table 1 presents the corpus statistics.,Experiment/Discussion
+"A sample is characterised by the range of n. Ti,j is a set of samples with i <n <j.",Experiment/Discussion
+T is the union of the other four test sets.,Experiment/Discussion
+"Segmentation accuracy is measured by the metric proposed in (Beeferman et al., 1999).",Experiment/Discussion
+"Let Tr and Tp be the reference segmentation and that proposed by an automatic procedure. k is the average segment length in T. p(samelTr, k) and p(diffiTr, k) refer to the likelihood of sentence sz and sz±k belonging to the same and different topic segment(s) in Tk p(samelTr, Tp, diff, k) is the probability of a miss, i.e. sz and sz±k are about different topics in Tk but they belong to the same topic segment in T. p(difflTr, Tp, same, k) is the probability of false alarm, i.e. two sentences are about the same topic in Tr but they belong to different segments in T. Equation 5 combines these four measures to calculate p(errorlTr, Tp, k), the probability of segmentation errors.",Experiment/Discussion
+"The error rate of an algorithm is computed as the average of p(errorlTr, Tp, k) for a test set.",Experiment/Discussion
+"A low error rate implies high segmentation accuracy. p(diffl , Tp , same, k)p(samelTr, k) This test procedure is not perfect.",Experiment/Discussion
+"First, assessing the accuracy of an algorithm in an artificial task is inferior to a test that uses human segmented text.",Experiment/Discussion
+"However, this approach does allow us to conduct a large-scale comparative study on similarity metrics which focuses on text similarity rather than topic boundary detection.",Experiment/Discussion
+"Second, the error metric favours texts with short topic segments.",Experiment/Discussion
+Segmentation errors within a segment which is smaller than k are not always detected correctly.,Experiment/Discussion
+"Thus, an algorithm is assessed using texts with different ranges of segment length.",Experiment/Discussion
+"Although the metric is not perfect, it is significantly more accurate than the popular precision/recall metric which ignores near misses.",Experiment/Discussion
+"Furthermore, the method is sufficiently accurate for this comparative study.",Experiment/Discussion
+Five degenerate algorithms define the baseline for the experiments.,Experiment/Discussion
+Be partitions a document into e = 10 segments of equal length.,Experiment/Discussion
+"Br, does not propose any boundaries.",Experiment/Discussion
+"B,„ assumes all potential boundaries are topic boundaries.",Experiment/Discussion
+Bb randomly selects b = 10 boundaries.,Experiment/Discussion
+B? randomly selects any number of boundaries as real boundaries.,Experiment/Discussion
+"Details about Bb and B? are described in (Choi, 2000a).",Experiment/Discussion
+Table 2 shows Be performed best with an average error rate of 42%.,Experiment/Discussion
+This is the baseline for algorithms that find the e most prominent topic boundaries.,Experiment/Discussion
+"B? serves as the baseline for methods that determines the optimal segmentation, i.e. the number of topic segments in a text.",Experiment/Discussion
+"The aim is to relate stemming, ranking and the termination procedure in C99 with segmentation accuracy.",Experiment/Discussion
+"The algorithm used in this experiment is identical to that presented in (Choi, 2000a) except tokens such as -- and - are recognised as punctuation marks and removed during pre-processing.",Experiment/Discussion
+Test results show this modification reduces error rate by 1%.,Experiment/Discussion
+"An analysis of the original algorithm reveals that non-word tokens introduce errors since they are converted into a null string by the stemming algorithm (Porter, 1980).",Experiment/Discussion
+This implementation of C99 has three parameters.,Experiment/Discussion
++r implies ranking is applied to the similarity matrix prior to divisive clustering.,Experiment/Discussion
++s shows the stemming algorithm is used in preprocessing.,Experiment/Discussion
+"+b means the algorithm finds the 10 most prominent topic boundaries, i.e. the automatic termination procedure is inactive.",Experiment/Discussion
+Test results (table 3) show ranking is crucial to C99.,Experiment/Discussion
+"There is a 10% difference between row 3 and 6 for T. This confirms the cosine metric is inaccurate for short text segments but the order between values, or rank, is significant.",Experiment/Discussion
+Future experiments will establish the relationship between segment size and accuracy.,Experiment/Discussion
+Stemming is generally believed to improve segmentation accuracy.,Experiment/Discussion
+This is confirmed by the experiment results.,Experiment/Discussion
+"However, we discovered that the process can introduce errors when segmenting short segments.",Experiment/Discussion
+"There is a 0.7% difference between row 1 and 3 for T3,5.",Experiment/Discussion
+"Finally, the termination strategy in C99 is not effective for short topic segments.",Experiment/Discussion
+"There is a 6.3% improvement between row 1 and 2 for T3,5.",Experiment/Discussion
+"However, its performance for larger segments is exceptional (0.6% difference between row 1 and 2 for T).",Experiment/Discussion
+"The aim is to establish the relationship between LSA dimensionality, training data and accuracy.",Experiment/Discussion
+"Our new algorithm, CWM, was used in this experiment.",Experiment/Discussion
+The method is identical to C99 except the stemming algorithm has been disabled and LSA is used in the formulation of the similarity matrix.,Experiment/Discussion
+Ten LSA spaces were examined.,Experiment/Discussion
+"Each space is characterised by the training data and its dimensionality. s and p imply the LSA space was trained on sentences and paragraphs, respectively.",Experiment/Discussion
+"The values {100, 200, 300, 400, 500} represent the dimensionality of the trained space.",Experiment/Discussion
+"For instance, &quot;p, 400&quot; is a 400-dimensional space that was trained on paragraphs.",Experiment/Discussion
+"Like C99, +r implies ranking is applied to the similarity matrix.",Experiment/Discussion
++b means CWM finds the ten most prominent boundaries.,Experiment/Discussion
+Let ji be the column average.,Experiment/Discussion
+Test results (table 4) show ranked LSA (column 4) has the lowest error rate.,Experiment/Discussion
+The raw values (column 1 and 3) performed well.,Experiment/Discussion
+The 1% difference in accuracy implies the termination strategy works well with LSA.,Experiment/Discussion
+"However, the same method is not applicable to the ranked LSA values (see column 2).",Experiment/Discussion
+The results in column 3 highlights the relationship between LSA space and error rate.,Experiment/Discussion
+"On average, a LSA space that was trained on paragraphs ([2(p) = 11.8%) out-performed one that was trained on sentences (p(s) = 15.6%).",Experiment/Discussion
+This shows similarity is well modelled by word co-occurrence in paragraphs.,Experiment/Discussion
+"It also suggests that although sentences are good for identifying words about the same topic, paragraphs are better for finding dissimilar words.",Experiment/Discussion
+"Intuitively speaking, large feature vectors are expected to generate more accurate similarity values.",Experiment/Discussion
+"Thus, segmentation accuracy should improve with dimensionality.",Experiment/Discussion
+The figures in column 3 show high dimensionality increases error rate.,Experiment/Discussion
+"However, the figures in column 4 suggest the contrary.",Experiment/Discussion
+This implies high dimensionality improves the ranking of LSA values but is detrimental to value accuracy.,Experiment/Discussion
+Table 5 presents a summary of experiment results.,Experiment/Discussion
+"C99 and C99b are the algorithms described in (Choi, 2000a).",Experiment/Discussion
+"C99b,, is the same as C99b except ranking has been disabled.",Experiment/Discussion
+The 11% difference between the two shows ranking is crucial to the cosine metric.,Experiment/Discussion
+"U00 and U00b are the word frequency methods proposed in (Utiyama and Isahara, 2001).",Experiment/Discussion
+CWM is the new method described in this paper.,Experiment/Discussion
+All versions of the algorithm use a LSA space that was trained on paragraphs.,Experiment/Discussion
+CWM1 is identical to C99b except the stemming algorithm has been disabled and it uses A500 to measure similarity.,Experiment/Discussion
+The results show it is more accurate than previous methods.,Experiment/Discussion
+CWM2 is the same algorithm but ranking has been disabled.,Experiment/Discussion
+The 5% difference between this and CWM1 implies ranking does improve accuracy.,Experiment/Discussion
+"Finally, CWM3 is a variant of CWM2 which uses A100 to measure similarity.",Experiment/Discussion
+"The 11% difference between this and C99b,_, shows LSA is more accurate than the cosine metric.",Experiment/Discussion
+"The significance of our results has been confirmed by both t-test and KS-test (Press et al., 1992).",Experiment/Discussion
+A series of experiments were conducted to establish the relationship between linguistic processes and segmentation accuracy.,Results/Conclusion
+"C99 (Choi, 2000a) was used as the test bench.",Results/Conclusion
+"In the first set of experiments, its stemming algorithm, ranking procedure and automatic termination method were systematically disabled to determine the contribution of each process to overall performance.",Results/Conclusion
+"We discovered that, first, stemming generally improves accuracy unless the topic segments are short (3 to 5 sentences).",Results/Conclusion
+"Second, ranking plays a vital role in C99.",Results/Conclusion
+It reduces error rate by half (22% to 10%).,Results/Conclusion
+"Finally, the termination procedure in C99 is effective (0.6% difference).",Results/Conclusion
+The method works particularly well on long topic segments (> 6 sentences).,Results/Conclusion
+The second set of experiments focused on LSA as a similarity metric.,Results/Conclusion
+The cosine metric in C99 was replaced by LSA.,Results/Conclusion
+Ten different LSA spaces were examined.,Results/Conclusion
+We discovered that LSA is twice as accurate as the cosine metric.,Results/Conclusion
+The results also showed vocabulary difference between paragraphs is a good feature for training a similarity metric.,Results/Conclusion
+"Further investigation into the relationship between ranking, LSA dimensionality and error rate revealed that LSA values become less accurate as more dimensions are incorporated into the feature vectors.",Results/Conclusion
+This implies the training data is noisy.,Results/Conclusion
+"However, with ranking, error rate decreases.",Results/Conclusion
+This shows the order of LSA values becomes more accurate when more features are used.,Results/Conclusion
+Future work will focus on document specific LSA and the termination strategy of the new algorithm.,Results/Conclusion
+Test results have shown the termination procedure in C99 works well on LSA similarity values but not on the ranked values.,Results/Conclusion
+We suspect the threshold selection method has to be modified.,Results/Conclusion
+"In terms of clustering, dynamic programming approaches (Ponte and Croft, 1997; Utiyama and Isahara, 2001, for example) will be examined.",Results/Conclusion
+"Finally, a LSA procedure for computing document specific similarity values will be evaluated.",Results/Conclusion
+Thanks are due to the anonymous reviewers for their invaluable comments; Masao Utiyama and Hitoshi Isahara for providing the U00 algorithm and detailed results; Marti Hearst for guidance on the evaluation problem; Mary McGee Wood for support and HCRC for making this work possible.,Results/Conclusion

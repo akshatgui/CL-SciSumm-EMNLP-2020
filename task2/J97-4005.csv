@@ -1,400 +1,400 @@
 col1,col2
-"Probabilistic analogues of regular and context-free grammars are well known in computational linguistics, and currently the subject of intensive research.",{}
-"To date, however, no satisfactory probabilistic analogue of attribute-value grammars has been proposed: previous attempts have failed to define an adequate parameter-estimation algorithm.",{}
-"In the present paper, I define stochastic attribute-value grammars and give an algorithm for computing the maximum-likelihood estimate of their parameters.",{}
-"The estimation algorithm is adapted from Della Pietra, Della Pietra, and Lafferty (1995).",{}
-"To estimate model parameters, it is necessary to compute the expectations of certain functions under random fields.",{}
-"In the application discussed by Della Pietra, Della Pietra, and Lafferty (representing English orthographic constraints), Gibbs sampling can be used to estimate the needed expectations.",{}
-"The fact that attribute-value grammars generate constrained languages makes Gibbs sampling inapplicable, but I show that sampling can be done using the more general Metropolis-Hastings algorithm.",{}
-"Probabilistic analogues of regular and context-free grammars are well known in computational linguistics, and currently the subject of intensive research.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"To date, however, no satisfactory probabilistic analogue of attribute-value grammars has been proposed: previous attempts have failed to define an adequate parameter-estimation algorithm.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"In the present paper, I define stochastic attribute-value grammars and give an algorithm for computing the maximum-likelihood estimate of their parameters.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"The estimation algorithm is adapted from Della Pietra, Della Pietra, and Lafferty (1995).","{'title': 'AT&T Laboratories', 'number': '1'}"
-"To estimate model parameters, it is necessary to compute the expectations of certain functions under random fields.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"In the application discussed by Della Pietra, Della Pietra, and Lafferty (representing English orthographic constraints), Gibbs sampling can be used to estimate the needed expectations.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"The fact that attribute-value grammars generate constrained languages makes Gibbs sampling inapplicable, but I show that sampling can be done using the more general Metropolis-Hastings algorithm.","{'title': 'AT&T Laboratories', 'number': '1'}"
-"Stochastic versions of regular grammars and context-free grammars have received a great deal of attention in computational linguistics for the last several years, and basic techniques of stochastic parsing and parameter estimation have been known for decades.","{'title': '1.', 'number': '2'}"
-"However, regular and context-free grammars are widely deemed linguistically inadequate; standard grammars in computational linguistics are attribute-value (AV) grammars of some variety.","{'title': '1.', 'number': '2'}"
-"Before the advent of statistical methods, regular and context-free grammars were considered too inexpressive for serious consideration, and even now the reliance on stochastic versions of the less-expressive grammars is often seen as an expedient necessitated by the lack of an adequate stochastic version of attribute-value grammars.","{'title': '1.', 'number': '2'}"
-Proposals have been made for extending stochastic models developed for the regular and context-free cases to grammars with constraints.',"{'title': '1.', 'number': '2'}"
-Brew (1995) sketches a probabilistic version of Head-Driven Phrase Structure Grammar (HPSG).,"{'title': '1.', 'number': '2'}"
-"He proposes a stochastic process for generating attribute-value structures, that is, directed acyclic graphs (dags).","{'title': '1.', 'number': '2'}"
-A dag is generated starting from a single node labeled with the (unique) most general type.,"{'title': '1.', 'number': '2'}"
-"Each type S has a set of maximal subtypes T1, .","{'title': '1.', 'number': '2'}"
-.,"{'title': '1.', 'number': '2'}"
-", Tn.","{'title': '1.', 'number': '2'}"
-"To expand a node labeled S, one chooses a maximal subtype T stochastically.","{'title': '1.', 'number': '2'}"
-"One then considers equating the current node with other nodes of type T, making a stochastic yes/no decision for each.","{'title': '1.', 'number': '2'}"
-Equating two nodes creates a re-entrancy.,"{'title': '1.', 'number': '2'}"
-"If the current node is equated with no other node, one proceeds to expand it.","{'title': '1.', 'number': '2'}"
-"Each maximal type introduces types U1,...,Un, corresponding to values of attributes; one creates a child node for each introduced type, and then expands each child in turn.","{'title': '1.', 'number': '2'}"
-A limitation of this approach is that it permits one to specify only the average rate of re-entrancies; it does not permit one to specify more complex context dependencies.,"{'title': '1.', 'number': '2'}"
-Eisele (1994) takes a logic-programming approach to constraint grammars.,"{'title': '1.', 'number': '2'}"
-He assigns probabilities to proof trees by attaching parameters to logic program clauses.,"{'title': '1.', 'number': '2'}"
-He presents the following logic program as an example: The probability of a proof tree is defined to be proportional to the product of the probabilities of clauses used in the proof.,"{'title': '1.', 'number': '2'}"
-Normalization is necessary because some derivations lead to invalid proof trees.,"{'title': '1.', 'number': '2'}"
-"For example, the derivation is invalid because of the illegal assignment b = c. Both Brew and Eisele associate weights with analogues of rewrite rules.","{'title': '1.', 'number': '2'}"
-"In Brew's case, we can view type expansion as a stochastic choice from a finite set of rules of form X where X is the type to expand and each 6 is a sequence of introduced child types.","{'title': '1.', 'number': '2'}"
-"A re-entrancy decision is a stochastic choice between two rules, X —> yes and X no, where X is the type of the node being considered for re-entrancy.","{'title': '1.', 'number': '2'}"
-"In Eisele's case, expanding a goal term can be viewed as a stochastic choice among a finite set of rules X —> where X is the predicate of the goal term and each 6 is a program clause whose head has predicate X.","{'title': '1.', 'number': '2'}"
-"The parameters of the models are essentially weights on such rules, representing the probability of choosing 6 when making a choice of type X.","{'title': '1.', 'number': '2'}"
-"In these terms, Brew and Eisele propose estimating parameters as the empirical relative frequency of the corresponding rules.","{'title': '1.', 'number': '2'}"
-"That is, the weight of the rule X —> is obtained by counting the number of times X rewrites as 6 in the training corpus, divided by the total number of times X is rewritten in the training corpus.","{'title': '1.', 'number': '2'}"
-"For want of a standard term, let us call these estimates Empirical Relative Frequency (ERF) estimates.","{'title': '1.', 'number': '2'}"
-"To deal with incomplete data, both Brew and Eisele appeal to the Expectation-Maximization (EM) algorithm, applied however to ERF rather than maximum-likelihood estimates.","{'title': '1.', 'number': '2'}"
-"Under certain independence conditions, ERF estimates are maximum-likelihood estimates.","{'title': '1.', 'number': '2'}"
-"Unfortunately, these conditions are violated when there are context dependencies of the sort found in attribute-value grammars, as will be shown below.","{'title': '1.', 'number': '2'}"
-"As a consequence, applying the ERF method to attribute-value grammars does not generally yield maximum-likelihood estimates.","{'title': '1.', 'number': '2'}"
-This is true whether one uses EM or not—a method that yields the &quot;wrong&quot; estimates on complete data does not improve when EM is used to extend the method to incomplete data.,"{'title': '1.', 'number': '2'}"
-Eisele identifies an important symptom that something is amiss with ERF estimates: the probability distribution over proof trees that one obtains does not agree with the frequency of proof trees in the training corpus.,"{'title': '1.', 'number': '2'}"
-Eisele recognizes that this problem arises only where there are context dependencies.,"{'title': '1.', 'number': '2'}"
-"Fortunately, solutions to the context-dependency problem have been described (and indeed are currently enjoying a surge of interest) in statistics, machine learning, and statistical pattern recognition, particularly image processing.","{'title': '1.', 'number': '2'}"
-The models of interest are known as random fields.,"{'title': '1.', 'number': '2'}"
-Random fields can be seen as a generalization of Markov chains and stochastic branching processes.,"{'title': '1.', 'number': '2'}"
-Markov chains are stochastic processes corresponding to regular grammars and random branching processes are stochastic processes corresponding to context-free grammars.,"{'title': '1.', 'number': '2'}"
-"The evolution of a Markov chain describes a line, in which each stochastic choice depends only on the state at the immediately preceding time-point.","{'title': '1.', 'number': '2'}"
-"The evolution of a random branching process describes a tree in which a finite-state process may spawn multiple child processes at the next time-step, but the number of processes and their states depend only on the state of the unique parent process at the preceding time-step.","{'title': '1.', 'number': '2'}"
-"In particular, stochastic choices are independent of other choices at the same time-step: each process evolves independently.","{'title': '1.', 'number': '2'}"
-"If we permit re-entrancies, that is, if we permit processes to re-merge, we generally introduce context-sensitivity.","{'title': '1.', 'number': '2'}"
-"In order to re-merge, processes must be &quot;in synch,&quot; which is to say, they cannot evolve in complete independence of one another.","{'title': '1.', 'number': '2'}"
-"Random fields are a particular class of multidimensional random processes, that is, processes corresponding to probability distributions over an arbitrary graph.","{'title': '1.', 'number': '2'}"
-"The theory of random fields can be traced back to Gibbs (1902); indeed, the probability distributions involved are known as Gibbs distributions.","{'title': '1.', 'number': '2'}"
-"To my knowledge, the first application of random fields to natural language was Mark et al. (1992).","{'title': '1.', 'number': '2'}"
-The problem of interest was how to combine a stochastic contextfree grammar with n-gram language models.,"{'title': '1.', 'number': '2'}"
-"In the resulting structures, the probability of choosing a particular word is constrained simultaneously by the syntactic tree in which it appears and the choices of words at the n preceding positions.","{'title': '1.', 'number': '2'}"
-"The contextsensitive constraints introduced by the n-gram model are reflected in re-entrancies in the structure of statistical dependencies, as in Figure 1.","{'title': '1.', 'number': '2'}"
-Statistical dependencies under the model of Mark et al. (1992).,"{'title': '1.', 'number': '2'}"
-"In this diagram, the choice of label on a node z with parent x and preceding word y is dependent on the label of x and y, but conditionally independent of the label on any other node.","{'title': '1.', 'number': '2'}"
-"Della Pietra, Della Pietra, and Lafferty (1995, henceforth, DD&L) also apply random fields to natural language processing.","{'title': '1.', 'number': '2'}"
-The application they consider is the induction of English orthographic constraints—inducing a grammar of possible English words.,"{'title': '1.', 'number': '2'}"
-"DD&L describe an algorithm called Improved Iterative Scaling (IIS) for selecting informative features of words to construct a random field, and for setting the parameters of the field optimally for a given set of features, to model an empirical word distribution.","{'title': '1.', 'number': '2'}"
-It is not immediately obvious how to use the ITS algorithm to equip attribute-value grammars with probabilities.,"{'title': '1.', 'number': '2'}"
-"In brief, the difficulty is that the ITS algorithm requires the computation of the expectations, under random fields, of certain functions; in general, computing these expectations involves summing over all configurations (all possible character sequences, in the orthography application), which is not possible when the configuration space is large.","{'title': '1.', 'number': '2'}"
-"Instead, DD&L use Gibbs sampling to estimate the needed expectations.","{'title': '1.', 'number': '2'}"
-Gibbs sampling is possible for the application that DD&L consider.,"{'title': '1.', 'number': '2'}"
-A prerequisite for Gibbs sampling is that the configuration space be closed under relabeling of graph nodes.,"{'title': '1.', 'number': '2'}"
-"In the orthography application, the configuration space is the set of possible English words, represented as finite linear graphs labeled with ASCII characters.","{'title': '1.', 'number': '2'}"
-"Every way of changing a label, that is, every substitution of one ASCII character for a different one, yields a possible English word.","{'title': '1.', 'number': '2'}"
-"By contrast, the set of graphs admitted by an attribute-value grammar G is highly constrained.","{'title': '1.', 'number': '2'}"
-"If one changes an arbitrary node label in a dag admitted by G, one does not necessarily obtain a new dag admitted by G. Hence, Gibbs sampling is not applicable.","{'title': '1.', 'number': '2'}"
-"However, I will show that a more general sampling method, the Metropolis-Hastings algorithm, can be used to compute the maximum-likelihood estimate of the parameters of AV grammars.","{'title': '1.', 'number': '2'}"
-Let us begin by examining stochastic context-free grammars (SCFGs) and asking why the natural extension of SCFG parameter estimation to attribute-value grammars fails.,"{'title': '2.', 'number': '3'}"
-"A point of terminology: I will use the term grammar to refer to an unweighted grammar, be it a context-free grammar or attribute-value grammar.","{'title': '2.', 'number': '3'}"
-A grammar equipped with weights (and other periphenalia as necessary) I will refer to as a model.,"{'title': '2.', 'number': '3'}"
-"Occasionally I will also use model to refer to the weights themselves, or the probability distribution they define.","{'title': '2.', 'number': '3'}"
-Throughout we will use the following stochastic context-free grammar for illustrative purposes.,"{'title': '2.', 'number': '3'}"
-"Let us call the underlying grammar G1 and the grammar equipped with weights as shown, Mi.","{'title': '2.', 'number': '3'}"
-: The probability of a given tree is computed as the product of probabilities of rules used in it.,"{'title': '2.', 'number': '3'}"
-For example: Let x be the tree in Figure 2 and let qi be the probability distribution over trees defined by model M1.,"{'title': '2.', 'number': '3'}"
-"Then: In parsing, we use the probability distribution qi (x) defined by model M1 to disambiguate: the grammar assigns some set of trees {xi, , x,,} to a sentence a, and we choose that tree xi that has greatest probability qi (x,).","{'title': '2.', 'number': '3'}"
-The issue of efficiently computing the most-probable parse for a given sentence has been thoroughly addressed in the literature.,"{'title': '2.', 'number': '3'}"
-"The standard parsing techniques can be readily adapted to the random-field models to be discussed below, so I simply refer the reader to the literature.","{'title': '2.', 'number': '3'}"
-"Instead, I concentrate on parameter estimation, which, for attribute-value grammars, cannot be accomplished by standard techniques.","{'title': '2.', 'number': '3'}"
-By parameter estimation we mean determining values for the weights 0.,"{'title': '2.', 'number': '3'}"
-"In order for a stochastic grammar to be useful, we must be able to compute the correct weights, where by correct weights we mean the weights that best account for a training corpus.","{'title': '2.', 'number': '3'}"
-The degree to which a given set of weights accounts for a training corpus is measured by the similarity between the distribution q(x) determined by the weights /3 and the distribution of trees x in the training corpus.,"{'title': '2.', 'number': '3'}"
-The distribution determined by the training corpus is known as the empirical distribution.,"{'title': '2.', 'number': '3'}"
-"For example, suppose we have a training corpus containing twelve trees of the four types from L(G1) shown in Figure 3, where c(x) is the count of how often the In comparing a distribution q to the empirical distribution /3, we shall actually measure dissimilarity rather than similarity.","{'title': '2.', 'number': '3'}"
-Our measure for dissimilarity of distributions The divergence between /5 and q at point x is the log of the ratio of p(x) to q(x).,"{'title': '2.', 'number': '3'}"
-"The overall divergence between p and q is the average divergence, where the averaging is over tree (tokens) in the corpus; i.e., point divergences 1n03(x)/q(x)) are weighted by /5(x) and summed.","{'title': '2.', 'number': '3'}"
-"For example, let qi be, as before, the distribution determined by model M1.","{'title': '2.', 'number': '3'}"
-"Table 1 shows qi, 17, the ratio qi (x)/13(x), and the weighted point divergence /3(x) ln(f 9(x) /q1(x)).","{'title': '2.', 'number': '3'}"
-The sum of the fourth column is the KL divergence D(Pliqi) between /3 and qi.,"{'title': '2.', 'number': '3'}"
-The third column contains qi (x)/(x) rather than 17(x)/qi(x) so that one can see at a glance whether qi (x) is too large (> 1) or too small (< 1).,"{'title': '2.', 'number': '3'}"
-The total divergence D(7'311(11) = 0.32.,"{'title': '2.', 'number': '3'}"
-One set of weights is better than another if its divergence from the empirical distribution is less.,"{'title': '2.', 'number': '3'}"
-"For example, let us consider a different set of weights for grammar G1.","{'title': '2.', 'number': '3'}"
-"Let M' be G1 with weights (1/2, 1/2, 1/2, 1/2, 1/2, 1/2), and let q' be the probability distribution determined by M'.","{'title': '2.', 'number': '3'}"
-Then the computation of the KL divergence is as in Table 2.,"{'title': '2.', 'number': '3'}"
-"The fit for x2 improves, but that is more than offset by a poorer fit for x1.","{'title': '2.', 'number': '3'}"
-"The distribution qi is a better distribution than q', in the sense that qi is more similar (less dissimilar) to the empirical distribution than q' is.","{'title': '2.', 'number': '3'}"
-One reason for adopting minimal KL divergence as a measure of goodness is that minimizing KL divergence maximizes likelihood.,"{'title': '2.', 'number': '3'}"
-"The likelihood of distribution q is the probability of the training corpus according to q: The expression on the right-hand side is —1/N times the cross entropy of q with respect top, hence maximizing log likelihood is equivalent to minimizing cross entropy.","{'title': '2.', 'number': '3'}"
-"Finally, D(1q) is equal to the cross entropy of q less the entropy of 15, and the entropy of /3 is constant with respect to q; hence minimizing cross entropy (maximizing likelihood) is equivalent to minimizing divergence.","{'title': '2.', 'number': '3'}"
-"For stochastic context-free grammars, it can be shown that the ERF method yields the best model for a given training corpus.","{'title': '2.', 'number': '3'}"
-"First, let us introduce some terminology and notation.","{'title': '2.', 'number': '3'}"
-With each rule i in a stochastic context-free grammar is associated a weight A and a function f1 (x) that returns the number of times rule i is used in the derivation of tree x.,"{'title': '2.', 'number': '3'}"
-"For example, consider the tree in Figure 2, repeated here in Figure 4 for convenience: Rule 1 is used once and rule 3 is used twice; accordingly fi (x) = 1, We use the notation p[f] to represent the expectation of f under probability distribution p; that is, p[f] = Ex p(x)f(x).","{'title': '2.', 'number': '3'}"
-The ERF method instructs us to choose the weight for rule i proportional to its empirical expectation fo[f].,"{'title': '2.', 'number': '3'}"
-"Algorithmically, we compute the expectation of each rule's frequency, and normalize among rules with the same left-hand side.","{'title': '2.', 'number': '3'}"
-"To illustrate, let us consider corpus (2.1) again.","{'title': '2.', 'number': '3'}"
-"The expectation of each rule frequency fi is a sum of terms f9(x)f,(x).","{'title': '2.', 'number': '3'}"
-"These terms are shown for each tree, in Table 3.","{'title': '2.', 'number': '3'}"
-"For example, in tree xl, rule 1 is used once and rule 3 is used twice.","{'title': '2.', 'number': '3'}"
-"The empirical probability of x1 is 1 / 3, so X1's contribution to f4fd is 1/3 • 1, and its contribution to /3[f3] is 1/3 • 2.","{'title': '2.', 'number': '3'}"
-The weight is obtained from p[f] by normalizing among rules with the same left-hand side.,"{'title': '2.', 'number': '3'}"
-"For example, the expected rule frequencies 13[fd and [f2] of rules with left-hand side S already sum to 1, so they are adopted without change as /31 and 02.","{'title': '2.', 'number': '3'}"
-"On the other hand, the expected rule frequencies 13 [f5] and p[f6] for rules with left-hand side B sum to 1/2, not 1, so they are doubled to yield weights Os and /36.","{'title': '2.', 'number': '3'}"
-It should be observed that the resulting weights are precisely the weights of model A41.,"{'title': '2.', 'number': '3'}"
-"It can be proven that the ERF weights are the best weights for a given contextfree grammar, in the sense that they define the distribution that is most similar to the empirical distribution.","{'title': '2.', 'number': '3'}"
-"That is, if /3 are the ERF weights (for a given grammar), defining distribution q, and 0' defining q' is any set of weights such that q q', then D(13iiq) < D(13iiqi)One might expect the best weights to yield D(1311q) = 0, but such is not the case.","{'title': '2.', 'number': '3'}"
-"We have just seen, for example, that the best weights for grammar G1 yield distribution (ID yet D(311q1) = 0.32 > 0.","{'title': '2.', 'number': '3'}"
-"A closer inspection of the divergence calculation in Table 1 reveals that qi is sometimes less than 19, but never greater than /5.","{'title': '2.', 'number': '3'}"
-Could we improve the fit by increasing qi?,"{'title': '2.', 'number': '3'}"
-"For that matter, how can it be that qi is never greater than /5?","{'title': '2.', 'number': '3'}"
-"As probability distributions, qi and /3 should have the same total mass, namely, one.","{'title': '2.', 'number': '3'}"
-Where is the missing mass for qi?,"{'title': '2.', 'number': '3'}"
-"The answer is of course that qi and /5 are probability distributions over L(Gi), but not all of L(G1) appears in the corpus.","{'title': '2.', 'number': '3'}"
-"Two trees are missing, and they account for the missing mass.","{'title': '2.', 'number': '3'}"
-These two trees are given in Figure 5.,"{'title': '2.', 'number': '3'}"
-"Each of these trees has The trees from L(G1) that are missing in the training corpus. probability 0 according to /5 (hence they can be ignored in the divergence calculation), but probability 1/9 according to qi.","{'title': '2.', 'number': '3'}"
-"Intuitively, the problem is this: The distribution qi assigns too little weight to trees x1 and x2, and too much weight to the &quot;missing&quot; trees; call them x5 and x6.","{'title': '2.', 'number': '3'}"
-Yet exactly the same rules are used in x5 and x6 as are used in x1 and x2.,"{'title': '2.', 'number': '3'}"
-"Hence there is no way to increase the weight for trees x1 and x2, improving their fit to /5, without simultaneously increasing the weight for x5 and x6, making their fit to 13 worse.","{'title': '2.', 'number': '3'}"
-The distribution qi is the best compromise possible.,"{'title': '2.', 'number': '3'}"
-"To say it another way, our assumption that the corpus was generated by a contextfree grammar means that any context dependencies in the corpus must be accidental, the result of sampling noise.","{'title': '2.', 'number': '3'}"
-"There is indeed a dependency in the corpus in Figure 3: in the trees where there are two A's, the A's always rewrite the same way.","{'title': '2.', 'number': '3'}"
-"If the corpus was generated by a stochastic context-free grammar, then this dependency is accidental.","{'title': '2.', 'number': '3'}"
-This does not mean that the context-free assumption is wrong.,"{'title': '2.', 'number': '3'}"
-"If we generate twelve trees at random from qi, it would not be too surprising if we got the corpus in Figure 3.","{'title': '2.', 'number': '3'}"
-"More extremely, if we generate a random corpus of size 1 from qi, it is quite impossible for the resulting empirical distribution to match the distribution qi.","{'title': '2.', 'number': '3'}"
-"But as the corpus size increases, the fit between 15 and qi becomes ever better.","{'title': '2.', 'number': '3'}"
-But what if the dependency in corpus (3) is not accidental?,"{'title': '3.', 'number': '4'}"
-What if we wish to adopt a grammar that imposes the constraint that both A's rewrite the same way?,"{'title': '3.', 'number': '4'}"
-We can impose such a constraint by means of an attribute-value grammar.,"{'title': '3.', 'number': '4'}"
-We may formalize an attribute-value grammar as a context-free grammar with attribute labels and path equations.,"{'title': '3.', 'number': '4'}"
-An example is the following grammar; let us call it G2: Generating a dag.,"{'title': '3.', 'number': '4'}"
-"The grammar used is G2. node labeled with the start category of G2, namely, S. A node x is expanded by choosing a rule that rewrites the category of x.","{'title': '3.', 'number': '4'}"
-"In this case, we choose rule 1 to expand the root node.","{'title': '3.', 'number': '4'}"
-"Rule 1 instructs us to create two children, both labeled A.","{'title': '3.', 'number': '4'}"
-The edge to the first child is labeled / and the edge to the second child is labeled 2.,"{'title': '3.', 'number': '4'}"
-The constraint (1 1) = (2 1) indicates that the / child of the / child of x is identical to the 1 child of the 2 child of x.,"{'title': '3.', 'number': '4'}"
-"We create an unlabeled node to represent this grandchild of x and direct appropriately labeled edges from the children, yielding (b).","{'title': '3.', 'number': '4'}"
-We proceed to expand the newly introduced nodes.,"{'title': '3.', 'number': '4'}"
-We choose rule 3 to expand the first A node.,"{'title': '3.', 'number': '4'}"
-"In this case, a child with edge labeled I already exists, so we use it rather than creating a new one.","{'title': '3.', 'number': '4'}"
-"Rule 3 instructs us to label this child a, yielding (c).","{'title': '3.', 'number': '4'}"
-Now we expand the second A node.,"{'title': '3.', 'number': '4'}"
-Again we choose rule 3.,"{'title': '3.', 'number': '4'}"
-"We are instructed to label the 1 child a, but it already has that label, so we do not need to do anything.","{'title': '3.', 'number': '4'}"
-"Finally, in (d), the only remaining node is the bottom-most node, labeled a.","{'title': '3.', 'number': '4'}"
-"Since its label is a terminal category, it does not need to be expanded, and we are done.","{'title': '3.', 'number': '4'}"
-Let us back up to (c) again.,"{'title': '3.', 'number': '4'}"
-Here we were free to choose rule 4 instead of rule 3 to expand the right-hand A node.,"{'title': '3.', 'number': '4'}"
-"Rule 4 instructs us to label the 1 child b, but we cannot, inasmuch as it is already labeled a.","{'title': '3.', 'number': '4'}"
-"The derivation fails, and no dag is generated.","{'title': '3.', 'number': '4'}"
-"The language L(G2) is the set of dags produced by successful derivations, as shown in Figure 7.","{'title': '3.', 'number': '4'}"
-"(The edges of the dags should actually be labeled with l's and 2's, but I The language generated by G2. have suppressed the edge labels for the sake of perspicuity.)","{'title': '3.', 'number': '4'}"
-Now we face the question of how to attach probabilities to grammar G2.,"{'title': '3.', 'number': '4'}"
-The natural extension of the method we used for context-free grammars is the following: Associate a weight with each of the six rules of grammar G2.,"{'title': '3.', 'number': '4'}"
-"For example, let M2 be the model consisting of G2 plus weights (i3,.","{'title': '3.', 'number': '4'}"
-".436) = (1 /2, 1 /2, 2/3, 1 /3, 1 /2, 1 /2).","{'title': '3.', 'number': '4'}"
-Let 02(x) be the weight that M2 assigns to dag x; it is defined to be the product of the weights of the rules used to generate x.,"{'title': '3.', 'number': '4'}"
-"For example, the weight 02 (xi) assigned to tree xi of Rule applications in a dag generated by G2.","{'title': '3.', 'number': '4'}"
-The weight of the dag is the product of the weights of rule applications. hence 02(xi) = 010303 = 1/2 • 2/3 • 2/3 = 2/9.,"{'title': '3.', 'number': '4'}"
-"Observe that 02(xi) = Ov3i, which is to say, 13(1(x1)4(x1).","{'title': '3.', 'number': '4'}"
-"Moreover, since /3° = 1, it does not hurt to include additional factors /ex') for those i where f, (xi) = 0.","{'title': '3.', 'number': '4'}"
-"That is, we can define the dag weight 0 corresponding to rule weights =- On) generally as:","{'title': '3.', 'number': '4'}"
-i=1 The next question is how to estimate weights.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-Let us consider what happens when we use the ERF method.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"Let us assume a corpus distribution for the dags in Figure 7 analogous to the distribution in Figure 3: Using the ERF method, we estimate rule weights as in Table 4.","{'title': 'o(x)= Hex)', 'number': '5'}"
-This table is identical to the one given earlier in the context-free case.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"We arrive at the same weights M2 we considered above, defining dag weights ;.2(x).","{'title': 'o(x)= Hex)', 'number': '5'}"
-But at this point a problem arises: 02 is not a probability distribution.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"Unlike in the context-free case, the four dags in Figure 7 constitute the entirety of L(G2).","{'title': 'o(x)= Hex)', 'number': '5'}"
-"This time, there are no missing dags to account for the missing probability mass.","{'title': 'o(x)= Hex)', 'number': '5'}"
-There is an obvious &quot;fix&quot; for this problem: we can simply normalize (b2.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"We might define the distribution q for an AV grammar with weight function 0 as: In particular, for 02, we have Z = 2/9 + 1/18 + 1/4 + 1/4 = 7/9.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"Dividing 02 by 7/9 yields the ERF distribution: On the face of it, then, we can transplant the methods we used in the context-free case to the AV case and nothing goes wrong.","{'title': 'o(x)= Hex)', 'number': '5'}"
-The only problem that arises (.15 not summing to one) has an obvious fix (normalization).,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"However, something has actually gone very wrong.","{'title': 'o(x)= Hex)', 'number': '5'}"
-The ERF method yields the best weights only under certain conditions that we inadvertently violated by changing L(G) and re-apportioning probability via normalization.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"In point of fact, we can easily see that the ERF weights in Table 4 are not the best weights for our example grammar.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"Consider the alternative model MK given in Figure 9, defining probability distribution 11*.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"An alternative model, M*.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"These weights are proper, in the sense that weights for rules with the same left-hand side sum to one.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"The reader can verify that 0* sums to Z = 3+3`n and that q* is: In short, in the AV case, the ERF weights do not yield the best weights.","{'title': 'o(x)= Hex)', 'number': '5'}"
-This means that the ERF method does not converge to the correct weights as the corpus size increases.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-"If there are genuine dependencies in the grammar, the ERF method converges systematically to the wrong weights.","{'title': 'o(x)= Hex)', 'number': '5'}"
-"Fortunately, there are methods that do converge to the right weights.","{'title': 'o(x)= Hex)', 'number': '5'}"
-These are methods that have been developed for random fields.,"{'title': 'o(x)= Hex)', 'number': '5'}"
-A random field defines a probability distribution over a set of labeled graphs SZ called configurations.,"{'title': '4.', 'number': '6'}"
-"In our case, the configurations are the dags generated by the grammar, i.e., C2 = L(G).","{'title': '4.', 'number': '6'}"
-The weight assigned to a configuration is the product of the weights assigned to selected features of the configuration.,"{'title': '4.', 'number': '6'}"
-"We use the notation: where ,(3, is the weight for feature i and J(.) is its frequency function, that is, f, (x) is the number of times that feature i occurs in configuration x.","{'title': '4.', 'number': '6'}"
-"(For most purposes, a feature can be identified with its frequency function; I will not always make a careful distinction between them.)","{'title': '4.', 'number': '6'}"
-"I use the term feature here as it is used in the machine learning and statistical pattern recognition literature, not as in the constraint grammar literature, where feature is synonymous with attribute.","{'title': '4.', 'number': '6'}"
-"In my usage, dag edges are labeled with attributes, not features.","{'title': '4.', 'number': '6'}"
-Features are rather like geographic features of dags: a feature is some larger or smaller piece of structure that occurs—possibly at more than one place—in a dag.,"{'title': '4.', 'number': '6'}"
-"The probability of a configuration (that is, a dag) is proportional to its weight, and is obtained by normalizing the weight distribution.","{'title': '4.', 'number': '6'}"
-"If we identify the features of a configuration with local trees—equivalently, with applications of rewrite rules—the random field model is almost identical to the model we considered in the previous section.","{'title': '4.', 'number': '6'}"
-There are two important differences.,"{'title': '4.', 'number': '6'}"
-"First, we no longer require weights to sum to one for rules with the same left-hand side.","{'title': '4.', 'number': '6'}"
-"Second, the model does not require features to be identified with rewrite rules.","{'title': '4.', 'number': '6'}"
-"We use the grammar to define the set of configurations S2 = L(G), but in defining a probability distribution over L(G), we can choose features of dags however we wish.","{'title': '4.', 'number': '6'}"
-Let us consider an example.,"{'title': '4.', 'number': '6'}"
-"Let us continue to assume grammar G2 generating the language in Figure 7, and let us continue to assume the empirical distribution in (1).","{'title': '4.', 'number': '6'}"
-"But now rather than taking rule applications to be features, let us adopt the two features in Figure 10.","{'title': '4.', 'number': '6'}"
-"For purpose of illustration, take feature 1 to have weight )(31 = v--2- and feature 2 to have weight 02 = 3/2.","{'title': '4.', 'number': '6'}"
-"The functions fi and f2 represent the frequencies of features 1 and 2, respectively, as in Figure 11.","{'title': '4.', 'number': '6'}"
-"We are able to exactly The frequencies (number of instances) of features 1 and 2 in dags generated by G2, and the computation of dag weights 0 and dag probabilities q. recreate the empirical distribution using fewer features than before.","{'title': '4.', 'number': '6'}"
-"Intuitively, we need only use as many features as are necessary to distinguish among trees that have different empirical probabilities.","{'title': '4.', 'number': '6'}"
-"This added flexibility is welcome, but it does make parameter estimation more involved.","{'title': '4.', 'number': '6'}"
-"Now we must not only choose values for weights, we must also choose the features that weights are to be associated with.","{'title': '4.', 'number': '6'}"
-"We would like to do both in a way that permits us to find the best model, in the sense of the model that minimizes the Kullback-Leibler distance with respect to the empirical distribution.","{'title': '4.', 'number': '6'}"
-"The ITS algorithm (Della Pietra, Della Pietra, and Lafferty 1995) provides a method to do precisely that.","{'title': '4.', 'number': '6'}"
-"In outline, the ITS algorithm is as follows: For the sake of concreteness, let us take features to be labeled subdags.","{'title': '5.', 'number': '7'}"
-"In step 2 of the algorithm we do not consider every conceivable labeled subdag, but only the atomic (i.e., single-node) subdags and those complex subdags that can be constructed by combining features already in the field or by combining a feature in the field with some atomic feature.","{'title': '5.', 'number': '7'}"
-We also limit our attention to features that actually occur in the training corpus.,"{'title': '5.', 'number': '7'}"
-"In our running example, the atomic features are as shown in Figure 12.","{'title': '5.', 'number': '7'}"
-"Features can be combined by adding connecting arcs, as shown in Figure 13, for example.","{'title': '5.', 'number': '7'}"
-Combining features to create more complex features.,"{'title': '5.', 'number': '7'}"
-Field induction begins with the null field.,"{'title': '5.', 'number': '7'}"
-"With the corpus we have been assuming, the null field takes the form in Figure 14.","{'title': '5.', 'number': '7'}"
-"No dag x has any features, so 0(x) = n, i3( is a The null field for G2. product of zero terms, and hence has value 1.","{'title': '5.', 'number': '7'}"
-"As a result, q is the uniform distribution.","{'title': '5.', 'number': '7'}"
-The Kullback-Leibler divergence D(pllq) is 0.03.,"{'title': '5.', 'number': '7'}"
-The aim of feature selection is to choose a feature that reduces this divergence as much as possible.,"{'title': '5.', 'number': '7'}"
-The astute reader will note that there is a problem with the null field if L(G) is infinite.,"{'title': '5.', 'number': '7'}"
-"Namely, it is not possible to have a uniform probability mass distribution over an infinite set.","{'title': '5.', 'number': '7'}"
-"If each dag in an infinite set of dags is assigned a constant nonzero probability E, then the total probability is infinite, no matter how small E is.","{'title': '5.', 'number': '7'}"
-There are a couple of ways of dealing with the problem.,"{'title': '5.', 'number': '7'}"
-"The approach that DD&L adopt is to assume a consistent prior distribution p(k) over graph sizes k, and a family of random fields qk representing the conditional probability q(x I k); the probability of a tree is then p(k)q(x I k).","{'title': '5.', 'number': '7'}"
-"All the random fields have the same features and weights, differing only in their normalizing constants.","{'title': '5.', 'number': '7'}"
-I will take a somewhat different approach here.,"{'title': '5.', 'number': '7'}"
-"As sketched at the beginning of section 3, we can generate dags from an AV grammar much as proposed by Brew and Eisele.","{'title': '5.', 'number': '7'}"
-"If we ignore failed derivations, the process of dag generation is completely analogous to the process of tree generation from a stochastic CFG—indeed, in the limiting case in which none of the rules contain constraints, the grammar is a CFG.","{'title': '5.', 'number': '7'}"
-"To obtain an initial distribution, we associate a weight with each rule, the weights for rules with a common left-hand side summing to one.","{'title': '5.', 'number': '7'}"
-The probability of a dag is proportional to the product of weights of rules used to generate it.,"{'title': '5.', 'number': '7'}"
-(Renormalization is necessary because of the failed derivations.),"{'title': '5.', 'number': '7'}"
-"We estimate weights using the ERF method: we estimate the weight of a rule as the relative frequency of the rule in the training corpus, among rules with the same left-hand side.","{'title': '5.', 'number': '7'}"
-"The resulting initial distribution (the ERF distribution) is not the maximum-likelihood distribution, as we know.","{'title': '5.', 'number': '7'}"
-But it can be taken as a useful first approximation.,"{'title': '5.', 'number': '7'}"
-"Intuitively, we begin with the ERF distribution and construct a random field to take account of context dependencies that the ERF distribution fails to capture, incrementally improving the fit to the empirical distribution.","{'title': '5.', 'number': '7'}"
-"In this framework, a model consists of: (1) An AV grammar G whose purpose is to define a set of dags L(G).","{'title': '5.', 'number': '7'}"
-(2) A set of initial weights 0 attached to the rules of G. The weight of a dag is the product of weights of rules used in generating it.,"{'title': '5.', 'number': '7'}"
-Discarding failed derivations and renormalizing yields the initial distribution po (x).,"{'title': '5.', 'number': '7'}"
-"At each iteration, we select a new feature f by considering all atomic features, and all complex features that can be constructed from features already in the field.","{'title': '5.', 'number': '7'}"
-"Holding the weights constant for all old features in the field, we choose the best weight 0 for f ) (how 13 is chosen will be discussed shortly), yielding a new distribution q1.","{'title': '5.', 'number': '7'}"
-"The score for feature f is the reduction it permits in D(11 gold ), where gold is the old field.","{'title': '5.', 'number': '7'}"
-"That is, the score for f is D(Igold) — D(311q0/).","{'title': '5.', 'number': '7'}"
-We compute the score for each candidate feature and add to the field that feature with the highest score.,"{'title': '5.', 'number': '7'}"
-"To illustrate, consider the two atomic features a and B.","{'title': '5.', 'number': '7'}"
-"Given the null field as old field, the best weight for a is 0 = 7/5, and the best weight for B is 0 = 1.","{'title': '5.', 'number': '7'}"
-This yields q and D(1.711f) as in Figure 15.,"{'title': '5.', 'number': '7'}"
-"The better feature is a, and a would be added to the field Comparing features. qa is the best (minimum-divergence) distribution that can be generated by adding the feature &quot;a&quot; to the field, and qB is the best distribution generable by adding the feature &quot;B&quot;. if these were the only two choices.","{'title': '5.', 'number': '7'}"
-"Intuitively, a is better than B because a permits us to distinguish the set {xi, x3} from the set {x2, x4}; the empirical probability of the former is 1/3+1/4 = 7/12 whereas the empirical probability of the latter is 5/12.","{'title': '5.', 'number': '7'}"
-"Distinguishing these sets permits us to model the empirical distribution better (since the old field assigns them equal probability, counter to the empirical distribution).","{'title': '5.', 'number': '7'}"
-"By contrast, the feature B distinguishes the set {xi, x2} from {x3, x4}.","{'title': '5.', 'number': '7'}"
-The empirical probability of the former is 1/3+1/6 = 1/2 and the empirical probability of the latter is also 1/2.,"{'title': '5.', 'number': '7'}"
-"The old field models these probabilities exactly correctly, so making the distinction does not permit us to improve on the old field.","{'title': '5.', 'number': '7'}"
-"As a result, the best weight we can choose for B is 1, which is equivalent to not having the feature B at all.","{'title': '5.', 'number': '7'}"
-"DD&L show that there is a unique weight ,a that maximizes the score for a new feature f (provided that the score for f is not constant for all weights).","{'title': '5.', 'number': '7'}"
-"Writing qo for the distribution that results from assigning weight 13 to feature f, j is the solution to the equation Intuitively, we choose the weight such that the expectation of f under the resulting new field is equal to its empirical expectation.","{'title': '5.', 'number': '7'}"
-Solving equation (2) for 3 is easy if L(G) is small enough to enumerate.,"{'title': '5.', 'number': '7'}"
-"Then the sum over L(G) that is implicit in q,3 [f] can be expanded out, and solving for 3 is simply a matter of arithmetic.","{'title': '5.', 'number': '7'}"
-Things are a bit trickier if L(G) is too large to enumerate.,"{'title': '5.', 'number': '7'}"
-DD&L show that we can solve equation (2) if we can estimate gold [f = ic] for k from 0 to the maximum value of f in the training corpus.,"{'title': '5.', 'number': '7'}"
-(See Appendix 1 for details.),"{'title': '5.', 'number': '7'}"
-We can estimate gold if = k] by means of random sampling.,"{'title': '5.', 'number': '7'}"
-"The idea is actually rather simple: to estimate how often the feature appears in &quot;the average dag,&quot; we generate a representative mini-corpus from the distribution iloid and count.","{'title': '5.', 'number': '7'}"
-"That is, we generate dags at random in such a way that the relative frequency of dag x is gold (x) (in the limit), and we count how often the feature of interest appears in dags in our generated mini-corpus.","{'title': '5.', 'number': '7'}"
-"The application that DD&L consider is the induction of English orthographic constraints, that is, inducing a field that assigns high probability to &quot;English-sounding&quot; words and low probability to non-English-sounding words.","{'title': '5.', 'number': '7'}"
-"For this application, Gibbs sampling is appropriate.","{'title': '5.', 'number': '7'}"
-"Gibbs sampling does not work for the application to AV grammars, however.","{'title': '5.', 'number': '7'}"
-"Fortunately, there is an alternative random sampling method we can use: Metropolis-Hastings sampling.","{'title': '5.', 'number': '7'}"
-We will discuss the issue in some detail shortly.,"{'title': '5.', 'number': '7'}"
-"When a new feature is added to the field, the best value for its initial weight is chosen, but the weights for the old features are held constant.","{'title': '5.', 'number': '7'}"
-"In general, however, adding the new feature may make it necessary to readjust weights for all features.","{'title': '5.', 'number': '7'}"
-The second half of the IIS algorithm involves finding the best weights for a given set of features.,"{'title': '5.', 'number': '7'}"
-The method is very similar to the method for selecting the initial weight for a new feature.,"{'title': '5.', 'number': '7'}"
-"Let (i31, , On) be the old weights for the features.","{'title': '5.', 'number': '7'}"
-"We wish to compute &quot;increments&quot; (61, .","{'title': '5.', 'number': '7'}"
-.,"{'title': '5.', 'number': '7'}"
-"SO to determine a new field with weights (601, • • • , n13n).","{'title': '5.', 'number': '7'}"
-Consider the equation gold efi] = P[fil (3) where f# (x) = Epx) is the total number of features of dag x.,"{'title': '5.', 'number': '7'}"
-The reason for the factor et is a bit involved.,"{'title': '5.', 'number': '7'}"
-"Very roughly, we would like to choose weights so that the expectation of f, under the new field is equal to p[f].","{'title': '5.', 'number': '7'}"
-"Now qn,(x) is: where we factor Z as Z6Zo, for Zo the normalization constant in q.m.","{'title': '5.', 'number': '7'}"
-"Hence, qnew [f] 45j for all the features simultaneously, not just the weight 6, for feature i.","{'title': '5.', 'number': '7'}"
-"We might consider approximating qnew Ef,J by ignoring the normalization factor and assuming that all features have the same weight as feature i.","{'title': '5.', 'number': '7'}"
-"Since ft 6;6(x) = 6,4(x), we arrive at the expression on the left-hand side of equation (3).","{'title': '5.', 'number': '7'}"
-"One might expect the approximation just described to be rather poor, but it is proven in Della Pietra, Della Pietra, and Lafferty (1995) that solving equation (3) for 6, (for each i) and setting the new weight for feature i to SiOi is guaranteed to improve the model.","{'title': '5.', 'number': '7'}"
-"This is the real justification for equation (3), and the reader is referred to Della Pietra, Della Pietra, and Lafferty (1995) for details.","{'title': '5.', 'number': '7'}"
-"Solving (3) yields improved weights, but it does not necessarily immediately yield the globally best weights.","{'title': '5.', 'number': '7'}"
-We can obtain the globally best weights by iterating.,"{'title': '5.', 'number': '7'}"
-"Set A 6,,A, for all i, and solve equation (3) again.","{'title': '5.', 'number': '7'}"
-Repeat until the weights no longer change.,"{'title': '5.', 'number': '7'}"
-"As with equation (2), solving equation (3) is straightforward if L(G) is small enough to enumerate, but not if L(G) is large.","{'title': '5.', 'number': '7'}"
-"In that case, we must use random sampling.","{'title': '5.', 'number': '7'}"
-We generate a representative mini-corpus and estimate expectations by counting in the mini-corpus.,"{'title': '5.', 'number': '7'}"
-(See Appendix 2.),"{'title': '5.', 'number': '7'}"
-We have seen that random sampling is necessary both to set the initial weight for features under consideration and to adjust all weights after a new feature is adopted.,"{'title': '5.', 'number': '7'}"
-Random sampling involves creating a corpus that is representative of a given model distribution q(x).,"{'title': '5.', 'number': '7'}"
-"To take a very simple example, a fair coin can be seen as a method for sampling from the distribution q in which q(H) = 1/2, q(T) = 1/2.","{'title': '5.', 'number': '7'}"
-Saying that a corpus is representative is actually not a comment about the corpus itself but the method by which it was generated: a corpus representative of distribution q is one generated by a process that samples from q.,"{'title': '5.', 'number': '7'}"
-Saying that a process M samples from q is to say that the empirical distributions of corpora generated by M converge to q in the limit.,"{'title': '5.', 'number': '7'}"
-"For example, if we flip a fair coin once, the resulting empirical distribution over (H, T) is either (1,0) or (0, 1), not the fair-coin distribution (1/2, 1/2).","{'title': '5.', 'number': '7'}"
-"But as we take larger and larger corpora, the resulting empirical distributions converge to (1/2, 1/2).","{'title': '5.', 'number': '7'}"
-An advantage of SCFGs that random fields lack is the transparent relationship between an SCFG defining a distribution q and a sampler for q.,"{'title': '5.', 'number': '7'}"
-"We can sample from q by performing stochastic derivations: each time we have a choice among rules expanding a category X, we choose rule X with probability 13„ where A is the weight of rule –÷ e,.","{'title': '5.', 'number': '7'}"
-Now we can sample from the initial distribution pa by performing stochastic derivations.,"{'title': '5.', 'number': '7'}"
-"At the beginning of Section 3, we sketched how to generate dags from an AV grammar G via nondeterministic derivations.","{'title': '5.', 'number': '7'}"
-"We defined the initial distribution in terms of weights 0 attached to the rules of G. We can convert the nondeterministic derivations discussed at the beginning of Section 3 into stochastic derivations by choosing rule X with probability 0, when expanding a node labeled X.","{'title': '5.', 'number': '7'}"
-"Some derivations fail, but throwing away failed derivations has the effect of renormalizing the weight function, so that we generate a dag x with probability po(x), as desired.","{'title': '5.', 'number': '7'}"
-The Metropolis-Hastings algorithm provides us with a means of converting the sampler for the initial distribution po(x) into a sampler for the field distribution q(x).,"{'title': '5.', 'number': '7'}"
-"Generally, let p(.) be a distribution for which we have a sampler.","{'title': '5.', 'number': '7'}"
-"We wish to construct a sample xl, , xN from a different distribution q(.).","{'title': '5.', 'number': '7'}"
-"Assume that items xl, , xt, are already in the sample, and we wish to choose x1.","{'title': '5.', 'number': '7'}"
-The sampler for p(.) proposes a new item y.,"{'title': '5.', 'number': '7'}"
-We do not simply add y to the sample—that would give us a sample from p(.,"{'title': '5.', 'number': '7'}"
-)—but rather we make a stochastic decision whether to accept the proposal y or reject it.,"{'title': '5.', 'number': '7'}"
-"If we accept y, it is added to the sample (xn±i = y), and if we reject y, then xn is repeated (xn+i = xn).","{'title': '5.', 'number': '7'}"
-"The acceptance decision is made as follows: If p(y) > q(y), then y is overrepresented among the proposals.","{'title': '5.', 'number': '7'}"
-We can quantify the degree of overrepresentation as p(y)/q(y).,"{'title': '5.', 'number': '7'}"
-The idea is to reject y with a probability corresponding to its degree of overrepresentation.,"{'title': '5.', 'number': '7'}"
-"However, we do not consider the absolute degree of overrepresentation, but rather the degree of overrepresentation relative to xn.","{'title': '5.', 'number': '7'}"
-"(If y and xr, are equally overrepresented, there is no reason to reject y in favor of xn.)","{'title': '5.', 'number': '7'}"
-"That is, we consider the value If r < 1, then y is underrepresented relative to xn, and we accept y with probability one.","{'title': '5.', 'number': '7'}"
-"If r> 1, then we accept y with a probability that diminishes as r increases: specifically, with probability 1/r.","{'title': '5.', 'number': '7'}"
-"In brief, the acceptance probability of y is A(y I xn) = min(1, 1/r).","{'title': '5.', 'number': '7'}"
-It can be shown that proposing items with probability pH and accepting them with probability A( I xn) yields a sampler for q(.).,"{'title': '5.', 'number': '7'}"
-"(See, for example, Winkler [1995]).2 The acceptance probability A(y I xn) reduces in our case to a particularly simple form.","{'title': '5.', 'number': '7'}"
-If r < 1 then A(y I x) = 1.,"{'title': '5.', 'number': '7'}"
-"Otherwise, writing 0(x) for the &quot;field weight&quot; ni 0{,(x), we have:","{'title': '5.', 'number': '7'}"
-"In summary, we cannot simply transplant CF methods to the AV grammar case.","{'title': '6.', 'number': '8'}"
-"In particular, the ERF method yields correct weights only for SCFGs, not for AV grammars.","{'title': '6.', 'number': '8'}"
-We can define a probabilistic version of AV grammars with a correct weight-selection method by going to random fields.,"{'title': '6.', 'number': '8'}"
-Feature selection and weight adjustment can be accomplished using the IIS algorithm.,"{'title': '6.', 'number': '8'}"
-"In feature selection, we need to use random sampling to find the initial weight for a candidate feature, and in weight adjustment we need to use random sampling to solve the weight equation.","{'title': '6.', 'number': '8'}"
-"The random sampling method that DD&L used is not appropriate for sets of dags, but we can solve that problem by using the Metropolis-Hastings method instead.","{'title': '6.', 'number': '8'}"
-Open questions remain.,"{'title': '6.', 'number': '8'}"
-"First, random sampling is notorious for being slow, and it remains to be shown whether the approach proposed here will be practicable.","{'title': '6.', 'number': '8'}"
-I expect practicability to be quite sensitive to the choice of grammar—the more the grammar's,"{'title': '6.', 'number': '8'}"
-"in which 71- is the distribution we wish to sample from (q, in our notation) and g(x,y) is the proposal probability: the probability that the input sampler will propose y if the previous configuration was x.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"The case we consider is a special case in which the proposal probability is independent of x: the proposal probability g(x, y) is, in our notation, p(y).","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"The original Metropolis algorithm is also a special case of the Metropolis-Hastings algorithm, in which the proposal probability is symmetric, that is, g(x,y) g(y, x).","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"The acceptance function then reduces to min(1,71-(y)/ir(x)), which is min(1,q(y)/q(x)) in our notation.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-I mention this only to point out that it is a different special case.,"{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"Our proposal probability is not symmetric, but rather independent of the previous configuration, and though our acceptance function reduces to a form (4) that is similar to the original Metropolis acceptance function, it is not the same: in general, 49(y) / 0(x) q(y)/q(x). distribution diverges from the initial context-free approximation, the more features will be necessary to &quot;correct&quot; it, and the more random sampling will be called on.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-A second issue is incomplete data.,"{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-The approach described here assumes complete data (a parsed training corpus).,"{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"Fortunately, an extension of the method to handle incomplete data (unparsed training corpora) is described in Riezler (1997), and I refer readers to that paper.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"As a closing note, it should be pointed out explicitly that the random field techniques described here can be profitably applied to context-free grammars, as well.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"As Stanley Peters nicely put it, there is a distinction between possibilistic and probabilistic context-sensitivity.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"Even if the language described by the grammar of interest—that is, the set of possible trees—is context-free, there may well be context-sensitive statistical dependencies.","{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-Random fields can be readily applied to capture such statistical dependencies whether or not L(G) is context-sensitive.,"{'title': '2 The Metropolis-Hastings acceptance probability is usually given in the form', 'number': '9'}"
-"In the feature selection step, we choose an initial weight 3 for each candidate feature f so as to maximize the gain G = D(-)11 gold) — D(i)-11cfr,o) of adding f to the field.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-It is actually more convenient to consider log weights a = ln /3.,"{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"For a given feature f, the log weight et that maximizes gain is the solution to the equation: where q„ is the distribution that results from adding f to the field with log weight a.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-This equation can be solved using Newton's method.,"{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"Define To find the value of a for which F(a) = 0, we begin at a convenient point ao (the &quot;null&quot; weight ao = 0 recommends itself) and iteratively compute: F(at) Della Pietra, Della Pietra, and Lafferty (1995) show that F'(at) is equal to the negative of the variance off under the new field, which I will write –17„[f].","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-To compute the iteration (6) we need to be able to compute F(at) and F'(at).,"{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"For F(at) we require p[f] and q„[f], and F'(at) can be expressed as [f simply the average value of f in the training corpus.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"The remaining terms are all of the form qa [FL We can re-express this expectation in terms of the old field -gold The expectations qoid fief] can be obtained by generating a random sample (z1, .","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"• • , zN) of size N from gold and computing the average value of leaf.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"That is, gold [ref] and the Newton iteration (6) reduces to: To compare candidates, we also need to know the gain D(Pliq old) — DQ311c16) for each candidate.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-"This can be expressed as follows (Della Pietra, Della Pietra, and Lafferty 1995): Putting everything together, the algorithm for feature selection has the following form.","{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-The array E[f] is assumed to have been initialized with the empirical expectations,"{'title': 'Appendix A: Initial Weight Estimation', 'number': '10'}"
-The procedure for adjusting field weights has much the same structure as the procedure for choosing initial weights.,"{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"In terms of log weights, we wish to compute increments (61, • • • , 6) such that the new field, with log weights (al + 61, • • • , an + e5n) has a lower divergence than the old field (al, , an).","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"We choose each 6, as the solution to the equation: Again, we use Newton's method.","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"We wish to find 6 such that F1(6) = 0, where: We see that the expectations we need to compute by sampling from gold are of form q0ld[ffie6f#].","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"We generate a random sample (z1, ••• , zN) and define: As we generate the sample we update the array C[i, mI = Ek (zk)= m 1;(4) .","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"We estimate qo1c[ffte6f#] as the average value of ftae6f# in the sample, namely, (1/N)5r(i,6).","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-This permits us to compute F;(6) and F;(6).,"{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"The resulting Newton iteration is: The estimation procedure is: procedure Adjust Weights (ai, , an) begin until the field converges do","{'title': 'Appendix B: Adjusting Field Weights', 'number': '11'}"
-"This work has greatly profited from the comments, criticism, and suggestions of a number of people, including Yoav Freund, John Lafferty, Stanley Peters, Hans Uszkoreit, and members of the audience at talks I gave at Saarbrucken and Tubingen.","{'title': 'Acknowledgments', 'number': '12'}"
-"Michael Miller and Kevin Mark introduced me to random fields as a way of dealing with context-sensitivities in language, planting the idea that led (much later) to this paper.","{'title': 'Acknowledgments', 'number': '12'}"
-"Finally, I would especially like to thank Marc Light and Stefan Riezler for extended discussions of the issues addressed here and helpful criticism of my first attempts to present this material.","{'title': 'Acknowledgments', 'number': '12'}"
-All responsibility for flaws and errors of course remains with me.,"{'title': 'Acknowledgments', 'number': '12'}"
+"Probabilistic analogues of regular and context-free grammars are well known in computational linguistics, and currently the subject of intensive research.",Introduction
+"To date, however, no satisfactory probabilistic analogue of attribute-value grammars has been proposed: previous attempts have failed to define an adequate parameter-estimation algorithm.",Introduction
+"In the present paper, I define stochastic attribute-value grammars and give an algorithm for computing the maximum-likelihood estimate of their parameters.",Introduction
+"The estimation algorithm is adapted from Della Pietra, Della Pietra, and Lafferty (1995).",Introduction
+"To estimate model parameters, it is necessary to compute the expectations of certain functions under random fields.",Introduction
+"In the application discussed by Della Pietra, Della Pietra, and Lafferty (representing English orthographic constraints), Gibbs sampling can be used to estimate the needed expectations.",Introduction
+"The fact that attribute-value grammars generate constrained languages makes Gibbs sampling inapplicable, but I show that sampling can be done using the more general Metropolis-Hastings algorithm.",Introduction
+"Probabilistic analogues of regular and context-free grammars are well known in computational linguistics, and currently the subject of intensive research.",Experiment/Discussion
+"To date, however, no satisfactory probabilistic analogue of attribute-value grammars has been proposed: previous attempts have failed to define an adequate parameter-estimation algorithm.",Experiment/Discussion
+"In the present paper, I define stochastic attribute-value grammars and give an algorithm for computing the maximum-likelihood estimate of their parameters.",Experiment/Discussion
+"The estimation algorithm is adapted from Della Pietra, Della Pietra, and Lafferty (1995).",Experiment/Discussion
+"To estimate model parameters, it is necessary to compute the expectations of certain functions under random fields.",Experiment/Discussion
+"In the application discussed by Della Pietra, Della Pietra, and Lafferty (representing English orthographic constraints), Gibbs sampling can be used to estimate the needed expectations.",Experiment/Discussion
+"The fact that attribute-value grammars generate constrained languages makes Gibbs sampling inapplicable, but I show that sampling can be done using the more general Metropolis-Hastings algorithm.",Experiment/Discussion
+"Stochastic versions of regular grammars and context-free grammars have received a great deal of attention in computational linguistics for the last several years, and basic techniques of stochastic parsing and parameter estimation have been known for decades.",Experiment/Discussion
+"However, regular and context-free grammars are widely deemed linguistically inadequate; standard grammars in computational linguistics are attribute-value (AV) grammars of some variety.",Experiment/Discussion
+"Before the advent of statistical methods, regular and context-free grammars were considered too inexpressive for serious consideration, and even now the reliance on stochastic versions of the less-expressive grammars is often seen as an expedient necessitated by the lack of an adequate stochastic version of attribute-value grammars.",Experiment/Discussion
+Proposals have been made for extending stochastic models developed for the regular and context-free cases to grammars with constraints.',Experiment/Discussion
+Brew (1995) sketches a probabilistic version of Head-Driven Phrase Structure Grammar (HPSG).,Experiment/Discussion
+"He proposes a stochastic process for generating attribute-value structures, that is, directed acyclic graphs (dags).",Experiment/Discussion
+A dag is generated starting from a single node labeled with the (unique) most general type.,Experiment/Discussion
+"Each type S has a set of maximal subtypes T1, .",Experiment/Discussion
+.,Experiment/Discussion
+", Tn.",Experiment/Discussion
+"To expand a node labeled S, one chooses a maximal subtype T stochastically.",Experiment/Discussion
+"One then considers equating the current node with other nodes of type T, making a stochastic yes/no decision for each.",Experiment/Discussion
+Equating two nodes creates a re-entrancy.,Experiment/Discussion
+"If the current node is equated with no other node, one proceeds to expand it.",Experiment/Discussion
+"Each maximal type introduces types U1,...,Un, corresponding to values of attributes; one creates a child node for each introduced type, and then expands each child in turn.",Experiment/Discussion
+A limitation of this approach is that it permits one to specify only the average rate of re-entrancies; it does not permit one to specify more complex context dependencies.,Experiment/Discussion
+Eisele (1994) takes a logic-programming approach to constraint grammars.,Experiment/Discussion
+He assigns probabilities to proof trees by attaching parameters to logic program clauses.,Experiment/Discussion
+He presents the following logic program as an example: The probability of a proof tree is defined to be proportional to the product of the probabilities of clauses used in the proof.,Experiment/Discussion
+Normalization is necessary because some derivations lead to invalid proof trees.,Experiment/Discussion
+"For example, the derivation is invalid because of the illegal assignment b = c. Both Brew and Eisele associate weights with analogues of rewrite rules.",Experiment/Discussion
+"In Brew's case, we can view type expansion as a stochastic choice from a finite set of rules of form X where X is the type to expand and each 6 is a sequence of introduced child types.",Experiment/Discussion
+"A re-entrancy decision is a stochastic choice between two rules, X —> yes and X no, where X is the type of the node being considered for re-entrancy.",Experiment/Discussion
+"In Eisele's case, expanding a goal term can be viewed as a stochastic choice among a finite set of rules X —> where X is the predicate of the goal term and each 6 is a program clause whose head has predicate X.",Experiment/Discussion
+"The parameters of the models are essentially weights on such rules, representing the probability of choosing 6 when making a choice of type X.",Experiment/Discussion
+"In these terms, Brew and Eisele propose estimating parameters as the empirical relative frequency of the corresponding rules.",Experiment/Discussion
+"That is, the weight of the rule X —> is obtained by counting the number of times X rewrites as 6 in the training corpus, divided by the total number of times X is rewritten in the training corpus.",Experiment/Discussion
+"For want of a standard term, let us call these estimates Empirical Relative Frequency (ERF) estimates.",Experiment/Discussion
+"To deal with incomplete data, both Brew and Eisele appeal to the Expectation-Maximization (EM) algorithm, applied however to ERF rather than maximum-likelihood estimates.",Experiment/Discussion
+"Under certain independence conditions, ERF estimates are maximum-likelihood estimates.",Experiment/Discussion
+"Unfortunately, these conditions are violated when there are context dependencies of the sort found in attribute-value grammars, as will be shown below.",Experiment/Discussion
+"As a consequence, applying the ERF method to attribute-value grammars does not generally yield maximum-likelihood estimates.",Experiment/Discussion
+This is true whether one uses EM or not—a method that yields the &quot;wrong&quot; estimates on complete data does not improve when EM is used to extend the method to incomplete data.,Experiment/Discussion
+Eisele identifies an important symptom that something is amiss with ERF estimates: the probability distribution over proof trees that one obtains does not agree with the frequency of proof trees in the training corpus.,Experiment/Discussion
+Eisele recognizes that this problem arises only where there are context dependencies.,Experiment/Discussion
+"Fortunately, solutions to the context-dependency problem have been described (and indeed are currently enjoying a surge of interest) in statistics, machine learning, and statistical pattern recognition, particularly image processing.",Experiment/Discussion
+The models of interest are known as random fields.,Experiment/Discussion
+Random fields can be seen as a generalization of Markov chains and stochastic branching processes.,Experiment/Discussion
+Markov chains are stochastic processes corresponding to regular grammars and random branching processes are stochastic processes corresponding to context-free grammars.,Experiment/Discussion
+"The evolution of a Markov chain describes a line, in which each stochastic choice depends only on the state at the immediately preceding time-point.",Experiment/Discussion
+"The evolution of a random branching process describes a tree in which a finite-state process may spawn multiple child processes at the next time-step, but the number of processes and their states depend only on the state of the unique parent process at the preceding time-step.",Experiment/Discussion
+"In particular, stochastic choices are independent of other choices at the same time-step: each process evolves independently.",Experiment/Discussion
+"If we permit re-entrancies, that is, if we permit processes to re-merge, we generally introduce context-sensitivity.",Experiment/Discussion
+"In order to re-merge, processes must be &quot;in synch,&quot; which is to say, they cannot evolve in complete independence of one another.",Experiment/Discussion
+"Random fields are a particular class of multidimensional random processes, that is, processes corresponding to probability distributions over an arbitrary graph.",Experiment/Discussion
+"The theory of random fields can be traced back to Gibbs (1902); indeed, the probability distributions involved are known as Gibbs distributions.",Experiment/Discussion
+"To my knowledge, the first application of random fields to natural language was Mark et al. (1992).",Experiment/Discussion
+The problem of interest was how to combine a stochastic contextfree grammar with n-gram language models.,Experiment/Discussion
+"In the resulting structures, the probability of choosing a particular word is constrained simultaneously by the syntactic tree in which it appears and the choices of words at the n preceding positions.",Experiment/Discussion
+"The contextsensitive constraints introduced by the n-gram model are reflected in re-entrancies in the structure of statistical dependencies, as in Figure 1.",Experiment/Discussion
+Statistical dependencies under the model of Mark et al. (1992).,Experiment/Discussion
+"In this diagram, the choice of label on a node z with parent x and preceding word y is dependent on the label of x and y, but conditionally independent of the label on any other node.",Experiment/Discussion
+"Della Pietra, Della Pietra, and Lafferty (1995, henceforth, DD&L) also apply random fields to natural language processing.",Experiment/Discussion
+The application they consider is the induction of English orthographic constraints—inducing a grammar of possible English words.,Experiment/Discussion
+"DD&L describe an algorithm called Improved Iterative Scaling (IIS) for selecting informative features of words to construct a random field, and for setting the parameters of the field optimally for a given set of features, to model an empirical word distribution.",Experiment/Discussion
+It is not immediately obvious how to use the ITS algorithm to equip attribute-value grammars with probabilities.,Experiment/Discussion
+"In brief, the difficulty is that the ITS algorithm requires the computation of the expectations, under random fields, of certain functions; in general, computing these expectations involves summing over all configurations (all possible character sequences, in the orthography application), which is not possible when the configuration space is large.",Experiment/Discussion
+"Instead, DD&L use Gibbs sampling to estimate the needed expectations.",Experiment/Discussion
+Gibbs sampling is possible for the application that DD&L consider.,Experiment/Discussion
+A prerequisite for Gibbs sampling is that the configuration space be closed under relabeling of graph nodes.,Experiment/Discussion
+"In the orthography application, the configuration space is the set of possible English words, represented as finite linear graphs labeled with ASCII characters.",Experiment/Discussion
+"Every way of changing a label, that is, every substitution of one ASCII character for a different one, yields a possible English word.",Experiment/Discussion
+"By contrast, the set of graphs admitted by an attribute-value grammar G is highly constrained.",Experiment/Discussion
+"If one changes an arbitrary node label in a dag admitted by G, one does not necessarily obtain a new dag admitted by G. Hence, Gibbs sampling is not applicable.",Experiment/Discussion
+"However, I will show that a more general sampling method, the Metropolis-Hastings algorithm, can be used to compute the maximum-likelihood estimate of the parameters of AV grammars.",Experiment/Discussion
+Let us begin by examining stochastic context-free grammars (SCFGs) and asking why the natural extension of SCFG parameter estimation to attribute-value grammars fails.,Experiment/Discussion
+"A point of terminology: I will use the term grammar to refer to an unweighted grammar, be it a context-free grammar or attribute-value grammar.",Experiment/Discussion
+A grammar equipped with weights (and other periphenalia as necessary) I will refer to as a model.,Experiment/Discussion
+"Occasionally I will also use model to refer to the weights themselves, or the probability distribution they define.",Experiment/Discussion
+Throughout we will use the following stochastic context-free grammar for illustrative purposes.,Experiment/Discussion
+"Let us call the underlying grammar G1 and the grammar equipped with weights as shown, Mi.",Experiment/Discussion
+: The probability of a given tree is computed as the product of probabilities of rules used in it.,Experiment/Discussion
+For example: Let x be the tree in Figure 2 and let qi be the probability distribution over trees defined by model M1.,Experiment/Discussion
+"Then: In parsing, we use the probability distribution qi (x) defined by model M1 to disambiguate: the grammar assigns some set of trees {xi, , x,,} to a sentence a, and we choose that tree xi that has greatest probability qi (x,).",Experiment/Discussion
+The issue of efficiently computing the most-probable parse for a given sentence has been thoroughly addressed in the literature.,Experiment/Discussion
+"The standard parsing techniques can be readily adapted to the random-field models to be discussed below, so I simply refer the reader to the literature.",Experiment/Discussion
+"Instead, I concentrate on parameter estimation, which, for attribute-value grammars, cannot be accomplished by standard techniques.",Experiment/Discussion
+By parameter estimation we mean determining values for the weights 0.,Experiment/Discussion
+"In order for a stochastic grammar to be useful, we must be able to compute the correct weights, where by correct weights we mean the weights that best account for a training corpus.",Experiment/Discussion
+The degree to which a given set of weights accounts for a training corpus is measured by the similarity between the distribution q(x) determined by the weights /3 and the distribution of trees x in the training corpus.,Experiment/Discussion
+The distribution determined by the training corpus is known as the empirical distribution.,Experiment/Discussion
+"For example, suppose we have a training corpus containing twelve trees of the four types from L(G1) shown in Figure 3, where c(x) is the count of how often the In comparing a distribution q to the empirical distribution /3, we shall actually measure dissimilarity rather than similarity.",Experiment/Discussion
+Our measure for dissimilarity of distributions The divergence between /5 and q at point x is the log of the ratio of p(x) to q(x).,Experiment/Discussion
+"The overall divergence between p and q is the average divergence, where the averaging is over tree (tokens) in the corpus; i.e., point divergences 1n03(x)/q(x)) are weighted by /5(x) and summed.",Experiment/Discussion
+"For example, let qi be, as before, the distribution determined by model M1.",Experiment/Discussion
+"Table 1 shows qi, 17, the ratio qi (x)/13(x), and the weighted point divergence /3(x) ln(f 9(x) /q1(x)).",Experiment/Discussion
+The sum of the fourth column is the KL divergence D(Pliqi) between /3 and qi.,Experiment/Discussion
+The third column contains qi (x)/(x) rather than 17(x)/qi(x) so that one can see at a glance whether qi (x) is too large (> 1) or too small (< 1).,Experiment/Discussion
+The total divergence D(7'311(11) = 0.32.,Experiment/Discussion
+One set of weights is better than another if its divergence from the empirical distribution is less.,Experiment/Discussion
+"For example, let us consider a different set of weights for grammar G1.",Experiment/Discussion
+"Let M' be G1 with weights (1/2, 1/2, 1/2, 1/2, 1/2, 1/2), and let q' be the probability distribution determined by M'.",Experiment/Discussion
+Then the computation of the KL divergence is as in Table 2.,Experiment/Discussion
+"The fit for x2 improves, but that is more than offset by a poorer fit for x1.",Experiment/Discussion
+"The distribution qi is a better distribution than q', in the sense that qi is more similar (less dissimilar) to the empirical distribution than q' is.",Experiment/Discussion
+One reason for adopting minimal KL divergence as a measure of goodness is that minimizing KL divergence maximizes likelihood.,Experiment/Discussion
+"The likelihood of distribution q is the probability of the training corpus according to q: The expression on the right-hand side is —1/N times the cross entropy of q with respect top, hence maximizing log likelihood is equivalent to minimizing cross entropy.",Experiment/Discussion
+"Finally, D(1q) is equal to the cross entropy of q less the entropy of 15, and the entropy of /3 is constant with respect to q; hence minimizing cross entropy (maximizing likelihood) is equivalent to minimizing divergence.",Experiment/Discussion
+"For stochastic context-free grammars, it can be shown that the ERF method yields the best model for a given training corpus.",Experiment/Discussion
+"First, let us introduce some terminology and notation.",Experiment/Discussion
+With each rule i in a stochastic context-free grammar is associated a weight A and a function f1 (x) that returns the number of times rule i is used in the derivation of tree x.,Experiment/Discussion
+"For example, consider the tree in Figure 2, repeated here in Figure 4 for convenience: Rule 1 is used once and rule 3 is used twice; accordingly fi (x) = 1, We use the notation p[f] to represent the expectation of f under probability distribution p; that is, p[f] = Ex p(x)f(x).",Experiment/Discussion
+The ERF method instructs us to choose the weight for rule i proportional to its empirical expectation fo[f].,Experiment/Discussion
+"Algorithmically, we compute the expectation of each rule's frequency, and normalize among rules with the same left-hand side.",Experiment/Discussion
+"To illustrate, let us consider corpus (2.1) again.",Experiment/Discussion
+"The expectation of each rule frequency fi is a sum of terms f9(x)f,(x).",Experiment/Discussion
+"These terms are shown for each tree, in Table 3.",Experiment/Discussion
+"For example, in tree xl, rule 1 is used once and rule 3 is used twice.",Experiment/Discussion
+"The empirical probability of x1 is 1 / 3, so X1's contribution to f4fd is 1/3 • 1, and its contribution to /3[f3] is 1/3 • 2.",Experiment/Discussion
+The weight is obtained from p[f] by normalizing among rules with the same left-hand side.,Experiment/Discussion
+"For example, the expected rule frequencies 13[fd and [f2] of rules with left-hand side S already sum to 1, so they are adopted without change as /31 and 02.",Experiment/Discussion
+"On the other hand, the expected rule frequencies 13 [f5] and p[f6] for rules with left-hand side B sum to 1/2, not 1, so they are doubled to yield weights Os and /36.",Experiment/Discussion
+It should be observed that the resulting weights are precisely the weights of model A41.,Experiment/Discussion
+"It can be proven that the ERF weights are the best weights for a given contextfree grammar, in the sense that they define the distribution that is most similar to the empirical distribution.",Experiment/Discussion
+"That is, if /3 are the ERF weights (for a given grammar), defining distribution q, and 0' defining q' is any set of weights such that q q', then D(13iiq) < D(13iiqi)One might expect the best weights to yield D(1311q) = 0, but such is not the case.",Experiment/Discussion
+"We have just seen, for example, that the best weights for grammar G1 yield distribution (ID yet D(311q1) = 0.32 > 0.",Experiment/Discussion
+"A closer inspection of the divergence calculation in Table 1 reveals that qi is sometimes less than 19, but never greater than /5.",Experiment/Discussion
+Could we improve the fit by increasing qi?,Experiment/Discussion
+"For that matter, how can it be that qi is never greater than /5?",Experiment/Discussion
+"As probability distributions, qi and /3 should have the same total mass, namely, one.",Experiment/Discussion
+Where is the missing mass for qi?,Experiment/Discussion
+"The answer is of course that qi and /5 are probability distributions over L(Gi), but not all of L(G1) appears in the corpus.",Experiment/Discussion
+"Two trees are missing, and they account for the missing mass.",Experiment/Discussion
+These two trees are given in Figure 5.,Experiment/Discussion
+"Each of these trees has The trees from L(G1) that are missing in the training corpus. probability 0 according to /5 (hence they can be ignored in the divergence calculation), but probability 1/9 according to qi.",Experiment/Discussion
+"Intuitively, the problem is this: The distribution qi assigns too little weight to trees x1 and x2, and too much weight to the &quot;missing&quot; trees; call them x5 and x6.",Experiment/Discussion
+Yet exactly the same rules are used in x5 and x6 as are used in x1 and x2.,Experiment/Discussion
+"Hence there is no way to increase the weight for trees x1 and x2, improving their fit to /5, without simultaneously increasing the weight for x5 and x6, making their fit to 13 worse.",Experiment/Discussion
+The distribution qi is the best compromise possible.,Experiment/Discussion
+"To say it another way, our assumption that the corpus was generated by a contextfree grammar means that any context dependencies in the corpus must be accidental, the result of sampling noise.",Experiment/Discussion
+"There is indeed a dependency in the corpus in Figure 3: in the trees where there are two A's, the A's always rewrite the same way.",Experiment/Discussion
+"If the corpus was generated by a stochastic context-free grammar, then this dependency is accidental.",Experiment/Discussion
+This does not mean that the context-free assumption is wrong.,Experiment/Discussion
+"If we generate twelve trees at random from qi, it would not be too surprising if we got the corpus in Figure 3.",Experiment/Discussion
+"More extremely, if we generate a random corpus of size 1 from qi, it is quite impossible for the resulting empirical distribution to match the distribution qi.",Experiment/Discussion
+"But as the corpus size increases, the fit between 15 and qi becomes ever better.",Experiment/Discussion
+But what if the dependency in corpus (3) is not accidental?,Experiment/Discussion
+What if we wish to adopt a grammar that imposes the constraint that both A's rewrite the same way?,Experiment/Discussion
+We can impose such a constraint by means of an attribute-value grammar.,Experiment/Discussion
+We may formalize an attribute-value grammar as a context-free grammar with attribute labels and path equations.,Experiment/Discussion
+An example is the following grammar; let us call it G2: Generating a dag.,Experiment/Discussion
+"The grammar used is G2. node labeled with the start category of G2, namely, S. A node x is expanded by choosing a rule that rewrites the category of x.",Experiment/Discussion
+"In this case, we choose rule 1 to expand the root node.",Experiment/Discussion
+"Rule 1 instructs us to create two children, both labeled A.",Experiment/Discussion
+The edge to the first child is labeled / and the edge to the second child is labeled 2.,Experiment/Discussion
+The constraint (1 1) = (2 1) indicates that the / child of the / child of x is identical to the 1 child of the 2 child of x.,Experiment/Discussion
+"We create an unlabeled node to represent this grandchild of x and direct appropriately labeled edges from the children, yielding (b).",Experiment/Discussion
+We proceed to expand the newly introduced nodes.,Experiment/Discussion
+We choose rule 3 to expand the first A node.,Experiment/Discussion
+"In this case, a child with edge labeled I already exists, so we use it rather than creating a new one.",Experiment/Discussion
+"Rule 3 instructs us to label this child a, yielding (c).",Experiment/Discussion
+Now we expand the second A node.,Experiment/Discussion
+Again we choose rule 3.,Experiment/Discussion
+"We are instructed to label the 1 child a, but it already has that label, so we do not need to do anything.",Experiment/Discussion
+"Finally, in (d), the only remaining node is the bottom-most node, labeled a.",Experiment/Discussion
+"Since its label is a terminal category, it does not need to be expanded, and we are done.",Experiment/Discussion
+Let us back up to (c) again.,Experiment/Discussion
+Here we were free to choose rule 4 instead of rule 3 to expand the right-hand A node.,Experiment/Discussion
+"Rule 4 instructs us to label the 1 child b, but we cannot, inasmuch as it is already labeled a.",Experiment/Discussion
+"The derivation fails, and no dag is generated.",Experiment/Discussion
+"The language L(G2) is the set of dags produced by successful derivations, as shown in Figure 7.",Experiment/Discussion
+"(The edges of the dags should actually be labeled with l's and 2's, but I The language generated by G2. have suppressed the edge labels for the sake of perspicuity.)",Experiment/Discussion
+Now we face the question of how to attach probabilities to grammar G2.,Experiment/Discussion
+The natural extension of the method we used for context-free grammars is the following: Associate a weight with each of the six rules of grammar G2.,Experiment/Discussion
+"For example, let M2 be the model consisting of G2 plus weights (i3,.",Experiment/Discussion
+".436) = (1 /2, 1 /2, 2/3, 1 /3, 1 /2, 1 /2).",Experiment/Discussion
+Let 02(x) be the weight that M2 assigns to dag x; it is defined to be the product of the weights of the rules used to generate x.,Experiment/Discussion
+"For example, the weight 02 (xi) assigned to tree xi of Rule applications in a dag generated by G2.",Experiment/Discussion
+The weight of the dag is the product of the weights of rule applications. hence 02(xi) = 010303 = 1/2 • 2/3 • 2/3 = 2/9.,Experiment/Discussion
+"Observe that 02(xi) = Ov3i, which is to say, 13(1(x1)4(x1).",Experiment/Discussion
+"Moreover, since /3° = 1, it does not hurt to include additional factors /ex') for those i where f, (xi) = 0.",Experiment/Discussion
+"That is, we can define the dag weight 0 corresponding to rule weights =- On) generally as:",Experiment/Discussion
+i=1 The next question is how to estimate weights.,Experiment/Discussion
+Let us consider what happens when we use the ERF method.,Experiment/Discussion
+"Let us assume a corpus distribution for the dags in Figure 7 analogous to the distribution in Figure 3: Using the ERF method, we estimate rule weights as in Table 4.",Experiment/Discussion
+This table is identical to the one given earlier in the context-free case.,Experiment/Discussion
+"We arrive at the same weights M2 we considered above, defining dag weights ;.2(x).",Experiment/Discussion
+But at this point a problem arises: 02 is not a probability distribution.,Experiment/Discussion
+"Unlike in the context-free case, the four dags in Figure 7 constitute the entirety of L(G2).",Experiment/Discussion
+"This time, there are no missing dags to account for the missing probability mass.",Experiment/Discussion
+There is an obvious &quot;fix&quot; for this problem: we can simply normalize (b2.,Experiment/Discussion
+"We might define the distribution q for an AV grammar with weight function 0 as: In particular, for 02, we have Z = 2/9 + 1/18 + 1/4 + 1/4 = 7/9.",Experiment/Discussion
+"Dividing 02 by 7/9 yields the ERF distribution: On the face of it, then, we can transplant the methods we used in the context-free case to the AV case and nothing goes wrong.",Experiment/Discussion
+The only problem that arises (.15 not summing to one) has an obvious fix (normalization).,Experiment/Discussion
+"However, something has actually gone very wrong.",Experiment/Discussion
+The ERF method yields the best weights only under certain conditions that we inadvertently violated by changing L(G) and re-apportioning probability via normalization.,Experiment/Discussion
+"In point of fact, we can easily see that the ERF weights in Table 4 are not the best weights for our example grammar.",Experiment/Discussion
+"Consider the alternative model MK given in Figure 9, defining probability distribution 11*.",Experiment/Discussion
+"An alternative model, M*.",Experiment/Discussion
+"These weights are proper, in the sense that weights for rules with the same left-hand side sum to one.",Experiment/Discussion
+"The reader can verify that 0* sums to Z = 3+3`n and that q* is: In short, in the AV case, the ERF weights do not yield the best weights.",Experiment/Discussion
+This means that the ERF method does not converge to the correct weights as the corpus size increases.,Experiment/Discussion
+"If there are genuine dependencies in the grammar, the ERF method converges systematically to the wrong weights.",Experiment/Discussion
+"Fortunately, there are methods that do converge to the right weights.",Experiment/Discussion
+These are methods that have been developed for random fields.,Experiment/Discussion
+A random field defines a probability distribution over a set of labeled graphs SZ called configurations.,Experiment/Discussion
+"In our case, the configurations are the dags generated by the grammar, i.e., C2 = L(G).",Experiment/Discussion
+The weight assigned to a configuration is the product of the weights assigned to selected features of the configuration.,Experiment/Discussion
+"We use the notation: where ,(3, is the weight for feature i and J(.) is its frequency function, that is, f, (x) is the number of times that feature i occurs in configuration x.",Experiment/Discussion
+"(For most purposes, a feature can be identified with its frequency function; I will not always make a careful distinction between them.)",Experiment/Discussion
+"I use the term feature here as it is used in the machine learning and statistical pattern recognition literature, not as in the constraint grammar literature, where feature is synonymous with attribute.",Experiment/Discussion
+"In my usage, dag edges are labeled with attributes, not features.",Experiment/Discussion
+Features are rather like geographic features of dags: a feature is some larger or smaller piece of structure that occurs—possibly at more than one place—in a dag.,Experiment/Discussion
+"The probability of a configuration (that is, a dag) is proportional to its weight, and is obtained by normalizing the weight distribution.",Experiment/Discussion
+"If we identify the features of a configuration with local trees—equivalently, with applications of rewrite rules—the random field model is almost identical to the model we considered in the previous section.",Experiment/Discussion
+There are two important differences.,Experiment/Discussion
+"First, we no longer require weights to sum to one for rules with the same left-hand side.",Experiment/Discussion
+"Second, the model does not require features to be identified with rewrite rules.",Experiment/Discussion
+"We use the grammar to define the set of configurations S2 = L(G), but in defining a probability distribution over L(G), we can choose features of dags however we wish.",Experiment/Discussion
+Let us consider an example.,Experiment/Discussion
+"Let us continue to assume grammar G2 generating the language in Figure 7, and let us continue to assume the empirical distribution in (1).",Experiment/Discussion
+"But now rather than taking rule applications to be features, let us adopt the two features in Figure 10.",Experiment/Discussion
+"For purpose of illustration, take feature 1 to have weight )(31 = v--2- and feature 2 to have weight 02 = 3/2.",Experiment/Discussion
+"The functions fi and f2 represent the frequencies of features 1 and 2, respectively, as in Figure 11.",Experiment/Discussion
+"We are able to exactly The frequencies (number of instances) of features 1 and 2 in dags generated by G2, and the computation of dag weights 0 and dag probabilities q. recreate the empirical distribution using fewer features than before.",Experiment/Discussion
+"Intuitively, we need only use as many features as are necessary to distinguish among trees that have different empirical probabilities.",Experiment/Discussion
+"This added flexibility is welcome, but it does make parameter estimation more involved.",Experiment/Discussion
+"Now we must not only choose values for weights, we must also choose the features that weights are to be associated with.",Experiment/Discussion
+"We would like to do both in a way that permits us to find the best model, in the sense of the model that minimizes the Kullback-Leibler distance with respect to the empirical distribution.",Experiment/Discussion
+"The ITS algorithm (Della Pietra, Della Pietra, and Lafferty 1995) provides a method to do precisely that.",Experiment/Discussion
+"In outline, the ITS algorithm is as follows: For the sake of concreteness, let us take features to be labeled subdags.",Experiment/Discussion
+"In step 2 of the algorithm we do not consider every conceivable labeled subdag, but only the atomic (i.e., single-node) subdags and those complex subdags that can be constructed by combining features already in the field or by combining a feature in the field with some atomic feature.",Experiment/Discussion
+We also limit our attention to features that actually occur in the training corpus.,Experiment/Discussion
+"In our running example, the atomic features are as shown in Figure 12.",Experiment/Discussion
+"Features can be combined by adding connecting arcs, as shown in Figure 13, for example.",Experiment/Discussion
+Combining features to create more complex features.,Experiment/Discussion
+Field induction begins with the null field.,Experiment/Discussion
+"With the corpus we have been assuming, the null field takes the form in Figure 14.",Experiment/Discussion
+"No dag x has any features, so 0(x) = n, i3( is a The null field for G2. product of zero terms, and hence has value 1.",Experiment/Discussion
+"As a result, q is the uniform distribution.",Experiment/Discussion
+The Kullback-Leibler divergence D(pllq) is 0.03.,Experiment/Discussion
+The aim of feature selection is to choose a feature that reduces this divergence as much as possible.,Experiment/Discussion
+The astute reader will note that there is a problem with the null field if L(G) is infinite.,Experiment/Discussion
+"Namely, it is not possible to have a uniform probability mass distribution over an infinite set.",Experiment/Discussion
+"If each dag in an infinite set of dags is assigned a constant nonzero probability E, then the total probability is infinite, no matter how small E is.",Experiment/Discussion
+There are a couple of ways of dealing with the problem.,Experiment/Discussion
+"The approach that DD&L adopt is to assume a consistent prior distribution p(k) over graph sizes k, and a family of random fields qk representing the conditional probability q(x I k); the probability of a tree is then p(k)q(x I k).",Experiment/Discussion
+"All the random fields have the same features and weights, differing only in their normalizing constants.",Experiment/Discussion
+I will take a somewhat different approach here.,Experiment/Discussion
+"As sketched at the beginning of section 3, we can generate dags from an AV grammar much as proposed by Brew and Eisele.",Experiment/Discussion
+"If we ignore failed derivations, the process of dag generation is completely analogous to the process of tree generation from a stochastic CFG—indeed, in the limiting case in which none of the rules contain constraints, the grammar is a CFG.",Experiment/Discussion
+"To obtain an initial distribution, we associate a weight with each rule, the weights for rules with a common left-hand side summing to one.",Experiment/Discussion
+The probability of a dag is proportional to the product of weights of rules used to generate it.,Experiment/Discussion
+(Renormalization is necessary because of the failed derivations.),Experiment/Discussion
+"We estimate weights using the ERF method: we estimate the weight of a rule as the relative frequency of the rule in the training corpus, among rules with the same left-hand side.",Experiment/Discussion
+"The resulting initial distribution (the ERF distribution) is not the maximum-likelihood distribution, as we know.",Experiment/Discussion
+But it can be taken as a useful first approximation.,Experiment/Discussion
+"Intuitively, we begin with the ERF distribution and construct a random field to take account of context dependencies that the ERF distribution fails to capture, incrementally improving the fit to the empirical distribution.",Experiment/Discussion
+"In this framework, a model consists of: (1) An AV grammar G whose purpose is to define a set of dags L(G).",Experiment/Discussion
+(2) A set of initial weights 0 attached to the rules of G. The weight of a dag is the product of weights of rules used in generating it.,Experiment/Discussion
+Discarding failed derivations and renormalizing yields the initial distribution po (x).,Experiment/Discussion
+"At each iteration, we select a new feature f by considering all atomic features, and all complex features that can be constructed from features already in the field.",Experiment/Discussion
+"Holding the weights constant for all old features in the field, we choose the best weight 0 for f ) (how 13 is chosen will be discussed shortly), yielding a new distribution q1.",Experiment/Discussion
+"The score for feature f is the reduction it permits in D(11 gold ), where gold is the old field.",Experiment/Discussion
+"That is, the score for f is D(Igold) — D(311q0/).",Experiment/Discussion
+We compute the score for each candidate feature and add to the field that feature with the highest score.,Experiment/Discussion
+"To illustrate, consider the two atomic features a and B.",Experiment/Discussion
+"Given the null field as old field, the best weight for a is 0 = 7/5, and the best weight for B is 0 = 1.",Experiment/Discussion
+This yields q and D(1.711f) as in Figure 15.,Experiment/Discussion
+"The better feature is a, and a would be added to the field Comparing features. qa is the best (minimum-divergence) distribution that can be generated by adding the feature &quot;a&quot; to the field, and qB is the best distribution generable by adding the feature &quot;B&quot;. if these were the only two choices.",Experiment/Discussion
+"Intuitively, a is better than B because a permits us to distinguish the set {xi, x3} from the set {x2, x4}; the empirical probability of the former is 1/3+1/4 = 7/12 whereas the empirical probability of the latter is 5/12.",Experiment/Discussion
+"Distinguishing these sets permits us to model the empirical distribution better (since the old field assigns them equal probability, counter to the empirical distribution).",Experiment/Discussion
+"By contrast, the feature B distinguishes the set {xi, x2} from {x3, x4}.",Experiment/Discussion
+The empirical probability of the former is 1/3+1/6 = 1/2 and the empirical probability of the latter is also 1/2.,Experiment/Discussion
+"The old field models these probabilities exactly correctly, so making the distinction does not permit us to improve on the old field.",Experiment/Discussion
+"As a result, the best weight we can choose for B is 1, which is equivalent to not having the feature B at all.",Experiment/Discussion
+"DD&L show that there is a unique weight ,a that maximizes the score for a new feature f (provided that the score for f is not constant for all weights).",Experiment/Discussion
+"Writing qo for the distribution that results from assigning weight 13 to feature f, j is the solution to the equation Intuitively, we choose the weight such that the expectation of f under the resulting new field is equal to its empirical expectation.",Experiment/Discussion
+Solving equation (2) for 3 is easy if L(G) is small enough to enumerate.,Experiment/Discussion
+"Then the sum over L(G) that is implicit in q,3 [f] can be expanded out, and solving for 3 is simply a matter of arithmetic.",Experiment/Discussion
+Things are a bit trickier if L(G) is too large to enumerate.,Experiment/Discussion
+DD&L show that we can solve equation (2) if we can estimate gold [f = ic] for k from 0 to the maximum value of f in the training corpus.,Experiment/Discussion
+(See Appendix 1 for details.),Experiment/Discussion
+We can estimate gold if = k] by means of random sampling.,Experiment/Discussion
+"The idea is actually rather simple: to estimate how often the feature appears in &quot;the average dag,&quot; we generate a representative mini-corpus from the distribution iloid and count.",Experiment/Discussion
+"That is, we generate dags at random in such a way that the relative frequency of dag x is gold (x) (in the limit), and we count how often the feature of interest appears in dags in our generated mini-corpus.",Experiment/Discussion
+"The application that DD&L consider is the induction of English orthographic constraints, that is, inducing a field that assigns high probability to &quot;English-sounding&quot; words and low probability to non-English-sounding words.",Experiment/Discussion
+"For this application, Gibbs sampling is appropriate.",Experiment/Discussion
+"Gibbs sampling does not work for the application to AV grammars, however.",Experiment/Discussion
+"Fortunately, there is an alternative random sampling method we can use: Metropolis-Hastings sampling.",Experiment/Discussion
+We will discuss the issue in some detail shortly.,Experiment/Discussion
+"When a new feature is added to the field, the best value for its initial weight is chosen, but the weights for the old features are held constant.",Experiment/Discussion
+"In general, however, adding the new feature may make it necessary to readjust weights for all features.",Experiment/Discussion
+The second half of the IIS algorithm involves finding the best weights for a given set of features.,Experiment/Discussion
+The method is very similar to the method for selecting the initial weight for a new feature.,Experiment/Discussion
+"Let (i31, , On) be the old weights for the features.",Experiment/Discussion
+"We wish to compute &quot;increments&quot; (61, .",Experiment/Discussion
+.,Experiment/Discussion
+"SO to determine a new field with weights (601, • • • , n13n).",Experiment/Discussion
+Consider the equation gold efi] = P[fil (3) where f# (x) = Epx) is the total number of features of dag x.,Experiment/Discussion
+The reason for the factor et is a bit involved.,Experiment/Discussion
+"Very roughly, we would like to choose weights so that the expectation of f, under the new field is equal to p[f].",Experiment/Discussion
+"Now qn,(x) is: where we factor Z as Z6Zo, for Zo the normalization constant in q.m.",Experiment/Discussion
+"Hence, qnew [f] 45j for all the features simultaneously, not just the weight 6, for feature i.",Experiment/Discussion
+"We might consider approximating qnew Ef,J by ignoring the normalization factor and assuming that all features have the same weight as feature i.",Experiment/Discussion
+"Since ft 6;6(x) = 6,4(x), we arrive at the expression on the left-hand side of equation (3).",Experiment/Discussion
+"One might expect the approximation just described to be rather poor, but it is proven in Della Pietra, Della Pietra, and Lafferty (1995) that solving equation (3) for 6, (for each i) and setting the new weight for feature i to SiOi is guaranteed to improve the model.",Experiment/Discussion
+"This is the real justification for equation (3), and the reader is referred to Della Pietra, Della Pietra, and Lafferty (1995) for details.",Experiment/Discussion
+"Solving (3) yields improved weights, but it does not necessarily immediately yield the globally best weights.",Experiment/Discussion
+We can obtain the globally best weights by iterating.,Experiment/Discussion
+"Set A 6,,A, for all i, and solve equation (3) again.",Experiment/Discussion
+Repeat until the weights no longer change.,Experiment/Discussion
+"As with equation (2), solving equation (3) is straightforward if L(G) is small enough to enumerate, but not if L(G) is large.",Experiment/Discussion
+"In that case, we must use random sampling.",Experiment/Discussion
+We generate a representative mini-corpus and estimate expectations by counting in the mini-corpus.,Experiment/Discussion
+(See Appendix 2.),Experiment/Discussion
+We have seen that random sampling is necessary both to set the initial weight for features under consideration and to adjust all weights after a new feature is adopted.,Experiment/Discussion
+Random sampling involves creating a corpus that is representative of a given model distribution q(x).,Experiment/Discussion
+"To take a very simple example, a fair coin can be seen as a method for sampling from the distribution q in which q(H) = 1/2, q(T) = 1/2.",Experiment/Discussion
+Saying that a corpus is representative is actually not a comment about the corpus itself but the method by which it was generated: a corpus representative of distribution q is one generated by a process that samples from q.,Experiment/Discussion
+Saying that a process M samples from q is to say that the empirical distributions of corpora generated by M converge to q in the limit.,Experiment/Discussion
+"For example, if we flip a fair coin once, the resulting empirical distribution over (H, T) is either (1,0) or (0, 1), not the fair-coin distribution (1/2, 1/2).",Experiment/Discussion
+"But as we take larger and larger corpora, the resulting empirical distributions converge to (1/2, 1/2).",Experiment/Discussion
+An advantage of SCFGs that random fields lack is the transparent relationship between an SCFG defining a distribution q and a sampler for q.,Experiment/Discussion
+"We can sample from q by performing stochastic derivations: each time we have a choice among rules expanding a category X, we choose rule X with probability 13„ where A is the weight of rule –÷ e,.",Experiment/Discussion
+Now we can sample from the initial distribution pa by performing stochastic derivations.,Experiment/Discussion
+"At the beginning of Section 3, we sketched how to generate dags from an AV grammar G via nondeterministic derivations.",Experiment/Discussion
+"We defined the initial distribution in terms of weights 0 attached to the rules of G. We can convert the nondeterministic derivations discussed at the beginning of Section 3 into stochastic derivations by choosing rule X with probability 0, when expanding a node labeled X.",Experiment/Discussion
+"Some derivations fail, but throwing away failed derivations has the effect of renormalizing the weight function, so that we generate a dag x with probability po(x), as desired.",Experiment/Discussion
+The Metropolis-Hastings algorithm provides us with a means of converting the sampler for the initial distribution po(x) into a sampler for the field distribution q(x).,Experiment/Discussion
+"Generally, let p(.) be a distribution for which we have a sampler.",Experiment/Discussion
+"We wish to construct a sample xl, , xN from a different distribution q(.).",Experiment/Discussion
+"Assume that items xl, , xt, are already in the sample, and we wish to choose x1.",Experiment/Discussion
+The sampler for p(.) proposes a new item y.,Experiment/Discussion
+We do not simply add y to the sample—that would give us a sample from p(.,Experiment/Discussion
+)—but rather we make a stochastic decision whether to accept the proposal y or reject it.,Experiment/Discussion
+"If we accept y, it is added to the sample (xn±i = y), and if we reject y, then xn is repeated (xn+i = xn).",Experiment/Discussion
+"The acceptance decision is made as follows: If p(y) > q(y), then y is overrepresented among the proposals.",Experiment/Discussion
+We can quantify the degree of overrepresentation as p(y)/q(y).,Experiment/Discussion
+The idea is to reject y with a probability corresponding to its degree of overrepresentation.,Experiment/Discussion
+"However, we do not consider the absolute degree of overrepresentation, but rather the degree of overrepresentation relative to xn.",Experiment/Discussion
+"(If y and xr, are equally overrepresented, there is no reason to reject y in favor of xn.)",Experiment/Discussion
+"That is, we consider the value If r < 1, then y is underrepresented relative to xn, and we accept y with probability one.",Experiment/Discussion
+"If r> 1, then we accept y with a probability that diminishes as r increases: specifically, with probability 1/r.",Experiment/Discussion
+"In brief, the acceptance probability of y is A(y I xn) = min(1, 1/r).",Experiment/Discussion
+It can be shown that proposing items with probability pH and accepting them with probability A( I xn) yields a sampler for q(.).,Experiment/Discussion
+"(See, for example, Winkler [1995]).2 The acceptance probability A(y I xn) reduces in our case to a particularly simple form.",Experiment/Discussion
+If r < 1 then A(y I x) = 1.,Experiment/Discussion
+"Otherwise, writing 0(x) for the &quot;field weight&quot; ni 0{,(x), we have:",Experiment/Discussion
+"In summary, we cannot simply transplant CF methods to the AV grammar case.",Experiment/Discussion
+"In particular, the ERF method yields correct weights only for SCFGs, not for AV grammars.",Experiment/Discussion
+We can define a probabilistic version of AV grammars with a correct weight-selection method by going to random fields.,Experiment/Discussion
+Feature selection and weight adjustment can be accomplished using the IIS algorithm.,Experiment/Discussion
+"In feature selection, we need to use random sampling to find the initial weight for a candidate feature, and in weight adjustment we need to use random sampling to solve the weight equation.",Experiment/Discussion
+"The random sampling method that DD&L used is not appropriate for sets of dags, but we can solve that problem by using the Metropolis-Hastings method instead.",Experiment/Discussion
+Open questions remain.,Experiment/Discussion
+"First, random sampling is notorious for being slow, and it remains to be shown whether the approach proposed here will be practicable.",Experiment/Discussion
+I expect practicability to be quite sensitive to the choice of grammar—the more the grammar's,Experiment/Discussion
+"in which 71- is the distribution we wish to sample from (q, in our notation) and g(x,y) is the proposal probability: the probability that the input sampler will propose y if the previous configuration was x.",Experiment/Discussion
+"The case we consider is a special case in which the proposal probability is independent of x: the proposal probability g(x, y) is, in our notation, p(y).",Experiment/Discussion
+"The original Metropolis algorithm is also a special case of the Metropolis-Hastings algorithm, in which the proposal probability is symmetric, that is, g(x,y) g(y, x).",Experiment/Discussion
+"The acceptance function then reduces to min(1,71-(y)/ir(x)), which is min(1,q(y)/q(x)) in our notation.",Experiment/Discussion
+I mention this only to point out that it is a different special case.,Experiment/Discussion
+"Our proposal probability is not symmetric, but rather independent of the previous configuration, and though our acceptance function reduces to a form (4) that is similar to the original Metropolis acceptance function, it is not the same: in general, 49(y) / 0(x) q(y)/q(x). distribution diverges from the initial context-free approximation, the more features will be necessary to &quot;correct&quot; it, and the more random sampling will be called on.",Experiment/Discussion
+A second issue is incomplete data.,Experiment/Discussion
+The approach described here assumes complete data (a parsed training corpus).,Experiment/Discussion
+"Fortunately, an extension of the method to handle incomplete data (unparsed training corpora) is described in Riezler (1997), and I refer readers to that paper.",Experiment/Discussion
+"As a closing note, it should be pointed out explicitly that the random field techniques described here can be profitably applied to context-free grammars, as well.",Experiment/Discussion
+"As Stanley Peters nicely put it, there is a distinction between possibilistic and probabilistic context-sensitivity.",Experiment/Discussion
+"Even if the language described by the grammar of interest—that is, the set of possible trees—is context-free, there may well be context-sensitive statistical dependencies.",Experiment/Discussion
+Random fields can be readily applied to capture such statistical dependencies whether or not L(G) is context-sensitive.,Experiment/Discussion
+"In the feature selection step, we choose an initial weight 3 for each candidate feature f so as to maximize the gain G = D(-)11 gold) — D(i)-11cfr,o) of adding f to the field.",Experiment/Discussion
+It is actually more convenient to consider log weights a = ln /3.,Experiment/Discussion
+"For a given feature f, the log weight et that maximizes gain is the solution to the equation: where q„ is the distribution that results from adding f to the field with log weight a.",Experiment/Discussion
+This equation can be solved using Newton's method.,Experiment/Discussion
+"Define To find the value of a for which F(a) = 0, we begin at a convenient point ao (the &quot;null&quot; weight ao = 0 recommends itself) and iteratively compute: F(at) Della Pietra, Della Pietra, and Lafferty (1995) show that F'(at) is equal to the negative of the variance off under the new field, which I will write –17„[f].",Experiment/Discussion
+To compute the iteration (6) we need to be able to compute F(at) and F'(at).,Experiment/Discussion
+"For F(at) we require p[f] and q„[f], and F'(at) can be expressed as [f simply the average value of f in the training corpus.",Experiment/Discussion
+"The remaining terms are all of the form qa [FL We can re-express this expectation in terms of the old field -gold The expectations qoid fief] can be obtained by generating a random sample (z1, .",Experiment/Discussion
+"• • , zN) of size N from gold and computing the average value of leaf.",Experiment/Discussion
+"That is, gold [ref] and the Newton iteration (6) reduces to: To compare candidates, we also need to know the gain D(Pliq old) — DQ311c16) for each candidate.",Experiment/Discussion
+"This can be expressed as follows (Della Pietra, Della Pietra, and Lafferty 1995): Putting everything together, the algorithm for feature selection has the following form.",Experiment/Discussion
+The array E[f] is assumed to have been initialized with the empirical expectations,Experiment/Discussion
+The procedure for adjusting field weights has much the same structure as the procedure for choosing initial weights.,Results/Conclusion
+"In terms of log weights, we wish to compute increments (61, • • • , 6) such that the new field, with log weights (al + 61, • • • , an + e5n) has a lower divergence than the old field (al, , an).",Results/Conclusion
+"We choose each 6, as the solution to the equation: Again, we use Newton's method.",Results/Conclusion
+"We wish to find 6 such that F1(6) = 0, where: We see that the expectations we need to compute by sampling from gold are of form q0ld[ffie6f#].",Results/Conclusion
+"We generate a random sample (z1, ••• , zN) and define: As we generate the sample we update the array C[i, mI = Ek (zk)= m 1;(4) .",Results/Conclusion
+"We estimate qo1c[ffte6f#] as the average value of ftae6f# in the sample, namely, (1/N)5r(i,6).",Results/Conclusion
+This permits us to compute F;(6) and F;(6).,Results/Conclusion
+"The resulting Newton iteration is: The estimation procedure is: procedure Adjust Weights (ai, , an) begin until the field converges do",Results/Conclusion
+"This work has greatly profited from the comments, criticism, and suggestions of a number of people, including Yoav Freund, John Lafferty, Stanley Peters, Hans Uszkoreit, and members of the audience at talks I gave at Saarbrucken and Tubingen.",Results/Conclusion
+"Michael Miller and Kevin Mark introduced me to random fields as a way of dealing with context-sensitivities in language, planting the idea that led (much later) to this paper.",Results/Conclusion
+"Finally, I would especially like to thank Marc Light and Stefan Riezler for extended discussions of the issues addressed here and helpful criticism of my first attempts to present this material.",Results/Conclusion
+All responsibility for flaws and errors of course remains with me.,Results/Conclusion

@@ -1,156 +1,156 @@
 col1,col2
-"We offer a simple, effective, and scalable method for statistical machine translation parameter tuning based on the pairwise approach to ranking (Herbrich et al., 1999).",{}
-"Unlike the popular MERT algorithm (Och, 2003), our pairwise ranking optimization (PRO) method is not limited to a handful of parameters and can easily handle systems with thousands of features.",{}
-"Moreover, unlike recent approaches built upon the MIRA algorithm of Crammer and Singer (2003) (Watanabe et al., 2007; Chiang et al., 2008b), PRO is easy to implement.",{}
-It uses off-the-shelf linear binary classifier software and can be built on top of an existing MERT framework in a matter of hours.,{}
-"We establish PRO’s scalability and effectiveness by comparing it to MERT and MIRA and demonstrate parity on both phrase-based and syntax-based systems in a variety of language pairs, using large scale data scenarios.",{}
-"The MERT algorithm (Och, 2003) is currently the most popular way to tune the parameters of a statistical machine translation (MT) system.","{'title': '1 Introduction', 'number': '1'}"
-"MERT is well-understood, easy to implement, and runs quickly, but can behave erratically and does not scale beyond a handful of features.","{'title': '1 Introduction', 'number': '1'}"
-"This lack of scalability is a significant weakness, as it inhibits systems from using more than a couple dozen features to discriminate between candidate translations and stymies feature development innovation.","{'title': '1 Introduction', 'number': '1'}"
-Several researchers have attempted to address this weakness.,"{'title': '1 Introduction', 'number': '1'}"
-"Recently, Watanabe et al. (2007) and Chiang et al.","{'title': '1 Introduction', 'number': '1'}"
-"(2008b) have developed tuning methods using the MIRA algorithm (Crammer and Singer, 2003) as a nucleus.","{'title': '1 Introduction', 'number': '1'}"
-The MIRA technique of Chiang et al. has been shown to perform well on large-scale tasks with hundreds or thousands of features (2009).,"{'title': '1 Introduction', 'number': '1'}"
-"However, the technique is complex and architecturally quite different from MERT.","{'title': '1 Introduction', 'number': '1'}"
-"Tellingly, in the entire proceedings of ACL 2010 (Hajiˇc et al., 2010), only one paper describing a statistical MT system cited the use of MIRA for tuning (Chiang, 2010), while 15 used MERT.1 Here we propose a simpler approach to tuning that scales similarly to high-dimensional feature spaces.","{'title': '1 Introduction', 'number': '1'}"
-"We cast tuning as a ranking problem (Chen et al., 2009), where the explicit goal is to learn to correctly rank candidate translations.","{'title': '1 Introduction', 'number': '1'}"
-"Specifically, we follow the pairwise approach to ranking (Herbrich et al., 1999; Freund et al., 2003; Burges et al., 2005; Cao et al., 2007), in which the ranking problem is reduced to the binary classification task of deciding between candidate translation pairs.","{'title': '1 Introduction', 'number': '1'}"
-Of primary concern to us is the ease of adoption of our proposed technique.,"{'title': '1 Introduction', 'number': '1'}"
-"Because of this, we adhere as closely as possible to the established MERT architecture and use freely available machine learning software.","{'title': '1 Introduction', 'number': '1'}"
-"The end result is a technique that scales and performs just as well as MIRA-based tuning, but which can be implemented in a couple of hours by anyone with an existing MERT implementation.","{'title': '1 Introduction', 'number': '1'}"
-"Mindful that many would-be enhancements to the state-of-the-art are false positives that only show improvement in a narrowly defined setting or with limited data, we validate our claims on both syntax and phrase-based systems, using multiple language pairs and large data sets.","{'title': '1 Introduction', 'number': '1'}"
-"We describe tuning in abstract and somewhat formal terms in Section 2, describe the MERT algorithm in the context of those terms and illustrate its scalability issues via a synthetic experiment in Section 3, introduce our pairwise ranking optimization method in Section 4, present numerous large-scale MT experiments to validate our claims in Section 5, discuss some related work in Section 6, and conclude in Section 7.","{'title': '1 Introduction', 'number': '1'}"
-"In Figure 1, we show an example candidate space, defined as a tuple (A, I, J, f, e, x) where: The example candidate space has two source sentences, three candidate translations for each source sentence, and feature vectors of dimension 2.","{'title': '2 Tuning', 'number': '2'}"
-"It is an example of a finite candidate space, defined as a candidate space for which I is finite and J maps each index of I to a finite set.","{'title': '2 Tuning', 'number': '2'}"
-"A policy of candidate space (A, I, J, f, e, x) is a function that maps each member i E I to a member of J(i).","{'title': '2 Tuning', 'number': '2'}"
-A policy corresponds to a choice of one candidate translation for each source sentence.,"{'title': '2 Tuning', 'number': '2'}"
-"For the example in Figure 1, policy p1 = 11 �-+ 2, 2 �-+ 31 corresponds to the choice of “he does not go” for the first source sentence and “I do not go” for the second source sentence.","{'title': '2 Tuning', 'number': '2'}"
-Obviously some policies are better than others.,"{'title': '2 Tuning', 'number': '2'}"
-"Policy p2 = 11 �-+ 3, 2 �-+ 11 corresponds to the inferior translations “she not go” and “I go not.” We assume the MT system distinguishes between policies using a scoring function for candidate translations of the form hw(i, j) = w · x(i, j), where w is a weight vector of the same dimension as feature vector x(i, j).","{'title': '2 Tuning', 'number': '2'}"
-"This scoring function extends to a policy p by summing the cost of each of the policy’s candidate translations: Hw(p) = Ei∈I hw(i, p(i)).","{'title': '2 Tuning', 'number': '2'}"
-"As can be seen in Figure 1, using w = [−2, 1], Hw(p1) = 9 and Hw(p2) = −8.","{'title': '2 Tuning', 'number': '2'}"
-"The goal of tuning is to learn a weight vector w such that Hw(p) assigns a high score to good policies, and a low score to bad policies.2 To do so, we need information about which policies are good and which are bad.","{'title': '2 Tuning', 'number': '2'}"
-This information is provided by a “gold” scoring function G that maps each policy to a real-valued score.,"{'title': '2 Tuning', 'number': '2'}"
-"Typically this gold function is BLEU (Papineni et al., 2002), though there are several common alternatives (Lavie and Denkowski, 2009; Melamed et al., 2003; Snover et al., 2006; Chiang et al., 2008a).","{'title': '2 Tuning', 'number': '2'}"
-"We want to find a weight vector w such that Hw behaves “similarly” to G on a candidate space s. We assume a loss function ls(Hw, G) which returns the real-valued loss of using scoring function Hw when the gold scoring function is G and the candidate space is s. Thus, we may say the goal of tuning is to find the weight vector w that minimizes loss.","{'title': '2 Tuning', 'number': '2'}"
-"In general, the candidate space may have infinitely many source sentences, as well as infinitely many candidate translations per source sentence.","{'title': '3 MERT', 'number': '3'}"
-"In practice, tuning optimizes over a finite subset of source sentences3 and a finite subset of candidate translations as well.","{'title': '3 MERT', 'number': '3'}"
-"The classic tuning architecture used in the dominant MERT approach (Och, 2003) forms the translation subset and learns weight vector w via Algorithm TUNE(s, G): space s = hA, I, J, f, e, xi w.r.t. gold function G. a feedback loop consisting of two phases.","{'title': '3 MERT', 'number': '3'}"
-Figure 2 shows the pseudocode.,"{'title': '3 MERT', 'number': '3'}"
-"During candidate generation, candidate translations are selected from a base candidate space s and added to a finite candidate space s0 called the candidate pool.","{'title': '3 MERT', 'number': '3'}"
-"During optimization, the weight vector w is optimized to minimize loss ls,(Hw, G).","{'title': '3 MERT', 'number': '3'}"
-"For its candidate generation phase, MERT generates the k-best candidate translations for each source sentence according to hw, where w is the weight vector from the previous optimization phase (or an arbitrary weight vector for the first iteration).","{'title': '3 MERT', 'number': '3'}"
-"For its optimization phase, MERT defines the loss function as follows: In other words, it prefers weight vectors w such that the gold function G scores Hw’s best policy as highly as possible (if Hw’s best policy is the same as G’s best policy, then there is zero loss).","{'title': '3 MERT', 'number': '3'}"
-Typically the optimization phase is implemented using Och’s line optimization algorithm (2003).,"{'title': '3 MERT', 'number': '3'}"
-MERT has proven itself effective at tuning candidate spaces with low dimensionality.,"{'title': '3 MERT', 'number': '3'}"
-"However, it is often claimed that MERT does not scale well with dimensionality.","{'title': '3 MERT', 'number': '3'}"
-"To test this claim, we devised the following synthetic data experiment: We used line optimization in the standard way, by generating 20 random starting weight vectors and hill-climbing on each independently until no further progress is made, then choosing the final weight vector that minimizes loss.","{'title': '3 MERT', 'number': '3'}"
-We tried various dimensionalities from 10 to 1000.,"{'title': '3 MERT', 'number': '3'}"
-"We repeated each setting three times, generating different random data each time.","{'title': '3 MERT', 'number': '3'}"
-The results in Figure 3 indicate that as the dimensionality of the problem increases MERT rapidly loses the ability to learn w∗.,"{'title': '3 MERT', 'number': '3'}"
-"Note that this synthetic problem is considerably easier than a real MT scenario, where the data is noisy and interdependent, and the gold scoring function is nonlinear.","{'title': '3 MERT', 'number': '3'}"
-"If MERT cannot scale in this simple scenario, it has little hope of succeeding in a high-dimensionality deployment scenario.","{'title': '3 MERT', 'number': '3'}"
-We would like to modify MERT so that it scales well to high-dimensionality candidate spaces.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-The most prominent example of a tuning method that performs well on high-dimensionality candidate spaces is the MIRA-based approach used by Watanabe et al. (2007) and Chiang et al.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-(2008b; 2009).,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Unfortunately, this approach requires a complex architecture that diverges significantly from the MERT approach, and consequently has not been widely adopted.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-Our goal is to achieve the same performance with minimal modification to MERT.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"With MERT as a starting point, we have a choice: modify candidate generation, optimization, or both.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Although alternative candidate generation methods have been proposed (Macherey et al., 2008; Chiang et al., 2008b; Chatterjee and Cancedda, 2010), we will restrict ourselves to MERT-style candidate generation, in order to minimize divergence from the established MERT tuning architecture.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Instead, we focus on the optimization phase.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"While intuitive, the MERT optimization module focuses attention on Hw’s best policy, and not on its overall prowess at ranking policies.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-We will create an optimization module that directly addresses Hw’s ability to rank policies in the hope that this more holistic approach will generalize better to unseen data.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Assume that the gold scoring function G decomposes in the following way: where g(i, j) is a local scoring function that scores the single candidate translation e(i, j).","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-We show an example g in Figure 1.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"For an arbitrary pair of candidate translations e(i, j) and e(i, j'), the local gold function g tells us which is the better translation.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-Note that this induces a ranking on the candidate translations for each source sentence.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"We follow the pairwise approach to ranking (Herbrich et al., 1999; Freund et al., 2003; Burges et al., 2005; Cao et al., 2007).","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"In the pairwise approach, the learning task is framed as the classification of candidate pairs into two categories: correctly ordered and incorrectly ordered.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Specifically, for candidate translation pair e(i, j) and e(i, j'), we want: g(i,j) > g(i,j') ⇔ hw(i,j) > hw(i,j').","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-We can re-express this condition: Thus optimization reduces to a classic binary classification problem.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"We create a labeled training instance for this problem by computing difference vector x(i, j) − x(i, j'), and labeling it as a positive or negative instance based on whether, respectively, the first or second vector is superior according to gold function g. To ensure balance, we consider both possible difference vectors from a pair.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"For example, given the candidate space of Figure 1, since g(1,1) > g(1, 3), we would add ([−4, 3], +) and ([4, −3], −) to our training set.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"We can then feed this training data directly to any off-the-shelf classification tool that returns a linear classifier, in order to obtain a weight vector w that optimizes the above condition.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-This weight vector can then be used directly by the MT system in the subsequent candidate generation phase.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"The exact loss function ls,(Hw, G) optimized depends on the choice of classifier.4 Typical approaches to pairwise ranking enumerate all difference vectors as training data.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"For tuning however, this means O(|I |∗ J2max) vectors, where Jmax is the cardinality of the largest J(i).","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Since I and Jmax commonly range in the thousands, a full enumeration would produce billions of feature vectors.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Out of tractability considerations, we sample from the space of difference vectors, using the sampler template in Figure 4.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"For each source sentence i, the sampler generates F candidate translation pairs hj, j'i, and accepts each pair with probability αi(|g(i,j) − g(i, j')|).","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Among the accepted pairs, it keeps the Ξ with greatest g differential, and adds their difference vectors to the training data.5 We repeated the scalability study from Section 3, now using our pairwise ranking optimization (hereafter, PRO) approach.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Throughout all experiments with PRO we choose Γ = 5000, Ξ = 50, and the following step function α for each αz: 6 We used MegaM III, 2004) as a binary classifier in our contrasting synthetic experiment and of the i.e., with all default settings for binary Figure 3 shows that PRO is able to learn nearly perfectly at all dimensionalities from 10 to 1000.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"As noted previously, though, this is a rather simple task.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"To encourage a disconnect between g and h, and make the synthetic scenario look more like obtained these parameters by trial-and-error experimentation on a single MT system (Urdu-English SBMT), then held them fixed throughout our experiments.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"We obtained similar results using P = = 100, and for each a logistic sigmoid function centered at the mean g differential of candidate translation pairs for the ith source sentence.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"This alternative approach has the advantage of being agnostic about which gold scoring function is used. the sampling settings previously described and MegaM as our classifier we were able to optimize two to three times faster than with but added noise to each feature vector, drawn from a zero-mean Gaussian with a standard deviation of 500.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"The results of the noisy synthetic experiments, but still The idea of learning from difference vectors also lies at the heart of the MIRA-based approaches (Watanabe et al., 2007; Chiang et al., 2008b) and the approach of Roth et al. (2010), which, similar to our method, uses sampling to select vectors.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Here, we isolate these aspects of those approaches to create a simpler tuning technique that closely mirrors the ubiquitous MERT architecture.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"Among other simplifications, we abstract away the choice of MIRA as the classification method (our approach can use any classification technique that learns a separating hyperplane), and we eliminate the need for oracle translations.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-An important observation is that BLEU does not satisfy the decomposability assumption of Equation (1).,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-An advantage of MERT is that it can directly optimize for non-decomposable scoring functions like BLEU.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-"In our experiments, we use the BLEU+1 approximation to BLEU (Liang et al., 2006) to determine class labels.","{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-We will nevert heless use BLEU to evaluate the trained systems.,"{'title': '4 Optimization via Pairwise Ranking', 'number': '4'}"
-We now turn to real machine translation conditions to validate our thesis: We can cleanly replace MERT’s line optimization with pairwise ranking optimization and immediately realize the benefits of high-dimension tuning.,"{'title': '5 Experiments', 'number': '5'}"
-"We now detail the three language pairs, two feature scenarios, and two MT models used for our experiments.","{'title': '5 Experiments', 'number': '5'}"
-"For each language pair and each MT model we used MERT, MIRA, and PRO to tune with a standard set of baseline features, and used the latter two methods to tune with an extended set of features.8 At the end of every experiment we used the final feature weights to decode a held-out test set and evaluated it with case-sensitive BLEU.","{'title': '5 Experiments', 'number': '5'}"
-The results are in Table 1.,"{'title': '5 Experiments', 'number': '5'}"
-"We used two systems, each based on a different MT model.","{'title': '5 Experiments', 'number': '5'}"
-"Our syntax-based system (hereafter, SBMT) follows the model of Galley et al. (2004).","{'title': '5 Experiments', 'number': '5'}"
-"Our 8MERT could not run to a satisfactory completion in any extended feature scenario; as implied in the synthetic data experiment of Section 3, the algorithm makes poor choices for its weights and this leads to low-quality k-best lists and dismal performance, near 0 BLEU in every iteration. phrase-based system (hereafter, PBMT) follows the model of Och and Ney (2004).","{'title': '5 Experiments', 'number': '5'}"
-"In both systems we learn alignments with GIZA++ (Och and Ney, 2000) using IBM Model 4; for Urdu-English and Chinese-English we merged alignments with the refined method, and for Arabic-English we merged with the union method.","{'title': '5 Experiments', 'number': '5'}"
-Table 2 notes the sizes of the datasets used in our experiments.,"{'title': '5 Experiments', 'number': '5'}"
-All tune and test data have four English reference sets for the purposes of scoring.,"{'title': '5 Experiments', 'number': '5'}"
-The training data for Urdu-English is that made available in the constrained track in the NIST 2009 MT evaluation.,"{'title': '5 Experiments', 'number': '5'}"
-"This includes many lexicon entries and other single-word data, which accounts for the large number of lines relative to word count.","{'title': '5 Experiments', 'number': '5'}"
-"The NIST 2008 evaluation set, which contains newswire and web data, is split into two parts; we used roughly half each for tune and test.","{'title': '5 Experiments', 'number': '5'}"
-We trained a 5-gram English language model on the English side of the training data.,"{'title': '5 Experiments', 'number': '5'}"
-The training data for Arabic English is that made available in the constrained track in the NIST 2008 MT evaluation.,"{'title': '5 Experiments', 'number': '5'}"
-"The tune set, which contains only newswire data, is a mix from NIST MT evaluation sets from 2003–2006 and from GALE development data.","{'title': '5 Experiments', 'number': '5'}"
-"The test set, which contains both web and newswire data, is the evaluation set from the NIST 2008 MT evaluation.","{'title': '5 Experiments', 'number': '5'}"
-We trained a 4-gram English language model on the English side of the training data.,"{'title': '5 Experiments', 'number': '5'}"
-For Chinese-English we used 173M words of training data from GALE 2008.,"{'title': '5 Experiments', 'number': '5'}"
-"For SBMT we used a 32M word subset for extracting rules and building a language model, but used the entire training data for alignments, and for all PBMT training.","{'title': '5 Experiments', 'number': '5'}"
-The tune and test sets both contain web and newswire data.,"{'title': '5 Experiments', 'number': '5'}"
-The tune set is selected from NIST MT evaluation sets from 2003–2006.,"{'title': '5 Experiments', 'number': '5'}"
-The test set is the evaluation set from the NIST 2008 MT evaluation.,"{'title': '5 Experiments', 'number': '5'}"
-We trained a 3-gram English language model on the English side of the training data.,"{'title': '5 Experiments', 'number': '5'}"
-"For each of our systems we identify two feature sets: baseline, which correspond to the typical small feature set reported in current MT literature, and extended, a superset of baseline, which adds hundreds or thousands of features.","{'title': '5 Experiments', 'number': '5'}"
-"Specifically, we use 15 baseline features for PBMT, similar to the baseline features described by Watanabe et al. (2007).","{'title': '5 Experiments', 'number': '5'}"
-"We use 19 baseline features for SBMT, similar to the baseline features described by Chiang et al. (2008b).","{'title': '5 Experiments', 'number': '5'}"
-We used the following feature classes in SBMT and PBMT extended scenarios: We used the following feature classes in SBMT extended scenarios only (cf.,"{'title': '5 Experiments', 'number': '5'}"
-"Chiang et al. (2009), Section 4.1):10 We used the following feature classes in PBMT extended scenarios only: The feature classes and number of features used within those classes for each language pair are summarized in Table 3.","{'title': '5 Experiments', 'number': '5'}"
-Each of the three approaches we compare in this study has various details associated with it that may prove useful to those wishing to reproduce our results.,"{'title': '5 Experiments', 'number': '5'}"
-"We list choices made for the various tuning methods here, and note that all our decisions were made in keeping with best practices for each algorithm.","{'title': '5 Experiments', 'number': '5'}"
-"We used David Chiang’s CMERT implementation of MERT that is available with the Moses system (Koehn et al., 2007).","{'title': '5 Experiments', 'number': '5'}"
-"We ran MERT for up to 30 iterations, using k = 1500, and stopping early when 11This constitutes 6,723 features in principle (822 − 1 since “unaligned-unaligned” is not considered) but in practice far fewer co-occurrences were seen.","{'title': '5 Experiments', 'number': '5'}"
-Table 3 shows the number of actual unigram word pair features observed in data. the accumulated k-best list does not change in an iteration.,"{'title': '5 Experiments', 'number': '5'}"
-"In every tuning iteration we ran MERT once with weights initialized to the last iteration’s chosen weight set and 19 times with random weights, and chose the the best of the 20 ending points according to G on the development set.","{'title': '5 Experiments', 'number': '5'}"
-"The G we optimize is tokenized, lower-cased 4-gram BLEU (Papineni et al., 2002).","{'title': '5 Experiments', 'number': '5'}"
-"We for the most part follow the MIRA algorithm for machine translation as described by Chiang et al. (2009)12 but instead of using the 10-best of each of the best hw, hw +g, and hw-g, we use the 30-best according to hw.13 We use the same sentence-level BLEU calculated in the context of previous 1-best translations as Chiang et al.","{'title': '5 Experiments', 'number': '5'}"
-(2008b; 2009).,"{'title': '5 Experiments', 'number': '5'}"
-We ran MIRA for 30 iterations.,"{'title': '5 Experiments', 'number': '5'}"
-We used the MegaM classifier and sampled as described in Section 4.2.,"{'title': '5 Experiments', 'number': '5'}"
-"As previously noted, we used BLEU+1 (Liang et al., 2006) for g. MegaM was easy to set up and ran fairly quickly, however any linear binary classifier that operates on real-valued features can be used, and in fact we obtained similar results using the support vector machine module of WEKA (Hall et al., 2009) as well as the Stanford classifier (Manning and Klein, 2003).","{'title': '5 Experiments', 'number': '5'}"
-"We ran for up to 30 iterations and used the same k and stopping criterion as was used for MERT, though variability of sampling precluded list convergence.","{'title': '5 Experiments', 'number': '5'}"
-"While MERT and MIRA use each iteration’s final weights as a starting point for hill-climbing the next iteration, the pairwise ranking approach has no explicit tie to previous iterations.","{'title': '5 Experiments', 'number': '5'}"
-"To incorporate such stability into our process we interpolated the weights w' learned by the classifier in iteration t with those from iteration t − 1 by a factor of Ψ, such that wt = Ψ · w' + (1 − Ψ) · wt−1.","{'title': '5 Experiments', 'number': '5'}"
-We found Ψ = 0.1 gave good performance across the board.,"{'title': '5 Experiments', 'number': '5'}"
-We implore the reader to avoid the natural tendency to compare results using baseline vs. extended features or between PBMT and SBMT on the same language pair.,"{'title': '5 Experiments', 'number': '5'}"
-"Such discussions are indeed interesting, and could lead to improvements in feature engineering or sartorial choices due to the outcome of wagers (Goodale, 2008), but they distract from our thesis.","{'title': '5 Experiments', 'number': '5'}"
-"As can be seen in Table 1, for each of the 12 choices of system, language pair, and feature set, the PRO method performed nearly the same as or better than MIRA and MERT on test data.","{'title': '5 Experiments', 'number': '5'}"
-In Figure 5 we show the tune and test BLEU using the weights learned at every iteration for each Urdu-English SBMT experiment.,"{'title': '5 Experiments', 'number': '5'}"
-"Typical of the rest of the experiments, we can clearly see that PRO appears to proceed more monotonically than the other methods.","{'title': '5 Experiments', 'number': '5'}"
-We quantified PRO’s stability as compared to MERT by repeating the Urdu-English baseline PBMT experiment five times with each configuration.,"{'title': '5 Experiments', 'number': '5'}"
-The tune and test BLEU at each iteration is depicted in Figure 6.,"{'title': '5 Experiments', 'number': '5'}"
-"The standard deviation of the final test BLEU of MERT was 0.13 across the five experiment instances, while PRO had a standard deviation of just 0.05.","{'title': '5 Experiments', 'number': '5'}"
-"Several works (Shen et al., 2004; Cowan et al., 2006; Watanabe et al., 2006) have used discriminative techniques to re-rank k-best lists for MT.","{'title': '6 Related Work', 'number': '6'}"
-Tillmann and Zhang (2005) used a customized form of multi-class stochastic gradient descent to learn feature weights for an MT model.,"{'title': '6 Related Work', 'number': '6'}"
-Och and Ney (2002) used maximum entropy to tune feature weights but did not compare pairs of derivations.,"{'title': '6 Related Work', 'number': '6'}"
-Ittycheriah and Roukos (2005) used a maximum entropy classifier to train an alignment model using hand-labeled data.,"{'title': '6 Related Work', 'number': '6'}"
-"Xiong et al. (2006) also used a maximum entropy classifier, in this case to train the reordering component of their MT model.","{'title': '6 Related Work', 'number': '6'}"
-"Lattice- and hypergraphbased variants of MERT (Macherey et al., 2008; Kumar et al., 2009) are more stable than traditional MERT, but also require significant engineering efforts.","{'title': '6 Related Work', 'number': '6'}"
-"We have described a simple technique for tuning an MT system that is on par with the leading techniques, exhibits reliable behavior, scales gracefully to high-dimension feature spaces, and is remarkably easy to implement.","{'title': '7 Conclusion', 'number': '7'}"
-"We have demonstrated, via a litany of experiments, that our claims are valid and that this technique is widely applicable.","{'title': '7 Conclusion', 'number': '7'}"
-It is our hope that the adoption of PRO tuning leads to fewer headaches during tuning and motivates advanced MT feature engineering research.,"{'title': '7 Conclusion', 'number': '7'}"
-"Thanks to Markus Dreyer, Kevin Knight, Saiyam Kohli, Greg Langmead, Daniel Marcu, Dragos Munteanu, and Wei Wang for their assistance.","{'title': 'Acknowledgments', 'number': '8'}"
-"Thanks also to the anonymous reviewers, especially the reviewer who implemented PRO during the review period and replicated our results.","{'title': 'Acknowledgments', 'number': '8'}"
+"We offer a simple, effective, and scalable method for statistical machine translation parameter tuning based on the pairwise approach to ranking (Herbrich et al., 1999).",Introduction
+"Unlike the popular MERT algorithm (Och, 2003), our pairwise ranking optimization (PRO) method is not limited to a handful of parameters and can easily handle systems with thousands of features.",Introduction
+"Moreover, unlike recent approaches built upon the MIRA algorithm of Crammer and Singer (2003) (Watanabe et al., 2007; Chiang et al., 2008b), PRO is easy to implement.",Introduction
+It uses off-the-shelf linear binary classifier software and can be built on top of an existing MERT framework in a matter of hours.,Introduction
+"We establish PRO’s scalability and effectiveness by comparing it to MERT and MIRA and demonstrate parity on both phrase-based and syntax-based systems in a variety of language pairs, using large scale data scenarios.",Introduction
+"The MERT algorithm (Och, 2003) is currently the most popular way to tune the parameters of a statistical machine translation (MT) system.",Experiment/Discussion
+"MERT is well-understood, easy to implement, and runs quickly, but can behave erratically and does not scale beyond a handful of features.",Experiment/Discussion
+"This lack of scalability is a significant weakness, as it inhibits systems from using more than a couple dozen features to discriminate between candidate translations and stymies feature development innovation.",Experiment/Discussion
+Several researchers have attempted to address this weakness.,Experiment/Discussion
+"Recently, Watanabe et al. (2007) and Chiang et al.",Experiment/Discussion
+"(2008b) have developed tuning methods using the MIRA algorithm (Crammer and Singer, 2003) as a nucleus.",Experiment/Discussion
+The MIRA technique of Chiang et al. has been shown to perform well on large-scale tasks with hundreds or thousands of features (2009).,Experiment/Discussion
+"However, the technique is complex and architecturally quite different from MERT.",Experiment/Discussion
+"Tellingly, in the entire proceedings of ACL 2010 (Hajiˇc et al., 2010), only one paper describing a statistical MT system cited the use of MIRA for tuning (Chiang, 2010), while 15 used MERT.1 Here we propose a simpler approach to tuning that scales similarly to high-dimensional feature spaces.",Experiment/Discussion
+"We cast tuning as a ranking problem (Chen et al., 2009), where the explicit goal is to learn to correctly rank candidate translations.",Experiment/Discussion
+"Specifically, we follow the pairwise approach to ranking (Herbrich et al., 1999; Freund et al., 2003; Burges et al., 2005; Cao et al., 2007), in which the ranking problem is reduced to the binary classification task of deciding between candidate translation pairs.",Experiment/Discussion
+Of primary concern to us is the ease of adoption of our proposed technique.,Experiment/Discussion
+"Because of this, we adhere as closely as possible to the established MERT architecture and use freely available machine learning software.",Experiment/Discussion
+"The end result is a technique that scales and performs just as well as MIRA-based tuning, but which can be implemented in a couple of hours by anyone with an existing MERT implementation.",Experiment/Discussion
+"Mindful that many would-be enhancements to the state-of-the-art are false positives that only show improvement in a narrowly defined setting or with limited data, we validate our claims on both syntax and phrase-based systems, using multiple language pairs and large data sets.",Experiment/Discussion
+"We describe tuning in abstract and somewhat formal terms in Section 2, describe the MERT algorithm in the context of those terms and illustrate its scalability issues via a synthetic experiment in Section 3, introduce our pairwise ranking optimization method in Section 4, present numerous large-scale MT experiments to validate our claims in Section 5, discuss some related work in Section 6, and conclude in Section 7.",Experiment/Discussion
+"In Figure 1, we show an example candidate space, defined as a tuple (A, I, J, f, e, x) where: The example candidate space has two source sentences, three candidate translations for each source sentence, and feature vectors of dimension 2.",Experiment/Discussion
+"It is an example of a finite candidate space, defined as a candidate space for which I is finite and J maps each index of I to a finite set.",Experiment/Discussion
+"A policy of candidate space (A, I, J, f, e, x) is a function that maps each member i E I to a member of J(i).",Experiment/Discussion
+A policy corresponds to a choice of one candidate translation for each source sentence.,Experiment/Discussion
+"For the example in Figure 1, policy p1 = 11 �-+ 2, 2 �-+ 31 corresponds to the choice of “he does not go” for the first source sentence and “I do not go” for the second source sentence.",Experiment/Discussion
+Obviously some policies are better than others.,Experiment/Discussion
+"Policy p2 = 11 �-+ 3, 2 �-+ 11 corresponds to the inferior translations “she not go” and “I go not.” We assume the MT system distinguishes between policies using a scoring function for candidate translations of the form hw(i, j) = w · x(i, j), where w is a weight vector of the same dimension as feature vector x(i, j).",Experiment/Discussion
+"This scoring function extends to a policy p by summing the cost of each of the policy’s candidate translations: Hw(p) = Ei∈I hw(i, p(i)).",Experiment/Discussion
+"As can be seen in Figure 1, using w = [−2, 1], Hw(p1) = 9 and Hw(p2) = −8.",Experiment/Discussion
+"The goal of tuning is to learn a weight vector w such that Hw(p) assigns a high score to good policies, and a low score to bad policies.2 To do so, we need information about which policies are good and which are bad.",Experiment/Discussion
+This information is provided by a “gold” scoring function G that maps each policy to a real-valued score.,Experiment/Discussion
+"Typically this gold function is BLEU (Papineni et al., 2002), though there are several common alternatives (Lavie and Denkowski, 2009; Melamed et al., 2003; Snover et al., 2006; Chiang et al., 2008a).",Experiment/Discussion
+"We want to find a weight vector w such that Hw behaves “similarly” to G on a candidate space s. We assume a loss function ls(Hw, G) which returns the real-valued loss of using scoring function Hw when the gold scoring function is G and the candidate space is s. Thus, we may say the goal of tuning is to find the weight vector w that minimizes loss.",Experiment/Discussion
+"In general, the candidate space may have infinitely many source sentences, as well as infinitely many candidate translations per source sentence.",Experiment/Discussion
+"In practice, tuning optimizes over a finite subset of source sentences3 and a finite subset of candidate translations as well.",Experiment/Discussion
+"The classic tuning architecture used in the dominant MERT approach (Och, 2003) forms the translation subset and learns weight vector w via Algorithm TUNE(s, G): space s = hA, I, J, f, e, xi w.r.t. gold function G. a feedback loop consisting of two phases.",Experiment/Discussion
+Figure 2 shows the pseudocode.,Experiment/Discussion
+"During candidate generation, candidate translations are selected from a base candidate space s and added to a finite candidate space s0 called the candidate pool.",Experiment/Discussion
+"During optimization, the weight vector w is optimized to minimize loss ls,(Hw, G).",Experiment/Discussion
+"For its candidate generation phase, MERT generates the k-best candidate translations for each source sentence according to hw, where w is the weight vector from the previous optimization phase (or an arbitrary weight vector for the first iteration).",Experiment/Discussion
+"For its optimization phase, MERT defines the loss function as follows: In other words, it prefers weight vectors w such that the gold function G scores Hw’s best policy as highly as possible (if Hw’s best policy is the same as G’s best policy, then there is zero loss).",Experiment/Discussion
+Typically the optimization phase is implemented using Och’s line optimization algorithm (2003).,Experiment/Discussion
+MERT has proven itself effective at tuning candidate spaces with low dimensionality.,Experiment/Discussion
+"However, it is often claimed that MERT does not scale well with dimensionality.",Experiment/Discussion
+"To test this claim, we devised the following synthetic data experiment: We used line optimization in the standard way, by generating 20 random starting weight vectors and hill-climbing on each independently until no further progress is made, then choosing the final weight vector that minimizes loss.",Experiment/Discussion
+We tried various dimensionalities from 10 to 1000.,Experiment/Discussion
+"We repeated each setting three times, generating different random data each time.",Experiment/Discussion
+The results in Figure 3 indicate that as the dimensionality of the problem increases MERT rapidly loses the ability to learn w∗.,Experiment/Discussion
+"Note that this synthetic problem is considerably easier than a real MT scenario, where the data is noisy and interdependent, and the gold scoring function is nonlinear.",Experiment/Discussion
+"If MERT cannot scale in this simple scenario, it has little hope of succeeding in a high-dimensionality deployment scenario.",Experiment/Discussion
+We would like to modify MERT so that it scales well to high-dimensionality candidate spaces.,Experiment/Discussion
+The most prominent example of a tuning method that performs well on high-dimensionality candidate spaces is the MIRA-based approach used by Watanabe et al. (2007) and Chiang et al.,Experiment/Discussion
+(2008b; 2009).,Experiment/Discussion
+"Unfortunately, this approach requires a complex architecture that diverges significantly from the MERT approach, and consequently has not been widely adopted.",Experiment/Discussion
+Our goal is to achieve the same performance with minimal modification to MERT.,Experiment/Discussion
+"With MERT as a starting point, we have a choice: modify candidate generation, optimization, or both.",Experiment/Discussion
+"Although alternative candidate generation methods have been proposed (Macherey et al., 2008; Chiang et al., 2008b; Chatterjee and Cancedda, 2010), we will restrict ourselves to MERT-style candidate generation, in order to minimize divergence from the established MERT tuning architecture.",Experiment/Discussion
+"Instead, we focus on the optimization phase.",Experiment/Discussion
+"While intuitive, the MERT optimization module focuses attention on Hw’s best policy, and not on its overall prowess at ranking policies.",Experiment/Discussion
+We will create an optimization module that directly addresses Hw’s ability to rank policies in the hope that this more holistic approach will generalize better to unseen data.,Experiment/Discussion
+"Assume that the gold scoring function G decomposes in the following way: where g(i, j) is a local scoring function that scores the single candidate translation e(i, j).",Experiment/Discussion
+We show an example g in Figure 1.,Experiment/Discussion
+"For an arbitrary pair of candidate translations e(i, j) and e(i, j'), the local gold function g tells us which is the better translation.",Experiment/Discussion
+Note that this induces a ranking on the candidate translations for each source sentence.,Experiment/Discussion
+"We follow the pairwise approach to ranking (Herbrich et al., 1999; Freund et al., 2003; Burges et al., 2005; Cao et al., 2007).",Experiment/Discussion
+"In the pairwise approach, the learning task is framed as the classification of candidate pairs into two categories: correctly ordered and incorrectly ordered.",Experiment/Discussion
+"Specifically, for candidate translation pair e(i, j) and e(i, j'), we want: g(i,j) > g(i,j') ⇔ hw(i,j) > hw(i,j').",Experiment/Discussion
+We can re-express this condition: Thus optimization reduces to a classic binary classification problem.,Experiment/Discussion
+"We create a labeled training instance for this problem by computing difference vector x(i, j) − x(i, j'), and labeling it as a positive or negative instance based on whether, respectively, the first or second vector is superior according to gold function g. To ensure balance, we consider both possible difference vectors from a pair.",Experiment/Discussion
+"For example, given the candidate space of Figure 1, since g(1,1) > g(1, 3), we would add ([−4, 3], +) and ([4, −3], −) to our training set.",Experiment/Discussion
+"We can then feed this training data directly to any off-the-shelf classification tool that returns a linear classifier, in order to obtain a weight vector w that optimizes the above condition.",Experiment/Discussion
+This weight vector can then be used directly by the MT system in the subsequent candidate generation phase.,Experiment/Discussion
+"The exact loss function ls,(Hw, G) optimized depends on the choice of classifier.4 Typical approaches to pairwise ranking enumerate all difference vectors as training data.",Experiment/Discussion
+"For tuning however, this means O(|I |∗ J2max) vectors, where Jmax is the cardinality of the largest J(i).",Experiment/Discussion
+"Since I and Jmax commonly range in the thousands, a full enumeration would produce billions of feature vectors.",Experiment/Discussion
+"Out of tractability considerations, we sample from the space of difference vectors, using the sampler template in Figure 4.",Experiment/Discussion
+"For each source sentence i, the sampler generates F candidate translation pairs hj, j'i, and accepts each pair with probability αi(|g(i,j) − g(i, j')|).",Experiment/Discussion
+"Among the accepted pairs, it keeps the Ξ with greatest g differential, and adds their difference vectors to the training data.5 We repeated the scalability study from Section 3, now using our pairwise ranking optimization (hereafter, PRO) approach.",Experiment/Discussion
+"Throughout all experiments with PRO we choose Γ = 5000, Ξ = 50, and the following step function α for each αz: 6 We used MegaM III, 2004) as a binary classifier in our contrasting synthetic experiment and of the i.e., with all default settings for binary Figure 3 shows that PRO is able to learn nearly perfectly at all dimensionalities from 10 to 1000.",Experiment/Discussion
+"As noted previously, though, this is a rather simple task.",Experiment/Discussion
+"To encourage a disconnect between g and h, and make the synthetic scenario look more like obtained these parameters by trial-and-error experimentation on a single MT system (Urdu-English SBMT), then held them fixed throughout our experiments.",Experiment/Discussion
+"We obtained similar results using P = = 100, and for each a logistic sigmoid function centered at the mean g differential of candidate translation pairs for the ith source sentence.",Experiment/Discussion
+"This alternative approach has the advantage of being agnostic about which gold scoring function is used. the sampling settings previously described and MegaM as our classifier we were able to optimize two to three times faster than with but added noise to each feature vector, drawn from a zero-mean Gaussian with a standard deviation of 500.",Experiment/Discussion
+"The results of the noisy synthetic experiments, but still The idea of learning from difference vectors also lies at the heart of the MIRA-based approaches (Watanabe et al., 2007; Chiang et al., 2008b) and the approach of Roth et al. (2010), which, similar to our method, uses sampling to select vectors.",Experiment/Discussion
+"Here, we isolate these aspects of those approaches to create a simpler tuning technique that closely mirrors the ubiquitous MERT architecture.",Experiment/Discussion
+"Among other simplifications, we abstract away the choice of MIRA as the classification method (our approach can use any classification technique that learns a separating hyperplane), and we eliminate the need for oracle translations.",Experiment/Discussion
+An important observation is that BLEU does not satisfy the decomposability assumption of Equation (1).,Experiment/Discussion
+An advantage of MERT is that it can directly optimize for non-decomposable scoring functions like BLEU.,Experiment/Discussion
+"In our experiments, we use the BLEU+1 approximation to BLEU (Liang et al., 2006) to determine class labels.",Experiment/Discussion
+We will nevert heless use BLEU to evaluate the trained systems.,Experiment/Discussion
+We now turn to real machine translation conditions to validate our thesis: We can cleanly replace MERT’s line optimization with pairwise ranking optimization and immediately realize the benefits of high-dimension tuning.,Experiment/Discussion
+"We now detail the three language pairs, two feature scenarios, and two MT models used for our experiments.",Experiment/Discussion
+"For each language pair and each MT model we used MERT, MIRA, and PRO to tune with a standard set of baseline features, and used the latter two methods to tune with an extended set of features.8 At the end of every experiment we used the final feature weights to decode a held-out test set and evaluated it with case-sensitive BLEU.",Experiment/Discussion
+The results are in Table 1.,Experiment/Discussion
+"We used two systems, each based on a different MT model.",Experiment/Discussion
+"Our syntax-based system (hereafter, SBMT) follows the model of Galley et al. (2004).",Experiment/Discussion
+"Our 8MERT could not run to a satisfactory completion in any extended feature scenario; as implied in the synthetic data experiment of Section 3, the algorithm makes poor choices for its weights and this leads to low-quality k-best lists and dismal performance, near 0 BLEU in every iteration. phrase-based system (hereafter, PBMT) follows the model of Och and Ney (2004).",Experiment/Discussion
+"In both systems we learn alignments with GIZA++ (Och and Ney, 2000) using IBM Model 4; for Urdu-English and Chinese-English we merged alignments with the refined method, and for Arabic-English we merged with the union method.",Experiment/Discussion
+Table 2 notes the sizes of the datasets used in our experiments.,Experiment/Discussion
+All tune and test data have four English reference sets for the purposes of scoring.,Experiment/Discussion
+The training data for Urdu-English is that made available in the constrained track in the NIST 2009 MT evaluation.,Experiment/Discussion
+"This includes many lexicon entries and other single-word data, which accounts for the large number of lines relative to word count.",Experiment/Discussion
+"The NIST 2008 evaluation set, which contains newswire and web data, is split into two parts; we used roughly half each for tune and test.",Experiment/Discussion
+We trained a 5-gram English language model on the English side of the training data.,Experiment/Discussion
+The training data for Arabic English is that made available in the constrained track in the NIST 2008 MT evaluation.,Experiment/Discussion
+"The tune set, which contains only newswire data, is a mix from NIST MT evaluation sets from 2003–2006 and from GALE development data.",Experiment/Discussion
+"The test set, which contains both web and newswire data, is the evaluation set from the NIST 2008 MT evaluation.",Experiment/Discussion
+We trained a 4-gram English language model on the English side of the training data.,Experiment/Discussion
+For Chinese-English we used 173M words of training data from GALE 2008.,Experiment/Discussion
+"For SBMT we used a 32M word subset for extracting rules and building a language model, but used the entire training data for alignments, and for all PBMT training.",Experiment/Discussion
+The tune and test sets both contain web and newswire data.,Experiment/Discussion
+The tune set is selected from NIST MT evaluation sets from 2003–2006.,Experiment/Discussion
+The test set is the evaluation set from the NIST 2008 MT evaluation.,Experiment/Discussion
+We trained a 3-gram English language model on the English side of the training data.,Experiment/Discussion
+"For each of our systems we identify two feature sets: baseline, which correspond to the typical small feature set reported in current MT literature, and extended, a superset of baseline, which adds hundreds or thousands of features.",Experiment/Discussion
+"Specifically, we use 15 baseline features for PBMT, similar to the baseline features described by Watanabe et al. (2007).",Experiment/Discussion
+"We use 19 baseline features for SBMT, similar to the baseline features described by Chiang et al. (2008b).",Experiment/Discussion
+We used the following feature classes in SBMT and PBMT extended scenarios: We used the following feature classes in SBMT extended scenarios only (cf.,Experiment/Discussion
+"Chiang et al. (2009), Section 4.1):10 We used the following feature classes in PBMT extended scenarios only: The feature classes and number of features used within those classes for each language pair are summarized in Table 3.",Experiment/Discussion
+Each of the three approaches we compare in this study has various details associated with it that may prove useful to those wishing to reproduce our results.,Experiment/Discussion
+"We list choices made for the various tuning methods here, and note that all our decisions were made in keeping with best practices for each algorithm.",Experiment/Discussion
+"We used David Chiang’s CMERT implementation of MERT that is available with the Moses system (Koehn et al., 2007).",Experiment/Discussion
+"We ran MERT for up to 30 iterations, using k = 1500, and stopping early when 11This constitutes 6,723 features in principle (822 − 1 since “unaligned-unaligned” is not considered) but in practice far fewer co-occurrences were seen.",Experiment/Discussion
+Table 3 shows the number of actual unigram word pair features observed in data. the accumulated k-best list does not change in an iteration.,Experiment/Discussion
+"In every tuning iteration we ran MERT once with weights initialized to the last iteration’s chosen weight set and 19 times with random weights, and chose the the best of the 20 ending points according to G on the development set.",Experiment/Discussion
+"The G we optimize is tokenized, lower-cased 4-gram BLEU (Papineni et al., 2002).",Experiment/Discussion
+"We for the most part follow the MIRA algorithm for machine translation as described by Chiang et al. (2009)12 but instead of using the 10-best of each of the best hw, hw +g, and hw-g, we use the 30-best according to hw.13 We use the same sentence-level BLEU calculated in the context of previous 1-best translations as Chiang et al.",Experiment/Discussion
+(2008b; 2009).,Experiment/Discussion
+We ran MIRA for 30 iterations.,Experiment/Discussion
+We used the MegaM classifier and sampled as described in Section 4.2.,Experiment/Discussion
+"As previously noted, we used BLEU+1 (Liang et al., 2006) for g. MegaM was easy to set up and ran fairly quickly, however any linear binary classifier that operates on real-valued features can be used, and in fact we obtained similar results using the support vector machine module of WEKA (Hall et al., 2009) as well as the Stanford classifier (Manning and Klein, 2003).",Experiment/Discussion
+"We ran for up to 30 iterations and used the same k and stopping criterion as was used for MERT, though variability of sampling precluded list convergence.",Experiment/Discussion
+"While MERT and MIRA use each iteration’s final weights as a starting point for hill-climbing the next iteration, the pairwise ranking approach has no explicit tie to previous iterations.",Experiment/Discussion
+"To incorporate such stability into our process we interpolated the weights w' learned by the classifier in iteration t with those from iteration t − 1 by a factor of Ψ, such that wt = Ψ · w' + (1 − Ψ) · wt−1.",Experiment/Discussion
+We found Ψ = 0.1 gave good performance across the board.,Experiment/Discussion
+We implore the reader to avoid the natural tendency to compare results using baseline vs. extended features or between PBMT and SBMT on the same language pair.,Experiment/Discussion
+"Such discussions are indeed interesting, and could lead to improvements in feature engineering or sartorial choices due to the outcome of wagers (Goodale, 2008), but they distract from our thesis.",Experiment/Discussion
+"As can be seen in Table 1, for each of the 12 choices of system, language pair, and feature set, the PRO method performed nearly the same as or better than MIRA and MERT on test data.",Experiment/Discussion
+In Figure 5 we show the tune and test BLEU using the weights learned at every iteration for each Urdu-English SBMT experiment.,Experiment/Discussion
+"Typical of the rest of the experiments, we can clearly see that PRO appears to proceed more monotonically than the other methods.",Experiment/Discussion
+We quantified PRO’s stability as compared to MERT by repeating the Urdu-English baseline PBMT experiment five times with each configuration.,Experiment/Discussion
+The tune and test BLEU at each iteration is depicted in Figure 6.,Experiment/Discussion
+"The standard deviation of the final test BLEU of MERT was 0.13 across the five experiment instances, while PRO had a standard deviation of just 0.05.",Experiment/Discussion
+"Several works (Shen et al., 2004; Cowan et al., 2006; Watanabe et al., 2006) have used discriminative techniques to re-rank k-best lists for MT.",Experiment/Discussion
+Tillmann and Zhang (2005) used a customized form of multi-class stochastic gradient descent to learn feature weights for an MT model.,Experiment/Discussion
+Och and Ney (2002) used maximum entropy to tune feature weights but did not compare pairs of derivations.,Experiment/Discussion
+Ittycheriah and Roukos (2005) used a maximum entropy classifier to train an alignment model using hand-labeled data.,Experiment/Discussion
+"Xiong et al. (2006) also used a maximum entropy classifier, in this case to train the reordering component of their MT model.",Experiment/Discussion
+"Lattice- and hypergraphbased variants of MERT (Macherey et al., 2008; Kumar et al., 2009) are more stable than traditional MERT, but also require significant engineering efforts.",Experiment/Discussion
+"We have described a simple technique for tuning an MT system that is on par with the leading techniques, exhibits reliable behavior, scales gracefully to high-dimension feature spaces, and is remarkably easy to implement.",Results/Conclusion
+"We have demonstrated, via a litany of experiments, that our claims are valid and that this technique is widely applicable.",Results/Conclusion
+It is our hope that the adoption of PRO tuning leads to fewer headaches during tuning and motivates advanced MT feature engineering research.,Results/Conclusion
+"Thanks to Markus Dreyer, Kevin Knight, Saiyam Kohli, Greg Langmead, Daniel Marcu, Dragos Munteanu, and Wei Wang for their assistance.",Results/Conclusion
+"Thanks also to the anonymous reviewers, especially the reviewer who implemented PRO during the review period and replicated our results.",Results/Conclusion

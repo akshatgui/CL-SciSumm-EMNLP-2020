@@ -1,160 +1,160 @@
 col1,col2
-"Word lattice decoding has proven useful in spoken language translation; we argue that it provides a compelling model for translation of text genres, as well.",{}
-We show that prior work in translating lattices using finite state techniques can be naturally extended to more expressive synchronous context-free grammarbased models.,{}
-"Additionally, we resolve a significant complication that non-linear word lattice inputs introduce in reordering models.",{}
-Our experiments evaluating the approach demonstrate substantial gains for Chinese- English and Arabic-English translation.,{}
-"When Brown and colleagues introduced statistical machine translation in the early 1990s, their key insight – harkening back to Weaver in the late 1940s – was that translation could be viewed as an instance of noisy channel modeling (Brown et al., 1990).","{'title': '1 Introduction', 'number': '1'}"
-They introduced a now standard decomposition that distinguishes modeling sentences in the target language (language models) from modeling the relationship between source and target language (translation models).,"{'title': '1 Introduction', 'number': '1'}"
-"Today, virtually all statistical translation systems seek the best hypothesis e for a given input f in the source language, according to consider all possibilities for f by encoding the alternatives compactly as a confusion network or lattice (Bertoldi et al., 2007; Bertoldi and Federico, 2005; Koehn et al., 2007).","{'title': '1 Introduction', 'number': '1'}"
-"Why, however, should this advantage be limited to translation from spoken input?","{'title': '1 Introduction', 'number': '1'}"
-"Even for text, there are often multiple ways to derive a sequence of words from the input string.","{'title': '1 Introduction', 'number': '1'}"
-"Segmentation of Chinese, decompounding in German, morphological analysis for Arabic — across a wide range of source languages, ambiguity in the input gives rise to multiple possibilities for the source word sequence.","{'title': '1 Introduction', 'number': '1'}"
-"Nonetheless, state-of-the-art systems commonly identify a single analysis f during a preprocessing step, and decode according to the decision rule in (1).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we go beyond speech translation by showing that lattice decoding can also yield improvements for text by preserving alternative analyses of the input.","{'title': '1 Introduction', 'number': '1'}"
-"In addition, we generalize lattice decoding algorithmically, extending it for the first time to hierarchical phrase-based translation (Chiang, 2005; Chiang, 2007).","{'title': '1 Introduction', 'number': '1'}"
-"Formally, the approach we take can be thought of as a “noisier channel”, where an observed signal o gives rise to a set of source-language strings f' E F(o) and we seek An exception is the translation of speech recognition output, where the acoustic signal generally underdetermines the choice of source word sequence f. There, Bertoldi and others have recently found that, rather than translating a single-best transcription f, it is advantageous to allow the MT decoder to = arg max max Pr(e)Pr(f'|e)Pr(o|f')�(4) e f�EF(o) Following Och and Ney (2002), we use the maximum entropy framework (Berger et al., 1996) to directly model the posterior Pr(e, f'|o) with parameters tuned to minimize a loss function representing the quality only of the resulting translations.","{'title': '1 Introduction', 'number': '1'}"
-"Thus, we make use of the following general decision rule: In principle, one could decode according to (2) simply by enumerating and decoding each f� ∈ F(o); however, for any interestingly large F(o) this will be impractical.","{'title': '1 Introduction', 'number': '1'}"
-"We assume that for many interesting cases of F(o), there will be identical substrings that express the same content, and therefore a lattice representation is appropriate.","{'title': '1 Introduction', 'number': '1'}"
-"In Section 2, we discuss decoding with this model in general, and then show how two classes of translation models can easily be adapted for lattice translation; we achieve a unified treatment of finite-state and hierarchical phrase-based models by treating lattices as a subcase of weighted finite state automata (FSAs).","{'title': '1 Introduction', 'number': '1'}"
-"In Section 3, we identify and solve issues that arise with reordering in non-linear FSAs, i.e.","{'title': '1 Introduction', 'number': '1'}"
-FSAs where every path does not pass through every node.,"{'title': '1 Introduction', 'number': '1'}"
-"Section 4 presents two applications of the noisier channel paradigm, demonstrating substantial performance gains in Arabic-English and Chinese-English translation.","{'title': '1 Introduction', 'number': '1'}"
-"In Section 5 we discuss relevant prior work, and we conclude in Section 6.","{'title': '1 Introduction', 'number': '1'}"
-"Most statistical machine translation systems model translational equivalence using either finite state transducers or synchronous context free grammars (Lopez, to appear 2008).","{'title': '2 Decoding', 'number': '2'}"
-In this section we discuss the issues associated with adapting decoders from both classes of formalism to process word lattices.,"{'title': '2 Decoding', 'number': '2'}"
-The first decoder we present is a SCFG-based decoder similar to the one described in Chiang (2007).,"{'title': '2 Decoding', 'number': '2'}"
-The second is a phrase-based decoder implementing the model of Koehn et al. (2003).,"{'title': '2 Decoding', 'number': '2'}"
-"A word lattice G = hV, Ei is a directed acyclic graph that formally is a weighted finite state automaton (FSA).","{'title': '2 Decoding', 'number': '2'}"
-We further stipulate that exactly one node has no outgoing edges and is designated the ‘end node’.,"{'title': '2 Decoding', 'number': '2'}"
-Figure 1 illustrates three classes of word lattices.,"{'title': '2 Decoding', 'number': '2'}"
-A word lattice is useful for our purposes because it permits any finite set of strings to be represented and allows for substrings common to multiple members of the set to be represented with a single piece of structure.,"{'title': '2 Decoding', 'number': '2'}"
-"Additionally, all paths from one node to another form an equivalence class representing, in our model, alternative expressions of the same underlying communicative intent.","{'title': '2 Decoding', 'number': '2'}"
-"For translation, we will find it useful to encode G in a chart based on a topological ordering of the nodes, as described by Cheppalier et al. (1999).","{'title': '2 Decoding', 'number': '2'}"
-The nodes in the lattices shown in Figure 1 are labeled according to an appropriate numbering.,"{'title': '2 Decoding', 'number': '2'}"
-"The chart-representation of the graph is a triple of 2-dimensional matrices hF, p, Ri, which can be constructed from the numbered graph.","{'title': '2 Decoding', 'number': '2'}"
-"Fi,j is the word label of the jth transition leaving node i.","{'title': '2 Decoding', 'number': '2'}"
-"The corresponding transition cost is pi,j.","{'title': '2 Decoding', 'number': '2'}"
-"Ri,j is the node number of the node on the right side of the jth transition leaving node i.","{'title': '2 Decoding', 'number': '2'}"
-"Note that Ri,j > i for all i, j.","{'title': '2 Decoding', 'number': '2'}"
-"Table 1 shows the word lattice from Figure 1 represented in matrix form as hF, p, Ri.","{'title': '2 Decoding', 'number': '2'}"
-"Chiang (2005) introduced hierarchical phrase-based translation models, which are formally based on synchronous context-free grammars (SCFGs).","{'title': '2 Decoding', 'number': '2'}"
-"Translation proceeds by parsing the input using the source language side of the grammar, simultaneously building a tree on the target language side via the target side of the synchronized rules.","{'title': '2 Decoding', 'number': '2'}"
-"Since decoding is equivalent to parsing, we begin by presenting a parser for word lattices, which is a generalization of a CKY parser for lattices given in Cheppalier et al. (1999).","{'title': '2 Decoding', 'number': '2'}"
-"Following Goodman (1999), we present our lattice parser as a deductive proof system in Figure 2.","{'title': '2 Decoding', 'number': '2'}"
-"The parser consists of two kinds of items, the first with the form [X —* α • Q, i, j] representing rules that have yet to be completed and span node i to node j.","{'title': '2 Decoding', 'number': '2'}"
-"The other items have the form [X, i, j] and indicate that non-terminal X spans [i, j].","{'title': '2 Decoding', 'number': '2'}"
-"As with sentence parsing, the goal is a deduction that covers the spans of the entire input lattice [5, 0, |V  |− 1].","{'title': '2 Decoding', 'number': '2'}"
-The three inference rules are: 1) match a terminal symbol and move across one edge in the lattice 2) move across an E-edge without advancing the dot in an incomplete rule 3) advance the dot across a nonterminal symbol given appropriate antecedents.,"{'title': '2 Decoding', 'number': '2'}"
-A target language model is necessary to generate fluent output.,"{'title': '2 Decoding', 'number': '2'}"
-"To do so, the grammar is intersected with an n-gram LM.","{'title': '2 Decoding', 'number': '2'}"
-"To mitigate the effects of the combinatorial explosion of non-terminals the LM intersection entails, we use cube-pruning to only consider the most promising expansions (Chiang, 2007).","{'title': '2 Decoding', 'number': '2'}"
-A second important class of translation models includes those based formally on FSTs.,"{'title': '2 Decoding', 'number': '2'}"
-"We present a description of the decoding process for a word lattice using a representative FST model, the phrase-based translation model described in Koehn et al. (2003).","{'title': '2 Decoding', 'number': '2'}"
-"Phrase-based models translate a foreign sentence f into the target language e by breaking up f into a sequence of phrases f1, where each phrase fz can contain one or more contiguous words and is translated into a target phrase ez of one or more contiguous words.","{'title': '2 Decoding', 'number': '2'}"
-Each word in f must be translated exactly once.,"{'title': '2 Decoding', 'number': '2'}"
-"To generalize this model to word lattices, it is necessary to choose both a path through the lattice and a partitioning of the sentence this induces into a sequence of phrases f1.","{'title': '2 Decoding', 'number': '2'}"
-"Although the number of source phrases in a word lattice can be exponential in the number of nodes, enumerating the possible translations of every span in a lattice is in practice tractable, as described by Bertoldi et al. (2007).","{'title': '2 Decoding', 'number': '2'}"
-"We adapted the Moses phrase-based decoder to translate word lattices (Koehn et al., 2007).","{'title': '2 Decoding', 'number': '2'}"
-The unmodified decoder builds a translation hypothesis from left to right by selecting a range of untranslated words and adding translations of this phrase to the end of the hypothesis being extended.,"{'title': '2 Decoding', 'number': '2'}"
-"When no untranslated words remain, the translation process is complete.","{'title': '2 Decoding', 'number': '2'}"
-"The word lattice decoder works similarly, only now the decoder keeps track not of the words that have been covered, but of the nodes, given a topological ordering of the nodes.","{'title': '2 Decoding', 'number': '2'}"
-"For example, assuming the third lattice in Figure 1 is our input, if the edge with word a is translated, this will cover two untranslated nodes [0,1] in the coverage vector, even though it is only a single word.","{'title': '2 Decoding', 'number': '2'}"
-"As with sentencebased decoding, a translation hypothesis is complete when all nodes in the input lattice are covered.","{'title': '2 Decoding', 'number': '2'}"
-"The changes described thus far are straightforward adaptations of the underlying phrase-based sentence decoder; however, dealing properly with non-monotonic decoding of word lattices introduces some minor complexity that is worth mentioning.","{'title': '2 Decoding', 'number': '2'}"
-"In the sentence decoder, any translation of any span of untranslated words is an allowable extension of a partial translation hypothesis, provided that the coverage vectors of the extension and the partial hypothesis do not intersect.","{'title': '2 Decoding', 'number': '2'}"
-"In a non-linear word lattice, a further constraint must be enforced ensuring that there is always a path from the starting node of the translation extension’s source to the node representing the nearest right edge of the already-translated material, as well as a path from the ending node of the translation extension’s source to future translated spans.","{'title': '2 Decoding', 'number': '2'}"
-Figure 3 illustrates the problem.,"{'title': '2 Decoding', 'number': '2'}"
-"If [0,1] is translated, the decoder must not consider translating [2,3] as a possible extension of this hypothesis since there is no path from node 1 to node 2 and therefore the span [1,2] would never be covered.","{'title': '2 Decoding', 'number': '2'}"
-"In the parser that forms the basis of the hierarchical decoder described in Section 2.3, no such restriction is necessary since grammar rules are processed in a strictly left-to-right fashion without any skips.","{'title': '2 Decoding', 'number': '2'}"
-"In both hierarchical and phrase-based models, the distance between words in the source sentence is used to limit where in the target sequence their translations will be generated.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"In phrase based translation, distortion is modeled explicitly.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Models that support non-monotonic decoding generally include a distortion cost, such as |ai − bi−1 − 1 |where ai is the starting position of the foreign phrase fi and bi−1 is the ending position of phrase fi−1 (Koehn et al., 2003).","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"The intuition behind this model is that since most translation is monotonic, the cost of skipping ahead or back in the source should be proportional to the number of words that are skipped.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Additionally, a maximum distortion limit is used to restrict the size of the search space.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"In linear word lattices, such as confusion networks, the distance metric used for the distortion penalty and for distortion limits is well defined; however, in a non-linear word lattice, it poses the problem illustrated in Figure 4.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Assuming the leftto-right decoding strategy described in the previous section, if c is generated by the first target word, the distortion penalty associated with “skipping ahead” should be either 3 or 2, depending on what path is chosen to translate the span [0,3].","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"In large lattices, where a single arc may span many nodes, the possible distances may vary quite substantially depending on what path is ultimately taken, and handling this properly therefore crucial.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Although hierarchical phrase-based models do not model distortion explicitly, Chiang (2007) suggests using a span length limit to restrict the window in which reordering can take place.1 The decoder enforces the constraint that a synchronous rule learned from the training data (the only mechanism by which reordering can be introduced) can span maximally A words in f. Like the distortion cost used in phrase-based systems, A is also poorly defined for non-linear lattices.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Since we want a distance metric that will restrict as few local reorderings as possible on any path, we use a function �(a, b) returning the length of the shortest path between nodes a and b.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"Since this function is not dependent on the exact path chosen, it can be computed in advance of decoding using an allpairs shortest path algorithm (Cormen et al., 1989).","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"We tested the effect of the distance metric on translation quality using Chinese word segmentation lattices (Section 4.1, below) using both a hierarchical and phrase-based system modified to translate word lattices.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-We compared the shortest-path distance metric with a baseline which uses the difference in node number as the distortion distance.,"{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"For an additional datapoint, we added a lexicalized reordering model that models the probability of each phrase pair appearing in three different orientations (swap, monotone, other) in the training corpus (Koehn et al., 2005).","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-Table 2 summarizes the results of the phrasebased systems.,"{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"On both test sets, the shortest path metric improved the BLEU scores.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"As expected, the lexicalized reordering model improved translation quality over the baseline; however, the improvement was more substantial in the model that used the shortest-path distance metric (which was already a higher baseline).","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-Table 3 summarizes the results of our experiment comparing the performance of two distance metrics to determine whether a rule has exceeded the decoder’s span limit.,"{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-"The pattern is the same, showing a clear increase in BLEU for the shortest path metric over the baseline.","{'title': '3 Distortion in a non-linear word lattice', 'number': '3'}"
-Chinese word segmentation.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-A necessary first step in translating Chinese using standard models is segmenting the character stream into a sequence of words.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Word-lattice translation offers two possible improvements over the conventional approach.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"First, a lattice may represent multiple alternative segmentations of a sentence; input represented in this way will be more robust to errors made by the segmenter.2 Second, different segmentation granularities may be more or less optimal for translating different spans.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"By encoding alternatives in the input in a word lattice, the decision as to which granularity to use for a given span can be resolved during decoding rather than when constructing the system.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Figure 5 illustrates a lattice based on three different segmentations.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Arabic morphological variation.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"Arabic orthography is problematic for lexical and phrase-based MT approaches since a large class of functional elements (prepositions, pronouns, tense markers, conjunctions, definiteness markers) are attached to their host stems.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"Thus, while the training data may provide good evidence for the translation of a particular stem by itself, the same stem may not be attested when attached to a particular conjunction.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The general solution taken is to take the best possible morphological analysis of the text (it is often ambiguous whether a piece of a word is part of the stem or merely a neighboring functional element), and then make a subset of the bound functional elements in the language into freestanding tokens.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Figure 6 illustrates the unsegmented Arabic surface form as well as the morphological segmentation variant we made use of.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The limitation of this approach is that as the amount and variety of training data increases, the optimal segmentation strategy changes: more aggressive segmentation results in fewer OOV tokens, but automatic evaluation metrics indicate lower translation quality, presumably because the smaller units are being translated less idiomatically (Habash and Sadat, 2006).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Lattices allow the decoder to make decisions about what granularity of segmentation to use subsententially.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"In our experiments we used two state-of-the-art Chinese word segmenters: one developed at Harbin Institute of Technology (Zhao et al., 2001), and one developed at Stanford University (Tseng et al., 2005).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"In addition, we used a character-based segmentation.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"In the remaining of this paper, we use cs for character segmentation, hs for Harbin segmentation and ss for Stanford segmentation.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"We built two types of lattices: one that combines the Harbin and Stanford segmenters (hs+ss), and one which uses all three segmentations (hs+ss+cs).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Data and Settings.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-The systems used in these experiments were trained on the NIST MT06 Eval corpus without the UN data (approximatively 950K sentences).,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-The corpus was analyzed with the three segmentation schemes.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"For the systems using word lattices, the training data contained the versions of the corpus appropriate for the segmentation schemes used in the input.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"That is, for the hs+ss condition, the training data consisted of two copies of the corpus: one segmented with the Harbin segmenter and the other with the Stanford segmenter.3 A trigram English language model with modified Kneser-Ney smoothing (Kneser and Ney, 1995) was trained on the English side of our training data as well as portions of the Gigaword v2 English Corpus, and was used for all experiments.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The NIST MT03 test set was used as a development set for optimizing the interpolation weights using minimum error rate training (Och, 2003).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The testing was done on the NIST 2005 and 2006 evaluation sets (MT05, MT06).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Experimental results: Word-lattices improve translation quality.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"We used both a phrase-based translation model, decoded using our modified version of Moses (Koehn et al., 2007), and a hierarchical phrase-based translation model, using our modified version of Hiero (Chiang, 2005; Chiang, 2007).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-These two translation model types illustrate the applicability of the theoretical contributions presented in Section 2 and Section 3.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-We observed that the coverage of named entities (NEs) in our baseline systems was rather poor.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"Since names in Chinese can be composed of relatively long strings of characters that cannot be translated individually, when generating the segmentation lattices that included cs arcs, we avoided segmenting NEs of type PERSON, as identified using a Chinese NE tagger (Florian et al., 2004).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-The results are summarized in Table 4.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-We see that using word lattices improves BLEU scores both in the phrase-based model and hierarchical model as compared to the single-best segmentation approach.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"All results using our word-lattice decoding for the hierarchical models (hs+ss and hs+ss+cs) are significantly better than the best segmentation (ss).4 For the phrase-based model, we obtain significant gains using our word-lattice decoder using all three segmentations on MT05.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The other results, while better than the best segmentation (hs) by at least 0.3 BLEU points, are not statistically significant.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"Even if the results are not statistically significant for MT06, there is a high decrease in OOV items when using word-lattices.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"For example, for MT06 the number of OOVs in the hs translation is 484.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-The number of OOVs decreased by 19% for hs+ss and by 75% for hs+ss+cs.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"As mentioned in Section 3, using lexical reordering for word-lattices further improves the translation quality.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-We created lattices from an unsegmented version of the Arabic test data and generated alternative arcs where clitics as well as the definiteness marker and the future tense marker were segmented into tokens.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-We used the Buckwalter morphological analyzer and disambiguated the analysis using a simple unigram model trained on the Penn Arabic Treebank.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Data and Settings.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"For these experiments we made use of the entire NIST MT08 training data, although for training of the system, we used a subsampling method proposed by Kishore Papineni that aims to include training sentences containing ngrams in the test data (personal communication).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"For all systems, we used a 5-gram English LM trained on 250M words of English training data.","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"The NIST MT03 test set was used as development set for optimizing the interpolation weights using MER training (Och, 2003).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-"Evaluation was carried out on the NIST 2005 and 2006 evaluation sets (MT05, MT06).","{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Experimental results: Word-lattices improve translation quality.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Results are presented in Table 5.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Using word-lattices to combine the surface forms with morphologically segmented forms significantly improves BLEU scores both in the phrase-based and hierarchical models.,"{'title': '4 Exploiting Source Language Alternatives', 'number': '4'}"
-Lattice Translation.,"{'title': '5 Prior work', 'number': '5'}"
-"The ‘noisier channel’ model of machine translation has been widely used in spoken language translation as an alternative to selecting the single-best hypothesis from an ASR system and translating it (Ney, 1999; Casacuberta et al., 2004; Zhang et al., 2005; Saleem et al., 2005; Matusov et al., 2005; Bertoldi et al., 2007; Mathias, 2007).","{'title': '5 Prior work', 'number': '5'}"
-Several authors (e.g.,"{'title': '5 Prior work', 'number': '5'}"
-Saleem et al. (2005) and Bertoldi et al.,"{'title': '5 Prior work', 'number': '5'}"
-(2007)) comment directly on the impracticality of using n-best lists to translate speech.,"{'title': '5 Prior work', 'number': '5'}"
-"Although translation is fundamentally a nonmonotonic relationship between most language pairs, reordering has tended to be a secondary concern to the researchers who have worked on lattice translation.","{'title': '5 Prior work', 'number': '5'}"
-"Matusov et al. (2005) decodes monotonically and then uses a finite state reordering model on the single-best translation, along the lines of Bangalore and Riccardi (2000).","{'title': '5 Prior work', 'number': '5'}"
-Mathias (2007) and Saleem et al. (2004) only report results of monotonic decoding for the systems they describe.,"{'title': '5 Prior work', 'number': '5'}"
-"Bertoldi et al. (2007) solve the problem by requiring that their input be in the format of a confusion network, which enables the standard distortion penalty to be used.","{'title': '5 Prior work', 'number': '5'}"
-"Finally, the system described by Zhang et al. (2005) uses IBM Model 4 features to translate lattices.","{'title': '5 Prior work', 'number': '5'}"
-"For the distortion model, they use the maximum probability value over all possible paths in the lattice for each jump considered, which is similar to the approach we have taken.","{'title': '5 Prior work', 'number': '5'}"
-"Mathias and Byrne (2006) build a phrase-based translation system as a cascaded series of FSTs which can accept any input FSA; however, the only reordering that is permitted is the swapping of two adjacent phrases.","{'title': '5 Prior work', 'number': '5'}"
-Applications of source lattices outside of the domain of spoken language translation have been far more limited.,"{'title': '5 Prior work', 'number': '5'}"
-Costa-juss`a and Fonollosa (2007) take steps in this direction by using lattices to encode multiple reorderings of the source language.,"{'title': '5 Prior work', 'number': '5'}"
-"Dyer (2007) uses confusion networks to encode morphological alternatives in Czech-English translation, and Xu et al. (2005) takes an approach very similar to ours for Chinese-English translation and encodes multiple word segmentations in a lattice, but which is decoded with a conventionally trained translation model and without a sophisticated reordering model.","{'title': '5 Prior work', 'number': '5'}"
-"The Arabic-English morphological segmentation lattices are similar in spirit to backoff translation models (Yang and Kirchhoff, 2006), which consider alternative morphological segmentations and simplifications of a surface token when the surface token can not be translated.","{'title': '5 Prior work', 'number': '5'}"
-Parsing and formal language theory.,"{'title': '5 Prior work', 'number': '5'}"
-"There has been considerable work on parsing word lattices, much of it for language modeling applications in speech recognition (Ney, 1991; Cheppalier and Rajman, 1998).","{'title': '5 Prior work', 'number': '5'}"
-"Additionally, Grune and Jacobs (2008) refines an algorithm originally due to Bar-Hillel for intersecting an arbitrary FSA (of which word lattices are a subset) with a CFG.","{'title': '5 Prior work', 'number': '5'}"
-Klein and Manning (2001) formalize parsing as a hypergraph search problem and derive an O(n3) parser for lattices.,"{'title': '5 Prior work', 'number': '5'}"
-"We have achieved substantial gains in translation performance by decoding compact representations of alternative source language analyses, rather than single-best representations.","{'title': '6 Conclusions', 'number': '6'}"
-"Our results generalize previous gains for lattice translation of spoken language input, and we have further generalized the approach by introducing an algorithm for lattice decoding using a hierarchical phrase-based model.","{'title': '6 Conclusions', 'number': '6'}"
-"Additionally, we have shown that although word lattices complicate modeling of word reordering, a simple heuristic offers good performance and enables many standard distortion models to be used directly with lattice input.","{'title': '6 Conclusions', 'number': '6'}"
-"This research was supported by the GALE program of the Defense Advanced Research Projects Agency, Contract No.","{'title': 'Acknowledgments', 'number': '7'}"
-HR0011-06-2-0001.,"{'title': 'Acknowledgments', 'number': '7'}"
-"The authors wish to thank Niyu Ge for the Chinese named-entity analysis, Pi-Chuan Chang for her assistance with the Stanford Chinese segmenter, and Tie-Jun Zhao and Congui Zhu for making the Harbin Chinese segmenter available to us.","{'title': 'Acknowledgments', 'number': '7'}"
+"Word lattice decoding has proven useful in spoken language translation; we argue that it provides a compelling model for translation of text genres, as well.",Introduction
+We show that prior work in translating lattices using finite state techniques can be naturally extended to more expressive synchronous context-free grammarbased models.,Introduction
+"Additionally, we resolve a significant complication that non-linear word lattice inputs introduce in reordering models.",Introduction
+Our experiments evaluating the approach demonstrate substantial gains for Chinese- English and Arabic-English translation.,Introduction
+"When Brown and colleagues introduced statistical machine translation in the early 1990s, their key insight – harkening back to Weaver in the late 1940s – was that translation could be viewed as an instance of noisy channel modeling (Brown et al., 1990).",Experiment/Discussion
+They introduced a now standard decomposition that distinguishes modeling sentences in the target language (language models) from modeling the relationship between source and target language (translation models).,Experiment/Discussion
+"Today, virtually all statistical translation systems seek the best hypothesis e for a given input f in the source language, according to consider all possibilities for f by encoding the alternatives compactly as a confusion network or lattice (Bertoldi et al., 2007; Bertoldi and Federico, 2005; Koehn et al., 2007).",Experiment/Discussion
+"Why, however, should this advantage be limited to translation from spoken input?",Experiment/Discussion
+"Even for text, there are often multiple ways to derive a sequence of words from the input string.",Experiment/Discussion
+"Segmentation of Chinese, decompounding in German, morphological analysis for Arabic — across a wide range of source languages, ambiguity in the input gives rise to multiple possibilities for the source word sequence.",Experiment/Discussion
+"Nonetheless, state-of-the-art systems commonly identify a single analysis f during a preprocessing step, and decode according to the decision rule in (1).",Experiment/Discussion
+"In this paper, we go beyond speech translation by showing that lattice decoding can also yield improvements for text by preserving alternative analyses of the input.",Experiment/Discussion
+"In addition, we generalize lattice decoding algorithmically, extending it for the first time to hierarchical phrase-based translation (Chiang, 2005; Chiang, 2007).",Experiment/Discussion
+"Formally, the approach we take can be thought of as a “noisier channel”, where an observed signal o gives rise to a set of source-language strings f' E F(o) and we seek An exception is the translation of speech recognition output, where the acoustic signal generally underdetermines the choice of source word sequence f. There, Bertoldi and others have recently found that, rather than translating a single-best transcription f, it is advantageous to allow the MT decoder to = arg max max Pr(e)Pr(f'|e)Pr(o|f')�(4) e f�EF(o) Following Och and Ney (2002), we use the maximum entropy framework (Berger et al., 1996) to directly model the posterior Pr(e, f'|o) with parameters tuned to minimize a loss function representing the quality only of the resulting translations.",Experiment/Discussion
+"Thus, we make use of the following general decision rule: In principle, one could decode according to (2) simply by enumerating and decoding each f� ∈ F(o); however, for any interestingly large F(o) this will be impractical.",Experiment/Discussion
+"We assume that for many interesting cases of F(o), there will be identical substrings that express the same content, and therefore a lattice representation is appropriate.",Experiment/Discussion
+"In Section 2, we discuss decoding with this model in general, and then show how two classes of translation models can easily be adapted for lattice translation; we achieve a unified treatment of finite-state and hierarchical phrase-based models by treating lattices as a subcase of weighted finite state automata (FSAs).",Experiment/Discussion
+"In Section 3, we identify and solve issues that arise with reordering in non-linear FSAs, i.e.",Experiment/Discussion
+FSAs where every path does not pass through every node.,Experiment/Discussion
+"Section 4 presents two applications of the noisier channel paradigm, demonstrating substantial performance gains in Arabic-English and Chinese-English translation.",Experiment/Discussion
+"In Section 5 we discuss relevant prior work, and we conclude in Section 6.",Experiment/Discussion
+"Most statistical machine translation systems model translational equivalence using either finite state transducers or synchronous context free grammars (Lopez, to appear 2008).",Experiment/Discussion
+In this section we discuss the issues associated with adapting decoders from both classes of formalism to process word lattices.,Experiment/Discussion
+The first decoder we present is a SCFG-based decoder similar to the one described in Chiang (2007).,Experiment/Discussion
+The second is a phrase-based decoder implementing the model of Koehn et al. (2003).,Experiment/Discussion
+"A word lattice G = hV, Ei is a directed acyclic graph that formally is a weighted finite state automaton (FSA).",Experiment/Discussion
+We further stipulate that exactly one node has no outgoing edges and is designated the ‘end node’.,Experiment/Discussion
+Figure 1 illustrates three classes of word lattices.,Experiment/Discussion
+A word lattice is useful for our purposes because it permits any finite set of strings to be represented and allows for substrings common to multiple members of the set to be represented with a single piece of structure.,Experiment/Discussion
+"Additionally, all paths from one node to another form an equivalence class representing, in our model, alternative expressions of the same underlying communicative intent.",Experiment/Discussion
+"For translation, we will find it useful to encode G in a chart based on a topological ordering of the nodes, as described by Cheppalier et al. (1999).",Experiment/Discussion
+The nodes in the lattices shown in Figure 1 are labeled according to an appropriate numbering.,Experiment/Discussion
+"The chart-representation of the graph is a triple of 2-dimensional matrices hF, p, Ri, which can be constructed from the numbered graph.",Experiment/Discussion
+"Fi,j is the word label of the jth transition leaving node i.",Experiment/Discussion
+"The corresponding transition cost is pi,j.",Experiment/Discussion
+"Ri,j is the node number of the node on the right side of the jth transition leaving node i.",Experiment/Discussion
+"Note that Ri,j > i for all i, j.",Experiment/Discussion
+"Table 1 shows the word lattice from Figure 1 represented in matrix form as hF, p, Ri.",Experiment/Discussion
+"Chiang (2005) introduced hierarchical phrase-based translation models, which are formally based on synchronous context-free grammars (SCFGs).",Experiment/Discussion
+"Translation proceeds by parsing the input using the source language side of the grammar, simultaneously building a tree on the target language side via the target side of the synchronized rules.",Experiment/Discussion
+"Since decoding is equivalent to parsing, we begin by presenting a parser for word lattices, which is a generalization of a CKY parser for lattices given in Cheppalier et al. (1999).",Experiment/Discussion
+"Following Goodman (1999), we present our lattice parser as a deductive proof system in Figure 2.",Experiment/Discussion
+"The parser consists of two kinds of items, the first with the form [X —* α • Q, i, j] representing rules that have yet to be completed and span node i to node j.",Experiment/Discussion
+"The other items have the form [X, i, j] and indicate that non-terminal X spans [i, j].",Experiment/Discussion
+"As with sentence parsing, the goal is a deduction that covers the spans of the entire input lattice [5, 0, |V  |− 1].",Experiment/Discussion
+The three inference rules are: 1) match a terminal symbol and move across one edge in the lattice 2) move across an E-edge without advancing the dot in an incomplete rule 3) advance the dot across a nonterminal symbol given appropriate antecedents.,Experiment/Discussion
+A target language model is necessary to generate fluent output.,Experiment/Discussion
+"To do so, the grammar is intersected with an n-gram LM.",Experiment/Discussion
+"To mitigate the effects of the combinatorial explosion of non-terminals the LM intersection entails, we use cube-pruning to only consider the most promising expansions (Chiang, 2007).",Experiment/Discussion
+A second important class of translation models includes those based formally on FSTs.,Experiment/Discussion
+"We present a description of the decoding process for a word lattice using a representative FST model, the phrase-based translation model described in Koehn et al. (2003).",Experiment/Discussion
+"Phrase-based models translate a foreign sentence f into the target language e by breaking up f into a sequence of phrases f1, where each phrase fz can contain one or more contiguous words and is translated into a target phrase ez of one or more contiguous words.",Experiment/Discussion
+Each word in f must be translated exactly once.,Experiment/Discussion
+"To generalize this model to word lattices, it is necessary to choose both a path through the lattice and a partitioning of the sentence this induces into a sequence of phrases f1.",Experiment/Discussion
+"Although the number of source phrases in a word lattice can be exponential in the number of nodes, enumerating the possible translations of every span in a lattice is in practice tractable, as described by Bertoldi et al. (2007).",Experiment/Discussion
+"We adapted the Moses phrase-based decoder to translate word lattices (Koehn et al., 2007).",Experiment/Discussion
+The unmodified decoder builds a translation hypothesis from left to right by selecting a range of untranslated words and adding translations of this phrase to the end of the hypothesis being extended.,Experiment/Discussion
+"When no untranslated words remain, the translation process is complete.",Experiment/Discussion
+"The word lattice decoder works similarly, only now the decoder keeps track not of the words that have been covered, but of the nodes, given a topological ordering of the nodes.",Experiment/Discussion
+"For example, assuming the third lattice in Figure 1 is our input, if the edge with word a is translated, this will cover two untranslated nodes [0,1] in the coverage vector, even though it is only a single word.",Experiment/Discussion
+"As with sentencebased decoding, a translation hypothesis is complete when all nodes in the input lattice are covered.",Experiment/Discussion
+"The changes described thus far are straightforward adaptations of the underlying phrase-based sentence decoder; however, dealing properly with non-monotonic decoding of word lattices introduces some minor complexity that is worth mentioning.",Experiment/Discussion
+"In the sentence decoder, any translation of any span of untranslated words is an allowable extension of a partial translation hypothesis, provided that the coverage vectors of the extension and the partial hypothesis do not intersect.",Experiment/Discussion
+"In a non-linear word lattice, a further constraint must be enforced ensuring that there is always a path from the starting node of the translation extension’s source to the node representing the nearest right edge of the already-translated material, as well as a path from the ending node of the translation extension’s source to future translated spans.",Experiment/Discussion
+Figure 3 illustrates the problem.,Experiment/Discussion
+"If [0,1] is translated, the decoder must not consider translating [2,3] as a possible extension of this hypothesis since there is no path from node 1 to node 2 and therefore the span [1,2] would never be covered.",Experiment/Discussion
+"In the parser that forms the basis of the hierarchical decoder described in Section 2.3, no such restriction is necessary since grammar rules are processed in a strictly left-to-right fashion without any skips.",Experiment/Discussion
+"In both hierarchical and phrase-based models, the distance between words in the source sentence is used to limit where in the target sequence their translations will be generated.",Experiment/Discussion
+"In phrase based translation, distortion is modeled explicitly.",Experiment/Discussion
+"Models that support non-monotonic decoding generally include a distortion cost, such as |ai − bi−1 − 1 |where ai is the starting position of the foreign phrase fi and bi−1 is the ending position of phrase fi−1 (Koehn et al., 2003).",Experiment/Discussion
+"The intuition behind this model is that since most translation is monotonic, the cost of skipping ahead or back in the source should be proportional to the number of words that are skipped.",Experiment/Discussion
+"Additionally, a maximum distortion limit is used to restrict the size of the search space.",Experiment/Discussion
+"In linear word lattices, such as confusion networks, the distance metric used for the distortion penalty and for distortion limits is well defined; however, in a non-linear word lattice, it poses the problem illustrated in Figure 4.",Experiment/Discussion
+"Assuming the leftto-right decoding strategy described in the previous section, if c is generated by the first target word, the distortion penalty associated with “skipping ahead” should be either 3 or 2, depending on what path is chosen to translate the span [0,3].",Experiment/Discussion
+"In large lattices, where a single arc may span many nodes, the possible distances may vary quite substantially depending on what path is ultimately taken, and handling this properly therefore crucial.",Experiment/Discussion
+"Although hierarchical phrase-based models do not model distortion explicitly, Chiang (2007) suggests using a span length limit to restrict the window in which reordering can take place.1 The decoder enforces the constraint that a synchronous rule learned from the training data (the only mechanism by which reordering can be introduced) can span maximally A words in f. Like the distortion cost used in phrase-based systems, A is also poorly defined for non-linear lattices.",Experiment/Discussion
+"Since we want a distance metric that will restrict as few local reorderings as possible on any path, we use a function �(a, b) returning the length of the shortest path between nodes a and b.",Experiment/Discussion
+"Since this function is not dependent on the exact path chosen, it can be computed in advance of decoding using an allpairs shortest path algorithm (Cormen et al., 1989).",Experiment/Discussion
+"We tested the effect of the distance metric on translation quality using Chinese word segmentation lattices (Section 4.1, below) using both a hierarchical and phrase-based system modified to translate word lattices.",Experiment/Discussion
+We compared the shortest-path distance metric with a baseline which uses the difference in node number as the distortion distance.,Experiment/Discussion
+"For an additional datapoint, we added a lexicalized reordering model that models the probability of each phrase pair appearing in three different orientations (swap, monotone, other) in the training corpus (Koehn et al., 2005).",Experiment/Discussion
+Table 2 summarizes the results of the phrasebased systems.,Experiment/Discussion
+"On both test sets, the shortest path metric improved the BLEU scores.",Experiment/Discussion
+"As expected, the lexicalized reordering model improved translation quality over the baseline; however, the improvement was more substantial in the model that used the shortest-path distance metric (which was already a higher baseline).",Experiment/Discussion
+Table 3 summarizes the results of our experiment comparing the performance of two distance metrics to determine whether a rule has exceeded the decoder’s span limit.,Experiment/Discussion
+"The pattern is the same, showing a clear increase in BLEU for the shortest path metric over the baseline.",Experiment/Discussion
+Chinese word segmentation.,Experiment/Discussion
+A necessary first step in translating Chinese using standard models is segmenting the character stream into a sequence of words.,Experiment/Discussion
+Word-lattice translation offers two possible improvements over the conventional approach.,Experiment/Discussion
+"First, a lattice may represent multiple alternative segmentations of a sentence; input represented in this way will be more robust to errors made by the segmenter.2 Second, different segmentation granularities may be more or less optimal for translating different spans.",Experiment/Discussion
+"By encoding alternatives in the input in a word lattice, the decision as to which granularity to use for a given span can be resolved during decoding rather than when constructing the system.",Experiment/Discussion
+Figure 5 illustrates a lattice based on three different segmentations.,Experiment/Discussion
+Arabic morphological variation.,Experiment/Discussion
+"Arabic orthography is problematic for lexical and phrase-based MT approaches since a large class of functional elements (prepositions, pronouns, tense markers, conjunctions, definiteness markers) are attached to their host stems.",Experiment/Discussion
+"Thus, while the training data may provide good evidence for the translation of a particular stem by itself, the same stem may not be attested when attached to a particular conjunction.",Experiment/Discussion
+"The general solution taken is to take the best possible morphological analysis of the text (it is often ambiguous whether a piece of a word is part of the stem or merely a neighboring functional element), and then make a subset of the bound functional elements in the language into freestanding tokens.",Experiment/Discussion
+Figure 6 illustrates the unsegmented Arabic surface form as well as the morphological segmentation variant we made use of.,Experiment/Discussion
+"The limitation of this approach is that as the amount and variety of training data increases, the optimal segmentation strategy changes: more aggressive segmentation results in fewer OOV tokens, but automatic evaluation metrics indicate lower translation quality, presumably because the smaller units are being translated less idiomatically (Habash and Sadat, 2006).",Experiment/Discussion
+Lattices allow the decoder to make decisions about what granularity of segmentation to use subsententially.,Experiment/Discussion
+"In our experiments we used two state-of-the-art Chinese word segmenters: one developed at Harbin Institute of Technology (Zhao et al., 2001), and one developed at Stanford University (Tseng et al., 2005).",Experiment/Discussion
+"In addition, we used a character-based segmentation.",Experiment/Discussion
+"In the remaining of this paper, we use cs for character segmentation, hs for Harbin segmentation and ss for Stanford segmentation.",Experiment/Discussion
+"We built two types of lattices: one that combines the Harbin and Stanford segmenters (hs+ss), and one which uses all three segmentations (hs+ss+cs).",Experiment/Discussion
+Data and Settings.,Experiment/Discussion
+The systems used in these experiments were trained on the NIST MT06 Eval corpus without the UN data (approximatively 950K sentences).,Experiment/Discussion
+The corpus was analyzed with the three segmentation schemes.,Experiment/Discussion
+"For the systems using word lattices, the training data contained the versions of the corpus appropriate for the segmentation schemes used in the input.",Experiment/Discussion
+"That is, for the hs+ss condition, the training data consisted of two copies of the corpus: one segmented with the Harbin segmenter and the other with the Stanford segmenter.3 A trigram English language model with modified Kneser-Ney smoothing (Kneser and Ney, 1995) was trained on the English side of our training data as well as portions of the Gigaword v2 English Corpus, and was used for all experiments.",Experiment/Discussion
+"The NIST MT03 test set was used as a development set for optimizing the interpolation weights using minimum error rate training (Och, 2003).",Experiment/Discussion
+"The testing was done on the NIST 2005 and 2006 evaluation sets (MT05, MT06).",Experiment/Discussion
+Experimental results: Word-lattices improve translation quality.,Experiment/Discussion
+"We used both a phrase-based translation model, decoded using our modified version of Moses (Koehn et al., 2007), and a hierarchical phrase-based translation model, using our modified version of Hiero (Chiang, 2005; Chiang, 2007).",Experiment/Discussion
+These two translation model types illustrate the applicability of the theoretical contributions presented in Section 2 and Section 3.,Experiment/Discussion
+We observed that the coverage of named entities (NEs) in our baseline systems was rather poor.,Experiment/Discussion
+"Since names in Chinese can be composed of relatively long strings of characters that cannot be translated individually, when generating the segmentation lattices that included cs arcs, we avoided segmenting NEs of type PERSON, as identified using a Chinese NE tagger (Florian et al., 2004).",Experiment/Discussion
+The results are summarized in Table 4.,Experiment/Discussion
+We see that using word lattices improves BLEU scores both in the phrase-based model and hierarchical model as compared to the single-best segmentation approach.,Experiment/Discussion
+"All results using our word-lattice decoding for the hierarchical models (hs+ss and hs+ss+cs) are significantly better than the best segmentation (ss).4 For the phrase-based model, we obtain significant gains using our word-lattice decoder using all three segmentations on MT05.",Experiment/Discussion
+"The other results, while better than the best segmentation (hs) by at least 0.3 BLEU points, are not statistically significant.",Experiment/Discussion
+"Even if the results are not statistically significant for MT06, there is a high decrease in OOV items when using word-lattices.",Experiment/Discussion
+"For example, for MT06 the number of OOVs in the hs translation is 484.",Experiment/Discussion
+The number of OOVs decreased by 19% for hs+ss and by 75% for hs+ss+cs.,Experiment/Discussion
+"As mentioned in Section 3, using lexical reordering for word-lattices further improves the translation quality.",Experiment/Discussion
+We created lattices from an unsegmented version of the Arabic test data and generated alternative arcs where clitics as well as the definiteness marker and the future tense marker were segmented into tokens.,Experiment/Discussion
+We used the Buckwalter morphological analyzer and disambiguated the analysis using a simple unigram model trained on the Penn Arabic Treebank.,Experiment/Discussion
+Data and Settings.,Experiment/Discussion
+"For these experiments we made use of the entire NIST MT08 training data, although for training of the system, we used a subsampling method proposed by Kishore Papineni that aims to include training sentences containing ngrams in the test data (personal communication).",Experiment/Discussion
+"For all systems, we used a 5-gram English LM trained on 250M words of English training data.",Experiment/Discussion
+"The NIST MT03 test set was used as development set for optimizing the interpolation weights using MER training (Och, 2003).",Experiment/Discussion
+"Evaluation was carried out on the NIST 2005 and 2006 evaluation sets (MT05, MT06).",Experiment/Discussion
+Experimental results: Word-lattices improve translation quality.,Experiment/Discussion
+Results are presented in Table 5.,Experiment/Discussion
+Using word-lattices to combine the surface forms with morphologically segmented forms significantly improves BLEU scores both in the phrase-based and hierarchical models.,Experiment/Discussion
+Lattice Translation.,Experiment/Discussion
+"The ‘noisier channel’ model of machine translation has been widely used in spoken language translation as an alternative to selecting the single-best hypothesis from an ASR system and translating it (Ney, 1999; Casacuberta et al., 2004; Zhang et al., 2005; Saleem et al., 2005; Matusov et al., 2005; Bertoldi et al., 2007; Mathias, 2007).",Experiment/Discussion
+Several authors (e.g.,Experiment/Discussion
+Saleem et al. (2005) and Bertoldi et al.,Experiment/Discussion
+(2007)) comment directly on the impracticality of using n-best lists to translate speech.,Experiment/Discussion
+"Although translation is fundamentally a nonmonotonic relationship between most language pairs, reordering has tended to be a secondary concern to the researchers who have worked on lattice translation.",Experiment/Discussion
+"Matusov et al. (2005) decodes monotonically and then uses a finite state reordering model on the single-best translation, along the lines of Bangalore and Riccardi (2000).",Experiment/Discussion
+Mathias (2007) and Saleem et al. (2004) only report results of monotonic decoding for the systems they describe.,Experiment/Discussion
+"Bertoldi et al. (2007) solve the problem by requiring that their input be in the format of a confusion network, which enables the standard distortion penalty to be used.",Experiment/Discussion
+"Finally, the system described by Zhang et al. (2005) uses IBM Model 4 features to translate lattices.",Experiment/Discussion
+"For the distortion model, they use the maximum probability value over all possible paths in the lattice for each jump considered, which is similar to the approach we have taken.",Experiment/Discussion
+"Mathias and Byrne (2006) build a phrase-based translation system as a cascaded series of FSTs which can accept any input FSA; however, the only reordering that is permitted is the swapping of two adjacent phrases.",Experiment/Discussion
+Applications of source lattices outside of the domain of spoken language translation have been far more limited.,Experiment/Discussion
+Costa-juss`a and Fonollosa (2007) take steps in this direction by using lattices to encode multiple reorderings of the source language.,Experiment/Discussion
+"Dyer (2007) uses confusion networks to encode morphological alternatives in Czech-English translation, and Xu et al. (2005) takes an approach very similar to ours for Chinese-English translation and encodes multiple word segmentations in a lattice, but which is decoded with a conventionally trained translation model and without a sophisticated reordering model.",Experiment/Discussion
+"The Arabic-English morphological segmentation lattices are similar in spirit to backoff translation models (Yang and Kirchhoff, 2006), which consider alternative morphological segmentations and simplifications of a surface token when the surface token can not be translated.",Experiment/Discussion
+Parsing and formal language theory.,Experiment/Discussion
+"There has been considerable work on parsing word lattices, much of it for language modeling applications in speech recognition (Ney, 1991; Cheppalier and Rajman, 1998).",Experiment/Discussion
+"Additionally, Grune and Jacobs (2008) refines an algorithm originally due to Bar-Hillel for intersecting an arbitrary FSA (of which word lattices are a subset) with a CFG.",Experiment/Discussion
+Klein and Manning (2001) formalize parsing as a hypergraph search problem and derive an O(n3) parser for lattices.,Experiment/Discussion
+"We have achieved substantial gains in translation performance by decoding compact representations of alternative source language analyses, rather than single-best representations.",Results/Conclusion
+"Our results generalize previous gains for lattice translation of spoken language input, and we have further generalized the approach by introducing an algorithm for lattice decoding using a hierarchical phrase-based model.",Results/Conclusion
+"Additionally, we have shown that although word lattices complicate modeling of word reordering, a simple heuristic offers good performance and enables many standard distortion models to be used directly with lattice input.",Results/Conclusion
+"This research was supported by the GALE program of the Defense Advanced Research Projects Agency, Contract No.",Results/Conclusion
+HR0011-06-2-0001.,Results/Conclusion
+"The authors wish to thank Niyu Ge for the Chinese named-entity analysis, Pi-Chuan Chang for her assistance with the Stanford Chinese segmenter, and Tie-Jun Zhao and Congui Zhu for making the Harbin Chinese segmenter available to us.",Results/Conclusion

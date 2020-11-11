@@ -1,188 +1,188 @@
 col1,col2
-This paper presents a new hypothesis alignment method for combining outputs of multiple machine translation (MT) systems.,{}
-An indirect hidden Markov model (IHMM) is proposed to address the synonym matching and word ordering issues in hypothesis alignment.,{}
-"Unlike traditional HMMs whose parameters are trained via maximum likelihood estimation (MLE), the of the IHMM are estimated a variety of sources including word semantic similarity, word surface similarity, and a distance-based distortion penalty.",{}
-The IHMM-based method significantly outperforms the state-of-the-art TER-based alignment model in our experiments on NIST benchmark datasets.,{}
-Our combined SMT system using the proposed method achieved the best Chinese-to-English translation result in the constrained training track of the,{}
-System combination has been applied successfully to various machine translation tasks.,"{'title': '1 Introduction', 'number': '1'}"
-"Recently, confusion-network-based system combination algorithms have been developed to combine outputs of multiple machine translation (MT) systems to form a consensus output (Bangalore, et al. 2001, Matusov et al., 2006, Rosti et al., 2007, Sim et al., 2007).","{'title': '1 Introduction', 'number': '1'}"
-"A confusion network comprises a sequence of sets of alternative words, possibly including null’s, with associated scores.","{'title': '1 Introduction', 'number': '1'}"
-"The consensus output is then derived by selecting one word from each set of alternatives, to produce the sequence with the best overall score, which could be assigned in various ways such as by voting, by using posterior probability estimates, or by using a combination of these measures and other features.","{'title': '1 Introduction', 'number': '1'}"
-"Constructing a confusion network requires choosing one of the hypotheses as the backbone (also called “skeleton” in the literature), and other hypotheses are aligned to it at the word level.","{'title': '1 Introduction', 'number': '1'}"
-High quality hypothesis alignment is crucial to the performance of the resulting system combination.,"{'title': '1 Introduction', 'number': '1'}"
-"However, there are two challenging issues that make MT hypothesis alignment difficult.","{'title': '1 Introduction', 'number': '1'}"
-"First, different hypotheses may use different synonymous words to express the same meaning, and these synonyms need to be aligned to each other.","{'title': '1 Introduction', 'number': '1'}"
-"Second, correct translations may have different word orderings in different hypotheses and these words need to be properly reordered in hypothesis alignment.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we propose an indirect hidden Markov model (IHMM) for MT hypothesis alignment.","{'title': '1 Introduction', 'number': '1'}"
-The HMM provides a way to model both synonym matching and word ordering.,"{'title': '1 Introduction', 'number': '1'}"
-"Unlike traditional HMMs whose parameters are trained via maximum likelihood estimation (MLE), the parameters of the IHMM are estimated indirectly from a variety of sources including word semantic similarity, word surface similarity, and a distancebased distortion penalty, without using large amount of training data.","{'title': '1 Introduction', 'number': '1'}"
-Our combined SMT system using the proposed method gave the best result on the Chinese-to-English test in the constrained training track of the 2008 NIST Open MT Evaluation (MT08).,"{'title': '1 Introduction', 'number': '1'}"
-"The current state-of-the-art is confusion-networkbased MT system combination as described by Rosti and colleagues (Rosti et al., 2007a, Rosti et al., 2007b).","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-The major steps are illustrated in Figure 1.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-In Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (a), hypotheses from different MT systems are first collected.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-Then in Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (b), one of the hypotheses is selected as the backbone for hypothesis alignment.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-This is usually done by a sentence-level minimum Bayes risk (MBR) method which selects a hypothesis that has the minimum average distance compared to all hypotheses.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-The backbone determines the word order of the combined output.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-Then as illustrated in Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (c), all other hypotheses are aligned to the backbone.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-Note that in Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (c) the symbol ε denotes a null word, which is inserted by the alignment normalization algorithm described in section 3.4.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (c) also illustrates the handling of synonym alignment (e.g., aligning “car” to “sedan”), and word re-ordering of the hypothesis.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-Then in Fig.,"{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"1 (d), a confusion network is constructed based on the aligned hypotheses, which consists of a sequence of sets in which each word is aligned to a list of alternative words (including null) in the same set.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"Then, a set of global and local features are used to decode the confusion network.","{'title': '2 Confusion-network-based MT system combination', 'number': '2'}"
-"In confusion-network-based system combination for SMT, a major difficulty is aligning hypotheses to the backbone.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"One possible statistical model for word alignment is the HMM, which has been widely used for bilingual word alignment (Vogel et al., 1996, Och and Ney, 2003).","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In this paper, we propose an indirect-HMM method for monolingual hypothesis alignment.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Let denote the backbone, �' _ ( ,...,dj) a hypothesis to be aligned to e; , and the alignment that specifies the position of the backbone word aligned to each hypothesis word.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-We treat each word in the backbone as an HMM state and the words in the hypothesis as the observation sequence.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"We use a first-order HMM, assuming that the emission probability depends only on the backbone word, and the transition probability p(aj I aj_,,I) depends only on the position of the last state and the length of the backbone.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Treating the alignment as hidden variable, the conditional probability that the hypothesis is generated by the backbone is given by As in HMM-based bilingual word alignment (Och and Ney, 2003), we also associate a null with each backbone word to allow generating hypothesis words that do not align to any backbone word.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In HMM-based hypothesis alignment, emission probabilities model the similarity between a backbone word and a hypothesis word, and will be referred to as the similarity model.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"The transition probabilities model word reordering, and will be called the distortion model.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"The similarity model, which specifies the emission probabilities of the HMM, models the similarity between a backbone word and a hypothesis word.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Since both words are in the same language, the similarity model can be derived based on both semantic similarity and surface similarity, and the overall similarity model is a linear interpolation of the two: where and reflect the semantic and surface similarity between and e; , respectively, and α is the interpolation factor.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Since the semantic similarity between two target words is source-dependent, the semantic similarity model is derived by using the source word sequence as a hidden layer: where is the source sentence.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Moreover, in order to handle the case that two target words are synonyms but neither of them has counter-part in the source sentence, a null is introduced on the source side, which is represented by f0.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-The last step in (3) assumes that first ei generates all source words including null.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-Then ej’ is generated by all source words including null.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In the common SMT scenario where a large amount of bilingual parallel data is available, we can estimate the translation probabilities from a source word to a target word and vice versa via conventional bilingual word alignment.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Then both p(fk I e;) and in (3) can be derived: where is the translation model from the source-to-target word alignment model, and p(fk I e;) , which enforces the sum-to-1 constraint over all words in the source sentence, takes the following form, where A2s (fk I e;) is the translation model from the target-to-source word alignment model.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In our method, A2s (null I e;) for all target words is simply a constant pnull, whose value is optimized on held-out data 1.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-The surface similarity model can be estimated in several ways.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"A very simple model could be based on exact match: the surface similarity model, per,,.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"(elj I , would take the value 1.0 if e’= e, and 0 otherwise 2 .","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"However, a smoothed surface similarity model is used in our method.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"If the target language uses alphabetic orthography, as English does, we treat words as letter sequences and the similarity measure can be the length of the longest matched prefix (LMP) or the length of the longest common subsequence (LCS) between them.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Then, this raw similarity measure is transformed to a surface similarity score between 0 and 1 through an exponential mapping, where is computed as and is the raw similarity measure of ej’ ei, which is the length of the LMP or LCS of ej’ and ei. and p is a smoothing factor that characterizes the mapping, Thus as p approaches infinity, backs off to the exact match model.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-We found the smoothed similarity model of (4) yields slightly better results than the exact match model.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-Both LMP- and LCS- based methods achieve similar performance but the computation of LMP is faster.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Therefore, we only report results of the LMP-based smoothed similarity model.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"The distortion model, which specifies the transition probabilities of the HMM, models the first-order dependencies of word ordering.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In bilingual HMM-based word alignment, it is commonly assumed that transition probabilities Following Och and Ney (2003), we use a fixed value p0 for the probability of jumping to a null state, which can be optimized on held-out data, and the overall distortion model becomes As suggested by Liang et al. (2006), we can group the distortion parameters {c(d)}, d= i - i', into a few buckets.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"In our implementation, 11 buckets are used for c(≤-4), c(-3), ... c(0), ..., c(5), c(≥6).","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-The probability mass for transitions with jump distance larger than 6 and less than -4 is uniformly divided.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"By doing this, only a handful of c(d) parameters need to be estimated.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Although it is possible to estimate them using the EM algorithm on a small development set, we found that a particularly simple model, described below, works surprisingly well in our experiments.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Since both the backbone and the hypothesis are in the same language, It seems intuitive that the distortion model should favor monotonic alignment and only allow non-monotonic alignment with a certain penalty.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"This leads us to use a distortion model of the following form, where K is a tuning factor optimized on held-out data.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-As shown in Fig.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"2, the value of distortion score peaks at d=1, i.e., the monotonic alignment, and decays for non-monotonic alignments depending on how far it diverges from the monotonic alignment.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Given an HMM, the Viterbi alignment algorithm can be applied to find the best alignment between the backbone and the hypothesis, However, the alignment produced by the algorithm cannot be used directly to build a confusion network.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-There are two reasons for this.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"First, the alignment produced may contain 1-N mappings between the backbone and the hypothesis whereas 1-1 mappings are required in order to build a confusion network.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Second, if hypothesis words are aligned to a null in the backbone or vice versa, we need to insert actual nulls into the right places in the hypothesis and the backbone, respectively.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Therefore, we need to normalize the alignment produced by Viterbi search.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"First, whenever more than one hypothesis words are aligned to one backbone word, we keep the link which gives the highest occupation probability computed via the forward-backward algorithm.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-The other hypothesis words originally aligned to the backbone word will be aligned to the null associated with that backbone word.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"Second, for the hypothesis words that are aligned to a particular null on the backbone side, a set of nulls are inserted around that backbone word associated with the null such that no links cross each other.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-As illustrated in Fig.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"3 (a), if a hypothesis word e2’ is aligned to the backbone word e2, a null is inserted in front of the backbone word e2 linked to the hypothesis word e1’ that comes before e2’.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-Nulls are also inserted for other hypothesis words such as e3’ and e4’ after the backbone word e2.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-"If there is no hypothesis word aligned to that backbone word, all nulls are inserted after that backbone word .3 For a backbone word that is aligned to no hypothesis word, a null is inserted on the hypothesis side, right after the hypothesis word which is aligned to the immediately preceding backbone word.","{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-An example is shown in Fig.,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-3 (b).,"{'title': '3 Indirect-HMM-based Hypothesis Alignment', 'number': '3'}"
-The two main hypothesis alignment methods for system combination in the previous literature are GIZA++ and TER-based methods.,"{'title': '4 Related work', 'number': '4'}"
-"Matusov et al. (2006) proposed using GIZA++ to align words between different MT hypotheses, where all hypotheses of the test corpus are collected to create hypothesis pairs for GIZA++ training.","{'title': '4 Related work', 'number': '4'}"
-"This approach uses the conventional HMM model bootstrapped from IBM Model-1 as implemented in GIZA++, and heuristically combines results from aligning in both directions.","{'title': '4 Related work', 'number': '4'}"
-System combination based on this approach gives an improvement over the best single system.,"{'title': '4 Related work', 'number': '4'}"
-"However, the number of hypothesis pairs for training is limited by the size of the test corpus.","{'title': '4 Related work', 'number': '4'}"
-"Also, MT hypotheses from the same source sentence are correlated with each other and these hypothesis pairs are not i.i.d. data samples.","{'title': '4 Related work', 'number': '4'}"
-"Therefore, GIZA++ training on such a data set may be unreliable.","{'title': '4 Related work', 'number': '4'}"
-"Bangalore et al. (2001) used a multiple stringmatching algorithm based on Levenshtein edit distance, and later Sim et al.","{'title': '4 Related work', 'number': '4'}"
-(2007) and Rosti et al. (2007) extended it to a TER-based method for hypothesis alignment.,"{'title': '4 Related work', 'number': '4'}"
-"TER (Snover et al., 2006) measures the minimum number of edits, including substitution, insertion, deletion, and shift of blocks of words, that are needed to modify a hypothesis so that it exactly matches the other hypothesis.","{'title': '4 Related work', 'number': '4'}"
-The best alignment is the one that gives the minimum number of translation edits.,"{'title': '4 Related work', 'number': '4'}"
-"TER-based confusion network construction and system combination has demonstrated superior performance on various large-scale MT tasks (Rosti. et al, 2007).","{'title': '4 Related work', 'number': '4'}"
-"However, when searching for the optimal alignment, the TER-based method uses a strict surface hard match for counting edits.","{'title': '4 Related work', 'number': '4'}"
-"Therefore, it is not able to handle synonym matching well.","{'title': '4 Related work', 'number': '4'}"
-"Moreover, although TER-based alignment allows phrase shifts to accommodate the non-monotonic word ordering, all non-monotonic shifts are penalized equally no matter how short or how long the move is, and this penalty is set to be the same as that for substitution, deletion, and insertion edits.","{'title': '4 Related work', 'number': '4'}"
-"Therefore, its modeling of non-monotonic word ordering is very coarse-grained.","{'title': '4 Related work', 'number': '4'}"
-"In contrast to the GIZA++-based method, our IHMM-based method has a similarity model estimated using bilingual word alignment HMMs that are trained on a large amount of bi-text data.","{'title': '4 Related work', 'number': '4'}"
-"Moreover, the surface similarity information is explicitly incorporated in our model, while it is only used implicitly via parameter initialization for IBM Model-1 training by Matusov et al. (2006).","{'title': '4 Related work', 'number': '4'}"
-"On the other hand, the TER-based alignment model is similar to a coarse-grained, nonnormalized version of our IHMM, in which the similarity model assigns no penalty to an exact surface match and a fixed penalty to all substitutions, insertions, and deletions, and the distortion model simply assigns no penalty to a monotonic jump, and a fixed penalty to all other jumps, equal to the non-exact-match penalty in the similarity model.","{'title': '4 Related work', 'number': '4'}"
-There have been other hypothesis alignment methods.,"{'title': '4 Related work', 'number': '4'}"
-"Karakos, et al. (2008) proposed an ITGbased method for hypothesis alignment, Rosti et al.","{'title': '4 Related work', 'number': '4'}"
-"(2008) proposed an incremental alignment method, and a heuristic-based matching algorithm was proposed by Jayaraman and Lavie (2005).","{'title': '4 Related work', 'number': '4'}"
-"In this section, we evaluate our IHMM-based hypothesis alignment method on the Chinese-toEnglish (C2E) test in the constrained training track of the 2008 NIST Open MT Evaluation (NIST, 2008).","{'title': '5 Evaluation', 'number': '5'}"
-We compare to the TER-based method used by Rosti et al. (2007).,"{'title': '5 Evaluation', 'number': '5'}"
-"In the following experiments, the NIST BLEU score is used as the evaluation metric (Papineni et al., 2002), which is reported as a percentage in the following sections.","{'title': '5 Evaluation', 'number': '5'}"
-"In our implementation, the backbone is selected with MBR.","{'title': '5 Evaluation', 'number': '5'}"
-Only the top hypothesis from each single system is considered as a backbone.,"{'title': '5 Evaluation', 'number': '5'}"
-A uniform posteriori probability is assigned to all hypotheses.,"{'title': '5 Evaluation', 'number': '5'}"
-TER is used as loss function in the MBR computation.,"{'title': '5 Evaluation', 'number': '5'}"
-"Similar to (Rosti et al., 2007), each word in the confusion network is associated with a word posterior probability.","{'title': '5 Evaluation', 'number': '5'}"
-"Given a system S, each of its hypotheses is assigned with a rank-based score of 1/(1+r)η, where r is the rank of the hypothesis, and η is a rank smoothing parameter.","{'title': '5 Evaluation', 'number': '5'}"
-The system specific rank-based score of a word w for a given system S is the sum of all the rank-based scores of the hypotheses in system S that contain the word w at the given position (after hypothesis alignment).,"{'title': '5 Evaluation', 'number': '5'}"
-This score is then normalized by the sum of the scores of all the alternative words at the same position and from the same system S to generate the system specific word posterior.,"{'title': '5 Evaluation', 'number': '5'}"
-"Then, the total word posterior of w over all systems is a sum of these system specific posteriors weighted by system weights.","{'title': '5 Evaluation', 'number': '5'}"
-"Beside the word posteriors, we use language model scores and a word count as features for confusion network decoding.","{'title': '5 Evaluation', 'number': '5'}"
-"Therefore, for an M-way system combination that uses N LMs, a total of M+N+1 decoding parameters, including M-1 system weights, one rank smoothing factor, N language model weights, and one weight for the word count feature, are optimized using Powell’s method (Brent, 1973) to maximize BLEU score on a development set4 .","{'title': '5 Evaluation', 'number': '5'}"
-Two language models are used in our experiments.,"{'title': '5 Evaluation', 'number': '5'}"
-"One is a trigram model estimated from the English side of the parallel training data, and the other is a 5-gram model trained on the English GigaWord corpus from LDC using the MSRLM toolkit (Nguyen et al, 2007).","{'title': '5 Evaluation', 'number': '5'}"
-4 The parameters of IHMM are not tuned by maximum-BLEU training.,"{'title': '5 Evaluation', 'number': '5'}"
-"In order to reduce the fluctuation of BLEU scores caused by the inconsistent translation output length, an unsupervised length adaptation method has been devised.","{'title': '5 Evaluation', 'number': '5'}"
-We compute an expected length ratio between the MT output and the source sentences on the development set after maximumBLEU training.,"{'title': '5 Evaluation', 'number': '5'}"
-"Then during test, we adapt the length of the translation output by adjusting the weight of the word count feature such that the expected output/source length ratio is met.","{'title': '5 Evaluation', 'number': '5'}"
-"In our experiments, we apply length adaptation to the system combination output at the level of the whole test corpus.","{'title': '5 Evaluation', 'number': '5'}"
-"The development (dev) set used for system combination parameter training contains 1002 sentences sampled from the previous NIST MT Chinese-to-English test sets: 35% from MT04, 55% from MT05, and 10% from MT06-newswire.","{'title': '5 Evaluation', 'number': '5'}"
-"The test set is the MT08 Chinese-to-English “current” test set, which includes 1357 sentences from both newswire and web-data genres.","{'title': '5 Evaluation', 'number': '5'}"
-Both dev and test sets have four references per sentence.,"{'title': '5 Evaluation', 'number': '5'}"
-"As inputs to the system combination, 10-best hypotheses for each source sentence in the dev and test sets are collected from each of the eight single systems.","{'title': '5 Evaluation', 'number': '5'}"
-All outputs on the MT08 test set were true-cased before scoring using a log-linear conditional Markov model proposed by Toutanova et al. (2008).,"{'title': '5 Evaluation', 'number': '5'}"
-"However, to save computation effort, the results on the dev set are reported in case insensitive BLEU (ciBLEU) score instead.","{'title': '5 Evaluation', 'number': '5'}"
-"In our main experiments, outputs from a total of eight single MT systems were combined.","{'title': '5 Evaluation', 'number': '5'}"
-"As listed in Table 1, Sys-1 is a tree-to-string system proposed by Quirk et al., (2005); Sys-2 is a phrasebased system with fast pruning proposed by Moore and Quirk (2008); Sys-3 is a phrase-based system with syntactic source reordering proposed by Wang et al. (2007a); Sys-4 is a syntax-based preordering system proposed by Li et. al.","{'title': '5 Evaluation', 'number': '5'}"
-"(2007); Sys5 is a hierarchical system proposed by Chiang (2007); Sys-6 is a lexicalized re-ordering system proposed by Xiong et al. (2006); Sys-7 is a twopass phrase-based system with adapted LM proposed by Foster and Kuhn (2007); and Sys-8 is a hierarchical system with two-pass rescoring using a parser-based LM proposed by Wang et al., (2007b).","{'title': '5 Evaluation', 'number': '5'}"
-All systems were trained within the confines of the constrained training condition of NIST MT08 evaluation.,"{'title': '5 Evaluation', 'number': '5'}"
-These single systems are optimized with maximum-BLEU training on different subsets of the previous NIST MT test data.,"{'title': '5 Evaluation', 'number': '5'}"
-"The bilingual translation models used to compute the semantic similarity are from the worddependent HMMs proposed by He (2007), which are trained on two million parallel sentence-pairs selected from the training corpus allowed by the constrained training condition of MT08.","{'title': '5 Evaluation', 'number': '5'}"
-"In the IHMM-based method, the smoothing factor for surface similarity model is set to ρ = 3, the interpolation factor of the overall similarity model is set to α = 0.3, and the controlling factor of the distance-based distortion parameters is set to K=2.","{'title': '5 Evaluation', 'number': '5'}"
-These settings are optimized on the dev set.,"{'title': '5 Evaluation', 'number': '5'}"
-"Individual system results and system combination results using both IHMM and TER alignment, on both the dev and test sets, are presented in Table 1.","{'title': '5 Evaluation', 'number': '5'}"
-"The TER-based hypothesis alignment tool used in our experiments is the publicly available TER Java program, TERCOM (Snover et al., 2006).","{'title': '5 Evaluation', 'number': '5'}"
-Default settings of TERCOM are used in the following experiments.,"{'title': '5 Evaluation', 'number': '5'}"
-"On the dev set, the case insensitive BLEU score of the IHMM-based 8-way system combination output is about 5.8 points higher than that of the best single system.","{'title': '5 Evaluation', 'number': '5'}"
-"Compared to the TER-based method, the IHMM-based method is about 1.5 BLEU points better.","{'title': '5 Evaluation', 'number': '5'}"
-"On the MT08 test set, the IHMM-based system combination gave a case sensitive BLEU score of 30.89%.","{'title': '5 Evaluation', 'number': '5'}"
-It outperformed the best single system by 4.7 BLEU points and the TER-based system combination by 1.0 BLEU points.,"{'title': '5 Evaluation', 'number': '5'}"
-Note that the best single system on the dev set and the test set are different.,"{'title': '5 Evaluation', 'number': '5'}"
-"The different single systems are optimized on different tuning sets, so this discrepancy between dev set and test set results is presumably due to differing degrees of mismatch between the dev and test sets and the various tuning sets.","{'title': '5 Evaluation', 'number': '5'}"
-"In order to evaluate how well our method performs when we combine more systems, we collected MT outputs on MT08 from seven additional single systems as summarized in Table 2.","{'title': '5 Evaluation', 'number': '5'}"
-These systems belong to two groups.,"{'title': '5 Evaluation', 'number': '5'}"
-Sys-9 to Sys-12 are in the first group.,"{'title': '5 Evaluation', 'number': '5'}"
-They are syntaxaugmented hierarchical systems similar to those described by Shen et al. (2008) using different Chinese word segmentation and language models.,"{'title': '5 Evaluation', 'number': '5'}"
-The second group has Sys-13 to Sys-15.,"{'title': '5 Evaluation', 'number': '5'}"
-"Sys-13 is a phrasal system proposed by Koehn et al. (2003), Sys-14 is a hierarchical system proposed by Chiang (2007), and Sys-15 is a syntax-based system proposed by Galley et al.","{'title': '5 Evaluation', 'number': '5'}"
-(2006).,"{'title': '5 Evaluation', 'number': '5'}"
-All seven systems were trained within the confines of the constrained training condition of NIST MT08 evaluation.,"{'title': '5 Evaluation', 'number': '5'}"
-We collected 10-best MT outputs only on the MT08 test set from these seven extra systems.,"{'title': '5 Evaluation', 'number': '5'}"
-No MT outputs on our dev set are available from them at present.,"{'title': '5 Evaluation', 'number': '5'}"
-"Therefore, we directly adopt system combination parameters trained for the previous 8way system combination, except the system weights, which are re-set by the following heuristics: First, the total system weight mass 1.0 is evenly divided among the three groups of single systems: {Sys-1~8}, {Sys-9~12}, and {Sys13~15}.","{'title': '5 Evaluation', 'number': '5'}"
-Each group receives a total system weight mass of 1/3.,"{'title': '5 Evaluation', 'number': '5'}"
-"Then the weight mass is further divided in each group: in the first group, the original weights of systems 1~8 are multiplied by 1/3; in the second and third groups, the weight mass is evenly distributed within the group, i.e., 1/12 for each system in group 2, and 1/9 for each system in group 35.","{'title': '5 Evaluation', 'number': '5'}"
-"Length adaptation is applied to control the final output length, where the same expected length ratio of the previous 8-way system combination is adopted.","{'title': '5 Evaluation', 'number': '5'}"
-The results of the 15-way system combination are presented in Table 3.,"{'title': '5 Evaluation', 'number': '5'}"
-It shows that the IHMMbased method is still about 1 BLEU point better than the TER-based method.,"{'title': '5 Evaluation', 'number': '5'}"
-"Moreover, combining 15 single systems gives an output that has a NIST BLEU score of 34.82%, which is 3.9 points better than the best submission to the NIST MT08 constrained training track (NIST, 2008).","{'title': '5 Evaluation', 'number': '5'}"
-"To our knowledge, this is the best result reported on this task.","{'title': '5 Evaluation', 'number': '5'}"
-"In this section, we evaluate the effect of the semantic similarity model and the surface similarity model by varying the interpolation weight α of (2).","{'title': '5 Evaluation', 'number': '5'}"
-The results on both the dev and test sets are reported in Table 4.,"{'title': '5 Evaluation', 'number': '5'}"
-"In one extreme case, α = 1, the overall similarity model is based only on semantic similarity.","{'title': '5 Evaluation', 'number': '5'}"
-"This gives a case insensitive BLEU score of 41.70% and a case sensitive BLEU score of 28.92% on the dev and test set, respectively.","{'title': '5 Evaluation', 'number': '5'}"
-The accuracy is significantly improved to 43.62% on the dev set and 30.89% on test set when α = 0.3.,"{'title': '5 Evaluation', 'number': '5'}"
-"In another extreme case, α = 0, in which only the surface similarity model is used for the overall similarity model, the performance degrades by about 0.2 point.","{'title': '5 Evaluation', 'number': '5'}"
-"Therefore, the surface similarity information seems more important for monolingual hypothesis alignment, but both sub-models are useful.","{'title': '5 Evaluation', 'number': '5'}"
-We investigate the effect of the distance-based distortion model by varying the controlling factor K in (6).,"{'title': '5 Evaluation', 'number': '5'}"
-"For example, setting K=1.0 gives a lineardecay distortion model, and setting K=2.0 gives a quadratic smoothed distance-based distortion model.","{'title': '5 Evaluation', 'number': '5'}"
-"As shown in Table 5, the optimal result can be achieved using a properly smoothed distancebased distortion model.","{'title': '5 Evaluation', 'number': '5'}"
-Synonym matching and word ordering are two central issues for hypothesis alignment in confusion-network-based MT system combination.,"{'title': '6 Conclusion', 'number': '6'}"
-"In this paper, an IHMM-based method is proposed for hypothesis alignment.","{'title': '6 Conclusion', 'number': '6'}"
-It uses a similarity model for synonym matching and a distortion model for word ordering.,"{'title': '6 Conclusion', 'number': '6'}"
-"In contrast to previous methods, the similarity model explicitly incorporates both semantic and surface word similarity, which is critical to monolingual word alignment, and a smoothed distance-based distortion model is used to model the first-order dependency of word ordering, which is shown to be better than simpler approaches.","{'title': '6 Conclusion', 'number': '6'}"
-Our experimental results show that the IHMMbased hypothesis alignment method gave superior results on the NIST MT08 C2E test set compared to the TER-based method.,"{'title': '6 Conclusion', 'number': '6'}"
-"Moreover, we show that our system combination method can scale up to combining more systems and produce a better output that has a case sensitive BLEU score of 34.82, which is 3.9 BLEU points better than the best official submission of MT08.","{'title': '6 Conclusion', 'number': '6'}"
-"The authors are grateful to Chris Quirk, Arul Menezes, Kristina Toutanova, William Dolan, Mu Li, Chi-Ho Li, Dongdong Zhang, Long Jiang, Ming Zhou, George Foster, Roland Kuhn, Jing Zheng, Wen Wang, Necip Fazil Ayan, Dimitra Vergyri, Nicolas Scheffer, Andreas Stolcke, Kevin Knight, Jens-Soenke Voeckler, Spyros Matsoukas, and Antti-Veikko Rosti for assistance with the MT systems and/or for the valuable suggestions and discussions.","{'title': 'Acknowledgement', 'number': '7'}"
+This paper presents a new hypothesis alignment method for combining outputs of multiple machine translation (MT) systems.,Introduction
+An indirect hidden Markov model (IHMM) is proposed to address the synonym matching and word ordering issues in hypothesis alignment.,Introduction
+"Unlike traditional HMMs whose parameters are trained via maximum likelihood estimation (MLE), the of the IHMM are estimated a variety of sources including word semantic similarity, word surface similarity, and a distance-based distortion penalty.",Introduction
+The IHMM-based method significantly outperforms the state-of-the-art TER-based alignment model in our experiments on NIST benchmark datasets.,Introduction
+Our combined SMT system using the proposed method achieved the best Chinese-to-English translation result in the constrained training track of the,Introduction
+System combination has been applied successfully to various machine translation tasks.,Experiment/Discussion
+"Recently, confusion-network-based system combination algorithms have been developed to combine outputs of multiple machine translation (MT) systems to form a consensus output (Bangalore, et al. 2001, Matusov et al., 2006, Rosti et al., 2007, Sim et al., 2007).",Experiment/Discussion
+"A confusion network comprises a sequence of sets of alternative words, possibly including null’s, with associated scores.",Experiment/Discussion
+"The consensus output is then derived by selecting one word from each set of alternatives, to produce the sequence with the best overall score, which could be assigned in various ways such as by voting, by using posterior probability estimates, or by using a combination of these measures and other features.",Experiment/Discussion
+"Constructing a confusion network requires choosing one of the hypotheses as the backbone (also called “skeleton” in the literature), and other hypotheses are aligned to it at the word level.",Experiment/Discussion
+High quality hypothesis alignment is crucial to the performance of the resulting system combination.,Experiment/Discussion
+"However, there are two challenging issues that make MT hypothesis alignment difficult.",Experiment/Discussion
+"First, different hypotheses may use different synonymous words to express the same meaning, and these synonyms need to be aligned to each other.",Experiment/Discussion
+"Second, correct translations may have different word orderings in different hypotheses and these words need to be properly reordered in hypothesis alignment.",Experiment/Discussion
+"In this paper, we propose an indirect hidden Markov model (IHMM) for MT hypothesis alignment.",Experiment/Discussion
+The HMM provides a way to model both synonym matching and word ordering.,Experiment/Discussion
+"Unlike traditional HMMs whose parameters are trained via maximum likelihood estimation (MLE), the parameters of the IHMM are estimated indirectly from a variety of sources including word semantic similarity, word surface similarity, and a distancebased distortion penalty, without using large amount of training data.",Experiment/Discussion
+Our combined SMT system using the proposed method gave the best result on the Chinese-to-English test in the constrained training track of the 2008 NIST Open MT Evaluation (MT08).,Experiment/Discussion
+"The current state-of-the-art is confusion-networkbased MT system combination as described by Rosti and colleagues (Rosti et al., 2007a, Rosti et al., 2007b).",Experiment/Discussion
+The major steps are illustrated in Figure 1.,Experiment/Discussion
+In Fig.,Experiment/Discussion
+"1 (a), hypotheses from different MT systems are first collected.",Experiment/Discussion
+Then in Fig.,Experiment/Discussion
+"1 (b), one of the hypotheses is selected as the backbone for hypothesis alignment.",Experiment/Discussion
+This is usually done by a sentence-level minimum Bayes risk (MBR) method which selects a hypothesis that has the minimum average distance compared to all hypotheses.,Experiment/Discussion
+The backbone determines the word order of the combined output.,Experiment/Discussion
+Then as illustrated in Fig.,Experiment/Discussion
+"1 (c), all other hypotheses are aligned to the backbone.",Experiment/Discussion
+Note that in Fig.,Experiment/Discussion
+"1 (c) the symbol ε denotes a null word, which is inserted by the alignment normalization algorithm described in section 3.4.",Experiment/Discussion
+Fig.,Experiment/Discussion
+"1 (c) also illustrates the handling of synonym alignment (e.g., aligning “car” to “sedan”), and word re-ordering of the hypothesis.",Experiment/Discussion
+Then in Fig.,Experiment/Discussion
+"1 (d), a confusion network is constructed based on the aligned hypotheses, which consists of a sequence of sets in which each word is aligned to a list of alternative words (including null) in the same set.",Experiment/Discussion
+"Then, a set of global and local features are used to decode the confusion network.",Experiment/Discussion
+"In confusion-network-based system combination for SMT, a major difficulty is aligning hypotheses to the backbone.",Experiment/Discussion
+"One possible statistical model for word alignment is the HMM, which has been widely used for bilingual word alignment (Vogel et al., 1996, Och and Ney, 2003).",Experiment/Discussion
+"In this paper, we propose an indirect-HMM method for monolingual hypothesis alignment.",Experiment/Discussion
+"Let denote the backbone, �' _ ( ,...,dj) a hypothesis to be aligned to e; , and the alignment that specifies the position of the backbone word aligned to each hypothesis word.",Experiment/Discussion
+We treat each word in the backbone as an HMM state and the words in the hypothesis as the observation sequence.,Experiment/Discussion
+"We use a first-order HMM, assuming that the emission probability depends only on the backbone word, and the transition probability p(aj I aj_,,I) depends only on the position of the last state and the length of the backbone.",Experiment/Discussion
+"Treating the alignment as hidden variable, the conditional probability that the hypothesis is generated by the backbone is given by As in HMM-based bilingual word alignment (Och and Ney, 2003), we also associate a null with each backbone word to allow generating hypothesis words that do not align to any backbone word.",Experiment/Discussion
+"In HMM-based hypothesis alignment, emission probabilities model the similarity between a backbone word and a hypothesis word, and will be referred to as the similarity model.",Experiment/Discussion
+"The transition probabilities model word reordering, and will be called the distortion model.",Experiment/Discussion
+"The similarity model, which specifies the emission probabilities of the HMM, models the similarity between a backbone word and a hypothesis word.",Experiment/Discussion
+"Since both words are in the same language, the similarity model can be derived based on both semantic similarity and surface similarity, and the overall similarity model is a linear interpolation of the two: where and reflect the semantic and surface similarity between and e; , respectively, and α is the interpolation factor.",Experiment/Discussion
+"Since the semantic similarity between two target words is source-dependent, the semantic similarity model is derived by using the source word sequence as a hidden layer: where is the source sentence.",Experiment/Discussion
+"Moreover, in order to handle the case that two target words are synonyms but neither of them has counter-part in the source sentence, a null is introduced on the source side, which is represented by f0.",Experiment/Discussion
+The last step in (3) assumes that first ei generates all source words including null.,Experiment/Discussion
+Then ej’ is generated by all source words including null.,Experiment/Discussion
+"In the common SMT scenario where a large amount of bilingual parallel data is available, we can estimate the translation probabilities from a source word to a target word and vice versa via conventional bilingual word alignment.",Experiment/Discussion
+"Then both p(fk I e;) and in (3) can be derived: where is the translation model from the source-to-target word alignment model, and p(fk I e;) , which enforces the sum-to-1 constraint over all words in the source sentence, takes the following form, where A2s (fk I e;) is the translation model from the target-to-source word alignment model.",Experiment/Discussion
+"In our method, A2s (null I e;) for all target words is simply a constant pnull, whose value is optimized on held-out data 1.",Experiment/Discussion
+The surface similarity model can be estimated in several ways.,Experiment/Discussion
+"A very simple model could be based on exact match: the surface similarity model, per,,.",Experiment/Discussion
+"(elj I , would take the value 1.0 if e’= e, and 0 otherwise 2 .",Experiment/Discussion
+"However, a smoothed surface similarity model is used in our method.",Experiment/Discussion
+"If the target language uses alphabetic orthography, as English does, we treat words as letter sequences and the similarity measure can be the length of the longest matched prefix (LMP) or the length of the longest common subsequence (LCS) between them.",Experiment/Discussion
+"Then, this raw similarity measure is transformed to a surface similarity score between 0 and 1 through an exponential mapping, where is computed as and is the raw similarity measure of ej’ ei, which is the length of the LMP or LCS of ej’ and ei. and p is a smoothing factor that characterizes the mapping, Thus as p approaches infinity, backs off to the exact match model.",Experiment/Discussion
+We found the smoothed similarity model of (4) yields slightly better results than the exact match model.,Experiment/Discussion
+Both LMP- and LCS- based methods achieve similar performance but the computation of LMP is faster.,Experiment/Discussion
+"Therefore, we only report results of the LMP-based smoothed similarity model.",Experiment/Discussion
+"The distortion model, which specifies the transition probabilities of the HMM, models the first-order dependencies of word ordering.",Experiment/Discussion
+"In bilingual HMM-based word alignment, it is commonly assumed that transition probabilities Following Och and Ney (2003), we use a fixed value p0 for the probability of jumping to a null state, which can be optimized on held-out data, and the overall distortion model becomes As suggested by Liang et al. (2006), we can group the distortion parameters {c(d)}, d= i - i', into a few buckets.",Experiment/Discussion
+"In our implementation, 11 buckets are used for c(≤-4), c(-3), ... c(0), ..., c(5), c(≥6).",Experiment/Discussion
+The probability mass for transitions with jump distance larger than 6 and less than -4 is uniformly divided.,Experiment/Discussion
+"By doing this, only a handful of c(d) parameters need to be estimated.",Experiment/Discussion
+"Although it is possible to estimate them using the EM algorithm on a small development set, we found that a particularly simple model, described below, works surprisingly well in our experiments.",Experiment/Discussion
+"Since both the backbone and the hypothesis are in the same language, It seems intuitive that the distortion model should favor monotonic alignment and only allow non-monotonic alignment with a certain penalty.",Experiment/Discussion
+"This leads us to use a distortion model of the following form, where K is a tuning factor optimized on held-out data.",Experiment/Discussion
+As shown in Fig.,Experiment/Discussion
+"2, the value of distortion score peaks at d=1, i.e., the monotonic alignment, and decays for non-monotonic alignments depending on how far it diverges from the monotonic alignment.",Experiment/Discussion
+"Given an HMM, the Viterbi alignment algorithm can be applied to find the best alignment between the backbone and the hypothesis, However, the alignment produced by the algorithm cannot be used directly to build a confusion network.",Experiment/Discussion
+There are two reasons for this.,Experiment/Discussion
+"First, the alignment produced may contain 1-N mappings between the backbone and the hypothesis whereas 1-1 mappings are required in order to build a confusion network.",Experiment/Discussion
+"Second, if hypothesis words are aligned to a null in the backbone or vice versa, we need to insert actual nulls into the right places in the hypothesis and the backbone, respectively.",Experiment/Discussion
+"Therefore, we need to normalize the alignment produced by Viterbi search.",Experiment/Discussion
+"First, whenever more than one hypothesis words are aligned to one backbone word, we keep the link which gives the highest occupation probability computed via the forward-backward algorithm.",Experiment/Discussion
+The other hypothesis words originally aligned to the backbone word will be aligned to the null associated with that backbone word.,Experiment/Discussion
+"Second, for the hypothesis words that are aligned to a particular null on the backbone side, a set of nulls are inserted around that backbone word associated with the null such that no links cross each other.",Experiment/Discussion
+As illustrated in Fig.,Experiment/Discussion
+"3 (a), if a hypothesis word e2’ is aligned to the backbone word e2, a null is inserted in front of the backbone word e2 linked to the hypothesis word e1’ that comes before e2’.",Experiment/Discussion
+Nulls are also inserted for other hypothesis words such as e3’ and e4’ after the backbone word e2.,Experiment/Discussion
+"If there is no hypothesis word aligned to that backbone word, all nulls are inserted after that backbone word .3 For a backbone word that is aligned to no hypothesis word, a null is inserted on the hypothesis side, right after the hypothesis word which is aligned to the immediately preceding backbone word.",Experiment/Discussion
+An example is shown in Fig.,Experiment/Discussion
+3 (b).,Experiment/Discussion
+The two main hypothesis alignment methods for system combination in the previous literature are GIZA++ and TER-based methods.,Experiment/Discussion
+"Matusov et al. (2006) proposed using GIZA++ to align words between different MT hypotheses, where all hypotheses of the test corpus are collected to create hypothesis pairs for GIZA++ training.",Experiment/Discussion
+"This approach uses the conventional HMM model bootstrapped from IBM Model-1 as implemented in GIZA++, and heuristically combines results from aligning in both directions.",Experiment/Discussion
+System combination based on this approach gives an improvement over the best single system.,Experiment/Discussion
+"However, the number of hypothesis pairs for training is limited by the size of the test corpus.",Experiment/Discussion
+"Also, MT hypotheses from the same source sentence are correlated with each other and these hypothesis pairs are not i.i.d. data samples.",Experiment/Discussion
+"Therefore, GIZA++ training on such a data set may be unreliable.",Experiment/Discussion
+"Bangalore et al. (2001) used a multiple stringmatching algorithm based on Levenshtein edit distance, and later Sim et al.",Experiment/Discussion
+(2007) and Rosti et al. (2007) extended it to a TER-based method for hypothesis alignment.,Experiment/Discussion
+"TER (Snover et al., 2006) measures the minimum number of edits, including substitution, insertion, deletion, and shift of blocks of words, that are needed to modify a hypothesis so that it exactly matches the other hypothesis.",Experiment/Discussion
+The best alignment is the one that gives the minimum number of translation edits.,Experiment/Discussion
+"TER-based confusion network construction and system combination has demonstrated superior performance on various large-scale MT tasks (Rosti. et al, 2007).",Experiment/Discussion
+"However, when searching for the optimal alignment, the TER-based method uses a strict surface hard match for counting edits.",Experiment/Discussion
+"Therefore, it is not able to handle synonym matching well.",Experiment/Discussion
+"Moreover, although TER-based alignment allows phrase shifts to accommodate the non-monotonic word ordering, all non-monotonic shifts are penalized equally no matter how short or how long the move is, and this penalty is set to be the same as that for substitution, deletion, and insertion edits.",Experiment/Discussion
+"Therefore, its modeling of non-monotonic word ordering is very coarse-grained.",Experiment/Discussion
+"In contrast to the GIZA++-based method, our IHMM-based method has a similarity model estimated using bilingual word alignment HMMs that are trained on a large amount of bi-text data.",Experiment/Discussion
+"Moreover, the surface similarity information is explicitly incorporated in our model, while it is only used implicitly via parameter initialization for IBM Model-1 training by Matusov et al. (2006).",Experiment/Discussion
+"On the other hand, the TER-based alignment model is similar to a coarse-grained, nonnormalized version of our IHMM, in which the similarity model assigns no penalty to an exact surface match and a fixed penalty to all substitutions, insertions, and deletions, and the distortion model simply assigns no penalty to a monotonic jump, and a fixed penalty to all other jumps, equal to the non-exact-match penalty in the similarity model.",Experiment/Discussion
+There have been other hypothesis alignment methods.,Experiment/Discussion
+"Karakos, et al. (2008) proposed an ITGbased method for hypothesis alignment, Rosti et al.",Experiment/Discussion
+"(2008) proposed an incremental alignment method, and a heuristic-based matching algorithm was proposed by Jayaraman and Lavie (2005).",Experiment/Discussion
+"In this section, we evaluate our IHMM-based hypothesis alignment method on the Chinese-toEnglish (C2E) test in the constrained training track of the 2008 NIST Open MT Evaluation (NIST, 2008).",Experiment/Discussion
+We compare to the TER-based method used by Rosti et al. (2007).,Experiment/Discussion
+"In the following experiments, the NIST BLEU score is used as the evaluation metric (Papineni et al., 2002), which is reported as a percentage in the following sections.",Experiment/Discussion
+"In our implementation, the backbone is selected with MBR.",Experiment/Discussion
+Only the top hypothesis from each single system is considered as a backbone.,Experiment/Discussion
+A uniform posteriori probability is assigned to all hypotheses.,Experiment/Discussion
+TER is used as loss function in the MBR computation.,Experiment/Discussion
+"Similar to (Rosti et al., 2007), each word in the confusion network is associated with a word posterior probability.",Experiment/Discussion
+"Given a system S, each of its hypotheses is assigned with a rank-based score of 1/(1+r)η, where r is the rank of the hypothesis, and η is a rank smoothing parameter.",Experiment/Discussion
+The system specific rank-based score of a word w for a given system S is the sum of all the rank-based scores of the hypotheses in system S that contain the word w at the given position (after hypothesis alignment).,Experiment/Discussion
+This score is then normalized by the sum of the scores of all the alternative words at the same position and from the same system S to generate the system specific word posterior.,Experiment/Discussion
+"Then, the total word posterior of w over all systems is a sum of these system specific posteriors weighted by system weights.",Experiment/Discussion
+"Beside the word posteriors, we use language model scores and a word count as features for confusion network decoding.",Experiment/Discussion
+"Therefore, for an M-way system combination that uses N LMs, a total of M+N+1 decoding parameters, including M-1 system weights, one rank smoothing factor, N language model weights, and one weight for the word count feature, are optimized using Powell’s method (Brent, 1973) to maximize BLEU score on a development set4 .",Experiment/Discussion
+Two language models are used in our experiments.,Experiment/Discussion
+"One is a trigram model estimated from the English side of the parallel training data, and the other is a 5-gram model trained on the English GigaWord corpus from LDC using the MSRLM toolkit (Nguyen et al, 2007).",Experiment/Discussion
+4 The parameters of IHMM are not tuned by maximum-BLEU training.,Experiment/Discussion
+"In order to reduce the fluctuation of BLEU scores caused by the inconsistent translation output length, an unsupervised length adaptation method has been devised.",Experiment/Discussion
+We compute an expected length ratio between the MT output and the source sentences on the development set after maximumBLEU training.,Experiment/Discussion
+"Then during test, we adapt the length of the translation output by adjusting the weight of the word count feature such that the expected output/source length ratio is met.",Experiment/Discussion
+"In our experiments, we apply length adaptation to the system combination output at the level of the whole test corpus.",Experiment/Discussion
+"The development (dev) set used for system combination parameter training contains 1002 sentences sampled from the previous NIST MT Chinese-to-English test sets: 35% from MT04, 55% from MT05, and 10% from MT06-newswire.",Experiment/Discussion
+"The test set is the MT08 Chinese-to-English “current” test set, which includes 1357 sentences from both newswire and web-data genres.",Experiment/Discussion
+Both dev and test sets have four references per sentence.,Experiment/Discussion
+"As inputs to the system combination, 10-best hypotheses for each source sentence in the dev and test sets are collected from each of the eight single systems.",Experiment/Discussion
+All outputs on the MT08 test set were true-cased before scoring using a log-linear conditional Markov model proposed by Toutanova et al. (2008).,Experiment/Discussion
+"However, to save computation effort, the results on the dev set are reported in case insensitive BLEU (ciBLEU) score instead.",Experiment/Discussion
+"In our main experiments, outputs from a total of eight single MT systems were combined.",Experiment/Discussion
+"As listed in Table 1, Sys-1 is a tree-to-string system proposed by Quirk et al., (2005); Sys-2 is a phrasebased system with fast pruning proposed by Moore and Quirk (2008); Sys-3 is a phrase-based system with syntactic source reordering proposed by Wang et al. (2007a); Sys-4 is a syntax-based preordering system proposed by Li et. al.",Experiment/Discussion
+"(2007); Sys5 is a hierarchical system proposed by Chiang (2007); Sys-6 is a lexicalized re-ordering system proposed by Xiong et al. (2006); Sys-7 is a twopass phrase-based system with adapted LM proposed by Foster and Kuhn (2007); and Sys-8 is a hierarchical system with two-pass rescoring using a parser-based LM proposed by Wang et al., (2007b).",Experiment/Discussion
+All systems were trained within the confines of the constrained training condition of NIST MT08 evaluation.,Experiment/Discussion
+These single systems are optimized with maximum-BLEU training on different subsets of the previous NIST MT test data.,Experiment/Discussion
+"The bilingual translation models used to compute the semantic similarity are from the worddependent HMMs proposed by He (2007), which are trained on two million parallel sentence-pairs selected from the training corpus allowed by the constrained training condition of MT08.",Experiment/Discussion
+"In the IHMM-based method, the smoothing factor for surface similarity model is set to ρ = 3, the interpolation factor of the overall similarity model is set to α = 0.3, and the controlling factor of the distance-based distortion parameters is set to K=2.",Experiment/Discussion
+These settings are optimized on the dev set.,Experiment/Discussion
+"Individual system results and system combination results using both IHMM and TER alignment, on both the dev and test sets, are presented in Table 1.",Experiment/Discussion
+"The TER-based hypothesis alignment tool used in our experiments is the publicly available TER Java program, TERCOM (Snover et al., 2006).",Experiment/Discussion
+Default settings of TERCOM are used in the following experiments.,Experiment/Discussion
+"On the dev set, the case insensitive BLEU score of the IHMM-based 8-way system combination output is about 5.8 points higher than that of the best single system.",Experiment/Discussion
+"Compared to the TER-based method, the IHMM-based method is about 1.5 BLEU points better.",Experiment/Discussion
+"On the MT08 test set, the IHMM-based system combination gave a case sensitive BLEU score of 30.89%.",Experiment/Discussion
+It outperformed the best single system by 4.7 BLEU points and the TER-based system combination by 1.0 BLEU points.,Experiment/Discussion
+Note that the best single system on the dev set and the test set are different.,Experiment/Discussion
+"The different single systems are optimized on different tuning sets, so this discrepancy between dev set and test set results is presumably due to differing degrees of mismatch between the dev and test sets and the various tuning sets.",Experiment/Discussion
+"In order to evaluate how well our method performs when we combine more systems, we collected MT outputs on MT08 from seven additional single systems as summarized in Table 2.",Experiment/Discussion
+These systems belong to two groups.,Experiment/Discussion
+Sys-9 to Sys-12 are in the first group.,Experiment/Discussion
+They are syntaxaugmented hierarchical systems similar to those described by Shen et al. (2008) using different Chinese word segmentation and language models.,Experiment/Discussion
+The second group has Sys-13 to Sys-15.,Experiment/Discussion
+"Sys-13 is a phrasal system proposed by Koehn et al. (2003), Sys-14 is a hierarchical system proposed by Chiang (2007), and Sys-15 is a syntax-based system proposed by Galley et al.",Experiment/Discussion
+(2006).,Experiment/Discussion
+All seven systems were trained within the confines of the constrained training condition of NIST MT08 evaluation.,Experiment/Discussion
+We collected 10-best MT outputs only on the MT08 test set from these seven extra systems.,Experiment/Discussion
+No MT outputs on our dev set are available from them at present.,Experiment/Discussion
+"Therefore, we directly adopt system combination parameters trained for the previous 8way system combination, except the system weights, which are re-set by the following heuristics: First, the total system weight mass 1.0 is evenly divided among the three groups of single systems: {Sys-1~8}, {Sys-9~12}, and {Sys13~15}.",Experiment/Discussion
+Each group receives a total system weight mass of 1/3.,Experiment/Discussion
+"Then the weight mass is further divided in each group: in the first group, the original weights of systems 1~8 are multiplied by 1/3; in the second and third groups, the weight mass is evenly distributed within the group, i.e., 1/12 for each system in group 2, and 1/9 for each system in group 35.",Experiment/Discussion
+"Length adaptation is applied to control the final output length, where the same expected length ratio of the previous 8-way system combination is adopted.",Experiment/Discussion
+The results of the 15-way system combination are presented in Table 3.,Experiment/Discussion
+It shows that the IHMMbased method is still about 1 BLEU point better than the TER-based method.,Experiment/Discussion
+"Moreover, combining 15 single systems gives an output that has a NIST BLEU score of 34.82%, which is 3.9 points better than the best submission to the NIST MT08 constrained training track (NIST, 2008).",Experiment/Discussion
+"To our knowledge, this is the best result reported on this task.",Experiment/Discussion
+"In this section, we evaluate the effect of the semantic similarity model and the surface similarity model by varying the interpolation weight α of (2).",Experiment/Discussion
+The results on both the dev and test sets are reported in Table 4.,Experiment/Discussion
+"In one extreme case, α = 1, the overall similarity model is based only on semantic similarity.",Experiment/Discussion
+"This gives a case insensitive BLEU score of 41.70% and a case sensitive BLEU score of 28.92% on the dev and test set, respectively.",Experiment/Discussion
+The accuracy is significantly improved to 43.62% on the dev set and 30.89% on test set when α = 0.3.,Experiment/Discussion
+"In another extreme case, α = 0, in which only the surface similarity model is used for the overall similarity model, the performance degrades by about 0.2 point.",Experiment/Discussion
+"Therefore, the surface similarity information seems more important for monolingual hypothesis alignment, but both sub-models are useful.",Experiment/Discussion
+We investigate the effect of the distance-based distortion model by varying the controlling factor K in (6).,Experiment/Discussion
+"For example, setting K=1.0 gives a lineardecay distortion model, and setting K=2.0 gives a quadratic smoothed distance-based distortion model.",Experiment/Discussion
+"As shown in Table 5, the optimal result can be achieved using a properly smoothed distancebased distortion model.",Experiment/Discussion
+Synonym matching and word ordering are two central issues for hypothesis alignment in confusion-network-based MT system combination.,Results/Conclusion
+"In this paper, an IHMM-based method is proposed for hypothesis alignment.",Results/Conclusion
+It uses a similarity model for synonym matching and a distortion model for word ordering.,Results/Conclusion
+"In contrast to previous methods, the similarity model explicitly incorporates both semantic and surface word similarity, which is critical to monolingual word alignment, and a smoothed distance-based distortion model is used to model the first-order dependency of word ordering, which is shown to be better than simpler approaches.",Results/Conclusion
+Our experimental results show that the IHMMbased hypothesis alignment method gave superior results on the NIST MT08 C2E test set compared to the TER-based method.,Results/Conclusion
+"Moreover, we show that our system combination method can scale up to combining more systems and produce a better output that has a case sensitive BLEU score of 34.82, which is 3.9 BLEU points better than the best official submission of MT08.",Results/Conclusion
+"The authors are grateful to Chris Quirk, Arul Menezes, Kristina Toutanova, William Dolan, Mu Li, Chi-Ho Li, Dongdong Zhang, Long Jiang, Ming Zhou, George Foster, Roland Kuhn, Jing Zheng, Wen Wang, Necip Fazil Ayan, Dimitra Vergyri, Nicolas Scheffer, Andreas Stolcke, Kevin Knight, Jens-Soenke Voeckler, Spyros Matsoukas, and Antti-Veikko Rosti for assistance with the MT systems and/or for the valuable suggestions and discussions.",Results/Conclusion

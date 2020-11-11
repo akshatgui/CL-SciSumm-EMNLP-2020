@@ -1,153 +1,153 @@
 col1,col2
-This paper reports the development of loglinear models for the disambiguation in wide-coverage HPSG parsing.,{}
-"The estimation of log-linear models requires high computational cost, especially with widecoverage grammars.",{}
-"Using techniques to reduce the estimation cost, we trained the models using 20 sections of Penn Treebank.",{}
-"A series of experiments empirically evaluated the estimation techniques, and also examined the performance of the disambiguation models on the parsing of real-world sentences.",{}
-"Head-Driven Phrase Structure Grammar (HPSG) (Pollard and Sag, 1994) has been studied extensively from both linguistic and computational points of view.","{'title': '1 Introduction', 'number': '1'}"
-"However, despite research on HPSG processing efficiency (Oepen et al., 2002a), the application of HPSG parsing is still limited to specific domains and short sentences (Oepen et al., 2002b; Toutanova and Manning, 2002).","{'title': '1 Introduction', 'number': '1'}"
-Scaling up HPSG parsing to assess real-world texts is an emerging research field with both theoretical and practical applications.,"{'title': '1 Introduction', 'number': '1'}"
-"Recently, a wide-coverage grammar and a large treebank have become available for English HPSG (Miyao et al., 2004).","{'title': '1 Introduction', 'number': '1'}"
-A large treebank can be used as training and test data for statistical models.,"{'title': '1 Introduction', 'number': '1'}"
-"Therefore, we now have the basis for the development and the evaluation of statistical disambiguation models for wide-coverage HPSG parsing.","{'title': '1 Introduction', 'number': '1'}"
-"The aim of this paper is to report the development of log-linear models for the disambiguation in widecoverage HPSG parsing, and their empirical evaluation through the parsing of the Wall Street Journal of Penn Treebank II (Marcus et al., 1994).","{'title': '1 Introduction', 'number': '1'}"
-"This is challenging because the estimation of log-linear models is computationally expensive, and we require solutions to make the model estimation tractable.","{'title': '1 Introduction', 'number': '1'}"
-We apply two techniques for reducing the training cost.,"{'title': '1 Introduction', 'number': '1'}"
-One is the estimation on a packed representation of HPSG parse trees (Section 3).,"{'title': '1 Introduction', 'number': '1'}"
-The other is the filtering of parse candidates according to a preliminary probability distribution (Section 4).,"{'title': '1 Introduction', 'number': '1'}"
-"To our knowledge, this work provides the first results of extensive experiments of parsing Penn Treebank with a probabilistic HPSG.","{'title': '1 Introduction', 'number': '1'}"
-The results from the Wall Street Journal are significant because the complexity of the sentences is different from that of short sentences.,"{'title': '1 Introduction', 'number': '1'}"
-Experiments of the parsing of realworld sentences can properly evaluate the effectiveness and possibility of parsing models for HPSG.,"{'title': '1 Introduction', 'number': '1'}"
-"Discriminative log-linear models are now becoming a de facto standard for probabilistic disambiguation models for deep parsing (Johnson et al., 1999; Riezler et al., 2002; Geman and Johnson, 2002; Miyao and Tsujii, 2002; Clark and Curran, 2004b; Kaplan et al., 2004).","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"Previous studies on probabilistic models for HPSG (Toutanova and Manning, 2002; Baldridge and Osborne, 2003; Malouf and van Noord, 2004) also adopted log-linear models.","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-HPSG exploits feature structures to represent linguistic constraints.,"{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"Such constraints are known to introduce inconsistencies in probabilistic models estimated using simple relative frequency (Abney, 1997).","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-Log-linear models are required for credible probabilistic models and are also beneficial for incorporating various overlapping features.,"{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-This study follows previous studies on the probabilistic models for HPSG.,"{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"The probability, p(tIs), of producing the parse result t from a given sentence s is defined as where po(tIs) is a reference distribution (usually assumed to be a uniform distribution), and T(s) is a set of parse candidates assigned to s. The feature function fi(t, s) represents the characteristics of t and s, while the corresponding model parameter Ai(t, s) is its weight.","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"Model parameters that maximize the loglikelihood of the training data are computed using a numerical optimization method (Malouf, 2002).","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"Estimation of the above model requires a set of pairs (ts, T (s)), where ts is the correct parse for sentence s. While ts is provided by a treebank, T(s) is computed by parsing each s in the treebank.","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"Previous studies assumed T(s) could be enumerated; however, the assumption is impractical because the size of T(s) is exponentially related to the length of s. The problem of exponential explosion is inevitable in the wide-coverage parsing of real-world texts because many parse candidates are produced to support various constructions in long sentences.","{'title': '2 Disambiguation models for HPSG', 'number': '2'}"
-"To avoid exponential explosion, we represent T(s) in a packed form of HPSG parse trees.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"A parse tree of HPSG is represented as a set of tuples (m, 1, r), where m, 1, and r are the signs of mother, left daughter, and right daughter, respectively1.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"In chart parsing, partial parse candidates are stored in a chart, in which phrasal signs are identified and packed into an equivalence class if they are determined to be equivalent and dominate the same word sequence.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-A set of parse trees is then represented as a set of relations among equivalence classes.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Figure 1 shows a chart for parsing “he saw a girl with a telescope”, where the modifiee (“saw” or “girl”) of “with” is ambiguous.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Each feature structure expresses an equivalence class, and the arrows represent immediate-dominance relations.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"The phrase, “saw a girl with a telescope”, has two trees (A in the figure).","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Since the signs of the top-most nodes are equivalent, they are packed into an equivalence class.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-The ambiguity is represented as two pairs of arrows that come out of the node.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Formally, a set of HPSG parse trees is represented in a chart as a tuple (E, Er, a), where E is a set of equivalence classes, Er C E is a set of root nodes, and a : E —� 2ExE is a function to represent immediate-dominance relations.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Our representation of the chart can be interpreted as an instance of a feature forest (Miyao and Tsujii, 2002; Geman and Johnson, 2002).","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-A feature forest is an “and/or” graph to represent exponentiallymany tree structures in a packed form.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"If T(s) is represented in a feature forest, p(tIT(s)) can be estimated using dynamic programming without unpacking the chart.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"A feature forest is formally defined as a tuple, (C, D, R, y, b), where C is a set of conjunctive nodes, D is a set of disjunctive nodes, R C_ C is a set of root nodes2, y : D 2c is a conjunctive daughter function, and b : C 2D is a disjunctive The simplest way to map a chart of HPSG parse trees into a feature forest is to map each equivalence class e E E to a conjunctive node c E C. However, in HPSG parsing, important features for disambiguation are combinations of a mother and its daughters, i.e., (m, 1, r).","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Hence, we map the tuple (eM, el, er), which corresponds to (m, 1, r), into a conjunctive node.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-Figure 2 shows (a part of) the HPSG parse trees in Figure 1 represented as a feature forest.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Square boxes are conjunctive nodes, dotted lines express a disjunctive daughter function, and solid arrows represent a conjunctive daughter function.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-The mapping is formally defined as follows.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-The above method allows for the tractable estimation of log-linear models on exponentially-many HPSG parse trees.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"However, despite the development of methods to improve HPSG parsing efficiency (Oepen et al., 2002a), the exhaustive parsing of all sentences in a treebank is still expensive.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-Our idea is that we can omit the computation of parse trees with low probabilities in the estimation stage because T(s) can be approximated with parse trees with high probabilities.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"To achieve this, we first prepared a preliminary probabilistic model whose estimation did not require the parsing of a treebank.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-The preliminary model was used to reduce the search space for parsing a training treebank.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"The preliminary model in this study is a unigram model, p(tIs) = FJwEs p(1I w), where w E s is a word in the sentence s, and 1 is a lexical entry assigned to w. This model can be estimated without parsing a treebank.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Given this model, we restrict the number of lexical entries used to parse a treebank.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"With a threshold n for the number of lexical entries and a threshold C for the probability, lexical entries are assigned to a word in descending order of probability, until the number of assigned entries exceeds n, or the accumulated probability exceeds C. If the lexical entry necessary to produce the correct parse is not assigned, it is additionally assigned to the word.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-Figure 3 shows an example of filtering lexical entries assigned to “saw”.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"With C = 0.95, four lexical entries are assigned.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Although the lexicon includes other lexical entries, such as a verbal entry taking a sentential complement (p = 0.01 in the figure), they are filtered out.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-This method reduces the time for RULE the name of the applied schema DIST the distance between the head words of the daughters COMMA whether a comma exists between daughters and/or inside of daughter phrases SPAN the number of words dominated by the phrase SYM the symbol of the phrasal category (e.g.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"NP, VP) WORD the surface form of the head word POS the part-of-speech of the head word LE the lexical entry assigned to the head word parsing a treebank, while this approximation causes bias in the training data and results in lower accuracy.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-The trade-off between the parsing cost and the accuracy will be examined experimentally.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-We have several ways to integrate p with the estimated model p(tIT(s)).,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"In the experiments, we will empirically compare the following methods in terms of accuracy and estimation time.","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-Filtering only The unigram probability p is used only for filtering.,"{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Product The probability is defined as the product of p and the estimated model p. Reference distribution p is used as a reference distribution of p. Feature function log is used as a feature function of p. This method was shown to be a generalization of the reference distribution method (Johnson and Riezler, 2000).","{'title': '3 Packed representation of HPSG parse trees', 'number': '3'}"
-"Feature functions in the log-linear models are designed to capture the characteristics of (er,,,, el, C,).","{'title': '5 Features', 'number': '4'}"
-"In this paper, we investigate combinations of the atomic features listed in Table 1.","{'title': '5 Features', 'number': '4'}"
-The following combinations are used for representing the characteristics of the binary/unary schema applications.,"{'title': '5 Features', 'number': '4'}"
-"In addition, the following is for expressing the condition of the root node of the parse tree.","{'title': '5 Features', 'number': '4'}"
-"Figure 4 shows examples: (root is for the root node, in which the phrase symbol is S and the surface form, part-of-speech, and lexical entry of the lexical head are “saw”, VBD, and a transitive verb, respectively. fbinary is for the binary rule application to “saw a girl” and “with a telescope”, in which the applied schema is the Head-Modifier Schema, the left daughter is VP headed by “saw”, and the right daughter is PP headed by “with”, whose part-of-speech is IN and the lexical entry is a VP-modifying preposition.","{'title': '5 Features', 'number': '4'}"
-"In an actual implementation, some of the atomic features are abstracted (i.e., ignored) for smoothing.","{'title': '5 Features', 'number': '4'}"
-Table 2 shows a full set of templates of combined features used in the experiments.,"{'title': '5 Features', 'number': '4'}"
-Each row represents a template of a feature function.,"{'title': '5 Features', 'number': '4'}"
-A check means the atomic feature is incorporated while a hyphen means the feature is ignored.,"{'title': '5 Features', 'number': '4'}"
-"Restricting the domain of feature functions to (cm, Cl, Cr) seems to limit the flexibility of feature design.","{'title': '5 Features', 'number': '4'}"
-"Although it is true to some extent, this does not necessarily mean the impossibility of incorporating features on nonlocal dependencies into the model.","{'title': '5 Features', 'number': '4'}"
-This is because a feature forest model does not assume probabilistic independence of conjunctive nodes.,"{'title': '5 Features', 'number': '4'}"
-This means that we can unpack a part of the forest without changing the model.,"{'title': '5 Features', 'number': '4'}"
-"Actually, in our previous study (Miyao et al., 2003), we successfully developed a probabilistic model including features on nonlocal predicate-argument dependencies.","{'title': '5 Features', 'number': '4'}"
-"However, since we could not observe significant improvements by incorporating nonlocal features, this paper investigates only the features described above.","{'title': '5 Features', 'number': '4'}"
-"We used an HPSG grammar derived from Penn Treebank (Marcus et al., 1994) Section 02-21 (39,832 sentences) by our method of grammar development (Miyao et al., 2004).","{'title': '6 Experiments', 'number': '5'}"
-The training data was the HPSG treebank derived from the same portion of the Penn Treebank3.,"{'title': '6 Experiments', 'number': '5'}"
-"For the training, we eliminated sentences with no less than 40 words and for which the parser could not produce the correct parse.","{'title': '6 Experiments', 'number': '5'}"
-"The resulting training set consisted of 33,574 sentences.","{'title': '6 Experiments', 'number': '5'}"
-"The treebanks derived from Sections 22 and 23 were used as the development (1,644 sentences) and final test sets (2,299 sentences).","{'title': '6 Experiments', 'number': '5'}"
-We measured the accuracy of predicate-argument dependencies output by the parser.,"{'title': '6 Experiments', 'number': '5'}"
-"A dependency is defined as a tuple (7, wh, a, wa), where 7 is the predicate type (e.g., adjective, intransitive verb), wy, is the head word of the predicate, a is the argument label (MODARG, ARG1, ..., ARG4), and wa is the head word of the argument.","{'title': '6 Experiments', 'number': '5'}"
-"Labeled precision/recall (LP/LR) is the ratio of tuples correctly identified by the parser, while unlabeled precision/recall (UP/UR) is the ratio of wh and wa correctly identified regardless of 7 and a.","{'title': '6 Experiments', 'number': '5'}"
-The F-score is the harmonic mean of LP and LR.,"{'title': '6 Experiments', 'number': '5'}"
-The accuracy was measured by parsing test sentences with part-of-speech tags provided by the treebank.,"{'title': '6 Experiments', 'number': '5'}"
-"The Gaussian prior was used for smoothing (Chen and Rosenfeld, 1999), and its hyper-parameter was tuned for each model to maximize the F-score for the development set.","{'title': '6 Experiments', 'number': '5'}"
-"The optimization algorithm was the limited-memory BFGS method (Nocedal and Wright, 1999).","{'title': '6 Experiments', 'number': '5'}"
-All the following experiments were conducted on AMD Opteron servers with a 2.0-GHz CPU and 12-GB memory.,"{'title': '6 Experiments', 'number': '5'}"
-Table 3 shows the accuracy for the development/test sets.,"{'title': '6 Experiments', 'number': '5'}"
-"Features occurring more than twice were included in the model (598,326 features).","{'title': '6 Experiments', 'number': '5'}"
-Filtering was done by the reference distribution method with n = 10 and c = 0.95.,"{'title': '6 Experiments', 'number': '5'}"
-"The unigram model for filtering was a log-linear model with two feature templates, (WORD, POS, LE� and (POS, LE� (24,847 features).","{'title': '6 Experiments', 'number': '5'}"
-"Our results cannot be strictly compared with other grammar formalisms because each formalism represents predicate-argument dependencies differently; for reference, our results are competitive with the corresponding measures reported for Combinatory Categorial Grammar (CCG) (LP/LR = 86.6/86.3) (Clark and Curran, 2004b).","{'title': '6 Experiments', 'number': '5'}"
-"Different from the results of CCG and PCFG (Collins, 1999; Charniak, 2000), the recall was clearly lower than precision.","{'title': '6 Experiments', 'number': '5'}"
-This results from the HPSG grammar having stricter feature constraints and the parser not being able to produce parse results for around one percent of the sentences.,"{'title': '6 Experiments', 'number': '5'}"
-"To improve recall, we need techniques of robust processing with HPSG. duced in Section 4.","{'title': '6 Experiments', 'number': '5'}"
-"In all of the following experiments, we show the accuracy for the test set (< 40 words) only.","{'title': '6 Experiments', 'number': '5'}"
-Table 4 revealed that our simple method of filtering caused a fatal bias in training data when a preliminary distribution was used only for filtering.,"{'title': '6 Experiments', 'number': '5'}"
-"However, the model combined with a preliminary model achieved sufficient accuracy.","{'title': '6 Experiments', 'number': '5'}"
-The reference distribution method achieved higher accuracy and lower cost.,"{'title': '6 Experiments', 'number': '5'}"
-The feature function method achieved lower accuracy in our experiments.,"{'title': '6 Experiments', 'number': '5'}"
-A possible reason is that a hyper-parameter of the prior was set to the same value for all the features including the feature of the preliminary distribution.,"{'title': '6 Experiments', 'number': '5'}"
-Table 5 shows the results of changing the filtering threshold.,"{'title': '6 Experiments', 'number': '5'}"
-We can determine the correlation between the estimation/parsing cost and accuracy.,"{'title': '6 Experiments', 'number': '5'}"
-"In our experiment, n > 10 and c > 0.90 seem necessary to preserve the F-score over 85.0.","{'title': '6 Experiments', 'number': '5'}"
-Figure 5 shows the accuracy for each sentence length.,"{'title': '6 Experiments', 'number': '5'}"
-It is apparent from this figure that the accuracy was significantly higher for shorter sentences (< 10 words).,"{'title': '6 Experiments', 'number': '5'}"
-This implies that experiments with only short sentences overestimate the performance of parsers.,"{'title': '6 Experiments', 'number': '5'}"
-Sentences with at least 10 words are necessary to properly evaluate the performance of parsing real-world texts.,"{'title': '6 Experiments', 'number': '5'}"
-Figure 6 shows the learning curve.,"{'title': '6 Experiments', 'number': '5'}"
-"A feature set was fixed, while the parameter of the prior was optimized for each model.","{'title': '6 Experiments', 'number': '5'}"
-"High accuracy was attained even with small data, and the accuracy seemed to be saturated.","{'title': '6 Experiments', 'number': '5'}"
-This indicates that we cannot further improve the accuracy simply by increasing training data.,"{'title': '6 Experiments', 'number': '5'}"
-The exploration of new types of features is necessary for higher accuracy.,"{'title': '6 Experiments', 'number': '5'}"
-Table 6 shows the accuracy with difference feature sets.,"{'title': '6 Experiments', 'number': '5'}"
-The accuracy was measured by removing some of the atomic features from the final model.,"{'title': '6 Experiments', 'number': '5'}"
-The last row denotes the accuracy attained by the preliminary model.,"{'title': '6 Experiments', 'number': '5'}"
-"The numbers in bold type represent that the difference from the final model was significant according to stratified shuffling tests (Cohen, 1995) with p-value < 0.05.","{'title': '6 Experiments', 'number': '5'}"
-"The results indicate that DIST, COMMA, SPAN, WORD, and POS features contributed to the final accuracy, although the differences were slight.","{'title': '6 Experiments', 'number': '5'}"
-"In contrast, RULE, SYM, and LE features did not affect the accuracy.","{'title': '6 Experiments', 'number': '5'}"
-"However, if each of them was removed together with another feature, the accuracy decreased drastically.","{'title': '6 Experiments', 'number': '5'}"
-This implies that such features had overlapping information.,"{'title': '6 Experiments', 'number': '5'}"
-Table 7 shows the manual classification of the causes of errors in 100 sentences randomly chosen from the development set.,"{'title': '6 Experiments', 'number': '5'}"
-"In our evaluation, one error source may cause multiple errors of dependencies.","{'title': '6 Experiments', 'number': '5'}"
-"For example, if a wrong lexical entry was assigned to a verb, all the argument dependencies of the verb are counted as errors.","{'title': '6 Experiments', 'number': '5'}"
-The numbers in the table include such double-counting.,"{'title': '6 Experiments', 'number': '5'}"
-"Major causes were classified into three types: argument/modifier distinction, attachment ambiguity, and lexical ambiguity.","{'title': '6 Experiments', 'number': '5'}"
-"While attachment/lexical ambiguities are well-known causes, the other is peculiar to deep parsing.","{'title': '6 Experiments', 'number': '5'}"
-"Most of the errors cannot be resolved by features we investigated in this study, and the design of other features is crucial for further improvements.","{'title': '6 Experiments', 'number': '5'}"
-"Experiments on deep parsing of Penn Treebank have been reported for Combinatory Categorial Grammar (CCG) (Clark and Curran, 2004b) and Lexical Functional Grammar (LFG) (Kaplan et al., 2004).","{'title': '7 Discussion and related work', 'number': '6'}"
-"They developed log-linear models on a packed representation of parse forests, which is similar to our representation.","{'title': '7 Discussion and related work', 'number': '6'}"
-"Although HPSG exploits further complicated feature constraints and requires high computational cost, our work has proved that log-linear models can be applied to HPSG parsing and attain accurate and wide-coverage parsing.","{'title': '7 Discussion and related work', 'number': '6'}"
-Clark and Curran (2004a) described a method of reducing the cost of parsing a training treebank in the context of CCG parsing.,"{'title': '7 Discussion and related work', 'number': '6'}"
-"They first assigned to each word a small number of supertags, which correspond to lexical entries in our case, and parsed supertagged sentences.","{'title': '7 Discussion and related work', 'number': '6'}"
-"Since they did not mention the probabilities of supertags, their method corresponds to our “filtering only” method.","{'title': '7 Discussion and related work', 'number': '6'}"
-"However, they also applied the same supertagger in a parsing stage, and this seemed to be crucial for high accuracy.","{'title': '7 Discussion and related work', 'number': '6'}"
-This means that they estimated the probability of producing a parse tree from a supertagged sentence.,"{'title': '7 Discussion and related work', 'number': '6'}"
-"Another approach to estimating log-linear models for HPSG is to extract a small informative sample from the original set T (s) (Osborne, 2000).","{'title': '7 Discussion and related work', 'number': '6'}"
-Malouf and van Noord (2004) successfully applied this method to German HPSG.,"{'title': '7 Discussion and related work', 'number': '6'}"
-The problem with this method was in the approximation of exponentially many parse trees by a polynomial-size sample.,"{'title': '7 Discussion and related work', 'number': '6'}"
-"However, their method has the advantage that any features on a parse tree can be incorporated into the model.","{'title': '7 Discussion and related work', 'number': '6'}"
-The trade-off between approximation and locality of features is an outstanding problem.,"{'title': '7 Discussion and related work', 'number': '6'}"
-"Other discriminative classifiers were applied to the disambiguation in HPSG parsing (Baldridge and Osborne, 2003; Toutanova et al., 2004).","{'title': '7 Discussion and related work', 'number': '6'}"
-The problem of exponential explosion is also inevitable for their methods.,"{'title': '7 Discussion and related work', 'number': '6'}"
-"An approach similar to ours may be applied to them, following the study on the learning of a discriminative classifier for a packed representation (Taskar et al., 2004).","{'title': '7 Discussion and related work', 'number': '6'}"
-"As discussed in Section 6, exploration of other features is indispensable to further improvements.","{'title': '7 Discussion and related work', 'number': '6'}"
-"A possible direction is to encode larger contexts of parse trees, which were shown to improve the accuracy (Toutanova and Manning, 2002; Toutanova et al., 2004).","{'title': '7 Discussion and related work', 'number': '6'}"
-"Future work includes the investigation of such features, as well as the abstraction of lexical dependencies like semantic classes.","{'title': '7 Discussion and related work', 'number': '6'}"
+This paper reports the development of loglinear models for the disambiguation in wide-coverage HPSG parsing.,Introduction
+"The estimation of log-linear models requires high computational cost, especially with widecoverage grammars.",Introduction
+"Using techniques to reduce the estimation cost, we trained the models using 20 sections of Penn Treebank.",Introduction
+"A series of experiments empirically evaluated the estimation techniques, and also examined the performance of the disambiguation models on the parsing of real-world sentences.",Introduction
+"Head-Driven Phrase Structure Grammar (HPSG) (Pollard and Sag, 1994) has been studied extensively from both linguistic and computational points of view.",Experiment/Discussion
+"However, despite research on HPSG processing efficiency (Oepen et al., 2002a), the application of HPSG parsing is still limited to specific domains and short sentences (Oepen et al., 2002b; Toutanova and Manning, 2002).",Experiment/Discussion
+Scaling up HPSG parsing to assess real-world texts is an emerging research field with both theoretical and practical applications.,Experiment/Discussion
+"Recently, a wide-coverage grammar and a large treebank have become available for English HPSG (Miyao et al., 2004).",Experiment/Discussion
+A large treebank can be used as training and test data for statistical models.,Experiment/Discussion
+"Therefore, we now have the basis for the development and the evaluation of statistical disambiguation models for wide-coverage HPSG parsing.",Experiment/Discussion
+"The aim of this paper is to report the development of log-linear models for the disambiguation in widecoverage HPSG parsing, and their empirical evaluation through the parsing of the Wall Street Journal of Penn Treebank II (Marcus et al., 1994).",Experiment/Discussion
+"This is challenging because the estimation of log-linear models is computationally expensive, and we require solutions to make the model estimation tractable.",Experiment/Discussion
+We apply two techniques for reducing the training cost.,Experiment/Discussion
+One is the estimation on a packed representation of HPSG parse trees (Section 3).,Experiment/Discussion
+The other is the filtering of parse candidates according to a preliminary probability distribution (Section 4).,Experiment/Discussion
+"To our knowledge, this work provides the first results of extensive experiments of parsing Penn Treebank with a probabilistic HPSG.",Experiment/Discussion
+The results from the Wall Street Journal are significant because the complexity of the sentences is different from that of short sentences.,Experiment/Discussion
+Experiments of the parsing of realworld sentences can properly evaluate the effectiveness and possibility of parsing models for HPSG.,Experiment/Discussion
+"Discriminative log-linear models are now becoming a de facto standard for probabilistic disambiguation models for deep parsing (Johnson et al., 1999; Riezler et al., 2002; Geman and Johnson, 2002; Miyao and Tsujii, 2002; Clark and Curran, 2004b; Kaplan et al., 2004).",Experiment/Discussion
+"Previous studies on probabilistic models for HPSG (Toutanova and Manning, 2002; Baldridge and Osborne, 2003; Malouf and van Noord, 2004) also adopted log-linear models.",Experiment/Discussion
+HPSG exploits feature structures to represent linguistic constraints.,Experiment/Discussion
+"Such constraints are known to introduce inconsistencies in probabilistic models estimated using simple relative frequency (Abney, 1997).",Experiment/Discussion
+Log-linear models are required for credible probabilistic models and are also beneficial for incorporating various overlapping features.,Experiment/Discussion
+This study follows previous studies on the probabilistic models for HPSG.,Experiment/Discussion
+"The probability, p(tIs), of producing the parse result t from a given sentence s is defined as where po(tIs) is a reference distribution (usually assumed to be a uniform distribution), and T(s) is a set of parse candidates assigned to s. The feature function fi(t, s) represents the characteristics of t and s, while the corresponding model parameter Ai(t, s) is its weight.",Experiment/Discussion
+"Model parameters that maximize the loglikelihood of the training data are computed using a numerical optimization method (Malouf, 2002).",Experiment/Discussion
+"Estimation of the above model requires a set of pairs (ts, T (s)), where ts is the correct parse for sentence s. While ts is provided by a treebank, T(s) is computed by parsing each s in the treebank.",Experiment/Discussion
+"Previous studies assumed T(s) could be enumerated; however, the assumption is impractical because the size of T(s) is exponentially related to the length of s. The problem of exponential explosion is inevitable in the wide-coverage parsing of real-world texts because many parse candidates are produced to support various constructions in long sentences.",Experiment/Discussion
+"To avoid exponential explosion, we represent T(s) in a packed form of HPSG parse trees.",Experiment/Discussion
+"A parse tree of HPSG is represented as a set of tuples (m, 1, r), where m, 1, and r are the signs of mother, left daughter, and right daughter, respectively1.",Experiment/Discussion
+"In chart parsing, partial parse candidates are stored in a chart, in which phrasal signs are identified and packed into an equivalence class if they are determined to be equivalent and dominate the same word sequence.",Experiment/Discussion
+A set of parse trees is then represented as a set of relations among equivalence classes.,Experiment/Discussion
+"Figure 1 shows a chart for parsing “he saw a girl with a telescope”, where the modifiee (“saw” or “girl”) of “with” is ambiguous.",Experiment/Discussion
+"Each feature structure expresses an equivalence class, and the arrows represent immediate-dominance relations.",Experiment/Discussion
+"The phrase, “saw a girl with a telescope”, has two trees (A in the figure).",Experiment/Discussion
+"Since the signs of the top-most nodes are equivalent, they are packed into an equivalence class.",Experiment/Discussion
+The ambiguity is represented as two pairs of arrows that come out of the node.,Experiment/Discussion
+"Formally, a set of HPSG parse trees is represented in a chart as a tuple (E, Er, a), where E is a set of equivalence classes, Er C E is a set of root nodes, and a : E —� 2ExE is a function to represent immediate-dominance relations.",Experiment/Discussion
+"Our representation of the chart can be interpreted as an instance of a feature forest (Miyao and Tsujii, 2002; Geman and Johnson, 2002).",Experiment/Discussion
+A feature forest is an “and/or” graph to represent exponentiallymany tree structures in a packed form.,Experiment/Discussion
+"If T(s) is represented in a feature forest, p(tIT(s)) can be estimated using dynamic programming without unpacking the chart.",Experiment/Discussion
+"A feature forest is formally defined as a tuple, (C, D, R, y, b), where C is a set of conjunctive nodes, D is a set of disjunctive nodes, R C_ C is a set of root nodes2, y : D 2c is a conjunctive daughter function, and b : C 2D is a disjunctive The simplest way to map a chart of HPSG parse trees into a feature forest is to map each equivalence class e E E to a conjunctive node c E C. However, in HPSG parsing, important features for disambiguation are combinations of a mother and its daughters, i.e., (m, 1, r).",Experiment/Discussion
+"Hence, we map the tuple (eM, el, er), which corresponds to (m, 1, r), into a conjunctive node.",Experiment/Discussion
+Figure 2 shows (a part of) the HPSG parse trees in Figure 1 represented as a feature forest.,Experiment/Discussion
+"Square boxes are conjunctive nodes, dotted lines express a disjunctive daughter function, and solid arrows represent a conjunctive daughter function.",Experiment/Discussion
+The mapping is formally defined as follows.,Experiment/Discussion
+The above method allows for the tractable estimation of log-linear models on exponentially-many HPSG parse trees.,Experiment/Discussion
+"However, despite the development of methods to improve HPSG parsing efficiency (Oepen et al., 2002a), the exhaustive parsing of all sentences in a treebank is still expensive.",Experiment/Discussion
+Our idea is that we can omit the computation of parse trees with low probabilities in the estimation stage because T(s) can be approximated with parse trees with high probabilities.,Experiment/Discussion
+"To achieve this, we first prepared a preliminary probabilistic model whose estimation did not require the parsing of a treebank.",Experiment/Discussion
+The preliminary model was used to reduce the search space for parsing a training treebank.,Experiment/Discussion
+"The preliminary model in this study is a unigram model, p(tIs) = FJwEs p(1I w), where w E s is a word in the sentence s, and 1 is a lexical entry assigned to w. This model can be estimated without parsing a treebank.",Experiment/Discussion
+"Given this model, we restrict the number of lexical entries used to parse a treebank.",Experiment/Discussion
+"With a threshold n for the number of lexical entries and a threshold C for the probability, lexical entries are assigned to a word in descending order of probability, until the number of assigned entries exceeds n, or the accumulated probability exceeds C. If the lexical entry necessary to produce the correct parse is not assigned, it is additionally assigned to the word.",Experiment/Discussion
+Figure 3 shows an example of filtering lexical entries assigned to “saw”.,Experiment/Discussion
+"With C = 0.95, four lexical entries are assigned.",Experiment/Discussion
+"Although the lexicon includes other lexical entries, such as a verbal entry taking a sentential complement (p = 0.01 in the figure), they are filtered out.",Experiment/Discussion
+This method reduces the time for RULE the name of the applied schema DIST the distance between the head words of the daughters COMMA whether a comma exists between daughters and/or inside of daughter phrases SPAN the number of words dominated by the phrase SYM the symbol of the phrasal category (e.g.,Experiment/Discussion
+"NP, VP) WORD the surface form of the head word POS the part-of-speech of the head word LE the lexical entry assigned to the head word parsing a treebank, while this approximation causes bias in the training data and results in lower accuracy.",Experiment/Discussion
+The trade-off between the parsing cost and the accuracy will be examined experimentally.,Experiment/Discussion
+We have several ways to integrate p with the estimated model p(tIT(s)).,Experiment/Discussion
+"In the experiments, we will empirically compare the following methods in terms of accuracy and estimation time.",Experiment/Discussion
+Filtering only The unigram probability p is used only for filtering.,Experiment/Discussion
+"Product The probability is defined as the product of p and the estimated model p. Reference distribution p is used as a reference distribution of p. Feature function log is used as a feature function of p. This method was shown to be a generalization of the reference distribution method (Johnson and Riezler, 2000).",Experiment/Discussion
+"Feature functions in the log-linear models are designed to capture the characteristics of (er,,,, el, C,).",Experiment/Discussion
+"In this paper, we investigate combinations of the atomic features listed in Table 1.",Experiment/Discussion
+The following combinations are used for representing the characteristics of the binary/unary schema applications.,Experiment/Discussion
+"In addition, the following is for expressing the condition of the root node of the parse tree.",Experiment/Discussion
+"Figure 4 shows examples: (root is for the root node, in which the phrase symbol is S and the surface form, part-of-speech, and lexical entry of the lexical head are “saw”, VBD, and a transitive verb, respectively. fbinary is for the binary rule application to “saw a girl” and “with a telescope”, in which the applied schema is the Head-Modifier Schema, the left daughter is VP headed by “saw”, and the right daughter is PP headed by “with”, whose part-of-speech is IN and the lexical entry is a VP-modifying preposition.",Experiment/Discussion
+"In an actual implementation, some of the atomic features are abstracted (i.e., ignored) for smoothing.",Experiment/Discussion
+Table 2 shows a full set of templates of combined features used in the experiments.,Experiment/Discussion
+Each row represents a template of a feature function.,Experiment/Discussion
+A check means the atomic feature is incorporated while a hyphen means the feature is ignored.,Experiment/Discussion
+"Restricting the domain of feature functions to (cm, Cl, Cr) seems to limit the flexibility of feature design.",Experiment/Discussion
+"Although it is true to some extent, this does not necessarily mean the impossibility of incorporating features on nonlocal dependencies into the model.",Experiment/Discussion
+This is because a feature forest model does not assume probabilistic independence of conjunctive nodes.,Experiment/Discussion
+This means that we can unpack a part of the forest without changing the model.,Experiment/Discussion
+"Actually, in our previous study (Miyao et al., 2003), we successfully developed a probabilistic model including features on nonlocal predicate-argument dependencies.",Experiment/Discussion
+"However, since we could not observe significant improvements by incorporating nonlocal features, this paper investigates only the features described above.",Experiment/Discussion
+"We used an HPSG grammar derived from Penn Treebank (Marcus et al., 1994) Section 02-21 (39,832 sentences) by our method of grammar development (Miyao et al., 2004).",Results/Conclusion
+The training data was the HPSG treebank derived from the same portion of the Penn Treebank3.,Results/Conclusion
+"For the training, we eliminated sentences with no less than 40 words and for which the parser could not produce the correct parse.",Results/Conclusion
+"The resulting training set consisted of 33,574 sentences.",Results/Conclusion
+"The treebanks derived from Sections 22 and 23 were used as the development (1,644 sentences) and final test sets (2,299 sentences).",Results/Conclusion
+We measured the accuracy of predicate-argument dependencies output by the parser.,Results/Conclusion
+"A dependency is defined as a tuple (7, wh, a, wa), where 7 is the predicate type (e.g., adjective, intransitive verb), wy, is the head word of the predicate, a is the argument label (MODARG, ARG1, ..., ARG4), and wa is the head word of the argument.",Results/Conclusion
+"Labeled precision/recall (LP/LR) is the ratio of tuples correctly identified by the parser, while unlabeled precision/recall (UP/UR) is the ratio of wh and wa correctly identified regardless of 7 and a.",Results/Conclusion
+The F-score is the harmonic mean of LP and LR.,Results/Conclusion
+The accuracy was measured by parsing test sentences with part-of-speech tags provided by the treebank.,Results/Conclusion
+"The Gaussian prior was used for smoothing (Chen and Rosenfeld, 1999), and its hyper-parameter was tuned for each model to maximize the F-score for the development set.",Results/Conclusion
+"The optimization algorithm was the limited-memory BFGS method (Nocedal and Wright, 1999).",Results/Conclusion
+All the following experiments were conducted on AMD Opteron servers with a 2.0-GHz CPU and 12-GB memory.,Results/Conclusion
+Table 3 shows the accuracy for the development/test sets.,Results/Conclusion
+"Features occurring more than twice were included in the model (598,326 features).",Results/Conclusion
+Filtering was done by the reference distribution method with n = 10 and c = 0.95.,Results/Conclusion
+"The unigram model for filtering was a log-linear model with two feature templates, (WORD, POS, LE� and (POS, LE� (24,847 features).",Results/Conclusion
+"Our results cannot be strictly compared with other grammar formalisms because each formalism represents predicate-argument dependencies differently; for reference, our results are competitive with the corresponding measures reported for Combinatory Categorial Grammar (CCG) (LP/LR = 86.6/86.3) (Clark and Curran, 2004b).",Results/Conclusion
+"Different from the results of CCG and PCFG (Collins, 1999; Charniak, 2000), the recall was clearly lower than precision.",Results/Conclusion
+This results from the HPSG grammar having stricter feature constraints and the parser not being able to produce parse results for around one percent of the sentences.,Results/Conclusion
+"To improve recall, we need techniques of robust processing with HPSG. duced in Section 4.",Results/Conclusion
+"In all of the following experiments, we show the accuracy for the test set (< 40 words) only.",Results/Conclusion
+Table 4 revealed that our simple method of filtering caused a fatal bias in training data when a preliminary distribution was used only for filtering.,Results/Conclusion
+"However, the model combined with a preliminary model achieved sufficient accuracy.",Results/Conclusion
+The reference distribution method achieved higher accuracy and lower cost.,Results/Conclusion
+The feature function method achieved lower accuracy in our experiments.,Results/Conclusion
+A possible reason is that a hyper-parameter of the prior was set to the same value for all the features including the feature of the preliminary distribution.,Results/Conclusion
+Table 5 shows the results of changing the filtering threshold.,Results/Conclusion
+We can determine the correlation between the estimation/parsing cost and accuracy.,Results/Conclusion
+"In our experiment, n > 10 and c > 0.90 seem necessary to preserve the F-score over 85.0.",Results/Conclusion
+Figure 5 shows the accuracy for each sentence length.,Results/Conclusion
+It is apparent from this figure that the accuracy was significantly higher for shorter sentences (< 10 words).,Results/Conclusion
+This implies that experiments with only short sentences overestimate the performance of parsers.,Results/Conclusion
+Sentences with at least 10 words are necessary to properly evaluate the performance of parsing real-world texts.,Results/Conclusion
+Figure 6 shows the learning curve.,Results/Conclusion
+"A feature set was fixed, while the parameter of the prior was optimized for each model.",Results/Conclusion
+"High accuracy was attained even with small data, and the accuracy seemed to be saturated.",Results/Conclusion
+This indicates that we cannot further improve the accuracy simply by increasing training data.,Results/Conclusion
+The exploration of new types of features is necessary for higher accuracy.,Results/Conclusion
+Table 6 shows the accuracy with difference feature sets.,Results/Conclusion
+The accuracy was measured by removing some of the atomic features from the final model.,Results/Conclusion
+The last row denotes the accuracy attained by the preliminary model.,Results/Conclusion
+"The numbers in bold type represent that the difference from the final model was significant according to stratified shuffling tests (Cohen, 1995) with p-value < 0.05.",Results/Conclusion
+"The results indicate that DIST, COMMA, SPAN, WORD, and POS features contributed to the final accuracy, although the differences were slight.",Results/Conclusion
+"In contrast, RULE, SYM, and LE features did not affect the accuracy.",Results/Conclusion
+"However, if each of them was removed together with another feature, the accuracy decreased drastically.",Results/Conclusion
+This implies that such features had overlapping information.,Results/Conclusion
+Table 7 shows the manual classification of the causes of errors in 100 sentences randomly chosen from the development set.,Results/Conclusion
+"In our evaluation, one error source may cause multiple errors of dependencies.",Results/Conclusion
+"For example, if a wrong lexical entry was assigned to a verb, all the argument dependencies of the verb are counted as errors.",Results/Conclusion
+The numbers in the table include such double-counting.,Results/Conclusion
+"Major causes were classified into three types: argument/modifier distinction, attachment ambiguity, and lexical ambiguity.",Results/Conclusion
+"While attachment/lexical ambiguities are well-known causes, the other is peculiar to deep parsing.",Results/Conclusion
+"Most of the errors cannot be resolved by features we investigated in this study, and the design of other features is crucial for further improvements.",Results/Conclusion
+"Experiments on deep parsing of Penn Treebank have been reported for Combinatory Categorial Grammar (CCG) (Clark and Curran, 2004b) and Lexical Functional Grammar (LFG) (Kaplan et al., 2004).",Results/Conclusion
+"They developed log-linear models on a packed representation of parse forests, which is similar to our representation.",Results/Conclusion
+"Although HPSG exploits further complicated feature constraints and requires high computational cost, our work has proved that log-linear models can be applied to HPSG parsing and attain accurate and wide-coverage parsing.",Results/Conclusion
+Clark and Curran (2004a) described a method of reducing the cost of parsing a training treebank in the context of CCG parsing.,Results/Conclusion
+"They first assigned to each word a small number of supertags, which correspond to lexical entries in our case, and parsed supertagged sentences.",Results/Conclusion
+"Since they did not mention the probabilities of supertags, their method corresponds to our “filtering only” method.",Results/Conclusion
+"However, they also applied the same supertagger in a parsing stage, and this seemed to be crucial for high accuracy.",Results/Conclusion
+This means that they estimated the probability of producing a parse tree from a supertagged sentence.,Results/Conclusion
+"Another approach to estimating log-linear models for HPSG is to extract a small informative sample from the original set T (s) (Osborne, 2000).",Results/Conclusion
+Malouf and van Noord (2004) successfully applied this method to German HPSG.,Results/Conclusion
+The problem with this method was in the approximation of exponentially many parse trees by a polynomial-size sample.,Results/Conclusion
+"However, their method has the advantage that any features on a parse tree can be incorporated into the model.",Results/Conclusion
+The trade-off between approximation and locality of features is an outstanding problem.,Results/Conclusion
+"Other discriminative classifiers were applied to the disambiguation in HPSG parsing (Baldridge and Osborne, 2003; Toutanova et al., 2004).",Results/Conclusion
+The problem of exponential explosion is also inevitable for their methods.,Results/Conclusion
+"An approach similar to ours may be applied to them, following the study on the learning of a discriminative classifier for a packed representation (Taskar et al., 2004).",Results/Conclusion
+"As discussed in Section 6, exploration of other features is indispensable to further improvements.",Results/Conclusion
+"A possible direction is to encode larger contexts of parse trees, which were shown to improve the accuracy (Toutanova and Manning, 2002; Toutanova et al., 2004).",Results/Conclusion
+"Future work includes the investigation of such features, as well as the abstraction of lexical dependencies like semantic classes.",Results/Conclusion

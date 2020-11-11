@@ -1,124 +1,124 @@
 col1,col2
-Morphology induction is a subproblem of important tasks like automatic learning of machine-readable dictionaries and grammar induction.,{}
-Previous morphology induction approaches have relied solely on statistics of hypothesized stems and affixes to choose which affixes to consider legitimate.,{}
-"Relying on stemand-affix statistics rather than semantic knowledge leads to a number of problems, such as the inappropriate use of valid affixes (&quot;ally&quot; stemming to &quot;all&quot;).",{}
-We introduce a semantic-based algorithm for learning morphology which only proposes affixes when the stem and stem-plusaffix are sufficiently similar semantically.,{}
-We implement our approach using Latent Semantic Analysis and show that our semantics-only approach provides morphology induction results that rival a current state-of-the-art system.,{}
-"Computational morphological analyzers have existed in various languages for years and it has been said that &quot;the quest for an efficient method for the analysis and generation of word-forms is no longer an academic research topic&quot; (Karlsson and Karttunen, 1997).","{'title': '1 Introduction', 'number': '1'}"
-"However, development of these analyzers typically begins with human intervention requiring time spans from days to weeks.","{'title': '1 Introduction', 'number': '1'}"
-"If it were possible to build such analyzers automatically without human knowledge, significant development time could be saved.","{'title': '1 Introduction', 'number': '1'}"
-"On a larger scale, consider the task of inducing machine-readable dictionaries (MRDs) using no human-provided information (&quot;knowledge-free&quot;).","{'title': '1 Introduction', 'number': '1'}"
-"In building an MRD, &quot;simply expanding the dictionary to encompass every word one is ever likely to encounter.. .fails to take advantage of regularities&quot; (Sproat, 1992, p. xiii).","{'title': '1 Introduction', 'number': '1'}"
-"Hence, automatic morphological analysis is also critical for selecting appropriate and non-redundant MRD headwords.","{'title': '1 Introduction', 'number': '1'}"
-"For the reasons expressed above, we are interested in knowledge-free morphology induction.","{'title': '1 Introduction', 'number': '1'}"
-"Thus, in this paper, we show how to automatically induce morphological relationships between words.","{'title': '1 Introduction', 'number': '1'}"
-"Previous morphology induction approaches (Goldsmith, 1997, 2000; Mean, 1998; Gaussier, 1999) have focused on inflectional languages and have used statistics of hypothesized stems and affixes to choose which affixes to consider legitimate.","{'title': '1 Introduction', 'number': '1'}"
-"Several problems can arise using only stem-and-affix statistics: (1) valid affixes may be applied inappropriately (&quot;ally&quot; stemming to &quot;all&quot;), (2) morphological ambiguity may arise (&quot;rating&quot; conflating with &quot;rat&quot; instead of &quot;rate&quot;), and (3) non-productive affixes may get accidentally pruned (the relationship between &quot;dirty&quot; and &quot;dirt&quot; may be lost).1 Some of these problems could be resolved if one could incorporate word semantics.","{'title': '1 Introduction', 'number': '1'}"
-"For instance, &quot;all&quot; is not semantically similar to &quot;ally,&quot; so with knowledge of semantics, an algorithm could avoid conflating these two words.","{'title': '1 Introduction', 'number': '1'}"
-"To maintain the &quot;knowledge-free&quot; paradigm, such semantics would need to be automatically induced.","{'title': '1 Introduction', 'number': '1'}"
-"Latent Semantic Analysis (LSA) (Deerwester, et al., 1990); Landauer, et at., 1998) is a technique which automatically identifies semantic information from a corpus.","{'title': '1 Introduction', 'number': '1'}"
-"We here show that incorporating LSA-based semantics alone into the morphology-induction process can provide results that rival a state-ofthe-art system based on stem-and-affix statistics (Goldsmith's Linguistica). lError examples are from Goldsmith's Linguistica Our algorithm automatically extracts potential affixes from an untagged corpus, identifies word pairs sharing the same proposed stem but having different affixes, and uses LSA to judge semantic relatedness between word pairs.","{'title': '1 Introduction', 'number': '1'}"
-This process serves to identify valid morphological relations.,"{'title': '1 Introduction', 'number': '1'}"
-"Though our algorithm could be applied to any inflectional language, we here restrict it to English in order to perform evaluations against the human-labeled CELEX database (Baayen, et al., 1993).","{'title': '1 Introduction', 'number': '1'}"
-"Existing induction algorithms all focus on identifying prefixes, suffixes, and word stems in inflectional languages (avoiding infixes and other language types like concatenative or agglutinative languages (Sproat, 1992)).","{'title': '2 Previous work', 'number': '2'}"
-"They also observe high frequency occurrences of some word endings or beginnings, perform statistics thereon, and propose that some of these appendages are valid morphemes.","{'title': '2 Previous work', 'number': '2'}"
-"However, these algorithms differ in specifics.","{'title': '2 Previous work', 'number': '2'}"
-DeJean (1998) uses an approach derived from Harris (1951) where word-splitting occurs if the number of distinct letters that follows a given sequence of characters surpasses a threshold.,"{'title': '2 Previous work', 'number': '2'}"
-He uses these hypothesized affixes to resegment words and thereby identify additional affixes that were initially overlooked.,"{'title': '2 Previous work', 'number': '2'}"
-His overall goal is different from ours: he primarily seeks an affix inventory.,"{'title': '2 Previous work', 'number': '2'}"
-Goldsmith (1997) tries cutting each word in exactly one place based on probability and lengths of hypothesized stems and affixes.,"{'title': '2 Previous work', 'number': '2'}"
-He applies the EM algorithm to eliminate inappropriate parses.,"{'title': '2 Previous work', 'number': '2'}"
-He collects the possible suffixes for each stem calling these a signature which aid in determining word classes.,"{'title': '2 Previous work', 'number': '2'}"
-"Goldsmith (2000) later incorporates minimum description length to identify stemming characteristics that most compress the data, but his algorithm otherwise remains similar in nature.","{'title': '2 Previous work', 'number': '2'}"
-"Goldsmith's algorithm is practically knowledge-free, though he incorporates capitalization removal and some word segmentation.","{'title': '2 Previous work', 'number': '2'}"
-Gaussier (1999) begins with an inflectional lexicon and seeks to find derivational morphology.,"{'title': '2 Previous work', 'number': '2'}"
-The words and parts of speech from his inflectional lexicon serve for building relational families of words and identifying sets of word pairs and suffixes therefrom.,"{'title': '2 Previous work', 'number': '2'}"
-Gaussier splits words based on p-similarity — words that agree in exactly the first p characters.,"{'title': '2 Previous work', 'number': '2'}"
-He also builds a probabilistic model which indicates that the probability of two words being morphological variants is based upon the probability of their respective changes in orthography and morphosynt act ics .,"{'title': '2 Previous work', 'number': '2'}"
-Our algorithm also focuses on inflectional languages.,"{'title': '3 Current approach', 'number': '3'}"
-"However, with the exception of word segmentation, we provide it no human information and we consider only the impact of semantics.","{'title': '3 Current approach', 'number': '3'}"
-"Our approach (see Figure 1) can be decomposed into four components: (1) initially selecting candidate affixes, (2) identifying affixes which are potential morphological variants of each other, (3) computing semantic vectors for words possessing these candidate affixes, and (4) selecting as valid morphological variants those words with similar semantic vectors.","{'title': '3 Current approach', 'number': '3'}"
-"To select candidate affixes, we, like Gaussier, identify p-similar words.","{'title': '3 Current approach', 'number': '3'}"
-We insert words into a trie (Figure 2) and extract potential affixes by observing those places in the trie where branching occurs.,"{'title': '3 Current approach', 'number': '3'}"
-"Figure 2's hypothesized suffixes are NULL, &quot;s,&quot; &quot;ed,&quot; &quot;es,&quot; &quot;ing,&quot; &quot;e,&quot; and &quot;eful.&quot; We retain only the K most-frequent candidate affixes for subsequent processing.","{'title': '3 Current approach', 'number': '3'}"
-The value for K needs to be large enough to account for the number of expected regular affixes in any given language as well as some of the more frequent irregular affixes.,"{'title': '3 Current approach', 'number': '3'}"
-We arbitrarily chose K to be 200 in our system.,"{'title': '3 Current approach', 'number': '3'}"
-(It should also be mentioned that we can identify potential prefixes by inserting words into the trie in reversed order.,"{'title': '3 Current approach', 'number': '3'}"
-This prefix mode can additionally serve for identifying capitalization.),"{'title': '3 Current approach', 'number': '3'}"
-Stage 3 Stage 4 ind wo-r\ pairs that are possible morphoWe next identify pairs of candidate affixes that descend from a common ancestor node in the trie.,"{'title': '3 Current approach', 'number': '3'}"
-"For example, (&quot;s&quot;, NULL) constitutes such a pair from Figure 2.","{'title': '3 Current approach', 'number': '3'}"
-We call these pairs rules.,"{'title': '3 Current approach', 'number': '3'}"
-"Two words sharing the same root and the same affix rule, such as &quot;cars&quot; and &quot;car,&quot; form what we call a pair of potential morphological variants (PPMVs).","{'title': '3 Current approach', 'number': '3'}"
-We define the ruleset of a given rule to be the set of all PPM Vs that have that rule in common.,"{'title': '3 Current approach', 'number': '3'}"
-"For instance, from Figure 2, the ruleset for (&quot;s&quot;, NULL) would be the pairs &quot;cars/car&quot; and &quot;cares/care.&quot; Our algorithm establishes a list which identifies the rulesets for every hypothesized rule extracted from the data and then it must proceed to determine which rulesets or PPM Vs describe true morphological relationships.","{'title': '3 Current approach', 'number': '3'}"
-"Deerwester, et al. (1990) showed that it is possible to find significant semantic relationships between words and documents in a corpus with virtually no human intervention (with the possible exception of a human-built stop word list).","{'title': '3 Current approach', 'number': '3'}"
-"This is typically done by applying singular value decomposition (SVD) to a matrix, M, where each entry M(i,j) contains the frequency of word i as seen in document j of the corpus.","{'title': '3 Current approach', 'number': '3'}"
-"This methodology is referred to as Latent Semantic Analysis (LSA) and is well-described in the literature (Landauer, et al., 1998; Manning and Schiitze, 1999).","{'title': '3 Current approach', 'number': '3'}"
-"SVDs seek to decompose a matrix A into the product of three matrices U, D, and VT where U and VT are orthogonal matrices and D is a diagonal matrix containing the singular values (squared eigenvalues) of A.","{'title': '3 Current approach', 'number': '3'}"
-"Since SVD's can be performed which identify singular values by descending order of size (Berry, et al., 1993), LSA truncates after finding the k largest singular values.","{'title': '3 Current approach', 'number': '3'}"
-This corresponds to projecting the vector representation of each word into a k-dimensional subspace whose axes form k (latent) semantic directions.,"{'title': '3 Current approach', 'number': '3'}"
-These projections are precisely the rows of the matrix product UkDk.,"{'title': '3 Current approach', 'number': '3'}"
-"A typical k is 300, which is the value we used.","{'title': '3 Current approach', 'number': '3'}"
-"However, we have altered the algorithm somewhat to fit our needs.","{'title': '3 Current approach', 'number': '3'}"
-"First, to stay as close to the knowledge-free scenario as possible, we neither apply a stopword list nor remove capitalization.","{'title': '3 Current approach', 'number': '3'}"
-"Secondly, since SVDs are more designed to work on normally-distributed data (Manning and Schiitze, 1999, p. 565), we operate on Zscores rather than counts.","{'title': '3 Current approach', 'number': '3'}"
-"Lastly, instead of generating a term-document matrix, we build a term-term matrix.","{'title': '3 Current approach', 'number': '3'}"
-"Schiitze (1993) achieved excellent performance at classifying words into quasi-partof-speech classes by building and performing an SVD on an Nx4N term-term matrix, M(i,Np+j).","{'title': '3 Current approach', 'number': '3'}"
-The indices i and j represent the top N highest frequency words.,"{'title': '3 Current approach', 'number': '3'}"
-"The p values range from 0 to 3 representing whether the word indexed by j is positionally offset from the word indexed by i by -2, -1, +1, or +2, respectively.","{'title': '3 Current approach', 'number': '3'}"
-"For example, if &quot;the&quot; and &quot;people&quot; were respectively the 1st and 100th highest frequency words, then upon seeing the phrase &quot;the people,&quot; Schiitze's approach would increment the counts of M(1,2N+100) and M(100,N+1).","{'title': '3 Current approach', 'number': '3'}"
-We used Schfitze's general framework but tailored it to identify local semantic information.,"{'title': '3 Current approach', 'number': '3'}"
-"We built an Nx2N matrix and our p values correspond to those words whose offsets from word i are in the intervals [-50,-1] and [1,50], respectively.","{'title': '3 Current approach', 'number': '3'}"
-We also reserve the Nth position as a catch-all position to account for all words that are not in the top (N-1).,"{'title': '3 Current approach', 'number': '3'}"
-An important issue to resolve is how large should N be.,"{'title': '3 Current approach', 'number': '3'}"
-We would like to be able to incorporate semantics for an arbitrarily large number of words and LSA quickly becomes impractical on large sets.,"{'title': '3 Current approach', 'number': '3'}"
-"Fortunately, it is possible to build a matrix with a smaller value of N (say, 2500), perform an SVD thereon, and then fold in remaining terms (Manning and Schaze, 1999, p. 563).","{'title': '3 Current approach', 'number': '3'}"
-"Since the U and V matrices of an SVD are orthogonal matrices, then UUT=VVT=I.","{'title': '3 Current approach', 'number': '3'}"
-This implies that AV=UD.,"{'title': '3 Current approach', 'number': '3'}"
-"This means that for a new word, w, one can build a vector a which identifies how w relates to the top N words according to the p different conditions described above.","{'title': '3 Current approach', 'number': '3'}"
-"For example, if w were one of the top N words, then a would simply represent w's particular row from the A matrix.","{'title': '3 Current approach', 'number': '3'}"
-The product aw= avk is the projection of 6T into the k-dimensional latent semantic space.,"{'title': '3 Current approach', 'number': '3'}"
-"By storing an index to the words of the corpus as well as a sorted list of these words, one can efficiently build a set of semantic vectors which includes each word of interest.","{'title': '3 Current approach', 'number': '3'}"
-"Morphologically-related words frequently share similar semantics, so we want to see how well semantic vectors of PPMVs correlate.","{'title': '3 Current approach', 'number': '3'}"
-"If we know how PPMVs correlate in comparison to other word pairs from their same rulesets, we can actually determine the semantic-based probability that the variants are legitimate.","{'title': '3 Current approach', 'number': '3'}"
-"In this section, we identify a measure for correlating PPMVs and illustrate how ruleset-based statistics help identify legitimate PPMVs.","{'title': '3 Current approach', 'number': '3'}"
-"The cosine of the angle between two vectors v1 and v2 is given by, We want to determine the correlation between each of the words of every PPMV.","{'title': '3 Current approach', 'number': '3'}"
-We use what we call a normalized cosine score (NCS) as a correlation.,"{'title': '3 Current approach', 'number': '3'}"
-"To obtain a NCS, we first calculate the cosine between each semantic vector, nw, and the semantic vectors from 200 randomly chosen words.","{'title': '3 Current approach', 'number': '3'}"
-"By this means we obtain w's correlation mean (p,w) and standard deviation (cru,).","{'title': '3 Current approach', 'number': '3'}"
-"If v is one of w's variants, then we define the NCS between nw and Itv to be By considering NCSs for all word pairs coupled under a particular rule, we can determine semantic-based probabilities that indicate which PPMVs are legitimate.","{'title': '3 Current approach', 'number': '3'}"
-"We expect random NCSs to be normally-distributed according to .A.r(0,1).","{'title': '3 Current approach', 'number': '3'}"
-"Given that a particular ruleset contains nR PPMVs, we can therefore approximate the number (nT), mean (AT) and standard deviation (o-T) of true correlations.","{'title': '3 Current approach', 'number': '3'}"
-"If we define (I, z(t, a) to be iy e—( .x)2dx, then we can compute the probability that the particular correlation is legitimate: It is possible that a rule can be hypothesized at the trie stage that is true under only certain conditions.","{'title': '3 Current approach', 'number': '3'}"
-"A prime example of such a rule is (&quot;es&quot;, NULL).","{'title': '3 Current approach', 'number': '3'}"
-"Observe from Table 1 that the word &quot;cares&quot; poorly correlates with &quot;car.&quot; Yet, it is true that &quot;-es&quot; is a valid suffix for the words &quot;flashes,&quot; &quot;catches,&quot; &quot;kisses,&quot; and many other words where the &quot;-es&quot; is preceded by a voiceless sibilant.","{'title': '3 Current approach', 'number': '3'}"
-"Hence, there is merit to considering subrules that arise while performing analysis on a particular rule.","{'title': '3 Current approach', 'number': '3'}"
-"For instance, while evaluating the (&quot;es&quot;, NULL) rule, it is desirable to also consider potential subrules such as (&quot;ches&quot;, &quot;ch&quot;) and (&quot;tes&quot;, &quot;t&quot;).","{'title': '3 Current approach', 'number': '3'}"
-"One might expect that the average NCS for the (&quot;ches&quot;, &quot;ch&quot;) subrule might be higher than the overall rule (&quot;es&quot;, NULL) whereas the opposite will likely be true for (&quot;tes&quot;, &quot;t&quot;).","{'title': '3 Current approach', 'number': '3'}"
-Table 2 confirms this.,"{'title': '3 Current approach', 'number': '3'}"
-"We compare our algorithm to Goldsmith's Linguistica (2000) by using CELEX's (Baayen, et al., 1993) suffixes as a gold standard.","{'title': '4 Results', 'number': '4'}"
-"CELEX is a hand-tagged, morphologicallyanalyzed database of English words.","{'title': '4 Results', 'number': '4'}"
-"CELEX has limited coverage of the words from our data set (where our data consists of over eight million words from random subcollections of TREC data (Voorhees, et a1,1997/8)), so we only considered words with frequencies of 10 or more.","{'title': '4 Results', 'number': '4'}"
-"Morphological relationships can be represented graphically as directed graphs (see Figure 3, where three separate graphs are depicted).","{'title': '4 Results', 'number': '4'}"
-Developing a scoring algorithm to compare directed graphs is likely to be prone to disagreements.,"{'title': '4 Results', 'number': '4'}"
-"Therefore, we score only the vertex sets of directed graphs.","{'title': '4 Results', 'number': '4'}"
-We will refer to these vertex sets as conflation sets.,"{'title': '4 Results', 'number': '4'}"
-"For example, concern's conflation set contains itself as well as &quot;concerned,&quot; &quot;concerns,&quot; and &quot;concerning&quot; (or, in shorthand notation, the set is fa,b,c,d1).","{'title': '4 Results', 'number': '4'}"
-"To evaluate an algorithm, we sum the number of correct (C), inserted (I) , and deleted (D) words it predicts for each hypothesized conflation set.","{'title': '4 Results', 'number': '4'}"
-"If Xu, represents word w's conflation set according to the algorithm, and if Yw represents its CELEX-based conflation set, then However, in making these computations, we disregard any CELEX words that are not in the algorithm's data set and vice versa.","{'title': '4 Results', 'number': '4'}"
-"For example, suppose two algorithms were being compared on a data set where all the words from Figure 3 were available except &quot;concerting&quot; and &quot;concertos.&quot; Suppose further that one algorithm proposed that { a,b,c,d,e,f,g,i} formed a single conflation set whereas the other algorithm proposed the three sets { a,b,c,d},{e,g,i}, and {f}.","{'title': '4 Results', 'number': '4'}"
-Then Table 3 illustrates how the two algorithms would be scored.,"{'title': '4 Results', 'number': '4'}"
-"To explain Table 3, consider algorithm one's entries for 'a.'","{'title': '4 Results', 'number': '4'}"
-"Algorithm one had proposed that Xa=fa,b,c,d,e,f,g,il when in reality, = Ya={ a,b,c,d}.","{'title': '4 Results', 'number': '4'}"
-"Since IX,, n Ya I = 4 and IYak4, then CA=4/ 4.","{'title': '4 Results', 'number': '4'}"
-The remaining values of the table can be computed accordingly.,"{'title': '4 Results', 'number': '4'}"
-"Using the values from Table 3, we can also compute precision, recall, and F-Score.","{'title': '4 Results', 'number': '4'}"
-"Precision is defined to be C/(C+/), recall is C/(C+D), and F-Score is the product of precision and recall divided by the average of the two.","{'title': '4 Results', 'number': '4'}"
-"For the first algorithm, the precision, recall, and F-Score would have respectively been 1/3, 1, and 1/2.","{'title': '4 Results', 'number': '4'}"
-"In the second algorithm, these numbers would have been 5/7, 5/6, and 10/13.","{'title': '4 Results', 'number': '4'}"
-Table 4 uses the above scoring mechanism to compare between Linguistica and our system (at various probability thresholds).,"{'title': '4 Results', 'number': '4'}"
-"Note that since Linguistica removes capitalization, it will have a different total word count than our system.","{'title': '4 Results', 'number': '4'}"
-These results suggest that semantics and LSA can play a key part in knowledge-free morphology induction.,"{'title': '5 Conclusions', 'number': '5'}"
-Semantics alone worked at least as well as Goldsmith's frequency-based approach.,"{'title': '5 Conclusions', 'number': '5'}"
-Yet we believe that semantics-based and frequency-based approaches play complementary roles.,"{'title': '5 Conclusions', 'number': '5'}"
-"In current work, we are examining how to combine these two approaches.","{'title': '5 Conclusions', 'number': '5'}"
+Morphology induction is a subproblem of important tasks like automatic learning of machine-readable dictionaries and grammar induction.,Introduction
+Previous morphology induction approaches have relied solely on statistics of hypothesized stems and affixes to choose which affixes to consider legitimate.,Introduction
+"Relying on stemand-affix statistics rather than semantic knowledge leads to a number of problems, such as the inappropriate use of valid affixes (&quot;ally&quot; stemming to &quot;all&quot;).",Introduction
+We introduce a semantic-based algorithm for learning morphology which only proposes affixes when the stem and stem-plusaffix are sufficiently similar semantically.,Introduction
+We implement our approach using Latent Semantic Analysis and show that our semantics-only approach provides morphology induction results that rival a current state-of-the-art system.,Introduction
+"Computational morphological analyzers have existed in various languages for years and it has been said that &quot;the quest for an efficient method for the analysis and generation of word-forms is no longer an academic research topic&quot; (Karlsson and Karttunen, 1997).",Experiment/Discussion
+"However, development of these analyzers typically begins with human intervention requiring time spans from days to weeks.",Experiment/Discussion
+"If it were possible to build such analyzers automatically without human knowledge, significant development time could be saved.",Experiment/Discussion
+"On a larger scale, consider the task of inducing machine-readable dictionaries (MRDs) using no human-provided information (&quot;knowledge-free&quot;).",Experiment/Discussion
+"In building an MRD, &quot;simply expanding the dictionary to encompass every word one is ever likely to encounter.. .fails to take advantage of regularities&quot; (Sproat, 1992, p. xiii).",Experiment/Discussion
+"Hence, automatic morphological analysis is also critical for selecting appropriate and non-redundant MRD headwords.",Experiment/Discussion
+"For the reasons expressed above, we are interested in knowledge-free morphology induction.",Experiment/Discussion
+"Thus, in this paper, we show how to automatically induce morphological relationships between words.",Experiment/Discussion
+"Previous morphology induction approaches (Goldsmith, 1997, 2000; Mean, 1998; Gaussier, 1999) have focused on inflectional languages and have used statistics of hypothesized stems and affixes to choose which affixes to consider legitimate.",Experiment/Discussion
+"Several problems can arise using only stem-and-affix statistics: (1) valid affixes may be applied inappropriately (&quot;ally&quot; stemming to &quot;all&quot;), (2) morphological ambiguity may arise (&quot;rating&quot; conflating with &quot;rat&quot; instead of &quot;rate&quot;), and (3) non-productive affixes may get accidentally pruned (the relationship between &quot;dirty&quot; and &quot;dirt&quot; may be lost).1 Some of these problems could be resolved if one could incorporate word semantics.",Experiment/Discussion
+"For instance, &quot;all&quot; is not semantically similar to &quot;ally,&quot; so with knowledge of semantics, an algorithm could avoid conflating these two words.",Experiment/Discussion
+"To maintain the &quot;knowledge-free&quot; paradigm, such semantics would need to be automatically induced.",Experiment/Discussion
+"Latent Semantic Analysis (LSA) (Deerwester, et al., 1990); Landauer, et at., 1998) is a technique which automatically identifies semantic information from a corpus.",Experiment/Discussion
+"We here show that incorporating LSA-based semantics alone into the morphology-induction process can provide results that rival a state-ofthe-art system based on stem-and-affix statistics (Goldsmith's Linguistica). lError examples are from Goldsmith's Linguistica Our algorithm automatically extracts potential affixes from an untagged corpus, identifies word pairs sharing the same proposed stem but having different affixes, and uses LSA to judge semantic relatedness between word pairs.",Experiment/Discussion
+This process serves to identify valid morphological relations.,Experiment/Discussion
+"Though our algorithm could be applied to any inflectional language, we here restrict it to English in order to perform evaluations against the human-labeled CELEX database (Baayen, et al., 1993).",Experiment/Discussion
+"Existing induction algorithms all focus on identifying prefixes, suffixes, and word stems in inflectional languages (avoiding infixes and other language types like concatenative or agglutinative languages (Sproat, 1992)).",Experiment/Discussion
+"They also observe high frequency occurrences of some word endings or beginnings, perform statistics thereon, and propose that some of these appendages are valid morphemes.",Experiment/Discussion
+"However, these algorithms differ in specifics.",Experiment/Discussion
+DeJean (1998) uses an approach derived from Harris (1951) where word-splitting occurs if the number of distinct letters that follows a given sequence of characters surpasses a threshold.,Experiment/Discussion
+He uses these hypothesized affixes to resegment words and thereby identify additional affixes that were initially overlooked.,Experiment/Discussion
+His overall goal is different from ours: he primarily seeks an affix inventory.,Experiment/Discussion
+Goldsmith (1997) tries cutting each word in exactly one place based on probability and lengths of hypothesized stems and affixes.,Experiment/Discussion
+He applies the EM algorithm to eliminate inappropriate parses.,Experiment/Discussion
+He collects the possible suffixes for each stem calling these a signature which aid in determining word classes.,Experiment/Discussion
+"Goldsmith (2000) later incorporates minimum description length to identify stemming characteristics that most compress the data, but his algorithm otherwise remains similar in nature.",Experiment/Discussion
+"Goldsmith's algorithm is practically knowledge-free, though he incorporates capitalization removal and some word segmentation.",Experiment/Discussion
+Gaussier (1999) begins with an inflectional lexicon and seeks to find derivational morphology.,Experiment/Discussion
+The words and parts of speech from his inflectional lexicon serve for building relational families of words and identifying sets of word pairs and suffixes therefrom.,Experiment/Discussion
+Gaussier splits words based on p-similarity — words that agree in exactly the first p characters.,Experiment/Discussion
+He also builds a probabilistic model which indicates that the probability of two words being morphological variants is based upon the probability of their respective changes in orthography and morphosynt act ics .,Experiment/Discussion
+Our algorithm also focuses on inflectional languages.,Experiment/Discussion
+"However, with the exception of word segmentation, we provide it no human information and we consider only the impact of semantics.",Experiment/Discussion
+"Our approach (see Figure 1) can be decomposed into four components: (1) initially selecting candidate affixes, (2) identifying affixes which are potential morphological variants of each other, (3) computing semantic vectors for words possessing these candidate affixes, and (4) selecting as valid morphological variants those words with similar semantic vectors.",Experiment/Discussion
+"To select candidate affixes, we, like Gaussier, identify p-similar words.",Experiment/Discussion
+We insert words into a trie (Figure 2) and extract potential affixes by observing those places in the trie where branching occurs.,Experiment/Discussion
+"Figure 2's hypothesized suffixes are NULL, &quot;s,&quot; &quot;ed,&quot; &quot;es,&quot; &quot;ing,&quot; &quot;e,&quot; and &quot;eful.&quot; We retain only the K most-frequent candidate affixes for subsequent processing.",Experiment/Discussion
+The value for K needs to be large enough to account for the number of expected regular affixes in any given language as well as some of the more frequent irregular affixes.,Experiment/Discussion
+We arbitrarily chose K to be 200 in our system.,Experiment/Discussion
+(It should also be mentioned that we can identify potential prefixes by inserting words into the trie in reversed order.,Experiment/Discussion
+This prefix mode can additionally serve for identifying capitalization.),Experiment/Discussion
+Stage 3 Stage 4 ind wo-r\ pairs that are possible morphoWe next identify pairs of candidate affixes that descend from a common ancestor node in the trie.,Experiment/Discussion
+"For example, (&quot;s&quot;, NULL) constitutes such a pair from Figure 2.",Experiment/Discussion
+We call these pairs rules.,Experiment/Discussion
+"Two words sharing the same root and the same affix rule, such as &quot;cars&quot; and &quot;car,&quot; form what we call a pair of potential morphological variants (PPMVs).",Experiment/Discussion
+We define the ruleset of a given rule to be the set of all PPM Vs that have that rule in common.,Experiment/Discussion
+"For instance, from Figure 2, the ruleset for (&quot;s&quot;, NULL) would be the pairs &quot;cars/car&quot; and &quot;cares/care.&quot; Our algorithm establishes a list which identifies the rulesets for every hypothesized rule extracted from the data and then it must proceed to determine which rulesets or PPM Vs describe true morphological relationships.",Experiment/Discussion
+"Deerwester, et al. (1990) showed that it is possible to find significant semantic relationships between words and documents in a corpus with virtually no human intervention (with the possible exception of a human-built stop word list).",Experiment/Discussion
+"This is typically done by applying singular value decomposition (SVD) to a matrix, M, where each entry M(i,j) contains the frequency of word i as seen in document j of the corpus.",Experiment/Discussion
+"This methodology is referred to as Latent Semantic Analysis (LSA) and is well-described in the literature (Landauer, et al., 1998; Manning and Schiitze, 1999).",Experiment/Discussion
+"SVDs seek to decompose a matrix A into the product of three matrices U, D, and VT where U and VT are orthogonal matrices and D is a diagonal matrix containing the singular values (squared eigenvalues) of A.",Experiment/Discussion
+"Since SVD's can be performed which identify singular values by descending order of size (Berry, et al., 1993), LSA truncates after finding the k largest singular values.",Experiment/Discussion
+This corresponds to projecting the vector representation of each word into a k-dimensional subspace whose axes form k (latent) semantic directions.,Experiment/Discussion
+These projections are precisely the rows of the matrix product UkDk.,Experiment/Discussion
+"A typical k is 300, which is the value we used.",Experiment/Discussion
+"However, we have altered the algorithm somewhat to fit our needs.",Experiment/Discussion
+"First, to stay as close to the knowledge-free scenario as possible, we neither apply a stopword list nor remove capitalization.",Experiment/Discussion
+"Secondly, since SVDs are more designed to work on normally-distributed data (Manning and Schiitze, 1999, p. 565), we operate on Zscores rather than counts.",Experiment/Discussion
+"Lastly, instead of generating a term-document matrix, we build a term-term matrix.",Experiment/Discussion
+"Schiitze (1993) achieved excellent performance at classifying words into quasi-partof-speech classes by building and performing an SVD on an Nx4N term-term matrix, M(i,Np+j).",Experiment/Discussion
+The indices i and j represent the top N highest frequency words.,Experiment/Discussion
+"The p values range from 0 to 3 representing whether the word indexed by j is positionally offset from the word indexed by i by -2, -1, +1, or +2, respectively.",Experiment/Discussion
+"For example, if &quot;the&quot; and &quot;people&quot; were respectively the 1st and 100th highest frequency words, then upon seeing the phrase &quot;the people,&quot; Schiitze's approach would increment the counts of M(1,2N+100) and M(100,N+1).",Experiment/Discussion
+We used Schfitze's general framework but tailored it to identify local semantic information.,Experiment/Discussion
+"We built an Nx2N matrix and our p values correspond to those words whose offsets from word i are in the intervals [-50,-1] and [1,50], respectively.",Experiment/Discussion
+We also reserve the Nth position as a catch-all position to account for all words that are not in the top (N-1).,Experiment/Discussion
+An important issue to resolve is how large should N be.,Experiment/Discussion
+We would like to be able to incorporate semantics for an arbitrarily large number of words and LSA quickly becomes impractical on large sets.,Experiment/Discussion
+"Fortunately, it is possible to build a matrix with a smaller value of N (say, 2500), perform an SVD thereon, and then fold in remaining terms (Manning and Schaze, 1999, p. 563).",Experiment/Discussion
+"Since the U and V matrices of an SVD are orthogonal matrices, then UUT=VVT=I.",Experiment/Discussion
+This implies that AV=UD.,Experiment/Discussion
+"This means that for a new word, w, one can build a vector a which identifies how w relates to the top N words according to the p different conditions described above.",Experiment/Discussion
+"For example, if w were one of the top N words, then a would simply represent w's particular row from the A matrix.",Experiment/Discussion
+The product aw= avk is the projection of 6T into the k-dimensional latent semantic space.,Experiment/Discussion
+"By storing an index to the words of the corpus as well as a sorted list of these words, one can efficiently build a set of semantic vectors which includes each word of interest.",Experiment/Discussion
+"Morphologically-related words frequently share similar semantics, so we want to see how well semantic vectors of PPMVs correlate.",Experiment/Discussion
+"If we know how PPMVs correlate in comparison to other word pairs from their same rulesets, we can actually determine the semantic-based probability that the variants are legitimate.",Experiment/Discussion
+"In this section, we identify a measure for correlating PPMVs and illustrate how ruleset-based statistics help identify legitimate PPMVs.",Experiment/Discussion
+"The cosine of the angle between two vectors v1 and v2 is given by, We want to determine the correlation between each of the words of every PPMV.",Experiment/Discussion
+We use what we call a normalized cosine score (NCS) as a correlation.,Experiment/Discussion
+"To obtain a NCS, we first calculate the cosine between each semantic vector, nw, and the semantic vectors from 200 randomly chosen words.",Experiment/Discussion
+"By this means we obtain w's correlation mean (p,w) and standard deviation (cru,).",Experiment/Discussion
+"If v is one of w's variants, then we define the NCS between nw and Itv to be By considering NCSs for all word pairs coupled under a particular rule, we can determine semantic-based probabilities that indicate which PPMVs are legitimate.",Experiment/Discussion
+"We expect random NCSs to be normally-distributed according to .A.r(0,1).",Experiment/Discussion
+"Given that a particular ruleset contains nR PPMVs, we can therefore approximate the number (nT), mean (AT) and standard deviation (o-T) of true correlations.",Experiment/Discussion
+"If we define (I, z(t, a) to be iy e—( .x)2dx, then we can compute the probability that the particular correlation is legitimate: It is possible that a rule can be hypothesized at the trie stage that is true under only certain conditions.",Experiment/Discussion
+"A prime example of such a rule is (&quot;es&quot;, NULL).",Experiment/Discussion
+"Observe from Table 1 that the word &quot;cares&quot; poorly correlates with &quot;car.&quot; Yet, it is true that &quot;-es&quot; is a valid suffix for the words &quot;flashes,&quot; &quot;catches,&quot; &quot;kisses,&quot; and many other words where the &quot;-es&quot; is preceded by a voiceless sibilant.",Experiment/Discussion
+"Hence, there is merit to considering subrules that arise while performing analysis on a particular rule.",Experiment/Discussion
+"For instance, while evaluating the (&quot;es&quot;, NULL) rule, it is desirable to also consider potential subrules such as (&quot;ches&quot;, &quot;ch&quot;) and (&quot;tes&quot;, &quot;t&quot;).",Experiment/Discussion
+"One might expect that the average NCS for the (&quot;ches&quot;, &quot;ch&quot;) subrule might be higher than the overall rule (&quot;es&quot;, NULL) whereas the opposite will likely be true for (&quot;tes&quot;, &quot;t&quot;).",Experiment/Discussion
+Table 2 confirms this.,Experiment/Discussion
+"We compare our algorithm to Goldsmith's Linguistica (2000) by using CELEX's (Baayen, et al., 1993) suffixes as a gold standard.",Results/Conclusion
+"CELEX is a hand-tagged, morphologicallyanalyzed database of English words.",Results/Conclusion
+"CELEX has limited coverage of the words from our data set (where our data consists of over eight million words from random subcollections of TREC data (Voorhees, et a1,1997/8)), so we only considered words with frequencies of 10 or more.",Results/Conclusion
+"Morphological relationships can be represented graphically as directed graphs (see Figure 3, where three separate graphs are depicted).",Results/Conclusion
+Developing a scoring algorithm to compare directed graphs is likely to be prone to disagreements.,Results/Conclusion
+"Therefore, we score only the vertex sets of directed graphs.",Results/Conclusion
+We will refer to these vertex sets as conflation sets.,Results/Conclusion
+"For example, concern's conflation set contains itself as well as &quot;concerned,&quot; &quot;concerns,&quot; and &quot;concerning&quot; (or, in shorthand notation, the set is fa,b,c,d1).",Results/Conclusion
+"To evaluate an algorithm, we sum the number of correct (C), inserted (I) , and deleted (D) words it predicts for each hypothesized conflation set.",Results/Conclusion
+"If Xu, represents word w's conflation set according to the algorithm, and if Yw represents its CELEX-based conflation set, then However, in making these computations, we disregard any CELEX words that are not in the algorithm's data set and vice versa.",Results/Conclusion
+"For example, suppose two algorithms were being compared on a data set where all the words from Figure 3 were available except &quot;concerting&quot; and &quot;concertos.&quot; Suppose further that one algorithm proposed that { a,b,c,d,e,f,g,i} formed a single conflation set whereas the other algorithm proposed the three sets { a,b,c,d},{e,g,i}, and {f}.",Results/Conclusion
+Then Table 3 illustrates how the two algorithms would be scored.,Results/Conclusion
+"To explain Table 3, consider algorithm one's entries for 'a.'",Results/Conclusion
+"Algorithm one had proposed that Xa=fa,b,c,d,e,f,g,il when in reality, = Ya={ a,b,c,d}.",Results/Conclusion
+"Since IX,, n Ya I = 4 and IYak4, then CA=4/ 4.",Results/Conclusion
+The remaining values of the table can be computed accordingly.,Results/Conclusion
+"Using the values from Table 3, we can also compute precision, recall, and F-Score.",Results/Conclusion
+"Precision is defined to be C/(C+/), recall is C/(C+D), and F-Score is the product of precision and recall divided by the average of the two.",Results/Conclusion
+"For the first algorithm, the precision, recall, and F-Score would have respectively been 1/3, 1, and 1/2.",Results/Conclusion
+"In the second algorithm, these numbers would have been 5/7, 5/6, and 10/13.",Results/Conclusion
+Table 4 uses the above scoring mechanism to compare between Linguistica and our system (at various probability thresholds).,Results/Conclusion
+"Note that since Linguistica removes capitalization, it will have a different total word count than our system.",Results/Conclusion
+These results suggest that semantics and LSA can play a key part in knowledge-free morphology induction.,Results/Conclusion
+Semantics alone worked at least as well as Goldsmith's frequency-based approach.,Results/Conclusion
+Yet we believe that semantics-based and frequency-based approaches play complementary roles.,Results/Conclusion
+"In current work, we are examining how to combine these two approaches.",Results/Conclusion

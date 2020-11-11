@@ -1,203 +1,203 @@
 col1,col2
-We present an approach to grammar induction that utilizes syntactic universals to improve dependency parsing across a range of languages.,{}
-Our method uses a single set of manually-specified language-independent rules that identify syntactic dependencies between pairs of syntactic categories that commonly occur across languages.,{}
-"During inference of the probabilistic model, we use posterior expectation constraints to require that a minimum proportion of the dependencies we infer be instances of these rules.",{}
-We also automatically refine the syntactic categories given in our coarsely tagged input.,{}
-Across six languages our approach outperforms state-of-theart unsupervised methods by a significant mar,{}
-"Despite surface differences, human languages exhibit striking similarities in many fundamental aspects of syntactic structure.","{'title': '1 Introduction', 'number': '1'}"
-"These structural correspondences, referred to as syntactic universals, have been extensively studied in linguistics (Baker, 2001; Carnie, 2002; White, 2003; Newmeyer, 2005) and underlie many approaches in multilingual parsing.","{'title': '1 Introduction', 'number': '1'}"
-"In fact, much recent work has demonstrated that learning cross-lingual correspondences from corpus data greatly reduces the ambiguity inherent in syntactic analysis (Kuhn, 2004; Burkett and Klein, 2008; Cohen and Smith, 2009a; Snyder et al., 2009; Berg-Kirkpatrick and Klein, 2010).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present an alternative grammar induction approach that exploits these structural correspondences by declaratively encoding a small set of universal dependency rules.","{'title': '1 Introduction', 'number': '1'}"
-"As input to the model, we assume a corpus annotated with coarse syntactic categories (i.e., high-level part-ofspeech tags) and a set of universal rules defined over these categories, such as those in Table 1.","{'title': '1 Introduction', 'number': '1'}"
-These rules incorporate the definitional properties of syntactic categories in terms of their interdependencies and thus are universal across languages.,"{'title': '1 Introduction', 'number': '1'}"
-"They can potentially help disambiguate structural ambiguities that are difficult to learn from data alone — for example, our rules prefer analyses in which verbs are dependents of auxiliaries, even though analyzing auxiliaries as dependents of verbs is also consistent with the data.","{'title': '1 Introduction', 'number': '1'}"
-Leveraging these universal rules has the potential to improve parsing performance for a large number of human languages; this is particularly relevant to the processing of low-resource languages.,"{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, these universal rules are compact and well-understood, making them easy to manually construct.","{'title': '1 Introduction', 'number': '1'}"
-"In addition to these universal dependencies, each specific language typically possesses its own idiosyncratic set of dependencies.","{'title': '1 Introduction', 'number': '1'}"
-"We address this challenge by requiring the universal constraints to only hold in expectation rather than absolutely, i.e., we permit a certain number of violations of the constraints.","{'title': '1 Introduction', 'number': '1'}"
-We formulate a generative Bayesian model that explains the observed data while accounting for declarative linguistic rules during inference.,"{'title': '1 Introduction', 'number': '1'}"
-These rules are used as expectation constraints on the posterior distribution over dependency structures.,"{'title': '1 Introduction', 'number': '1'}"
-"This approach is based on the posterior regularization technique (Grac¸a et al., 2009), which we apply to a variational inference algorithm for our parsing model.","{'title': '1 Introduction', 'number': '1'}"
-"Our model can also optionally refine common high-level syntactic categories into per-language categories by inducing a clustering of words using Dirichlet Processes (Ferguson, 1973).","{'title': '1 Introduction', 'number': '1'}"
-"Since the universals guide induction toward linguistically plausible structures, automatic refinement becomes feasible even in the absence of manually annotated syntactic trees.","{'title': '1 Introduction', 'number': '1'}"
-"We test the effectiveness of our grammar induction model on six Indo-European languages from three language groups: English, Danish, Portuguese, Slovene, Spanish, and Swedish.","{'title': '1 Introduction', 'number': '1'}"
-"Though these languages share a high-level Indo-European ancestry, they cover a diverse range of syntactic phenomenon.","{'title': '1 Introduction', 'number': '1'}"
-"Our results demonstrate that universal rules greatly improve the accuracy of dependency parsing across all of these languages, outperforming current stateof-the-art unsupervised grammar induction methods (Headden III et al., 2009; Berg-Kirkpatrick and Klein, 2010).","{'title': '1 Introduction', 'number': '1'}"
-"Learning with Linguistic Constraints Our work is situated within a broader class of unsupervised approaches that employ declarative knowledge to improve learning of linguistic structure (Haghighi and Klein, 2006; Chang et al., 2007; Grac¸a et al., 2007; Cohen and Smith, 2009b; Druck et al., 2009; Liang et al., 2009a).","{'title': '2 Related Work', 'number': '2'}"
-The way we apply constraints is closest to the latter two approaches of posterior regularization and generalized expectation criteria.,"{'title': '2 Related Work', 'number': '2'}"
-"In the posterior regularization framework, constraints are expressed in the form of expectations on posteriors (Grac¸a et al., 2007; Ganchev et al., 2009; Grac¸a et al., 2009; Ganchev et al., 2010).","{'title': '2 Related Work', 'number': '2'}"
-This design enables the model to reflect constraints that are difficult to encode via the model structure or as priors on its parameters.,"{'title': '2 Related Work', 'number': '2'}"
-"In their approach, parameters are estimated using a modified EM algorithm, where the E-step minimizes the KL-divergence between the model posterior and the set of distributions that satisfies the constraints.","{'title': '2 Related Work', 'number': '2'}"
-Our approach also expresses constraints as expectations on the posterior; we utilize the machinery of their framework within a variational inference algorithm with a mean field approximation.,"{'title': '2 Related Work', 'number': '2'}"
-"Generalized expectation criteria, another technique for declaratively specifying expectation constraints, has previously been successfully applied to the task of dependency parsing (Druck et al., 2009).","{'title': '2 Related Work', 'number': '2'}"
-This objective expresses constraints in the form of preferences over model expectations.,"{'title': '2 Related Work', 'number': '2'}"
-The objective is penalized by the square distance between model expectations and the prespecified values of the expectation.,"{'title': '2 Related Work', 'number': '2'}"
-This approach yields significant gains compared to a fully unsupervised counterpart.,"{'title': '2 Related Work', 'number': '2'}"
-The constraints they studied are corpus- and languagespecific.,"{'title': '2 Related Work', 'number': '2'}"
-Our work demonstrates that a small set of language-independent universals can also serve as effective constraints.,"{'title': '2 Related Work', 'number': '2'}"
-"Furthermore, we find that our method outperforms the generalized expectation approach using corpus-specific constraints.","{'title': '2 Related Work', 'number': '2'}"
-Learning to Refine Syntactic Categories Recent research has demonstrated the usefulness of automatically refining the granularity of syntactic categories.,"{'title': '2 Related Work', 'number': '2'}"
-"While most of the existing approaches are implemented in the supervised setting (Finkel et al., 2007; Petrov and Klein, 2007), Liang et al. (2007) propose a non-parametric Bayesian model that learns the granularity of PCFG categories in an unsupervised fashion.","{'title': '2 Related Work', 'number': '2'}"
-"For each non-terminal grammar symbol, the model posits a Hierarchical Dirichlet Process over its refinements (subsymbols) to automatically learn the granularity of syntactic categories.","{'title': '2 Related Work', 'number': '2'}"
-"As with their work, we also use nonparametric priors for category refinement and employ variational methods for inference.","{'title': '2 Related Work', 'number': '2'}"
-"However, our goal is to apply category refinement to dependency parsing, rather than to PCFGs, requiring a substantially different model formulation.","{'title': '2 Related Work', 'number': '2'}"
-"While Liang et al. (2007) demonstrated empirical gains on a synthetic corpus, our experiments focus on unsupervised category refinement on real language data.","{'title': '2 Related Work', 'number': '2'}"
-"Universal Rules in NLP Despite the recent surge of interest in multilingual learning (Kuhn, 2004; Cohen and Smith, 2009a; Snyder et al., 2009; BergKirkpatrick and Klein, 2010), there is surprisingly little computational work on linguistic universals.","{'title': '2 Related Work', 'number': '2'}"
-"On the acquisition side, Daum´e III and Campbell (2007) proposed a computational technique for discovering universal implications in typological features.","{'title': '2 Related Work', 'number': '2'}"
-"More closely related to our work is the position paper by Bender (2009), which advocates the use of manually-encoded cross-lingual generalizations for the development of NLP systems.","{'title': '2 Related Work', 'number': '2'}"
-She argues that a system employing such knowledge could be easily adapted to a particular language by specializing this high level knowledge based on the typological features of the language.,"{'title': '2 Related Work', 'number': '2'}"
-"We also argue that cross-language universals are beneficial for automatic language processing; however, our focus is on learning language-specific adaptations of these rules from data.","{'title': '2 Related Work', 'number': '2'}"
-The central hypothesis of this work is that unsupervised dependency grammar induction can be improved using universal linguistic knowledge.,"{'title': '3 Model', 'number': '3'}"
-Toward this end our approach is comprised of two components: a probabilistic model that explains how sentences are generated from latent dependency structures and a technique for incorporating declarative rules into the inference process.,"{'title': '3 Model', 'number': '3'}"
-We first describe the generative story in this section before turning to how constraints are applied during inference in Section 4.,"{'title': '3 Model', 'number': '3'}"
-"Our model takes as input (i.e., as observed) a set of sentences where each word is annotated with a coarse part-of-speech tag.","{'title': '3 Model', 'number': '3'}"
-"Table 2 provides a detailed technical description of our model’s generative process, and Figure 1 presents a model diagram.","{'title': '3 Model', 'number': '3'}"
-For each observed coarse symbol s: ii.,"{'title': '3 Model', 'number': '3'}"
-For each child symbol s': A.,"{'title': '3 Model', 'number': '3'}"
-"Draw second-level infinite multinomial over subsymbols πs0szc — DP(α,βs0).","{'title': '3 Model', 'number': '3'}"
-For each tree node i generated in context c by parent symbol s' and parent subsymbol z': and parses.,"{'title': '3 Model', 'number': '3'}"
-"In the above GEM, DP, Dir, and Mult refer respectively to the stick breaking distribution, Dirichlet process, Dirichlet distribution, and multinomial distribution.","{'title': '3 Model', 'number': '3'}"
-Generating Symbols and Words We describe how a single node of the tree is generated before discussing how the entire tree structure is formed.,"{'title': '3 Model', 'number': '3'}"
-"Each node of the dependency tree is comprised of three random variables: an observed coarse symbol s, a hidden refined subsymbol z, and an observed word x.","{'title': '3 Model', 'number': '3'}"
-In the following let the parent of the current node have symbol s' and subsymbol z'; the root node is generated from separate root-specific distributions.,"{'title': '3 Model', 'number': '3'}"
-Subsymbol refinement is an optional component of the full model and can be omitted by deterministically equating s and z.,"{'title': '3 Model', 'number': '3'}"
-"As we explain at the end of this section, without this aspect the generative story closely resembles the classic dependency model with valence (DMV) of Klein and Manning (2004).","{'title': '3 Model', 'number': '3'}"
-First we draw symbol s from a finite multinomial distribution with parameters θs0z0c.,"{'title': '3 Model', 'number': '3'}"
-"As the indices indicate, we have one such set of multinomial parameters for every combination of parent symbol s' and subsymbol z' along with a context c. Here the context of the current node can take one of six values corresponding to every combination of direction (left or right) and valence (first, second, or third or higher child) with respect to its parent.","{'title': '3 Model', 'number': '3'}"
-The prior (base distribution) for each θs0z0c is a symmetric Dirichlet with hyperparameter θ0.,"{'title': '3 Model', 'number': '3'}"
-Next we draw the refined syntactic category subsymbol z from an infinite multinomial with parameters πss0z0c.,"{'title': '3 Model', 'number': '3'}"
-"Here the selection of π is indexed by the current node’s coarse symbol s, the symbol s' and subsymbol z' of the parent node, and the context c of the current node.","{'title': '3 Model', 'number': '3'}"
-"For each unique coarse symbol s we tie together the distributions πss0z0c for all possible parent and context combinations (i.e., s', z', and c) using a Hierarchical Dirichlet Process (HDP).","{'title': '3 Model', 'number': '3'}"
-"Specifically, for a single s, each distribution πss0z0c over subsymbols is drawn from a DP with concentration parameter α and base distribution βs over subsymbols.","{'title': '3 Model', 'number': '3'}"
-This base distribution βs is itself drawn from a GEM prior with concentration parameter γ.,"{'title': '3 Model', 'number': '3'}"
-"By formulating the generation of z as an HDP, we can share parameters for a single coarse symbol’s subsymbol distribution while allowing for individual variability based on node parent and context.","{'title': '3 Model', 'number': '3'}"
-"Note that parameters are not shared across different coarse symbols, preserving the distinctions expressed via the coarse tag annotations.","{'title': '3 Model', 'number': '3'}"
-"Finally, we generate the word x from a finite multinomial with parameters φsz, where s and z are the symbol and subsymbol of the current node.","{'title': '3 Model', 'number': '3'}"
-The φ distributions are drawn from a symmetric Dirichlet prior.,"{'title': '3 Model', 'number': '3'}"
-Generating the Tree Structure We now consider how the structure of the tree arises.,"{'title': '3 Model', 'number': '3'}"
-"We follow an approach similar to the widely-referenced DMV model (Klein and Manning, 2004), which forms the basis of the current state-of-the-art unsupervised grammar induction model (Headden III et al., 2009).","{'title': '3 Model', 'number': '3'}"
-After a node is drawn we generate children on each side until we produce a designated STOP symbol.,"{'title': '3 Model', 'number': '3'}"
-We encode more detailed valence information than Klein and Manning (2004) and condition child generation on parent valence.,"{'title': '3 Model', 'number': '3'}"
-"Specifically, after drawing a node we first decide whether to proceed to generate a child or to stop conditioned on the parent symbol and subsymbol and the current context (direction and valence).","{'title': '3 Model', 'number': '3'}"
-If we decide to generate a child we follow the previously described process for constructing a node.,"{'title': '3 Model', 'number': '3'}"
-"We can combine the stopping decision with the generation of the child symbol by including a distinguished STOP symbol as a possible outcome in distribution θ. No-Split Model Variant In the absence of subsymbol refinement (i.e., when subsymbol z is set to be identical to coarse symbol s), our model simplifies in some respects.","{'title': '3 Model', 'number': '3'}"
-"In particular, the HDP generation of z is obviated and word x is drawn from a word distribution 0s indexed solely by coarse symbol s. The resulting simplified model closely resembles DMV (Klein and Manning, 2004), except that it 1) explicitly generate words x rather than only partof-speech tags s, 2) encodes richer context and valence information, and 3) imposes a Dirichlet prior on the symbol distribution B.","{'title': '3 Model', 'number': '3'}"
-We now describe how to augment our generative model of dependency structure with constraints derived from linguistic knowledge.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-Incorporating arbitrary linguistic rules directly in the generative story is challenging as it requires careful tuning of either the model structure or priors for each constraint.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"Instead, following the approach of Grac¸a et al. (2007), we constrain the posterior to satisfy the rules in expectation during inference.","{'title': '4 Inference with Constraints', 'number': '4'}"
-This effectively biases the inference toward linguistically plausible settings.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"In standard variational inference, an intractable true posterior is approximated by a distribution from a tractable set (Bishop, 2006).","{'title': '4 Inference with Constraints', 'number': '4'}"
-This tractable set typically makes stronger independence assumptions between model parameters than the model itself.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"To incorporate the constraints, we further restrict the set to only include distributions that satisfy the specified expectation constraints over hidden variables.","{'title': '4 Inference with Constraints', 'number': '4'}"
-"In general, for some given model, let B denote the entire set of model parameters and z and x denote the hidden structure and observations respectively.","{'title': '4 Inference with Constraints', 'number': '4'}"
-"We are interested in estimating the posterior p(B, z  |x).","{'title': '4 Inference with Constraints', 'number': '4'}"
-"Variational inference transforms this problem into an optimization problem where we try to find a distribution q(B, z) from a restricted set Q that minimizes the KL-divergence between q(B, z) and p(B, z  |x): KL(q(B, z) k p(B, z  |x)) Thus F is a lower bound on likelihood.","{'title': '4 Inference with Constraints', 'number': '4'}"
-"Maximizing this lower bound is equivalent to minimizing the KLdivergence between p(B, z  |x) and q(B, z).","{'title': '4 Inference with Constraints', 'number': '4'}"
-To make this maximization tractable we make a mean field assumption that q belongs to a set Q of distributions that factorize as follows: We further constrain q to be from the subset of Q that satisfies the expectation constraint Eq[f(z)] ≤ b where f is a deterministically computable function of the hidden structures.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"In our model, for example, f counts the dependency edges that are an instance of one of the declaratively specified dependency rules, while b is the proportion of the total dependencies that we expect should fulfill this constraint.2 With the mean field factorization and the expectation constraints in place, solving the maximization of F in (1) separately for each factor yields the following updates: where We can solve (2) by setting q(B) to q'(B) — since q(z) is held fixed while updating q(B), the expectation function of the constraint remains constant during this update.","{'title': '4 Inference with Constraints', 'number': '4'}"
-"As shown by Grac¸a et al. (2007), the update in (3) is a constrained optimization problem and can be solved by performing gradient search on its dual: For a fixed value of A the optimal q(z) ∝ q'(z) exp(−ATf(z)).","{'title': '4 Inference with Constraints', 'number': '4'}"
-By updating q(B) and q(z) as in (2) and (3) we are effectively maximizing the lower bound F. 2Constraints of the form E9[f(z)] > b are easily imposed by negating f(z) and b.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-We now derive the specific variational updates for our dependency induction model.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-First we assume the following mean-field factorization of our variational distribution: The only factor affected by the expectation constraints is q(z).,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"Recall from the previous section that the update for q(z) is performed via gradient search on the dual of a constrained minimization problem of the form: where s0 varies over the set of unique symbols in the observed tags, z0 denotes subsymbols for each symbol, c varies over context values comprising a pair of direction (left or right) and valence (first, second, or third or higher) values, and s corresponds to child symbols.","{'title': '4 Inference with Constraints', 'number': '4'}"
-We restrict q(θs0z0c) and q(φs0z0) to be Dirichlet distributions and q(z) to be multinomial.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"As with prior work (Liang et al., 2009b), we assume a degenerate q(β) - δ0∗(β) for tractability reasons, i.e., all mass is concentrated on some single β∗.","{'title': '4 Inference with Constraints', 'number': '4'}"
-"We also assume that the top level stick-breaking distribution is truncated at T, i.e., q(β) assigns zero probability to integers greater than T. Because of the truncation of β, we can approximate q(πss0z0c) with an asymmetric finite dimensional Dirichlet.","{'title': '4 Inference with Constraints', 'number': '4'}"
-The factors are updated one at a time holding all other factors fixed.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-The variational update for q(π) is given by: where term Eq(z)[Css0z0c(z)] is the expected count w.r.t. q(z) of child symbol s and subsymbol z in context c when generated by parent symbol s0 and subsymbol z0.,"{'title': '4 Inference with Constraints', 'number': '4'}"
-"Similarly, the updates for q(θ) and q(φ) are given by: where Cs0z0c(s) is the count of child symbol s being generated by the parent symbol s0 and subsymbol z0 in context c and Cs0z0x is the count of word x being generated by symbol s0 and subsymbol z0. where N is the total number of sentences, len(n) is the length of sentence n, and index h(nj) refers to the head of the jth node of sentence n. Given this q0(z) a gradient search is performed using (6) to find the optimal λ and thus the primal solution for updating q(z).","{'title': '4 Inference with Constraints', 'number': '4'}"
-"Finally, we update the degenerate factor q(βs) with the projected gradient search algorithm used by Liang et al. (2009b).","{'title': '4 Inference with Constraints', 'number': '4'}"
-"Universal Dependency Rules We compile a set of 13 universal dependency rules consistent with various linguistic accounts (Carnie, 2002; Newmeyer, 2005), shown in Table 1.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-"These rules are defined over coarse part-of-speech tags: Noun, Verb, Adjective, Adverb, Pronoun, Article, Auxiliary, Preposition, Numeral and Conjunction.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-Each rule specifies a part-of-speech for the head and argument but does not provide ordering information.,"{'title': '5 Linguistic Constraints', 'number': '5'}"
-We require that a minimum proportion of the posterior dependencies be instances of these rules in expectation.,"{'title': '5 Linguistic Constraints', 'number': '5'}"
-"In contrast to prior work on rule-driven dependency induction (Druck et al., 2009), where each rule has a separately specified expectation, we only set a single minimum expectation for the proportion of all dependencies that must match one of the rules.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-This setup is more relevant for learning with universals since individual rule frequencies vary greatly between languages.,"{'title': '5 Linguistic Constraints', 'number': '5'}"
-"English-specific Dependency Rules For English, we also consider a small set of hand-crafted dependency rules designed by Michael Collins3 for deterministic parsing, shown in Table 3.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-"Unlike the universals from Table 1, these rules alone are enough to construct a full dependency tree.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-Thus they allow us to judge whether the model is able to improve upon a human-engineered deterministic parser.,"{'title': '5 Linguistic Constraints', 'number': '5'}"
-"Moreover, with this dataset we can assess the additional benefit of using rules tailored to an individual language as opposed to universal rules.","{'title': '5 Linguistic Constraints', 'number': '5'}"
-"Datasets and Evaluation We test the effectiveness of our grammar induction approach on English, Danish, Portuguese, Slovene, Spanish, and Swedish.","{'title': '6 Experimental Setup', 'number': '6'}"
-"For English we use the Penn Treebank (Marcus et al., 1993), transformed from CFG parses into dependencies with the Collins head finding rules (Collins, 1999); for the other languages we use data from the 2006 CoNLL-X Shared Task (Buchholz and Marsi, 2006).","{'title': '6 Experimental Setup', 'number': '6'}"
-Each dataset provides manually annotated part-of-speech tags that are used for both training and testing.,"{'title': '6 Experimental Setup', 'number': '6'}"
-"For comparison purposes with previous work, we limit the cross-lingual experiments to sentences of length 10 or less (not counting punctuation).","{'title': '6 Experimental Setup', 'number': '6'}"
-"For English, we also explore sentences of length up to 20.","{'title': '6 Experimental Setup', 'number': '6'}"
-The final output metric is directed dependency accuracy.,"{'title': '6 Experimental Setup', 'number': '6'}"
-This is computed based on the Viterbi parses produced using the final unnormalized variational distribution q(z) over dependency structures.,"{'title': '6 Experimental Setup', 'number': '6'}"
-"Hyperparameters and Training Regimes Unless otherwise stated, in experiments with rule-based constraints the expected proportion of dependencies that must satisfy those constraints is set to 0.8.","{'title': '6 Experimental Setup', 'number': '6'}"
-This threshold value was chosen based on minimal tuning on a single language and ruleset (English with universal rules) and carried over to each other experimental condition.,"{'title': '6 Experimental Setup', 'number': '6'}"
-A more detailed discussion of the threshold’s empirical impact is presented in Section 7.1.,"{'title': '6 Experimental Setup', 'number': '6'}"
-Variational approximations to the HDP are truncated at 10.,"{'title': '6 Experimental Setup', 'number': '6'}"
-All hyperparameter values are fixed to 1 except α which is fixed to 10.,"{'title': '6 Experimental Setup', 'number': '6'}"
-We also conduct a set of No-Split experiments to evaluate the importance of syntactic refinement; in these experiments each coarse symbol corresponds to only one refined symbol.,"{'title': '6 Experimental Setup', 'number': '6'}"
-This is easily effected during inference by setting the HDP variational approximation truncation level to one.,"{'title': '6 Experimental Setup', 'number': '6'}"
-For each experiment we run 50 iterations of variational updates; for each iteration we perform five steps of gradient search to compute the update for the variational distribution q(z) over dependency structures.,"{'title': '6 Experimental Setup', 'number': '6'}"
-"In the following section we present our primary cross-lingual results using universal rules (Section 7.1) before performing a more in-depth analysis of model properties such as sensitivity to ruleset selection and inference stability (Section 7.2). with universal dependency rules (No-Split and HDPDEP), compared to DMV (Klein and Manning, 2004) and PGI (Berg-Kirkpatrick and Klein, 2010).","{'title': '7 Results', 'number': '7'}"
-The DMV results are taken from Berg-Kirkpatrick and Klein (2010).,"{'title': '7 Results', 'number': '7'}"
-Bold numbers indicate the best result for each language.,"{'title': '7 Results', 'number': '7'}"
-"For the full model, the standard deviation in performance over five runs is indicated in parentheses.","{'title': '7 Results', 'number': '7'}"
-Table 4 shows the performance of both our full model (HDP-DEP) and its No-Split version using universal dependency rules across six languages.,"{'title': '7 Results', 'number': '7'}"
-"We also provide the performance of two baselines — the dependency model with valence (DMV) (Klein and Manning, 2004) and the phylogenetic grammar induction (PGI) model (Berg-Kirkpatrick and Klein, 2010).","{'title': '7 Results', 'number': '7'}"
-HDP-DEP outperforms both DMV and PGI across all six languages.,"{'title': '7 Results', 'number': '7'}"
-Against DMV we achieve an average absolute improvement of 24.1%.,"{'title': '7 Results', 'number': '7'}"
-This improvement is expected given that DMV does not have access to the additional information provided through the universal rules.,"{'title': '7 Results', 'number': '7'}"
-"PGI is more relevant as a point of comparison, since it is able to leverage multilingual data to learn information similar to what we have declaratively specified using universal rules.","{'title': '7 Results', 'number': '7'}"
-"Specifically, PGI reduces induction ambiguity by connecting language-specific parameters via phylogenetic priors.","{'title': '7 Results', 'number': '7'}"
-"We find, however, that we outperform PGI by an average margin of 7.2%, demonstrating the benefits of explicit rule specification.","{'title': '7 Results', 'number': '7'}"
-"An additional point of comparison is the lexicalized unsupervised parser of Headden III et al. (2009), which yields the current state-of-the-art unsupervised accuracy on English at 68.8%.","{'title': '7 Results', 'number': '7'}"
-"Our method also outperforms this approach, without employing lexicalization and sophisticated smoothing as they do.","{'title': '7 Results', 'number': '7'}"
-This result suggests that combining the complementary strengths of their approach and ours dency rules on English and Spanish.,"{'title': '7 Results', 'number': '7'}"
-"For each rule, we evaluate the model using the ruleset excluding that rule, and list the most significant rules for each language.","{'title': '7 Results', 'number': '7'}"
-The second last column is the absolute loss in performance compared to the setting where all rules are available.,"{'title': '7 Results', 'number': '7'}"
-The last column shows the percentage of the gold dependencies that satisfy the rule. can yield further performance improvements.,"{'title': '7 Results', 'number': '7'}"
-Table 4 also shows the No-Split results where syntactic categories are not refined.,"{'title': '7 Results', 'number': '7'}"
-"We find that such refinement usually proves to be beneficial, yielding an average performance gain of 3.7%.","{'title': '7 Results', 'number': '7'}"
-"However, we note that the impact of incorporating splitting varies significantly across languages.","{'title': '7 Results', 'number': '7'}"
-Further understanding of this connection is an area of future research.,"{'title': '7 Results', 'number': '7'}"
-"Finally, we note that our model exhibits low variance for most languages.","{'title': '7 Results', 'number': '7'}"
-This result attests to how the expectation constraints consistently guide inference toward high-accuracy areas of the search space.,"{'title': '7 Results', 'number': '7'}"
-Ablation Analysis Our next experiment seeks to understand the relative importance of the various universal rules from Table 1.,"{'title': '7 Results', 'number': '7'}"
-We study how accuracy is affected when each of the rules is removed one at a time for English and Spanish.,"{'title': '7 Results', 'number': '7'}"
-Table 5 lists the rules with the greatest impact on performance when removed.,"{'title': '7 Results', 'number': '7'}"
-We note the high overlap between the most significant rules for English and Spanish.,"{'title': '7 Results', 'number': '7'}"
-We also observe that the relationship between a rule’s frequency and its importance for high accuracy is not straightforward.,"{'title': '7 Results', 'number': '7'}"
-"For example, the “Preposition → Noun” rule, whose removal degrades accuracy the most for both English and Spanish, is not the most frequent rule in either language.","{'title': '7 Results', 'number': '7'}"
-"This result suggests that some rules are harder to learn than others regardless of their frequency, so their presence in the specified ruleset yields stronger performance gains.","{'title': '7 Results', 'number': '7'}"
-Varying the Constraint Threshold In our main experiments we require that at least 80% of the expected dependencies satisfy the rule constraints.,"{'title': '7 Results', 'number': '7'}"
-We arrived at this threshold by tuning on the basis of English only.,"{'title': '7 Results', 'number': '7'}"
-"As shown in Figure 2, for English a broad band of threshold values from 75% to 90% yields results within 2.5% of each other, with a slight peak at 80%.","{'title': '7 Results', 'number': '7'}"
-"To further study the sensitivity of our method to how the threshold is set, we perform post hoc experiments with other threshold values on each of the other languages.","{'title': '7 Results', 'number': '7'}"
-"As Figure 2 also shows, on average a value of 80% is optimal across languages, though again accuracy is stable within 2.5% between thresholds of 75% to 90%.","{'title': '7 Results', 'number': '7'}"
-These results demonstrate that a single threshold is broadly applicable across languages.,"{'title': '7 Results', 'number': '7'}"
-"Interestingly, setting the threshold value independently for each language to its “true” proportion based on the gold dependencies (denoted as the “Gold” case in Figure 2) does not achieve optimal Table 6: Directed accuracy of our model (HDP-DEP) on sentences of length 10 or less and 20 or less from WSJ with different rulesets and with no rules, along with various baselines from the literature.","{'title': '7 Results', 'number': '7'}"
-Entries in this table are numbered for ease of reference in the text. performance.,"{'title': '7 Results', 'number': '7'}"
-"Thus, knowledge of the true languagespecific rule proportions is not necessary for high accuracy.","{'title': '7 Results', 'number': '7'}"
-We perform a set of additional experiments on English to gain further insight into HDP-DEP’s behavior.,"{'title': '7 Results', 'number': '7'}"
-Our choice of language is motivated by the fact that a wide range of prior parsing algorithms were developed for and tested exclusively on English.,"{'title': '7 Results', 'number': '7'}"
-"The experiments below demonstrate that 1) universal rules alone are powerful, but languageand dataset-tailored rules can further improve performance; 2) our model learns jointly from the rules and data, outperforming a rules-only deterministic parser; 3) the way we incorporate posterior constraints outperforms the generalized expectation constraint framework; and 4) our model exhibits low variance when seeded with different initializations.","{'title': '7 Results', 'number': '7'}"
-These results are summarized in Table 6 and discussed in detail below; line numbers refer to entries in Table 6.,"{'title': '7 Results', 'number': '7'}"
-Each run of HDP-DEP below is with syntactic refinement enabled.,"{'title': '7 Results', 'number': '7'}"
-Impact of Rules Selection We compare the performance of HDP-DEP using the universal rules versus a set of rules designed for deterministically parsing the Penn Treebank (see Section 5 for details).,"{'title': '7 Results', 'number': '7'}"
-"As lines 1 and 5 of Table 6 show, language-specific rules yield better performance.","{'title': '7 Results', 'number': '7'}"
-"For sentences of length 10 or less, the difference between the two rulesets is a relatively small 1.9%; for longer sentences, however, the difference is a substantially larger 15.7%.","{'title': '7 Results', 'number': '7'}"
-This is likely because longer sentences tend to be more complex and thus exhibit more language-idiosyncratic dependencies.,"{'title': '7 Results', 'number': '7'}"
-Such dependencies can be better captured by the refined language-specific rules.,"{'title': '7 Results', 'number': '7'}"
-"We also test model performance when no linguistic rules are available, i.e., performing unconstrained variational inference.","{'title': '7 Results', 'number': '7'}"
-"The model performs substantially worse (line 2), confirming that syntactic category refinement in a fully unsupervised setup is challenging.","{'title': '7 Results', 'number': '7'}"
-"Learning Beyond Provided Rules Since HDPDEP is provided with linguistic rules, a legitimate question is whether it improves upon what the rules encode, especially when the rules are complete and language-specific.","{'title': '7 Results', 'number': '7'}"
-We can answer this question by comparing the performance of our model seeded with the English-specific rules against a deterministic parser that implements the same rules.,"{'title': '7 Results', 'number': '7'}"
-Lines 4 and 5 of Table 6 demonstrate that the model outperforms a rules-only deterministic parser by 3.8% for sentences of length 10 or less and by 3.5% for sentences of length 20 or less.,"{'title': '7 Results', 'number': '7'}"
-"Comparison with Alternative Semi-supervised Parser The dependency parser based on the generalized expectation criteria (Druck et al., 2009) is the closest to our reported work in terms of technique.","{'title': '7 Results', 'number': '7'}"
-"To compare the two, we run HDP-DEP using the 20 rules given by Druck et al. (2009).","{'title': '7 Results', 'number': '7'}"
-Our model achieves an accuracy of 64.9% (line 7) compared to 61.3% (line 6) reported in their work.,"{'title': '7 Results', 'number': '7'}"
-"Note that we do not rely on rule-specific expectation information as they do, instead requiring only a single expectation constraint parameter.4 Model Stability It is commonly acknowledged in the literature that unsupervised grammar induction methods exhibit sensitivity to initialization.","{'title': '7 Results', 'number': '7'}"
-"As in the previous section, we find that the presence of linguistic rules greatly reduces this sensitivity: for HDP-DEP, the standard deviation over five randomly initialized runs with the English-specific rules is 1.5%, compared to 4.5% for the parser developed by Headden III et al. (2009) and 8.0% for DMV (Klein and Manning, 2004).","{'title': '7 Results', 'number': '7'}"
-In this paper we demonstrated that syntactic universals encoded as declarative constraints improve grammar induction.,"{'title': '8 Conclusions', 'number': '8'}"
-We formulated a generative model for dependency structure that models syntactic category refinement and biases inference to cohere with the provided constraints.,"{'title': '8 Conclusions', 'number': '8'}"
-"Our experiments showed that encoding a compact, well-accepted set of language-independent constraints significantly improves accuracy on multiple languages compared to the current state-of-the-art in unsupervised parsing.","{'title': '8 Conclusions', 'number': '8'}"
-"While our present work has yielded substantial gains over previous unsupervised methods, a large gap still remains between our method and fully supervised techniques.","{'title': '8 Conclusions', 'number': '8'}"
-"In future work we intend to study ways to bridge this gap by 1) incorporating more sophisticated linguistically-driven grammar rulesets to guide induction, 2) lexicalizing the model, and 3) combining our constraint-based approach with richer unsupervised models (e.g., Headden III et al. (2009)) to benefit from their complementary strengths.","{'title': '8 Conclusions', 'number': '8'}"
-"The authors acknowledge the support of the NSF (CAREER grant IIS-0448168, grant IIS-0904684, and a Graduate Research Fellowship).","{'title': 'Acknowledgments', 'number': '9'}"
-We are especially grateful to Michael Collins for inspiring us toward this line of inquiry and providing deterministic rules for English parsing.,"{'title': 'Acknowledgments', 'number': '9'}"
-"Thanks to Taylor Berg-Kirkpatrick, Sabine Iatridou, Ramesh Sridharan, and members of the MIT NLP group for their suggestions and comments.","{'title': 'Acknowledgments', 'number': '9'}"
-"Any opinions, findings, conclusions, or recommendations expressed in this paper are those of the authors, and do not necessarily reflect the views of the funding organizations.","{'title': 'Acknowledgments', 'number': '9'}"
+We present an approach to grammar induction that utilizes syntactic universals to improve dependency parsing across a range of languages.,Introduction
+Our method uses a single set of manually-specified language-independent rules that identify syntactic dependencies between pairs of syntactic categories that commonly occur across languages.,Introduction
+"During inference of the probabilistic model, we use posterior expectation constraints to require that a minimum proportion of the dependencies we infer be instances of these rules.",Introduction
+We also automatically refine the syntactic categories given in our coarsely tagged input.,Introduction
+Across six languages our approach outperforms state-of-theart unsupervised methods by a significant mar,Introduction
+"Despite surface differences, human languages exhibit striking similarities in many fundamental aspects of syntactic structure.",Experiment/Discussion
+"These structural correspondences, referred to as syntactic universals, have been extensively studied in linguistics (Baker, 2001; Carnie, 2002; White, 2003; Newmeyer, 2005) and underlie many approaches in multilingual parsing.",Experiment/Discussion
+"In fact, much recent work has demonstrated that learning cross-lingual correspondences from corpus data greatly reduces the ambiguity inherent in syntactic analysis (Kuhn, 2004; Burkett and Klein, 2008; Cohen and Smith, 2009a; Snyder et al., 2009; Berg-Kirkpatrick and Klein, 2010).",Experiment/Discussion
+"In this paper, we present an alternative grammar induction approach that exploits these structural correspondences by declaratively encoding a small set of universal dependency rules.",Experiment/Discussion
+"As input to the model, we assume a corpus annotated with coarse syntactic categories (i.e., high-level part-ofspeech tags) and a set of universal rules defined over these categories, such as those in Table 1.",Experiment/Discussion
+These rules incorporate the definitional properties of syntactic categories in terms of their interdependencies and thus are universal across languages.,Experiment/Discussion
+"They can potentially help disambiguate structural ambiguities that are difficult to learn from data alone — for example, our rules prefer analyses in which verbs are dependents of auxiliaries, even though analyzing auxiliaries as dependents of verbs is also consistent with the data.",Experiment/Discussion
+Leveraging these universal rules has the potential to improve parsing performance for a large number of human languages; this is particularly relevant to the processing of low-resource languages.,Experiment/Discussion
+"Furthermore, these universal rules are compact and well-understood, making them easy to manually construct.",Experiment/Discussion
+"In addition to these universal dependencies, each specific language typically possesses its own idiosyncratic set of dependencies.",Experiment/Discussion
+"We address this challenge by requiring the universal constraints to only hold in expectation rather than absolutely, i.e., we permit a certain number of violations of the constraints.",Experiment/Discussion
+We formulate a generative Bayesian model that explains the observed data while accounting for declarative linguistic rules during inference.,Experiment/Discussion
+These rules are used as expectation constraints on the posterior distribution over dependency structures.,Experiment/Discussion
+"This approach is based on the posterior regularization technique (Grac¸a et al., 2009), which we apply to a variational inference algorithm for our parsing model.",Experiment/Discussion
+"Our model can also optionally refine common high-level syntactic categories into per-language categories by inducing a clustering of words using Dirichlet Processes (Ferguson, 1973).",Experiment/Discussion
+"Since the universals guide induction toward linguistically plausible structures, automatic refinement becomes feasible even in the absence of manually annotated syntactic trees.",Experiment/Discussion
+"We test the effectiveness of our grammar induction model on six Indo-European languages from three language groups: English, Danish, Portuguese, Slovene, Spanish, and Swedish.",Experiment/Discussion
+"Though these languages share a high-level Indo-European ancestry, they cover a diverse range of syntactic phenomenon.",Experiment/Discussion
+"Our results demonstrate that universal rules greatly improve the accuracy of dependency parsing across all of these languages, outperforming current stateof-the-art unsupervised grammar induction methods (Headden III et al., 2009; Berg-Kirkpatrick and Klein, 2010).",Experiment/Discussion
+"Learning with Linguistic Constraints Our work is situated within a broader class of unsupervised approaches that employ declarative knowledge to improve learning of linguistic structure (Haghighi and Klein, 2006; Chang et al., 2007; Grac¸a et al., 2007; Cohen and Smith, 2009b; Druck et al., 2009; Liang et al., 2009a).",Experiment/Discussion
+The way we apply constraints is closest to the latter two approaches of posterior regularization and generalized expectation criteria.,Experiment/Discussion
+"In the posterior regularization framework, constraints are expressed in the form of expectations on posteriors (Grac¸a et al., 2007; Ganchev et al., 2009; Grac¸a et al., 2009; Ganchev et al., 2010).",Experiment/Discussion
+This design enables the model to reflect constraints that are difficult to encode via the model structure or as priors on its parameters.,Experiment/Discussion
+"In their approach, parameters are estimated using a modified EM algorithm, where the E-step minimizes the KL-divergence between the model posterior and the set of distributions that satisfies the constraints.",Experiment/Discussion
+Our approach also expresses constraints as expectations on the posterior; we utilize the machinery of their framework within a variational inference algorithm with a mean field approximation.,Experiment/Discussion
+"Generalized expectation criteria, another technique for declaratively specifying expectation constraints, has previously been successfully applied to the task of dependency parsing (Druck et al., 2009).",Experiment/Discussion
+This objective expresses constraints in the form of preferences over model expectations.,Experiment/Discussion
+The objective is penalized by the square distance between model expectations and the prespecified values of the expectation.,Experiment/Discussion
+This approach yields significant gains compared to a fully unsupervised counterpart.,Experiment/Discussion
+The constraints they studied are corpus- and languagespecific.,Experiment/Discussion
+Our work demonstrates that a small set of language-independent universals can also serve as effective constraints.,Experiment/Discussion
+"Furthermore, we find that our method outperforms the generalized expectation approach using corpus-specific constraints.",Experiment/Discussion
+Learning to Refine Syntactic Categories Recent research has demonstrated the usefulness of automatically refining the granularity of syntactic categories.,Experiment/Discussion
+"While most of the existing approaches are implemented in the supervised setting (Finkel et al., 2007; Petrov and Klein, 2007), Liang et al. (2007) propose a non-parametric Bayesian model that learns the granularity of PCFG categories in an unsupervised fashion.",Experiment/Discussion
+"For each non-terminal grammar symbol, the model posits a Hierarchical Dirichlet Process over its refinements (subsymbols) to automatically learn the granularity of syntactic categories.",Experiment/Discussion
+"As with their work, we also use nonparametric priors for category refinement and employ variational methods for inference.",Experiment/Discussion
+"However, our goal is to apply category refinement to dependency parsing, rather than to PCFGs, requiring a substantially different model formulation.",Experiment/Discussion
+"While Liang et al. (2007) demonstrated empirical gains on a synthetic corpus, our experiments focus on unsupervised category refinement on real language data.",Experiment/Discussion
+"Universal Rules in NLP Despite the recent surge of interest in multilingual learning (Kuhn, 2004; Cohen and Smith, 2009a; Snyder et al., 2009; BergKirkpatrick and Klein, 2010), there is surprisingly little computational work on linguistic universals.",Experiment/Discussion
+"On the acquisition side, Daum´e III and Campbell (2007) proposed a computational technique for discovering universal implications in typological features.",Experiment/Discussion
+"More closely related to our work is the position paper by Bender (2009), which advocates the use of manually-encoded cross-lingual generalizations for the development of NLP systems.",Experiment/Discussion
+She argues that a system employing such knowledge could be easily adapted to a particular language by specializing this high level knowledge based on the typological features of the language.,Experiment/Discussion
+"We also argue that cross-language universals are beneficial for automatic language processing; however, our focus is on learning language-specific adaptations of these rules from data.",Experiment/Discussion
+The central hypothesis of this work is that unsupervised dependency grammar induction can be improved using universal linguistic knowledge.,Experiment/Discussion
+Toward this end our approach is comprised of two components: a probabilistic model that explains how sentences are generated from latent dependency structures and a technique for incorporating declarative rules into the inference process.,Experiment/Discussion
+We first describe the generative story in this section before turning to how constraints are applied during inference in Section 4.,Experiment/Discussion
+"Our model takes as input (i.e., as observed) a set of sentences where each word is annotated with a coarse part-of-speech tag.",Experiment/Discussion
+"Table 2 provides a detailed technical description of our model’s generative process, and Figure 1 presents a model diagram.",Experiment/Discussion
+For each observed coarse symbol s: ii.,Experiment/Discussion
+For each child symbol s': A.,Experiment/Discussion
+"Draw second-level infinite multinomial over subsymbols πs0szc — DP(α,βs0).",Experiment/Discussion
+For each tree node i generated in context c by parent symbol s' and parent subsymbol z': and parses.,Experiment/Discussion
+"In the above GEM, DP, Dir, and Mult refer respectively to the stick breaking distribution, Dirichlet process, Dirichlet distribution, and multinomial distribution.",Experiment/Discussion
+Generating Symbols and Words We describe how a single node of the tree is generated before discussing how the entire tree structure is formed.,Experiment/Discussion
+"Each node of the dependency tree is comprised of three random variables: an observed coarse symbol s, a hidden refined subsymbol z, and an observed word x.",Experiment/Discussion
+In the following let the parent of the current node have symbol s' and subsymbol z'; the root node is generated from separate root-specific distributions.,Experiment/Discussion
+Subsymbol refinement is an optional component of the full model and can be omitted by deterministically equating s and z.,Experiment/Discussion
+"As we explain at the end of this section, without this aspect the generative story closely resembles the classic dependency model with valence (DMV) of Klein and Manning (2004).",Experiment/Discussion
+First we draw symbol s from a finite multinomial distribution with parameters θs0z0c.,Experiment/Discussion
+"As the indices indicate, we have one such set of multinomial parameters for every combination of parent symbol s' and subsymbol z' along with a context c. Here the context of the current node can take one of six values corresponding to every combination of direction (left or right) and valence (first, second, or third or higher child) with respect to its parent.",Experiment/Discussion
+The prior (base distribution) for each θs0z0c is a symmetric Dirichlet with hyperparameter θ0.,Experiment/Discussion
+Next we draw the refined syntactic category subsymbol z from an infinite multinomial with parameters πss0z0c.,Experiment/Discussion
+"Here the selection of π is indexed by the current node’s coarse symbol s, the symbol s' and subsymbol z' of the parent node, and the context c of the current node.",Experiment/Discussion
+"For each unique coarse symbol s we tie together the distributions πss0z0c for all possible parent and context combinations (i.e., s', z', and c) using a Hierarchical Dirichlet Process (HDP).",Experiment/Discussion
+"Specifically, for a single s, each distribution πss0z0c over subsymbols is drawn from a DP with concentration parameter α and base distribution βs over subsymbols.",Experiment/Discussion
+This base distribution βs is itself drawn from a GEM prior with concentration parameter γ.,Experiment/Discussion
+"By formulating the generation of z as an HDP, we can share parameters for a single coarse symbol’s subsymbol distribution while allowing for individual variability based on node parent and context.",Experiment/Discussion
+"Note that parameters are not shared across different coarse symbols, preserving the distinctions expressed via the coarse tag annotations.",Experiment/Discussion
+"Finally, we generate the word x from a finite multinomial with parameters φsz, where s and z are the symbol and subsymbol of the current node.",Experiment/Discussion
+The φ distributions are drawn from a symmetric Dirichlet prior.,Experiment/Discussion
+Generating the Tree Structure We now consider how the structure of the tree arises.,Experiment/Discussion
+"We follow an approach similar to the widely-referenced DMV model (Klein and Manning, 2004), which forms the basis of the current state-of-the-art unsupervised grammar induction model (Headden III et al., 2009).",Experiment/Discussion
+After a node is drawn we generate children on each side until we produce a designated STOP symbol.,Experiment/Discussion
+We encode more detailed valence information than Klein and Manning (2004) and condition child generation on parent valence.,Experiment/Discussion
+"Specifically, after drawing a node we first decide whether to proceed to generate a child or to stop conditioned on the parent symbol and subsymbol and the current context (direction and valence).",Experiment/Discussion
+If we decide to generate a child we follow the previously described process for constructing a node.,Experiment/Discussion
+"We can combine the stopping decision with the generation of the child symbol by including a distinguished STOP symbol as a possible outcome in distribution θ. No-Split Model Variant In the absence of subsymbol refinement (i.e., when subsymbol z is set to be identical to coarse symbol s), our model simplifies in some respects.",Experiment/Discussion
+"In particular, the HDP generation of z is obviated and word x is drawn from a word distribution 0s indexed solely by coarse symbol s. The resulting simplified model closely resembles DMV (Klein and Manning, 2004), except that it 1) explicitly generate words x rather than only partof-speech tags s, 2) encodes richer context and valence information, and 3) imposes a Dirichlet prior on the symbol distribution B.",Experiment/Discussion
+We now describe how to augment our generative model of dependency structure with constraints derived from linguistic knowledge.,Experiment/Discussion
+Incorporating arbitrary linguistic rules directly in the generative story is challenging as it requires careful tuning of either the model structure or priors for each constraint.,Experiment/Discussion
+"Instead, following the approach of Grac¸a et al. (2007), we constrain the posterior to satisfy the rules in expectation during inference.",Experiment/Discussion
+This effectively biases the inference toward linguistically plausible settings.,Experiment/Discussion
+"In standard variational inference, an intractable true posterior is approximated by a distribution from a tractable set (Bishop, 2006).",Experiment/Discussion
+This tractable set typically makes stronger independence assumptions between model parameters than the model itself.,Experiment/Discussion
+"To incorporate the constraints, we further restrict the set to only include distributions that satisfy the specified expectation constraints over hidden variables.",Experiment/Discussion
+"In general, for some given model, let B denote the entire set of model parameters and z and x denote the hidden structure and observations respectively.",Experiment/Discussion
+"We are interested in estimating the posterior p(B, z  |x).",Experiment/Discussion
+"Variational inference transforms this problem into an optimization problem where we try to find a distribution q(B, z) from a restricted set Q that minimizes the KL-divergence between q(B, z) and p(B, z  |x): KL(q(B, z) k p(B, z  |x)) Thus F is a lower bound on likelihood.",Experiment/Discussion
+"Maximizing this lower bound is equivalent to minimizing the KLdivergence between p(B, z  |x) and q(B, z).",Experiment/Discussion
+To make this maximization tractable we make a mean field assumption that q belongs to a set Q of distributions that factorize as follows: We further constrain q to be from the subset of Q that satisfies the expectation constraint Eq[f(z)] ≤ b where f is a deterministically computable function of the hidden structures.,Experiment/Discussion
+"In our model, for example, f counts the dependency edges that are an instance of one of the declaratively specified dependency rules, while b is the proportion of the total dependencies that we expect should fulfill this constraint.2 With the mean field factorization and the expectation constraints in place, solving the maximization of F in (1) separately for each factor yields the following updates: where We can solve (2) by setting q(B) to q'(B) — since q(z) is held fixed while updating q(B), the expectation function of the constraint remains constant during this update.",Experiment/Discussion
+"As shown by Grac¸a et al. (2007), the update in (3) is a constrained optimization problem and can be solved by performing gradient search on its dual: For a fixed value of A the optimal q(z) ∝ q'(z) exp(−ATf(z)).",Experiment/Discussion
+By updating q(B) and q(z) as in (2) and (3) we are effectively maximizing the lower bound F. 2Constraints of the form E9[f(z)] > b are easily imposed by negating f(z) and b.,Experiment/Discussion
+We now derive the specific variational updates for our dependency induction model.,Experiment/Discussion
+First we assume the following mean-field factorization of our variational distribution: The only factor affected by the expectation constraints is q(z).,Experiment/Discussion
+"Recall from the previous section that the update for q(z) is performed via gradient search on the dual of a constrained minimization problem of the form: where s0 varies over the set of unique symbols in the observed tags, z0 denotes subsymbols for each symbol, c varies over context values comprising a pair of direction (left or right) and valence (first, second, or third or higher) values, and s corresponds to child symbols.",Experiment/Discussion
+We restrict q(θs0z0c) and q(φs0z0) to be Dirichlet distributions and q(z) to be multinomial.,Experiment/Discussion
+"As with prior work (Liang et al., 2009b), we assume a degenerate q(β) - δ0∗(β) for tractability reasons, i.e., all mass is concentrated on some single β∗.",Experiment/Discussion
+"We also assume that the top level stick-breaking distribution is truncated at T, i.e., q(β) assigns zero probability to integers greater than T. Because of the truncation of β, we can approximate q(πss0z0c) with an asymmetric finite dimensional Dirichlet.",Experiment/Discussion
+The factors are updated one at a time holding all other factors fixed.,Experiment/Discussion
+The variational update for q(π) is given by: where term Eq(z)[Css0z0c(z)] is the expected count w.r.t. q(z) of child symbol s and subsymbol z in context c when generated by parent symbol s0 and subsymbol z0.,Experiment/Discussion
+"Similarly, the updates for q(θ) and q(φ) are given by: where Cs0z0c(s) is the count of child symbol s being generated by the parent symbol s0 and subsymbol z0 in context c and Cs0z0x is the count of word x being generated by symbol s0 and subsymbol z0. where N is the total number of sentences, len(n) is the length of sentence n, and index h(nj) refers to the head of the jth node of sentence n. Given this q0(z) a gradient search is performed using (6) to find the optimal λ and thus the primal solution for updating q(z).",Experiment/Discussion
+"Finally, we update the degenerate factor q(βs) with the projected gradient search algorithm used by Liang et al. (2009b).",Experiment/Discussion
+"Universal Dependency Rules We compile a set of 13 universal dependency rules consistent with various linguistic accounts (Carnie, 2002; Newmeyer, 2005), shown in Table 1.",Experiment/Discussion
+"These rules are defined over coarse part-of-speech tags: Noun, Verb, Adjective, Adverb, Pronoun, Article, Auxiliary, Preposition, Numeral and Conjunction.",Experiment/Discussion
+Each rule specifies a part-of-speech for the head and argument but does not provide ordering information.,Experiment/Discussion
+We require that a minimum proportion of the posterior dependencies be instances of these rules in expectation.,Experiment/Discussion
+"In contrast to prior work on rule-driven dependency induction (Druck et al., 2009), where each rule has a separately specified expectation, we only set a single minimum expectation for the proportion of all dependencies that must match one of the rules.",Experiment/Discussion
+This setup is more relevant for learning with universals since individual rule frequencies vary greatly between languages.,Experiment/Discussion
+"English-specific Dependency Rules For English, we also consider a small set of hand-crafted dependency rules designed by Michael Collins3 for deterministic parsing, shown in Table 3.",Experiment/Discussion
+"Unlike the universals from Table 1, these rules alone are enough to construct a full dependency tree.",Experiment/Discussion
+Thus they allow us to judge whether the model is able to improve upon a human-engineered deterministic parser.,Experiment/Discussion
+"Moreover, with this dataset we can assess the additional benefit of using rules tailored to an individual language as opposed to universal rules.",Experiment/Discussion
+"Datasets and Evaluation We test the effectiveness of our grammar induction approach on English, Danish, Portuguese, Slovene, Spanish, and Swedish.",Experiment/Discussion
+"For English we use the Penn Treebank (Marcus et al., 1993), transformed from CFG parses into dependencies with the Collins head finding rules (Collins, 1999); for the other languages we use data from the 2006 CoNLL-X Shared Task (Buchholz and Marsi, 2006).",Experiment/Discussion
+Each dataset provides manually annotated part-of-speech tags that are used for both training and testing.,Experiment/Discussion
+"For comparison purposes with previous work, we limit the cross-lingual experiments to sentences of length 10 or less (not counting punctuation).",Experiment/Discussion
+"For English, we also explore sentences of length up to 20.",Experiment/Discussion
+The final output metric is directed dependency accuracy.,Experiment/Discussion
+This is computed based on the Viterbi parses produced using the final unnormalized variational distribution q(z) over dependency structures.,Experiment/Discussion
+"Hyperparameters and Training Regimes Unless otherwise stated, in experiments with rule-based constraints the expected proportion of dependencies that must satisfy those constraints is set to 0.8.",Experiment/Discussion
+This threshold value was chosen based on minimal tuning on a single language and ruleset (English with universal rules) and carried over to each other experimental condition.,Experiment/Discussion
+A more detailed discussion of the threshold’s empirical impact is presented in Section 7.1.,Experiment/Discussion
+Variational approximations to the HDP are truncated at 10.,Experiment/Discussion
+All hyperparameter values are fixed to 1 except α which is fixed to 10.,Experiment/Discussion
+We also conduct a set of No-Split experiments to evaluate the importance of syntactic refinement; in these experiments each coarse symbol corresponds to only one refined symbol.,Experiment/Discussion
+This is easily effected during inference by setting the HDP variational approximation truncation level to one.,Experiment/Discussion
+For each experiment we run 50 iterations of variational updates; for each iteration we perform five steps of gradient search to compute the update for the variational distribution q(z) over dependency structures.,Experiment/Discussion
+"In the following section we present our primary cross-lingual results using universal rules (Section 7.1) before performing a more in-depth analysis of model properties such as sensitivity to ruleset selection and inference stability (Section 7.2). with universal dependency rules (No-Split and HDPDEP), compared to DMV (Klein and Manning, 2004) and PGI (Berg-Kirkpatrick and Klein, 2010).",Experiment/Discussion
+The DMV results are taken from Berg-Kirkpatrick and Klein (2010).,Experiment/Discussion
+Bold numbers indicate the best result for each language.,Experiment/Discussion
+"For the full model, the standard deviation in performance over five runs is indicated in parentheses.",Experiment/Discussion
+Table 4 shows the performance of both our full model (HDP-DEP) and its No-Split version using universal dependency rules across six languages.,Experiment/Discussion
+"We also provide the performance of two baselines — the dependency model with valence (DMV) (Klein and Manning, 2004) and the phylogenetic grammar induction (PGI) model (Berg-Kirkpatrick and Klein, 2010).",Experiment/Discussion
+HDP-DEP outperforms both DMV and PGI across all six languages.,Experiment/Discussion
+Against DMV we achieve an average absolute improvement of 24.1%.,Experiment/Discussion
+This improvement is expected given that DMV does not have access to the additional information provided through the universal rules.,Experiment/Discussion
+"PGI is more relevant as a point of comparison, since it is able to leverage multilingual data to learn information similar to what we have declaratively specified using universal rules.",Experiment/Discussion
+"Specifically, PGI reduces induction ambiguity by connecting language-specific parameters via phylogenetic priors.",Experiment/Discussion
+"We find, however, that we outperform PGI by an average margin of 7.2%, demonstrating the benefits of explicit rule specification.",Experiment/Discussion
+"An additional point of comparison is the lexicalized unsupervised parser of Headden III et al. (2009), which yields the current state-of-the-art unsupervised accuracy on English at 68.8%.",Experiment/Discussion
+"Our method also outperforms this approach, without employing lexicalization and sophisticated smoothing as they do.",Experiment/Discussion
+This result suggests that combining the complementary strengths of their approach and ours dency rules on English and Spanish.,Experiment/Discussion
+"For each rule, we evaluate the model using the ruleset excluding that rule, and list the most significant rules for each language.",Experiment/Discussion
+The second last column is the absolute loss in performance compared to the setting where all rules are available.,Experiment/Discussion
+The last column shows the percentage of the gold dependencies that satisfy the rule. can yield further performance improvements.,Experiment/Discussion
+Table 4 also shows the No-Split results where syntactic categories are not refined.,Experiment/Discussion
+"We find that such refinement usually proves to be beneficial, yielding an average performance gain of 3.7%.",Experiment/Discussion
+"However, we note that the impact of incorporating splitting varies significantly across languages.",Experiment/Discussion
+Further understanding of this connection is an area of future research.,Experiment/Discussion
+"Finally, we note that our model exhibits low variance for most languages.",Experiment/Discussion
+This result attests to how the expectation constraints consistently guide inference toward high-accuracy areas of the search space.,Experiment/Discussion
+Ablation Analysis Our next experiment seeks to understand the relative importance of the various universal rules from Table 1.,Experiment/Discussion
+We study how accuracy is affected when each of the rules is removed one at a time for English and Spanish.,Experiment/Discussion
+Table 5 lists the rules with the greatest impact on performance when removed.,Experiment/Discussion
+We note the high overlap between the most significant rules for English and Spanish.,Experiment/Discussion
+We also observe that the relationship between a rule’s frequency and its importance for high accuracy is not straightforward.,Experiment/Discussion
+"For example, the “Preposition → Noun” rule, whose removal degrades accuracy the most for both English and Spanish, is not the most frequent rule in either language.",Experiment/Discussion
+"This result suggests that some rules are harder to learn than others regardless of their frequency, so their presence in the specified ruleset yields stronger performance gains.",Experiment/Discussion
+Varying the Constraint Threshold In our main experiments we require that at least 80% of the expected dependencies satisfy the rule constraints.,Experiment/Discussion
+We arrived at this threshold by tuning on the basis of English only.,Experiment/Discussion
+"As shown in Figure 2, for English a broad band of threshold values from 75% to 90% yields results within 2.5% of each other, with a slight peak at 80%.",Experiment/Discussion
+"To further study the sensitivity of our method to how the threshold is set, we perform post hoc experiments with other threshold values on each of the other languages.",Experiment/Discussion
+"As Figure 2 also shows, on average a value of 80% is optimal across languages, though again accuracy is stable within 2.5% between thresholds of 75% to 90%.",Experiment/Discussion
+These results demonstrate that a single threshold is broadly applicable across languages.,Experiment/Discussion
+"Interestingly, setting the threshold value independently for each language to its “true” proportion based on the gold dependencies (denoted as the “Gold” case in Figure 2) does not achieve optimal Table 6: Directed accuracy of our model (HDP-DEP) on sentences of length 10 or less and 20 or less from WSJ with different rulesets and with no rules, along with various baselines from the literature.",Experiment/Discussion
+Entries in this table are numbered for ease of reference in the text. performance.,Experiment/Discussion
+"Thus, knowledge of the true languagespecific rule proportions is not necessary for high accuracy.",Experiment/Discussion
+We perform a set of additional experiments on English to gain further insight into HDP-DEP’s behavior.,Experiment/Discussion
+Our choice of language is motivated by the fact that a wide range of prior parsing algorithms were developed for and tested exclusively on English.,Experiment/Discussion
+"The experiments below demonstrate that 1) universal rules alone are powerful, but languageand dataset-tailored rules can further improve performance; 2) our model learns jointly from the rules and data, outperforming a rules-only deterministic parser; 3) the way we incorporate posterior constraints outperforms the generalized expectation constraint framework; and 4) our model exhibits low variance when seeded with different initializations.",Experiment/Discussion
+These results are summarized in Table 6 and discussed in detail below; line numbers refer to entries in Table 6.,Experiment/Discussion
+Each run of HDP-DEP below is with syntactic refinement enabled.,Experiment/Discussion
+Impact of Rules Selection We compare the performance of HDP-DEP using the universal rules versus a set of rules designed for deterministically parsing the Penn Treebank (see Section 5 for details).,Experiment/Discussion
+"As lines 1 and 5 of Table 6 show, language-specific rules yield better performance.",Experiment/Discussion
+"For sentences of length 10 or less, the difference between the two rulesets is a relatively small 1.9%; for longer sentences, however, the difference is a substantially larger 15.7%.",Experiment/Discussion
+This is likely because longer sentences tend to be more complex and thus exhibit more language-idiosyncratic dependencies.,Experiment/Discussion
+Such dependencies can be better captured by the refined language-specific rules.,Experiment/Discussion
+"We also test model performance when no linguistic rules are available, i.e., performing unconstrained variational inference.",Experiment/Discussion
+"The model performs substantially worse (line 2), confirming that syntactic category refinement in a fully unsupervised setup is challenging.",Experiment/Discussion
+"Learning Beyond Provided Rules Since HDPDEP is provided with linguistic rules, a legitimate question is whether it improves upon what the rules encode, especially when the rules are complete and language-specific.",Experiment/Discussion
+We can answer this question by comparing the performance of our model seeded with the English-specific rules against a deterministic parser that implements the same rules.,Experiment/Discussion
+Lines 4 and 5 of Table 6 demonstrate that the model outperforms a rules-only deterministic parser by 3.8% for sentences of length 10 or less and by 3.5% for sentences of length 20 or less.,Experiment/Discussion
+"Comparison with Alternative Semi-supervised Parser The dependency parser based on the generalized expectation criteria (Druck et al., 2009) is the closest to our reported work in terms of technique.",Experiment/Discussion
+"To compare the two, we run HDP-DEP using the 20 rules given by Druck et al. (2009).",Experiment/Discussion
+Our model achieves an accuracy of 64.9% (line 7) compared to 61.3% (line 6) reported in their work.,Experiment/Discussion
+"Note that we do not rely on rule-specific expectation information as they do, instead requiring only a single expectation constraint parameter.4 Model Stability It is commonly acknowledged in the literature that unsupervised grammar induction methods exhibit sensitivity to initialization.",Experiment/Discussion
+"As in the previous section, we find that the presence of linguistic rules greatly reduces this sensitivity: for HDP-DEP, the standard deviation over five randomly initialized runs with the English-specific rules is 1.5%, compared to 4.5% for the parser developed by Headden III et al. (2009) and 8.0% for DMV (Klein and Manning, 2004).",Experiment/Discussion
+In this paper we demonstrated that syntactic universals encoded as declarative constraints improve grammar induction.,Results/Conclusion
+We formulated a generative model for dependency structure that models syntactic category refinement and biases inference to cohere with the provided constraints.,Results/Conclusion
+"Our experiments showed that encoding a compact, well-accepted set of language-independent constraints significantly improves accuracy on multiple languages compared to the current state-of-the-art in unsupervised parsing.",Results/Conclusion
+"While our present work has yielded substantial gains over previous unsupervised methods, a large gap still remains between our method and fully supervised techniques.",Results/Conclusion
+"In future work we intend to study ways to bridge this gap by 1) incorporating more sophisticated linguistically-driven grammar rulesets to guide induction, 2) lexicalizing the model, and 3) combining our constraint-based approach with richer unsupervised models (e.g., Headden III et al. (2009)) to benefit from their complementary strengths.",Results/Conclusion
+"The authors acknowledge the support of the NSF (CAREER grant IIS-0448168, grant IIS-0904684, and a Graduate Research Fellowship).",Results/Conclusion
+We are especially grateful to Michael Collins for inspiring us toward this line of inquiry and providing deterministic rules for English parsing.,Results/Conclusion
+"Thanks to Taylor Berg-Kirkpatrick, Sabine Iatridou, Ramesh Sridharan, and members of the MIT NLP group for their suggestions and comments.",Results/Conclusion
+"Any opinions, findings, conclusions, or recommendations expressed in this paper are those of the authors, and do not necessarily reflect the views of the funding organizations.",Results/Conclusion

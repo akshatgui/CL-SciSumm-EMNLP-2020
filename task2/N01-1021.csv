@@ -1,146 +1,146 @@
 col1,col2
-"In human sentence processing, cognitive load can be defined many ways.",{}
-This report considers a definition of cognitive load in terms of the total probability of structural options that have been disconfirmed at point in a sentence: the surprisal of word its prefix on a phrase-structural language model.,{}
-"These loads can be efficiently calculated using a probabilistic Earley parser (Stolcke, 1995) which is interpreted as generating predictions about reading time on a word-by-word basis.",{}
-"Under grammatical assumptions supported by corpusfrequency data, the operation of Stolcke’s probabilistic Earley parser correctly predicts processing phenomena associated with garden path structural ambiguity and with the subject/object relative asymmetry.",{}
-What is the relation between a person’s knowledge of grammar and that same person’s application of that knowledge in perceiving syntactic structure?,"{'title': 'Introduction', 'number': '1'}"
-The answer to be proposed here observes three principles.,"{'title': 'Introduction', 'number': '1'}"
-Principle 1 The relation between the parser and grammar is one of strong competence.,"{'title': 'Introduction', 'number': '1'}"
-"Strong competence holds that the human sentence processing mechanism directly uses rules of grammar in its operation, and that a bare minimum of extragrammatical machinery is necessary.","{'title': 'Introduction', 'number': '1'}"
-"This hypothesis, originally proposed by Chomsky (Chomsky, 1965, page 9) has been pursued by many researchers (Bresnan, 1982) (Stabler, 1991) (Steedman, 1992) (Shieber and Johnson, 1993), and stands in contrast with an approach directed towards the discovery of autonomous principles unique to the processing mechanism.","{'title': 'Introduction', 'number': '1'}"
-Principle 2 Frequency affects performance.,"{'title': 'Introduction', 'number': '1'}"
-"The explanatory success of neural network and constraint-based lexicalist theories (McClelland and St. John, 1989) (MacDonald et al., 1994) (Taboret al., 1997) suggests a statistical theory of language performance.","{'title': 'Introduction', 'number': '1'}"
-The present work adopts a numerical view of competition in grammar that is grounded in probability.,"{'title': 'Introduction', 'number': '1'}"
-Principle 3 Sentence processing is eager.,"{'title': 'Introduction', 'number': '1'}"
-“Eager” in this sense means the experimental situations to be modeled are ones like self-paced reading in which sentence comprehenders are unrushed and no information is ignored at a point at which it could be used.,"{'title': 'Introduction', 'number': '1'}"
-"The proposal is that a person’s difficulty perceiving syntactic structure be modeled by word-toword surprisal (Attneave, 1959, page 6) which can be directly computed from a probabilistic phrasestructure grammar.","{'title': 'Introduction', 'number': '1'}"
-The approach taken here uses a parsing algorithm developed by Stolcke.,"{'title': 'Introduction', 'number': '1'}"
-"In the course of explaining the algorithm at a very high level I will indicate how the algorithm, interpreted as a psycholinguistic model, observes each principle.","{'title': 'Introduction', 'number': '1'}"
-"After that will come some simulation results, and then a conclusion.","{'title': 'Introduction', 'number': '1'}"
-Stolcke’s parsing algorithm was initially applied as a component of an automatic speech recognition system.,"{'title': '1 Language models', 'number': '2'}"
-"In speech recognition, one is often interested in the probability that some word will follow, given that a sequence of words has been seen.","{'title': '1 Language models', 'number': '2'}"
-"Given some lexicon of all possible words, a language model assigns a probability to every string of words from the lexicon.","{'title': '1 Language models', 'number': '2'}"
-"This defines a probabilistic language (Grenander, 1967) (Booth and Thompson, 1973) (Soule, 1974) (Wetherell, 1980).","{'title': '1 Language models', 'number': '2'}"
-A language model helps a speech recognizer focus its attention on words that are likely continuations of what it has recognized so far.,"{'title': '1 Language models', 'number': '2'}"
-"This is typically done using conditional probabilities of the form the probability that the nth word will actually be wn given that the words leading up to the nth have been w1, w2, ... wn−1.","{'title': '1 Language models', 'number': '2'}"
-"Given some finite lexicon, the probability of each possible outcome for Wn can be estimated using that outcome’s relative frequency in a sample.","{'title': '1 Language models', 'number': '2'}"
-"Traditional language models used for speech are ngram models, in which n − 1 words of history serve as the basis for predicting the nth word.","{'title': '1 Language models', 'number': '2'}"
-"Such models do not have any notion of hierarchical syntactic structure, except as might be visible through an nword window.","{'title': '1 Language models', 'number': '2'}"
-"Aware that the n-gram obscures many linguistically-significant distinctions (Chomsky, 1956, section 2.3), many speech researchers (Jelinek and Lafferty, 1991) sought to incorporate hierarchical phrase structure into language modeling (see (Stolcke, 1997)) although it was not until the late 1990s that such models were able to significantly improve on 3-grams (Chelba and Jelinek, 1998).","{'title': '1 Language models', 'number': '2'}"
-Stolcke’s probabilistic Earley parser is one way to use hierarchical phrase structure in a language model.,"{'title': '1 Language models', 'number': '2'}"
-"The grammar it parses is a probabilistic context-free phrase structure grammar (PCFG), e.g.","{'title': '1 Language models', 'number': '2'}"
-Such a grammar defines a probabilistic language in terms of a stochastic process that rewrites strings of grammar symbols according to the probabilities on the rules.,"{'title': '1 Language models', 'number': '2'}"
-Then each sentence in the language of the grammar has a probability equal to the product of the probabilities of all the rules used to generate it.,"{'title': '1 Language models', 'number': '2'}"
-This multiplication embodies the assumption that rule choices are independent.,"{'title': '1 Language models', 'number': '2'}"
-Sentences with more than one derivation accumulate the probability of all derivations that generate them.,"{'title': '1 Language models', 'number': '2'}"
-"Through recursion, infinite languages can be specified; an important mathematical question in this context is whether or not such a grammar is consistent – whether it assigns some probability to infinite derivations, or whether all derivations are guaranteed to terminate.","{'title': '1 Language models', 'number': '2'}"
-"Even if a PCFG is consistent, it would appear to have another drawback: it only assigns probabilities to complete sentences of its language.","{'title': '1 Language models', 'number': '2'}"
-This is as inconvenient for speech recognition as it is for modeling reading times.,"{'title': '1 Language models', 'number': '2'}"
-"Stolcke’s algorithm solves this problem by computing, at each word of an input string, the prefix probability.","{'title': '1 Language models', 'number': '2'}"
-This is the sum of the probabilities of all derivations whose yield is compatible with the string seen so far.,"{'title': '1 Language models', 'number': '2'}"
-If the grammar is consistent (the probabilities of all derivations sum to 1.0) then subtracting the prefix probability from 1.0 gives the total probability of all the analyses the parser has disconfirmed.,"{'title': '1 Language models', 'number': '2'}"
-"If the human parser is eager, then the “work” done during sentence processing is exactly this disconfirmation.","{'title': '1 Language models', 'number': '2'}"
-"The computation of prefix probabilities takes advantage of the design of the Earley parser (Earley, 1970) which by itself is not probabilistic.","{'title': '2 Earley parsing', 'number': '3'}"
-"In this section I provide a brief overview of Stolcke’s algorithm but the original paper should be consulted for full details (Stolcke, 1995).","{'title': '2 Earley parsing', 'number': '3'}"
-"Earley parsers work top-down, and propagate predictions confirmed by the input string back up through a set of states representing hypotheses the parser is entertaining about the structure of the sentence.","{'title': '2 Earley parsing', 'number': '3'}"
-"The global state of the parser at any one time is completely defined by this collection of states, a chart, which defines a tree set.","{'title': '2 Earley parsing', 'number': '3'}"
-"A state is a record that specifies An Earley parser has three main functions, predict, scan and complete, each of which can enter new states into the chart.","{'title': '2 Earley parsing', 'number': '3'}"
-"Starting from a dummy start state in which the dot is just to the left of the grammar’s start symbol, predict adds new states for rules which could expand the start symbol.","{'title': '2 Earley parsing', 'number': '3'}"
-"In these new predicted states, the dot is at the far left-hand side of each rule.","{'title': '2 Earley parsing', 'number': '3'}"
-"After prediction, scan checks the input string: if the symbol immediately following the dot matches the current word in the input, then the dot is moved rightward, across the symbol.","{'title': '2 Earley parsing', 'number': '3'}"
-The parser has “scanned” this word.,"{'title': '2 Earley parsing', 'number': '3'}"
-"Finally, complete propagates this change throughout the chart.","{'title': '2 Earley parsing', 'number': '3'}"
-"If, as a result of scanning, any states are now present in which the dot is at the end of a rule, then the left hand side of that rule has been recognized, and any other states having a dot immediately in front of the newly-recognized left hand side symbol can now have their dots moved as well.","{'title': '2 Earley parsing', 'number': '3'}"
-This happens over and over until no new states are generated.,"{'title': '2 Earley parsing', 'number': '3'}"
-Parsing finishes when the dot in the dummy start state is moved across the grammar’s start symbol.,"{'title': '2 Earley parsing', 'number': '3'}"
-"Stolcke’s innovation, as regards prefix probabilities is to add two additional pieces of information to each state: α, the forward, or prefix probability, and y the “inside” probability.","{'title': '2 Earley parsing', 'number': '3'}"
-"He notes that path An (unconstrained) Earley path, or simply path, is a sequence of Earley states linked by prediction, scanning, or completion. constrained A path is said to be constrained by, or generate a string x if the terminals immediately to the left of the dot in all scanned states, in sequence, form the string x. .","{'title': '2 Earley parsing', 'number': '3'}"
-.,"{'title': '2 Earley parsing', 'number': '3'}"
-.,"{'title': '2 Earley parsing', 'number': '3'}"
-The significance of Earley paths is that they are in a one-to-one correspondence with left-most derivations.,"{'title': '2 Earley parsing', 'number': '3'}"
-"This will allow us to talk about probabilities of derivations, strings and prefixes in terms of the actions performed by Earley’s parser.","{'title': '2 Earley parsing', 'number': '3'}"
-"(Stolcke, 1995, page 8) This correspondence between paths of parser operations and derivations enables the computation of the prefix probability – the sum of all derivations compatible with the prefix seen so far.","{'title': '2 Earley parsing', 'number': '3'}"
-"By the correspondence between derivations and Earley paths, one would need only to compute the sum of all paths that are constrained by the observed prefix.","{'title': '2 Earley parsing', 'number': '3'}"
-But this can be done in the course of parsing by storing the current prefix probability in each state.,"{'title': '2 Earley parsing', 'number': '3'}"
-"Then, when a new state is added by some parser operation, the contribution from each antecedent state – each previous state linked by some parser operation – is summed in the new state.","{'title': '2 Earley parsing', 'number': '3'}"
-Knowing the prefix probability at each state and then summing for all parser operations that result in the same new state efficiently counts all possible derivations.,"{'title': '2 Earley parsing', 'number': '3'}"
-Predicting a rule corresponds to multiplying by that rule’s probability.,"{'title': '2 Earley parsing', 'number': '3'}"
-Scanning does not alter any probabilities.,"{'title': '2 Earley parsing', 'number': '3'}"
-"Completion, though, requires knowing y, the inside probability, which records how probable was the inner structure of some recognized phrasal node.","{'title': '2 Earley parsing', 'number': '3'}"
-"When a state is completed, a bottom-up confirmation is united with a top-down prediction, so the α value of the complete-ee is multiplied by the y value of the complete-er.","{'title': '2 Earley parsing', 'number': '3'}"
-"Important technical problems involving leftrecursive and unit productions are examined and overcome in (Stolcke, 1995).","{'title': '2 Earley parsing', 'number': '3'}"
-"However, these complications do not add any further machinery to the parsing algorithm per se beyond the grammar rules and the dot-moving conventions: in particular, there are no heuristic parsing principles or intermediate structures that are later destroyed.","{'title': '2 Earley parsing', 'number': '3'}"
-In this respect the algorithm observes strong competence – principle 1.,"{'title': '2 Earley parsing', 'number': '3'}"
-In virtue of being a probabilistic parser it observes principle 2.,"{'title': '2 Earley parsing', 'number': '3'}"
-"Finally, in the sense that predict and complete each apply exhaustively at each new input word, the algorithm is eager, satisfying principle 3.","{'title': '2 Earley parsing', 'number': '3'}"
-Psycholinguistic theories vary regarding the amount bandwidth they attribute to the human sentence processing mechanism.,"{'title': '3 Parallelism', 'number': '4'}"
-"Theories of initial parsing preferences (Fodor and Ferreira, 1998) suggest that the human parser is fundamentally serial: a function from a tree and new word to a new tree.","{'title': '3 Parallelism', 'number': '4'}"
-These theories explain processing difficulty by appealing to “garden pathing” in which the current analysis is faced with words that cannot be reconciled with the structures built so far.,"{'title': '3 Parallelism', 'number': '4'}"
-"A middle ground is held by bounded-parallelism theories (Narayanan and Jurafsky, 1998) (Roark and Johnson, 1999).","{'title': '3 Parallelism', 'number': '4'}"
-"In these theories the human parser is modeled as a function from some subset of consistent trees and the new word, to a new tree subset.","{'title': '3 Parallelism', 'number': '4'}"
-"Garden paths arise in these theories when analyses fall out of the set of trees maintained from word to word, and have to be reanalyzed, as on strictly serial theories.","{'title': '3 Parallelism', 'number': '4'}"
-"Finally, there is the possibility of total parallelism, in which the entire set of trees compatible with the input is maintained somehow from word to word.","{'title': '3 Parallelism', 'number': '4'}"
-"On such a theory, garden-pathing cannot be explained by reanalysis.","{'title': '3 Parallelism', 'number': '4'}"
-"The probabilistic Earley parser computes all parses of its input, so as a psycholinguistic theory it is a total parallelism theory.","{'title': '3 Parallelism', 'number': '4'}"
-The explanation for garden-pathing will turn on the reduction in the probability of the new tree set compared with the previous tree set – reanalysis plays no role.,"{'title': '3 Parallelism', 'number': '4'}"
-"Before illustrating this kind of explanation with a specific example, it will be important to first clarify the nature of the linking hypothesis between the operation of the probabilistic Earley parser and the measured effects of the human parser.","{'title': '3 Parallelism', 'number': '4'}"
-"The measure of cognitive effort mentioned earlier is defined over prefixes: for some observed prefix, the cognitive effort expended to parse that prefix is proportional to the total probability of all the structural analyses which cannot be compatible with the observed prefix.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"This is consistent with eagerness since, if the parser were to fail to infer the incompatibility of some incompatible analysis, it would be delaying a computation, and hence not be eager.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"This prefix-based linking hypothesis can be turned into one that generates predictions about word-byword reading times by comparing the total effort expended before some word to the total effort after: in particular, take the comparison to be a ratio.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"Making the further assumption that the probabilities on PCFG rules are statements about how difficult it is to disconfirm each rule', then the ratio of 'This assumption is inevitable given principles 1 and 2.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"If there were separate processing costs distinct from the optimization costs postulated in the grammar, then strong competence is violated.","{'title': '4 Linking hypothesis', 'number': '5'}"
-Defining all grammatical structures as equally easy to disconfirm or perceive likewise voids the gradedness of grammaticality of any content. the α value for the previous word to the α value for the current word measures the combined difficulty of disconfirming all disconfirmable structures at a given word – the definition of cognitive load.,"{'title': '4 Linking hypothesis', 'number': '5'}"
-"Scaling this number by taking its log gives the surprisal, and defines a word-based measure of cognitive effort in terms of the prefix-based one.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"Of course, if the language model is sensitive to hierarchical structure, then the measure of cognitive effort so defined will be structure-sensitive as well. could account for garden path structural ambiguity.","{'title': '4 Linking hypothesis', 'number': '5'}"
-"Grammar (1) generates the celebrated garden path sentence “the horse raced past the barn fell” (Bever, 1970).","{'title': '4 Linking hypothesis', 'number': '5'}"
-"English speakers hearing these words one by one are inclined to take “the horse” as the subject of “raced,” expecting the sentence to end at the word “barn.” This is the main verb reading in figure 1.","{'title': '4 Linking hypothesis', 'number': '5'}"
-The debate over the form grammar takes in the mind is clearly a fundamental one for cognitive science.,"{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"Much recent psycholinguistic work has generated a wealth of evidence that frequency of exposure to linguistic elements can affect our processing (Mitchell et al., 1995) (MacDonald et al., 1994).","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"However, there is no clear consensus as to the size of the elements over which exposure has clearest effect.","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"Gibson and Pearlmutter identify it as an “outstanding question” whether or not phrase structure statistics are necessary to explain performance effects in sentence comprehension: Are phrase-level contingent frequency constraints necessary to explain comprehension performance, or are the remaining types of constraints sufficient.","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"If phraselevel contingent frequency constraints are necessary, can they subsume the effects of other constraints (e.g. locality) ?","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"(Gibson and Pearlmutter, 1998, page 13) Equally, formal work in linguistics has demonstrated the inadequacy of context-free grammars as an appropriate model for natural language in the general case (Shieber, 1985).","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"To address this criticism, the same prefix probabilities could be computing using tree-adjoining grammars (Nederhof et al., 1998).","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"With context-free grammars serving as the implicit backdrop for much work in human sentence processing, as well as linguistics2 simplicity seems as good a guide as any in the selection of a grammar formalism.","{'title': '5 Plausibility of Probabilistic Context-Free Grammar', 'number': '6'}"
-"Probabilistic context-free grammar (1) will help illustrate the way a phrase-structured language model The human sentence processing mechanism is metaphorically led up the garden path by the main verb reading, when, upon hearing “fell” it is forced to accept the alternative reduced relative reading shown in figure 2.","{'title': '6 Garden-pathing', 'number': '7'}"
-"The confusion between the main verb and the reduced relative readings, which is resolved upon hearing “fell” is the empirical phenomenon at issue.","{'title': '6 Garden-pathing', 'number': '7'}"
-"As the parse trees indicate, grammar (1) analyzes reduced relative clauses as a VP adjoined to an NP3.","{'title': '6 Garden-pathing', 'number': '7'}"
-In one sample of parsed text4 such adjunctions are about 7 times less likely than simple NPs made up of a determiner followed by a noun.,"{'title': '6 Garden-pathing', 'number': '7'}"
-The probabilities of the other crucial rules are likewise estimated by their relative frequencies in the sample.,"{'title': '6 Garden-pathing', 'number': '7'}"
-This simple grammar exhibits the essential character of the explanation: garden paths happen at points where the parser can disconfirm alternatives that together comprise a great amount of probability.,"{'title': '6 Garden-pathing', 'number': '7'}"
-Note the category ambiguity present with raced which can show up as both a past-tense verb (VBD) and a past participle (VBN).,"{'title': '6 Garden-pathing', 'number': '7'}"
-Figure 3 shows the reading time predictions5 derived via the linking hypothesis that reading time at word n is proportional to the surprisal log (αα−1).,"{'title': '6 Garden-pathing', 'number': '7'}"
-"At “fell,” the parser garden-paths: up until that point, both the main-verb and reduced-relative structures are consistent with the input.","{'title': '6 Garden-pathing', 'number': '7'}"
-"The prefix probability before “fell” is scanned is more than 10 times greater than after, suggesting that the probability mass of the analyses disconfirmed at that point was indeed great.","{'title': '6 Garden-pathing', 'number': '7'}"
-"In fact, all of the probability assigned to the main-verb structure is now lost, and only parses that involve the low-probability NP rule survive – a rule introduced 5 words back.","{'title': '6 Garden-pathing', 'number': '7'}"
-"If this garden path effect is truly a result of both the main verb and the reduced relative structures being simultaneously available up until the final verb, 5Whether the quantitative values of the predicted reading times can be mapped onto a particular experiment involves taking some position on the oft-observed (Gibson and Sch¨utze, 1999) imperfect relationship between corpus frequency and psychological norms. then the effect should disappear when words intervene that cancel the reduced relative interpretation early on.","{'title': '6 Garden-pathing', 'number': '7'}"
-"To examine this possibility, consider now a different example sentence, this time from the language of grammar (2).","{'title': '6 Garden-pathing', 'number': '7'}"
-The probabilities in grammar (2) are estimated from the same sample as before.,"{'title': '6 Garden-pathing', 'number': '7'}"
-"It generates a sentence composed of words actually found in the sample, “the banker told about the buy-back resigned.” This sentence exhibits the same reduced relative clause structure as does “the horse raced past the barn fell.” Grammar (2) also generates6 the subject relative “the banker who was told about the buy-back resigned.” Now a comparison of two conditions is possible.","{'title': '6 Garden-pathing', 'number': '7'}"
-"RC only the banker who was told about the buyback resigned The words who was cancel the main verb reading, and should make that condition easier to process.","{'title': '6 Garden-pathing', 'number': '7'}"
-This asymmetry is borne out in graphs 4 and 5.,"{'title': '6 Garden-pathing', 'number': '7'}"
-At “resigned” the probabilistic Earley parser predicts less reading time in the subject relative condition than in the reduced relative condition.,"{'title': '6 Garden-pathing', 'number': '7'}"
-"This comparison verifies that the same sorts of phenomena treated in reanalysis and bounded parallelism parsing theories fall out as cases of the present, total parallelism theory.","{'title': '6 Garden-pathing', 'number': '7'}"
-"Although they used frequency estimates provided by corpus data, the previous two grammars were partially hand-built.","{'title': '6 Garden-pathing', 'number': '7'}"
-They used a subset of the rules found in the sample of parsed text.,"{'title': '6 Garden-pathing', 'number': '7'}"
-A grammar including all rules observed in the entire sample supports the same sort of reasoning.,"{'title': '6 Garden-pathing', 'number': '7'}"
-"In this grammar, instead of just 2 NP rules there are 532, along with 120 S rules.","{'title': '6 Garden-pathing', 'number': '7'}"
-"Many of these generate analyses compatible with prefixes of the reduced relative clause at various points during parsing, so the expectation is that the parser will be disconfirming many more hypotheses at each word than in the simpler example.","{'title': '6 Garden-pathing', 'number': '7'}"
-Figure 6 shows the reading time predictions derived from this much richer grammar.,"{'title': '6 Garden-pathing', 'number': '7'}"
-"Because the terminal vocabulary of this richer grammar is so much larger, a comparatively large amount of information is conveyed by the nouns “banker” and “buy-back” leading to high surprisal values at those words.","{'title': '6 Garden-pathing', 'number': '7'}"
-"However, the garden path effect is still observable at “resigned” where the prefix probability ratio is nearly 10 times greater than at either of the nouns.","{'title': '6 Garden-pathing', 'number': '7'}"
-"Amid the lexical effects, the probabilistic Earley parser is affected by the same structural ambiguity that affects English speakers.","{'title': '6 Garden-pathing', 'number': '7'}"
-"The same kind of explanation supports an account of the subject-object relative asymmetry (cf. references in (Gibson, 1998)) in the processing of unreduced relative clauses.","{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-"Since the Earley parser is designed to work with context-free grammars, the following example grammar adopts a GPSG-style analysis of relative clauses (Gazdar et al., 1985, page 155).","{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-The estimates of the ratios for the two S[+R] rules are obtained by counting the proportion of subject relatives among all relatives in the Treebank’s parsed Brown corpus7.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-Grammar (3) generates both subject and object relative clauses.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-S[+R] → NP[+R] VP is the rule that generates subject relatives and S[+R] → NP[+R] S/NP generates object relatives.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-One might expect there to be a greater processing load for object relatives as soon as enough lexical material is present to determine that the sentence is in fact an object relatives.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-The same probabilistic Earley parser (modified to handle null-productions) explains this asymmetry in the same way as it explains the garden path effect.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-"Its predictions, under the same linking hypothesis as in the previous cases, are depicted in graphs 7 and 8.","{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-The mean surprisal for the object relative is about 5.0 whereas the mean surprisal for the subject relative is about 2.1.,"{'title': '7 Subject/Object asymmetry', 'number': '8'}"
-These examples suggest that a “total-parallelism” parsing theory based on probabilistic grammar can characterize some important processing phenomena.,"{'title': 'Conclusion', 'number': '9'}"
-"In the domain of structural ambiguity in particular, the explanation is of a different kind than in traditional reanalysis models: the order of processing is not theoretically significant, but the estimate of its magnitude at each point in a sentence is.","{'title': 'Conclusion', 'number': '9'}"
-"Results with empirically-derived grammars suggest an affirmative answer to Gibson and Pearlmutter’s quessThe difference in probability between subject and object rules could be due to the work necessary to set up storage for the filler, effectively recapitulating the HOLD Hypothesis (Wanner and Maratsos, 1978, page 119) tion: phrase-level contingent frequencies can do the work formerly done by other mechanisms.","{'title': 'Conclusion', 'number': '9'}"
-"Pursuit of methodological principles 1, 2 and 3 has identified a model capable of describing some of the same phenomena that motivate psycholinguistic interest in other theoretical frameworks.","{'title': 'Conclusion', 'number': '9'}"
-"Moreover, this recommends probabilistic grammars as an attractive possibility for psycholinguistics by providing clear, testable predictions and the potential for new mathematical insights.","{'title': 'Conclusion', 'number': '9'}"
+"In human sentence processing, cognitive load can be defined many ways.",Introduction
+This report considers a definition of cognitive load in terms of the total probability of structural options that have been disconfirmed at point in a sentence: the surprisal of word its prefix on a phrase-structural language model.,Introduction
+"These loads can be efficiently calculated using a probabilistic Earley parser (Stolcke, 1995) which is interpreted as generating predictions about reading time on a word-by-word basis.",Introduction
+"Under grammatical assumptions supported by corpusfrequency data, the operation of Stolcke’s probabilistic Earley parser correctly predicts processing phenomena associated with garden path structural ambiguity and with the subject/object relative asymmetry.",Introduction
+What is the relation between a person’s knowledge of grammar and that same person’s application of that knowledge in perceiving syntactic structure?,Experiment/Discussion
+The answer to be proposed here observes three principles.,Experiment/Discussion
+Principle 1 The relation between the parser and grammar is one of strong competence.,Experiment/Discussion
+"Strong competence holds that the human sentence processing mechanism directly uses rules of grammar in its operation, and that a bare minimum of extragrammatical machinery is necessary.",Experiment/Discussion
+"This hypothesis, originally proposed by Chomsky (Chomsky, 1965, page 9) has been pursued by many researchers (Bresnan, 1982) (Stabler, 1991) (Steedman, 1992) (Shieber and Johnson, 1993), and stands in contrast with an approach directed towards the discovery of autonomous principles unique to the processing mechanism.",Experiment/Discussion
+Principle 2 Frequency affects performance.,Experiment/Discussion
+"The explanatory success of neural network and constraint-based lexicalist theories (McClelland and St. John, 1989) (MacDonald et al., 1994) (Taboret al., 1997) suggests a statistical theory of language performance.",Experiment/Discussion
+The present work adopts a numerical view of competition in grammar that is grounded in probability.,Experiment/Discussion
+Principle 3 Sentence processing is eager.,Experiment/Discussion
+“Eager” in this sense means the experimental situations to be modeled are ones like self-paced reading in which sentence comprehenders are unrushed and no information is ignored at a point at which it could be used.,Experiment/Discussion
+"The proposal is that a person’s difficulty perceiving syntactic structure be modeled by word-toword surprisal (Attneave, 1959, page 6) which can be directly computed from a probabilistic phrasestructure grammar.",Experiment/Discussion
+The approach taken here uses a parsing algorithm developed by Stolcke.,Experiment/Discussion
+"In the course of explaining the algorithm at a very high level I will indicate how the algorithm, interpreted as a psycholinguistic model, observes each principle.",Experiment/Discussion
+"After that will come some simulation results, and then a conclusion.",Experiment/Discussion
+Stolcke’s parsing algorithm was initially applied as a component of an automatic speech recognition system.,Experiment/Discussion
+"In speech recognition, one is often interested in the probability that some word will follow, given that a sequence of words has been seen.",Experiment/Discussion
+"Given some lexicon of all possible words, a language model assigns a probability to every string of words from the lexicon.",Experiment/Discussion
+"This defines a probabilistic language (Grenander, 1967) (Booth and Thompson, 1973) (Soule, 1974) (Wetherell, 1980).",Experiment/Discussion
+A language model helps a speech recognizer focus its attention on words that are likely continuations of what it has recognized so far.,Experiment/Discussion
+"This is typically done using conditional probabilities of the form the probability that the nth word will actually be wn given that the words leading up to the nth have been w1, w2, ... wn−1.",Experiment/Discussion
+"Given some finite lexicon, the probability of each possible outcome for Wn can be estimated using that outcome’s relative frequency in a sample.",Experiment/Discussion
+"Traditional language models used for speech are ngram models, in which n − 1 words of history serve as the basis for predicting the nth word.",Experiment/Discussion
+"Such models do not have any notion of hierarchical syntactic structure, except as might be visible through an nword window.",Experiment/Discussion
+"Aware that the n-gram obscures many linguistically-significant distinctions (Chomsky, 1956, section 2.3), many speech researchers (Jelinek and Lafferty, 1991) sought to incorporate hierarchical phrase structure into language modeling (see (Stolcke, 1997)) although it was not until the late 1990s that such models were able to significantly improve on 3-grams (Chelba and Jelinek, 1998).",Experiment/Discussion
+Stolcke’s probabilistic Earley parser is one way to use hierarchical phrase structure in a language model.,Experiment/Discussion
+"The grammar it parses is a probabilistic context-free phrase structure grammar (PCFG), e.g.",Experiment/Discussion
+Such a grammar defines a probabilistic language in terms of a stochastic process that rewrites strings of grammar symbols according to the probabilities on the rules.,Experiment/Discussion
+Then each sentence in the language of the grammar has a probability equal to the product of the probabilities of all the rules used to generate it.,Experiment/Discussion
+This multiplication embodies the assumption that rule choices are independent.,Experiment/Discussion
+Sentences with more than one derivation accumulate the probability of all derivations that generate them.,Experiment/Discussion
+"Through recursion, infinite languages can be specified; an important mathematical question in this context is whether or not such a grammar is consistent – whether it assigns some probability to infinite derivations, or whether all derivations are guaranteed to terminate.",Experiment/Discussion
+"Even if a PCFG is consistent, it would appear to have another drawback: it only assigns probabilities to complete sentences of its language.",Experiment/Discussion
+This is as inconvenient for speech recognition as it is for modeling reading times.,Experiment/Discussion
+"Stolcke’s algorithm solves this problem by computing, at each word of an input string, the prefix probability.",Experiment/Discussion
+This is the sum of the probabilities of all derivations whose yield is compatible with the string seen so far.,Experiment/Discussion
+If the grammar is consistent (the probabilities of all derivations sum to 1.0) then subtracting the prefix probability from 1.0 gives the total probability of all the analyses the parser has disconfirmed.,Experiment/Discussion
+"If the human parser is eager, then the “work” done during sentence processing is exactly this disconfirmation.",Experiment/Discussion
+"The computation of prefix probabilities takes advantage of the design of the Earley parser (Earley, 1970) which by itself is not probabilistic.",Experiment/Discussion
+"In this section I provide a brief overview of Stolcke’s algorithm but the original paper should be consulted for full details (Stolcke, 1995).",Experiment/Discussion
+"Earley parsers work top-down, and propagate predictions confirmed by the input string back up through a set of states representing hypotheses the parser is entertaining about the structure of the sentence.",Experiment/Discussion
+"The global state of the parser at any one time is completely defined by this collection of states, a chart, which defines a tree set.",Experiment/Discussion
+"A state is a record that specifies An Earley parser has three main functions, predict, scan and complete, each of which can enter new states into the chart.",Experiment/Discussion
+"Starting from a dummy start state in which the dot is just to the left of the grammar’s start symbol, predict adds new states for rules which could expand the start symbol.",Experiment/Discussion
+"In these new predicted states, the dot is at the far left-hand side of each rule.",Experiment/Discussion
+"After prediction, scan checks the input string: if the symbol immediately following the dot matches the current word in the input, then the dot is moved rightward, across the symbol.",Experiment/Discussion
+The parser has “scanned” this word.,Experiment/Discussion
+"Finally, complete propagates this change throughout the chart.",Experiment/Discussion
+"If, as a result of scanning, any states are now present in which the dot is at the end of a rule, then the left hand side of that rule has been recognized, and any other states having a dot immediately in front of the newly-recognized left hand side symbol can now have their dots moved as well.",Experiment/Discussion
+This happens over and over until no new states are generated.,Experiment/Discussion
+Parsing finishes when the dot in the dummy start state is moved across the grammar’s start symbol.,Experiment/Discussion
+"Stolcke’s innovation, as regards prefix probabilities is to add two additional pieces of information to each state: α, the forward, or prefix probability, and y the “inside” probability.",Experiment/Discussion
+"He notes that path An (unconstrained) Earley path, or simply path, is a sequence of Earley states linked by prediction, scanning, or completion. constrained A path is said to be constrained by, or generate a string x if the terminals immediately to the left of the dot in all scanned states, in sequence, form the string x. .",Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+The significance of Earley paths is that they are in a one-to-one correspondence with left-most derivations.,Experiment/Discussion
+"This will allow us to talk about probabilities of derivations, strings and prefixes in terms of the actions performed by Earley’s parser.",Experiment/Discussion
+"(Stolcke, 1995, page 8) This correspondence between paths of parser operations and derivations enables the computation of the prefix probability – the sum of all derivations compatible with the prefix seen so far.",Experiment/Discussion
+"By the correspondence between derivations and Earley paths, one would need only to compute the sum of all paths that are constrained by the observed prefix.",Experiment/Discussion
+But this can be done in the course of parsing by storing the current prefix probability in each state.,Experiment/Discussion
+"Then, when a new state is added by some parser operation, the contribution from each antecedent state – each previous state linked by some parser operation – is summed in the new state.",Experiment/Discussion
+Knowing the prefix probability at each state and then summing for all parser operations that result in the same new state efficiently counts all possible derivations.,Experiment/Discussion
+Predicting a rule corresponds to multiplying by that rule’s probability.,Experiment/Discussion
+Scanning does not alter any probabilities.,Experiment/Discussion
+"Completion, though, requires knowing y, the inside probability, which records how probable was the inner structure of some recognized phrasal node.",Experiment/Discussion
+"When a state is completed, a bottom-up confirmation is united with a top-down prediction, so the α value of the complete-ee is multiplied by the y value of the complete-er.",Experiment/Discussion
+"Important technical problems involving leftrecursive and unit productions are examined and overcome in (Stolcke, 1995).",Experiment/Discussion
+"However, these complications do not add any further machinery to the parsing algorithm per se beyond the grammar rules and the dot-moving conventions: in particular, there are no heuristic parsing principles or intermediate structures that are later destroyed.",Experiment/Discussion
+In this respect the algorithm observes strong competence – principle 1.,Experiment/Discussion
+In virtue of being a probabilistic parser it observes principle 2.,Experiment/Discussion
+"Finally, in the sense that predict and complete each apply exhaustively at each new input word, the algorithm is eager, satisfying principle 3.",Experiment/Discussion
+Psycholinguistic theories vary regarding the amount bandwidth they attribute to the human sentence processing mechanism.,Experiment/Discussion
+"Theories of initial parsing preferences (Fodor and Ferreira, 1998) suggest that the human parser is fundamentally serial: a function from a tree and new word to a new tree.",Experiment/Discussion
+These theories explain processing difficulty by appealing to “garden pathing” in which the current analysis is faced with words that cannot be reconciled with the structures built so far.,Experiment/Discussion
+"A middle ground is held by bounded-parallelism theories (Narayanan and Jurafsky, 1998) (Roark and Johnson, 1999).",Experiment/Discussion
+"In these theories the human parser is modeled as a function from some subset of consistent trees and the new word, to a new tree subset.",Experiment/Discussion
+"Garden paths arise in these theories when analyses fall out of the set of trees maintained from word to word, and have to be reanalyzed, as on strictly serial theories.",Experiment/Discussion
+"Finally, there is the possibility of total parallelism, in which the entire set of trees compatible with the input is maintained somehow from word to word.",Experiment/Discussion
+"On such a theory, garden-pathing cannot be explained by reanalysis.",Experiment/Discussion
+"The probabilistic Earley parser computes all parses of its input, so as a psycholinguistic theory it is a total parallelism theory.",Experiment/Discussion
+The explanation for garden-pathing will turn on the reduction in the probability of the new tree set compared with the previous tree set – reanalysis plays no role.,Experiment/Discussion
+"Before illustrating this kind of explanation with a specific example, it will be important to first clarify the nature of the linking hypothesis between the operation of the probabilistic Earley parser and the measured effects of the human parser.",Experiment/Discussion
+"The measure of cognitive effort mentioned earlier is defined over prefixes: for some observed prefix, the cognitive effort expended to parse that prefix is proportional to the total probability of all the structural analyses which cannot be compatible with the observed prefix.",Experiment/Discussion
+"This is consistent with eagerness since, if the parser were to fail to infer the incompatibility of some incompatible analysis, it would be delaying a computation, and hence not be eager.",Experiment/Discussion
+"This prefix-based linking hypothesis can be turned into one that generates predictions about word-byword reading times by comparing the total effort expended before some word to the total effort after: in particular, take the comparison to be a ratio.",Experiment/Discussion
+"Making the further assumption that the probabilities on PCFG rules are statements about how difficult it is to disconfirm each rule', then the ratio of 'This assumption is inevitable given principles 1 and 2.",Experiment/Discussion
+"If there were separate processing costs distinct from the optimization costs postulated in the grammar, then strong competence is violated.",Experiment/Discussion
+Defining all grammatical structures as equally easy to disconfirm or perceive likewise voids the gradedness of grammaticality of any content. the α value for the previous word to the α value for the current word measures the combined difficulty of disconfirming all disconfirmable structures at a given word – the definition of cognitive load.,Experiment/Discussion
+"Scaling this number by taking its log gives the surprisal, and defines a word-based measure of cognitive effort in terms of the prefix-based one.",Experiment/Discussion
+"Of course, if the language model is sensitive to hierarchical structure, then the measure of cognitive effort so defined will be structure-sensitive as well. could account for garden path structural ambiguity.",Experiment/Discussion
+"Grammar (1) generates the celebrated garden path sentence “the horse raced past the barn fell” (Bever, 1970).",Experiment/Discussion
+"English speakers hearing these words one by one are inclined to take “the horse” as the subject of “raced,” expecting the sentence to end at the word “barn.” This is the main verb reading in figure 1.",Experiment/Discussion
+The debate over the form grammar takes in the mind is clearly a fundamental one for cognitive science.,Experiment/Discussion
+"Much recent psycholinguistic work has generated a wealth of evidence that frequency of exposure to linguistic elements can affect our processing (Mitchell et al., 1995) (MacDonald et al., 1994).",Experiment/Discussion
+"However, there is no clear consensus as to the size of the elements over which exposure has clearest effect.",Experiment/Discussion
+"Gibson and Pearlmutter identify it as an “outstanding question” whether or not phrase structure statistics are necessary to explain performance effects in sentence comprehension: Are phrase-level contingent frequency constraints necessary to explain comprehension performance, or are the remaining types of constraints sufficient.",Experiment/Discussion
+"If phraselevel contingent frequency constraints are necessary, can they subsume the effects of other constraints (e.g. locality) ?",Experiment/Discussion
+"(Gibson and Pearlmutter, 1998, page 13) Equally, formal work in linguistics has demonstrated the inadequacy of context-free grammars as an appropriate model for natural language in the general case (Shieber, 1985).",Experiment/Discussion
+"To address this criticism, the same prefix probabilities could be computing using tree-adjoining grammars (Nederhof et al., 1998).",Experiment/Discussion
+"With context-free grammars serving as the implicit backdrop for much work in human sentence processing, as well as linguistics2 simplicity seems as good a guide as any in the selection of a grammar formalism.",Experiment/Discussion
+"Probabilistic context-free grammar (1) will help illustrate the way a phrase-structured language model The human sentence processing mechanism is metaphorically led up the garden path by the main verb reading, when, upon hearing “fell” it is forced to accept the alternative reduced relative reading shown in figure 2.",Experiment/Discussion
+"The confusion between the main verb and the reduced relative readings, which is resolved upon hearing “fell” is the empirical phenomenon at issue.",Experiment/Discussion
+"As the parse trees indicate, grammar (1) analyzes reduced relative clauses as a VP adjoined to an NP3.",Experiment/Discussion
+In one sample of parsed text4 such adjunctions are about 7 times less likely than simple NPs made up of a determiner followed by a noun.,Experiment/Discussion
+The probabilities of the other crucial rules are likewise estimated by their relative frequencies in the sample.,Experiment/Discussion
+This simple grammar exhibits the essential character of the explanation: garden paths happen at points where the parser can disconfirm alternatives that together comprise a great amount of probability.,Experiment/Discussion
+Note the category ambiguity present with raced which can show up as both a past-tense verb (VBD) and a past participle (VBN).,Experiment/Discussion
+Figure 3 shows the reading time predictions5 derived via the linking hypothesis that reading time at word n is proportional to the surprisal log (αα−1).,Experiment/Discussion
+"At “fell,” the parser garden-paths: up until that point, both the main-verb and reduced-relative structures are consistent with the input.",Experiment/Discussion
+"The prefix probability before “fell” is scanned is more than 10 times greater than after, suggesting that the probability mass of the analyses disconfirmed at that point was indeed great.",Experiment/Discussion
+"In fact, all of the probability assigned to the main-verb structure is now lost, and only parses that involve the low-probability NP rule survive – a rule introduced 5 words back.",Experiment/Discussion
+"If this garden path effect is truly a result of both the main verb and the reduced relative structures being simultaneously available up until the final verb, 5Whether the quantitative values of the predicted reading times can be mapped onto a particular experiment involves taking some position on the oft-observed (Gibson and Sch¨utze, 1999) imperfect relationship between corpus frequency and psychological norms. then the effect should disappear when words intervene that cancel the reduced relative interpretation early on.",Experiment/Discussion
+"To examine this possibility, consider now a different example sentence, this time from the language of grammar (2).",Experiment/Discussion
+The probabilities in grammar (2) are estimated from the same sample as before.,Experiment/Discussion
+"It generates a sentence composed of words actually found in the sample, “the banker told about the buy-back resigned.” This sentence exhibits the same reduced relative clause structure as does “the horse raced past the barn fell.” Grammar (2) also generates6 the subject relative “the banker who was told about the buy-back resigned.” Now a comparison of two conditions is possible.",Experiment/Discussion
+"RC only the banker who was told about the buyback resigned The words who was cancel the main verb reading, and should make that condition easier to process.",Experiment/Discussion
+This asymmetry is borne out in graphs 4 and 5.,Experiment/Discussion
+At “resigned” the probabilistic Earley parser predicts less reading time in the subject relative condition than in the reduced relative condition.,Experiment/Discussion
+"This comparison verifies that the same sorts of phenomena treated in reanalysis and bounded parallelism parsing theories fall out as cases of the present, total parallelism theory.",Experiment/Discussion
+"Although they used frequency estimates provided by corpus data, the previous two grammars were partially hand-built.",Experiment/Discussion
+They used a subset of the rules found in the sample of parsed text.,Experiment/Discussion
+A grammar including all rules observed in the entire sample supports the same sort of reasoning.,Experiment/Discussion
+"In this grammar, instead of just 2 NP rules there are 532, along with 120 S rules.",Experiment/Discussion
+"Many of these generate analyses compatible with prefixes of the reduced relative clause at various points during parsing, so the expectation is that the parser will be disconfirming many more hypotheses at each word than in the simpler example.",Experiment/Discussion
+Figure 6 shows the reading time predictions derived from this much richer grammar.,Experiment/Discussion
+"Because the terminal vocabulary of this richer grammar is so much larger, a comparatively large amount of information is conveyed by the nouns “banker” and “buy-back” leading to high surprisal values at those words.",Experiment/Discussion
+"However, the garden path effect is still observable at “resigned” where the prefix probability ratio is nearly 10 times greater than at either of the nouns.",Experiment/Discussion
+"Amid the lexical effects, the probabilistic Earley parser is affected by the same structural ambiguity that affects English speakers.",Experiment/Discussion
+"The same kind of explanation supports an account of the subject-object relative asymmetry (cf. references in (Gibson, 1998)) in the processing of unreduced relative clauses.",Results/Conclusion
+"Since the Earley parser is designed to work with context-free grammars, the following example grammar adopts a GPSG-style analysis of relative clauses (Gazdar et al., 1985, page 155).",Results/Conclusion
+The estimates of the ratios for the two S[+R] rules are obtained by counting the proportion of subject relatives among all relatives in the Treebank’s parsed Brown corpus7.,Results/Conclusion
+Grammar (3) generates both subject and object relative clauses.,Results/Conclusion
+S[+R] → NP[+R] VP is the rule that generates subject relatives and S[+R] → NP[+R] S/NP generates object relatives.,Results/Conclusion
+One might expect there to be a greater processing load for object relatives as soon as enough lexical material is present to determine that the sentence is in fact an object relatives.,Results/Conclusion
+The same probabilistic Earley parser (modified to handle null-productions) explains this asymmetry in the same way as it explains the garden path effect.,Results/Conclusion
+"Its predictions, under the same linking hypothesis as in the previous cases, are depicted in graphs 7 and 8.",Results/Conclusion
+The mean surprisal for the object relative is about 5.0 whereas the mean surprisal for the subject relative is about 2.1.,Results/Conclusion
+These examples suggest that a “total-parallelism” parsing theory based on probabilistic grammar can characterize some important processing phenomena.,Results/Conclusion
+"In the domain of structural ambiguity in particular, the explanation is of a different kind than in traditional reanalysis models: the order of processing is not theoretically significant, but the estimate of its magnitude at each point in a sentence is.",Results/Conclusion
+"Results with empirically-derived grammars suggest an affirmative answer to Gibson and Pearlmutter’s quessThe difference in probability between subject and object rules could be due to the work necessary to set up storage for the filler, effectively recapitulating the HOLD Hypothesis (Wanner and Maratsos, 1978, page 119) tion: phrase-level contingent frequencies can do the work formerly done by other mechanisms.",Results/Conclusion
+"Pursuit of methodological principles 1, 2 and 3 has identified a model capable of describing some of the same phenomena that motivate psycholinguistic interest in other theoretical frameworks.",Results/Conclusion
+"Moreover, this recommends probabilistic grammars as an attractive possibility for psycholinguistics by providing clear, testable predictions and the potential for new mathematical insights.",Results/Conclusion

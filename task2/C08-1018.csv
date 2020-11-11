@@ -1,304 +1,304 @@
 col1,col2
-In this paper we generalise the sentence compression task.,{}
-"Rather than sim ply shorten a sentence by deleting words or constituents, as in previous work, we rewrite it using additional operations such as substitution, reordering, and insertion.",{}
-We present a new corpus that is suitedto our task and a discriminative tree-to tree transduction model that can naturallyaccount for structural and lexical mis matches.,{}
-"The model incorporates a novelgrammar extraction method, uses a lan guage model for coherent output, and canbe easily tuned to a wide range of compres sion specific loss functions.",{}
-Automatic sentence compression can be broadly described as the task of creating a grammaticalsummary of a single sentence with minimal information loss.,"{'title': 'Introduction', 'number': '1'}"
-"It has recently attracted much attention, in part because of its relevance to applications.","{'title': 'Introduction', 'number': '1'}"
-"Examples include the generation of sub titles from spoken transcripts (Vandeghinste and Pan, 2004), the display of text on small screens such as mobile phones or PDAs (Corston-Oliver, 2001), and, notably, summarisation (Jing, 2000; Lin, 2003).","{'title': 'Introduction', 'number': '1'}"
-"Most prior work has focused on a specific instantiation of sentence compression, namely word deletion.","{'title': 'Introduction', 'number': '1'}"
-"Given an input sentence of words, w 1 , w 2 . . .","{'title': 'Introduction', 'number': '1'}"
-"w n , a compression is formed by dropping any subset of these words (Knight c ? 2008.","{'title': 'Introduction', 'number': '1'}"
-Licensed under the Creative CommonsAttribution-Noncommercial-Share Alike 3.0 Unported li cense (http://creativecommons.org/licenses/by-nc-sa/3.0/).,"{'title': 'Introduction', 'number': '1'}"
-Some rights reserved.,"{'title': 'Introduction', 'number': '1'}"
-"and Marcu, 2002).","{'title': 'Introduction', 'number': '1'}"
-"The simplification renders the task computationally feasible, allowing efficient decoding using a dynamic program (Knight andMarcu, 2002; Turner and Charniak, 2005; McDon ald, 2006).","{'title': 'Introduction', 'number': '1'}"
-"Furthermore, constraining the problemto word deletion affords substantial modeling flexibility.","{'title': 'Introduction', 'number': '1'}"
-"Indeed, a variety of models have been successfully developed for this task ranging from in stantiations of the noisy-channel model (Knight and Marcu, 2002; Galley and McKeown, 2007;Turner and Charniak, 2005), to large-margin learn ing (McDonald, 2006; Cohn and Lapata, 2007), and Integer Linear Programming (Clarke, 2008).","{'title': 'Introduction', 'number': '1'}"
-"However, the simplification also renders the tasksomewhat artificial.","{'title': 'Introduction', 'number': '1'}"
-"There are many rewrite operations that could compress a sentence, besides deletion, including reordering, substitution, and inser tion.","{'title': 'Introduction', 'number': '1'}"
-"In fact, professional abstractors tend to use these operations to transform selected sentences from an article into the corresponding summary sentences (Jing, 2000).","{'title': 'Introduction', 'number': '1'}"
-"Therefore, in this paper we consider sentence compression from a more general perspective and generate abstracts rather than extracts.","{'title': 'Introduction', 'number': '1'}"
-"In this framework, the goal is to find a summary of theoriginal sentence which is grammatical and conveys the most important information without necessarily using the same words in the same or der.","{'title': 'Introduction', 'number': '1'}"
-"Our task is related to, but different from, paraphrase extraction (Barzilay, 2003).","{'title': 'Introduction', 'number': '1'}"
-"We must not only have access to paraphrases (i.e., rewrite rules), but also be able to combine them in order to generate new text, while attempting to produce a shorter resulting string.","{'title': 'Introduction', 'number': '1'}"
-Quirk et al (2004) present an end-to-end paraphrasing system inspired byphrase-based machine translation that can both ac quire paraphrases and use them to generate new strings.,"{'title': 'Introduction', 'number': '1'}"
-"However, their model is limited to lexical substitution ? no reordering takes place ? and is 137 lacking the compression objective.Once we move away from extractive compres sion we are faced with two problems.","{'title': 'Introduction', 'number': '1'}"
-"First, wemust find an appropriate training set for our abstractive task.","{'title': 'Introduction', 'number': '1'}"
-Compression corpora are not natu rally available and existing paraphrase corpora do not normally contain compressions.,"{'title': 'Introduction', 'number': '1'}"
-Our second problem concerns the modeling task itself.,"{'title': 'Introduction', 'number': '1'}"
-"Ideally, our learning framework should handle structural mismatches and complex rewriting operations.In what follows, we first present a new cor pus for abstractive compression which we created by having annotators compress sentences while rewriting them.","{'title': 'Introduction', 'number': '1'}"
-"Besides obtaining useful data formodeling purposes, we also demonstrate that ab stractive compression is a meaningful task.","{'title': 'Introduction', 'number': '1'}"
-We then present a tree-to-tree transducer capable of transforming an input parse tree into a compressed parse tree.,"{'title': 'Introduction', 'number': '1'}"
-"Our approach is based on synchronous tree substitution grammar (STSG, Eisner (2003)),a formalism that can account for structural mismatches, and is trained discriminatively.","{'title': 'Introduction', 'number': '1'}"
-"Specifi cally, we generalise the model of Cohn and Lapata (2007) to our abstractive task.","{'title': 'Introduction', 'number': '1'}"
-We present a noveltree-to-tree grammar extraction method which acquires paraphrases from bilingual corpora and ensure coherent output by including a ngram language model as a feature.,"{'title': 'Introduction', 'number': '1'}"
-We also develop a number of loss functions suited to the abstractive compression task.,"{'title': 'Introduction', 'number': '1'}"
-"We hope that some of the work described here might be of relevance to other gen eration tasks such as machine translation (Eisner, 2003), multi-document summarisation (Barzilay, 2003), and text simplification (Carroll et al, 1999).","{'title': 'Introduction', 'number': '1'}"
-A stumbling block to studying abstractive sentence compression is the lack of widely available corpora for training and testing.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Previous work has beenconducted almost exclusively on Ziff-Davis, a cor pus derived automatically from document abstractpairs (Knight and Marcu, 2002), or on human authored corpora (Clarke, 2008).","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Unfortunately,none of these data sources are suited to our problem since they have been produced with a single rewriting operation, namely word deletion.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Al though there is a greater supply of paraphrasing corpora, such as the Multiple-Translation Chinese (MTC) corpus 1 and theMicrosoft Research (MSR) Paraphrase Corpus (Quirk et al, 2004), they are also not ideal, since they have not been created 1 Available by the LDC, Catalog Number LDC2002T01, ISBN 1-58563-217-1.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-with compression in mind.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"They contain amplerewriting operations, however they do not explic itly target information loss.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"For the reasons just described, we created our own corpus.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"We collected 30 newspaper articles (575 sentences) from the British National Corpus (BNC) and the American News Text corpus, forwhich we obtained manual compressions.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"In or der to confirm that the task was feasible, five of these documents were initially compressed by two annotators (not the authors).","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-The annotators weregiven instructions that explained the task and defined sentence compression with the aid of examples.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"They were asked to paraphrase while preserv ing the most important information and ensuring the compressed sentences remained grammatical.They were encouraged to use any rewriting opera tions that seemed appropriate, e.g., to delete words, add new words, substitute them or reorder them.Assessing inter-annotator agreement is notori ously difficult for paraphrasing tasks (Barzilay, 2003) since there can be many valid outputs for a given input.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-Also our task is doubly subjective in deciding which information to remove from the sentence and how to rewrite it.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"In default of an agreement measure that is well suited to the task and takes both decisions into account, we assessedthem separately.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-We first examined whether the annotators compressed at a similar level.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-The com pression rate was 56% for one annotator and 54% for the other.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"2 We also assessed whether theyagreed in their rewrites by measuring BLEU (Pap ineni et al, 2002).","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"The inter-annotator BLEU score was 23.79%, compared with the source agreement BLEU of only 13.22%.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-Both the compression rateand BLEU score indicate that the task is welldefined and the compressions valid.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-The remaining 25 documents were compressed by a single an notator to ensure consistency.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-All our experiments used the data from this annotator.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-3Table 1 illustrates some examples from our corpus.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"As can be seen, some sentences contain a single rewrite operation.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"For instance, a PP is para phrased with a genitive (see (1)), a subordinate clause with a present participle (see (2)), a passive sentence with an active one (see (3)).","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"However, in most cases many rewrite decisions take place allat once.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-Consider sentence (4).,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Here, the conjunc tion high winds and snowfalls is abbreviated to 2 The term ?compression rate?","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-refers to the percentage of words retained in the compression.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-3 Available from http://homepages.inf.ed.ac.uk/ tcohn/paraphrase.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-138 1a.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-The future of the nation is in your hands.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-1b.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-The nation?s future is in your hands.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-2a.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"As he entered a polling booth in Katutura, he said.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-2b.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Entering a polling booth in Katutura, he said.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-3a.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Mr Usta was examined by Dr Raymond Crockett, a Harley Street physician specialising in kidney disease.3b.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Dr Raymond Crockett, a Harley Street physician, ex amined Mr Usta.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-4a.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"High winds and snowfalls have, however, grounded at a lower level the powerful US Navy Sea Stallion helicopters used to transport the slabs.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-4b.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Bad weather, however, has grounded the helicopters transporting the slabs.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-5a.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"To experts in international law and relations, the USaction demonstrates a breach by a major power of in ternational conventions.5b.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"Experts say the US are in breach of international con ventions.Table 1: Compression examples from our corpus; (a) sen tences are the source, (b) sentences the target.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-bad weather and the infinitive clause to transport to the present participle transporting.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-Note that the prenominal modifiers US Navy Sea Stallion and the verb used have been removed.,"{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-"In sentence (5), the verb say is added and the NP a breach by amajor power of international conventions is para phrased by the sentence the US are in breach of international conventions.","{'title': 'Abstractive Compression Corpus. ', 'number': '2'}"
-Our work builds on the model developed by Cohnand Lapata (2007).,"{'title': 'Basic Model. ', 'number': '3'}"
-They formulate sentence compression as a tree-to-tree rewriting task.,"{'title': 'Basic Model. ', 'number': '3'}"
-"A syn chronous tree substitution grammar (STSG, Eisner (2003)) licenses the space of all possible rewrites.","{'title': 'Basic Model. ', 'number': '3'}"
-"Each grammar rule is assigned a weight, and these weights are learnt in discriminative training.","{'title': 'Basic Model. ', 'number': '3'}"
-"For prediction, a specialised generation algorithmfinds the best scoring compression using the grammar rules.","{'title': 'Basic Model. ', 'number': '3'}"
-Cohn and Lapata apply this model to ex tractive compression with state-of-the-art results.,"{'title': 'Basic Model. ', 'number': '3'}"
-This model is appealing for our task for severalreasons.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Firstly, the synchronous grammar provides expressive power to model consistent syntactic effects such as reordering, changes in nonterminal categories and lexical substitution.","{'title': 'Basic Model. ', 'number': '3'}"
-"Sec ondly, it is discriminatively trained, which allowsfor the incorporation of all manner of powerful features.","{'title': 'Basic Model. ', 'number': '3'}"
-"Thirdly, the learning framework can be tai lored to the task by choosing an appropriate loss function.","{'title': 'Basic Model. ', 'number': '3'}"
-"In the following we describe their model in more detail with emphasis on the synchronous grammar, the model structure, and the predictionand training algorithms.","{'title': 'Basic Model. ', 'number': '3'}"
-Section 4 presents our ex tensions and modifications.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Grammar The grammar defines a space oftree pairs over uncompressed and compressed sen Grammar rules: ?S, S?","{'title': 'Basic Model. ', 'number': '3'}"
-"?NP 1 VBD 2 NP 3 , NP 1 VBD 2 NP 3 ? ?S, S?","{'title': 'Basic Model. ', 'number': '3'}"
-"?NP 1 VBD 2 NP 3 , NP 3 was VBN 2 by NP 1 ? ?NP, NP?","{'title': 'Basic Model. ', 'number': '3'}"
-"?he, him?","{'title': 'Basic Model. ', 'number': '3'}"
-"?NP, NP?","{'title': 'Basic Model. ', 'number': '3'}"
-"?he, he?","{'title': 'Basic Model. ', 'number': '3'}"
-"?NP, NP?","{'title': 'Basic Model. ', 'number': '3'}"
-"?he, Peter?","{'title': 'Basic Model. ', 'number': '3'}"
-"?VBD, VBN?","{'title': 'Basic Model. ', 'number': '3'}"
-"?sang, sung?","{'title': 'Basic Model. ', 'number': '3'}"
-"?NP, NP?","{'title': 'Basic Model. ', 'number': '3'}"
-"?a song, a song?","{'title': 'Basic Model. ', 'number': '3'}"
-Input tree: [S [NP He NP [VP sang VBD [NP a DT song NN ]]] Output trees: [S [NP He] [VP sang [NP a song]]] [S [NP Him] [VP sang [NP a song]]] [S [NP Peter] [VP sang [NP a song]]] [S [NP A song] [VP was [VP sung [PP by he]]]] [S [NP A song] [VP was [VP sung [PP by him]]]] [S [NP A song] [VP was [VP sung [PP by Peter]]]] Figure 1: Example grammar and the output trees it licences for an input tree.,"{'title': 'Basic Model. ', 'number': '3'}"
-The numbered boxes in the rules denote linked variables.,"{'title': 'Basic Model. ', 'number': '3'}"
-Pre-terminal categories are not shown for the output trees for the sake of brevity.,"{'title': 'Basic Model. ', 'number': '3'}"
-"tences, which we refer to henceforth as the source and target.","{'title': 'Basic Model. ', 'number': '3'}"
-We use the grammar to find the set of sister target sentences for a given source sentence.Figure 1 shows a toy grammar and the set of possi ble target (output) trees for the given source (input)tree.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Each output tree is created by applying a se ries of grammar rules, where each rule matches a fragment of the source and creates a fragment of the target tree.","{'title': 'Basic Model. ', 'number': '3'}"
-A rule in the grammar consists of a pair of elementary trees and a mapping between the variables (frontier non-terminals) in both trees.,"{'title': 'Basic Model. ', 'number': '3'}"
-A derivation is a sequence of rules yielding a target tree with no remaining variables.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Cohn and Lapata (2007) extract a STSG froma parsed, word-aligned corpus of source and target sentences.","{'title': 'Basic Model. ', 'number': '3'}"
-"Specifically, they extract the mini mal set of synchronous rules which can describe each tree pair.","{'title': 'Basic Model. ', 'number': '3'}"
-"These rules are minimal in the sensethat they cannot be made smaller (e.g., by replac ing a subtree with a variable) while still honouring the word-alignment.","{'title': 'Basic Model. ', 'number': '3'}"
-Decoding The grammar allows us to search for all sister trees for a given tree.,"{'title': 'Basic Model. ', 'number': '3'}"
-"The decoder maximises over this space: y ? =argmax y:S(y)=x ?(y) (1) where ?(y) = ? r?y ??(r, S(y)), ??","{'title': 'Basic Model. ', 'number': '3'}"
-"(2) Here x is the source (uncompressed) tree, y is a derivation which produces the source tree, S(y) = x, and a target tree, T (y), 4and r is a gram mar rule.","{'title': 'Basic Model. ', 'number': '3'}"
-The ? function scores the derivation and 4 Equation 1 optimises over derivations rather than target trees to allow tractable inference.,"{'title': 'Basic Model. ', 'number': '3'}"
-139 is defined in (2) as a linear function over the rules used.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Each rule?s score is an inner product between its feature vector, ?(r,y S), and the model parame ters, ?.","{'title': 'Basic Model. ', 'number': '3'}"
-"The feature functions are set by hand, while the model parameters are learned in training.","{'title': 'Basic Model. ', 'number': '3'}"
-The maximisation problem in (1) can be solved efficiently using a dynamic program.,"{'title': 'Basic Model. ', 'number': '3'}"
-Derivations will have common sub-structures whenever they transduce the same source sub-tree into a target sub-tree.,"{'title': 'Basic Model. ', 'number': '3'}"
-"This is captured in a chart, leading to an efficient bottom-up algorithm.","{'title': 'Basic Model. ', 'number': '3'}"
-The asymptotic time complexity of this search is O(SR) where S is the number of source nodes andR is the number of rules matching a given node.,"{'title': 'Basic Model. ', 'number': '3'}"
-"Training The model is trained using SVM struct , a large margin method for structured output problems (Joachims, 2005; Tsochantaridis et al, 2005).","{'title': 'Basic Model. ', 'number': '3'}"
-"This training method allows the use of a configurable loss function, ?(y ? ,y), whichmeasures the extent to which the model?s predic tion, y, differs from the reference, y ? .","{'title': 'Basic Model. ', 'number': '3'}"
-Central.,"{'title': 'Basic Model. ', 'number': '3'}"
-to training is the search for a derivation which is both high scoring and has high loss compared to the gold standard.,"{'title': 'Basic Model. ', 'number': '3'}"
-5 This requires finding the maximiser of H(y) in one of: H s = (1?,"{'title': 'Basic Model. ', 'number': '3'}"
-"??(y ? )??(y), ??)?(y ? ,y) H m = ?(y ? ,y)?","{'title': 'Basic Model. ', 'number': '3'}"
-"??(y ? )??(y), ??","{'title': 'Basic Model. ', 'number': '3'}"
-"(3) where the subscripts s and m denote slack and margin rescaling, which are different formulations of the training problem (see Tsochantaridis et al (2005) and Taskar et al (2003) for details).","{'title': 'Basic Model. ', 'number': '3'}"
-The search for the maximiser of H(y) in (3) requires the tracking of the loss value.,"{'title': 'Basic Model. ', 'number': '3'}"
-"This can be achieved by extending the decoding algorithmsuch that the chart cells also store the loss param eters (e.g., for precision, the number of true and false positives (Joachims, 2005)).","{'title': 'Basic Model. ', 'number': '3'}"
-"Consequently, this extension leads to a considerably higher time and space complexity compared to decoding.","{'title': 'Basic Model. ', 'number': '3'}"
-"For example, with precision loss the time complexity is O(S 3 R) as each step must consider O(S 2) pos sible loss parameter values.","{'title': 'Basic Model. ', 'number': '3'}"
-In this section we present our extensions of Cohnand Lapata?s (2007) model.,"{'title': 'Extensions. ', 'number': '4'}"
-The latter was de signed with the simpler extractive compression in mind and cannot be readily applied to our task.,"{'title': 'Extensions. ', 'number': '4'}"
-5 Spurious ambiguity in the grammar means that there areoften many derivations linking the source and target.,"{'title': 'Extensions. ', 'number': '4'}"
-"We fol low Cohn and Lapata (2007) by choosing the derivation with the most rules, which should provide good generalisation.","{'title': 'Extensions. ', 'number': '4'}"
-Grammar It is relatively straightforward to extract a grammar from our corpus.,"{'title': 'Extensions. ', 'number': '4'}"
-"This grammar will contain many rules encoding deletions and structural transformations but there will be many unobserved paraphrases, no matter how good the extraction method (recall that our corpus consistssolely of 565 sentences).","{'title': 'Extensions. ', 'number': '4'}"
-"For this reason, we ex tract a grammar from our abstractive corpus in the manner of Cohn and Lapata (2007) (see Section 5for details) and augment it with a larger grammar obtained from a parallel bilingual corpus.","{'title': 'Extensions. ', 'number': '4'}"
-"Crucially, our second grammar will not contain com pression rules, just paraphrasing ones.","{'title': 'Extensions. ', 'number': '4'}"
-We leave itto the model to learn which rules serve the com pression objective.,"{'title': 'Extensions. ', 'number': '4'}"
-"Our paraphrase grammar extraction method uses bilingual pivoting to learn paraphrases over syntax tree fragments, i.e., STSG rules.","{'title': 'Extensions. ', 'number': '4'}"
-Pivoting treats the paraphrasing problem as a two-stage translation process.,"{'title': 'Extensions. ', 'number': '4'}"
-"Some English text is translated to a foreign language, and then translated back into English (Bannard and Callison-Burch, 2005): p(e ? |e) = ? f p(e ? |f)p(f |e) (4) where p(f |e) is the probability of translating an English string e into a foreign string f and p(e ?|f) the probability of translating the same for eign string into some other English string e ? .","{'title': 'Extensions. ', 'number': '4'}"
-We.,"{'title': 'Extensions. ', 'number': '4'}"
-"thus obtain English-English translation probabili ties p(e ? |e) by marginalizing out the foreign text.Instead of using strings (Bannard and CallisonBurch, 2005), we use elementary trees on the En glish side, resulting in a monolingual STSG.","{'title': 'Extensions. ', 'number': '4'}"
-"Weobtain the elementary trees and foreign strings us ing the GKHM algorithm (Galley et al, 2004).","{'title': 'Extensions. ', 'number': '4'}"
-"This takes as input a bilingual word-aligned corpus with trees on one side, and finds the minimal set of tree fragments and their corresponding strings which is consistent with the word alignment.","{'title': 'Extensions. ', 'number': '4'}"
-This process is illustrated in Figure 2 where the aligned pair on the left gives rise to the rules shown onthe right.,"{'title': 'Extensions. ', 'number': '4'}"
-Note that the English rules and for eign strings shown include variable indices where they have been generalised.,"{'title': 'Extensions. ', 'number': '4'}"
-We estimate p(f |e) and p(e ? |f) from the set of tree-to-string rules and then then pivot each tree fragment to produce STSG rules.,"{'title': 'Extensions. ', 'number': '4'}"
-Figure 3 illustrates the process for the [VP does not VP] fragment.,"{'title': 'Extensions. ', 'number': '4'}"
-Modeling and Decoding Our grammar is much larger and noisier than a grammar extractedsolely for deletion-based compression.,"{'title': 'Extensions. ', 'number': '4'}"
-"So, in order to encourage coherence and inform lexical se 140 SNP VP VBZ does RB goHe not ne pasIl va PRP VP NP He Il PRP go vaVP VP VBZ does RB not ne pas VP S NP VP 1 2 1 1 1 2 Figure 2: Tree-to-string grammar extraction using the GHKM algorithm, showing the aligned sentence pair and the resulting rules as tree fragments and their matching strings.","{'title': 'Extensions. ', 'number': '4'}"
-The boxed numbers denote variables.,"{'title': 'Extensions. ', 'number': '4'}"
-VP VBZ does RB not ne pas VP n ' ne ne peut ...,"{'title': 'Extensions. ', 'number': '4'}"
-VP MD will RB not VB VP VBP do RB not VB 1 1 1 1 1 1 1 Figure 3: Pivoting the [VP does not VP] fragment.,"{'title': 'Extensions. ', 'number': '4'}"
-lection we incorporate a ngram language model(LM) as a feature.,"{'title': 'Extensions. ', 'number': '4'}"
-"This requires adapting the scor ing function, ?, in (2) to allow features over target ngrams: ?(y) = ? r?y ??(r, S(y)), ??+ ? m?T (y) ??(m,S(y)), ??","{'title': 'Extensions. ', 'number': '4'}"
-(5)where m are the ngrams and ? is a new fea ture function over these ngrams (we use only one ngram feature: the trigram log-probability).,"{'title': 'Extensions. ', 'number': '4'}"
-"Sadly, the scoring function in (5) renders the chart-based search used for training and decoding intractable.In order to provide sufficient context to the chart based algorithm, we must also store in each chart cell the n ? 1 target tokens at the left and right edges of its yield.","{'title': 'Extensions. ', 'number': '4'}"
-"This is equivalent to using as our grammar the intersection between the original grammar and the ngram LM (Chiang, 2007), and increases the decoding complexity to an infeasible O(SRL 2(n?1)V )whereL is the size of the lexicon.","{'title': 'Extensions. ', 'number': '4'}"
-"We adopt a popular approach in syntax-inspiredmachine translation to address this problem (Chi ang, 2007).","{'title': 'Extensions. ', 'number': '4'}"
-The idea is to use a beam-search overthe intersection grammar coupled with the cube pruning heuristic.,"{'title': 'Extensions. ', 'number': '4'}"
-"The beam limits the number ofitems in a given chart cell to a fixed constant, re gardless of the number of possible LM contexts and non-terminal categories.","{'title': 'Extensions. ', 'number': '4'}"
-"Cube-pruning furtherlimits the number of items considered for inclu sion in the beam, reducing the time complexity to a more manageable O(SRBV ) where B is the beam size.","{'title': 'Extensions. ', 'number': '4'}"
-We refer the interested reader to Chiang (2007) for details.,"{'title': 'Extensions. ', 'number': '4'}"
-Training The extensions to the model in (5)also necessitate changes in the training proce dure.,"{'title': 'Extensions. ', 'number': '4'}"
-Recall that training the basic model of Cohn and Lapata (2007) requires finding the maximiserof H(y) in (3).,"{'title': 'Extensions. ', 'number': '4'}"
-Their model uses a chart-based al gorithm for this purpose.,"{'title': 'Extensions. ', 'number': '4'}"
-"As in decoding we also use a beam search for training, thereby avoiding the exponential time complexity of exact search.The beam search requires an estimate of the qual ity for incomplete derivations.","{'title': 'Extensions. ', 'number': '4'}"
-"We use the margin rescaling objective, H m in (3), and approximatethe loss using the current (incomplete) loss param eter values in each chart cell.","{'title': 'Extensions. ', 'number': '4'}"
-We use a wide beam of 200 unique items or 500 items in total to reduce the impact of the approximation.,"{'title': 'Extensions. ', 'number': '4'}"
-Our loss functions are tailored to the task anddraw inspiration from metrics developed for ex tractive compression but also for summarisation and machine translation.,"{'title': 'Extensions. ', 'number': '4'}"
-They are based on the Hamming distance over unordered bags of items.,"{'title': 'Extensions. ', 'number': '4'}"
-"This measures the number of predicted items that did not appear in the reference, along with a penalty for short output: ? hamming (y ? ,y) = f+max (l ?","{'title': 'Extensions. ', 'number': '4'}"
-"(t+ f), 0) (6) where t and f are the number of true and falsepositives, respectively, when comparing the pre dicted target, y, with the reference, y ? , and l isthe length of the reference.","{'title': 'Extensions. ', 'number': '4'}"
-"The second term pe nalises short output, as predicting very little or nothing would otherwise be unpenalised.","{'title': 'Extensions. ', 'number': '4'}"
-"We have three Hamming loss functions over: 1) tokens, 2) ngrams (n ? 3), or 3) CFG productions.","{'title': 'Extensions. ', 'number': '4'}"
-Theselosses all operate on unordered bags and therefore might reward erroneous predictions.,"{'title': 'Extensions. ', 'number': '4'}"
-"For ex ample, a permutation of the reference tokens has zero token-loss.","{'title': 'Extensions. ', 'number': '4'}"
-"The CFG and ngram losses have overlapping items which encode a partial order, and therefore are less affected.In addition, we developed a fourth loss func tion to measure the edit distance between themodel?s prediction and the reference, both as bags of-tokens.","{'title': 'Extensions. ', 'number': '4'}"
-This measures the number of insertionsand deletions.,"{'title': 'Extensions. ', 'number': '4'}"
-"In contrast to the previous loss func tions, this requires the true positive counts to be clipped to the number of occurrences of each type in the reference.","{'title': 'Extensions. ', 'number': '4'}"
-"The edit distance is given by: ? edit (y ? ,y) = p+ q ? 2 ? i min(p i , q i ) (7) where p and q denote the number of target tokensin the predicted and reference derivation, respec tively, and p i and q i are the counts for type i. 141 ?ADJP,NP?","{'title': 'Extensions. ', 'number': '4'}"
-"?subject [PP to NP 1 ], part [PP of NP 1 ]?","{'title': 'Extensions. ', 'number': '4'}"
-"(T) ?ADVP,RB?","{'title': 'Extensions. ', 'number': '4'}"
-"?as well, also?","{'title': 'Extensions. ', 'number': '4'}"
-"(T) ?ADJP,JJ?","{'title': 'Extensions. ', 'number': '4'}"
-"?too little, insufficient?","{'title': 'Extensions. ', 'number': '4'}"
-"(P) ?S,S? ? ?S 1 and S 2 , S 2 and S 1 ?","{'title': 'Extensions. ', 'number': '4'}"
-"(P) ?NP,NP?","{'title': 'Extensions. ', 'number': '4'}"
-"?DT 1 NN 2 , DT 1 NN 2 ?","{'title': 'Extensions. ', 'number': '4'}"
-"(S) ?NP,NP?","{'title': 'Extensions. ', 'number': '4'}"
-"?DT 1 NN 2 , NN 2 ?","{'title': 'Extensions. ', 'number': '4'}"
-"(S) Table 2: Sample grammar rules extracted from the training set (T), pivoted set (P) or generated from the source (S).","{'title': 'Extensions. ', 'number': '4'}"
-In this section we present our experimental set up for assessing the performance of our model.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"We give details on the corpora and grammars we used, model parameters and features, 6 the baselineused for comparison with our approach, and ex plain how our system output was evaluated.","{'title': 'Experimental Design. ', 'number': '5'}"
-"Grammar Extraction Our grammar usedrules extracted directly from our compression cor pus (the training partition, 480 sentences) and a bilingual corpus (see Table 2 for examples).","{'title': 'Experimental Design. ', 'number': '5'}"
-"Theformer corpus was word-aligned using the Berke ley aligner (Liang et al, 2006) initialised with a lexicon of word identity mappings, and parsed with Bikel?s (2002) parser.","{'title': 'Experimental Design. ', 'number': '5'}"
-From this we extracted grammar rules following the technique described in Cohn and Lapata (2007).,"{'title': 'Experimental Design. ', 'number': '5'}"
-For the pivot grammarwe use the French-English Europarl v2 which con tains approximately 688K sentences.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"Again, the corpus was aligned using the Berkeley aligner and the English side was parsed with Bikel?s parser.","{'title': 'Experimental Design. ', 'number': '5'}"
-Weextracted tree-to-string rules using our implementation of the GHKM method.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"To ameliorate the effects of poor alignments on the grammar, we re moved singleton rules before pivoting.","{'title': 'Experimental Design. ', 'number': '5'}"
-"In addition to the two grammars described, wescanned the source trees in the compression cor pus and included STSG rules to copy each CFG production or delete up to two of its children.","{'title': 'Experimental Design. ', 'number': '5'}"
-This is illustrated in Table 2 where the last two rules are derived from the CFG production NP?DT NN inthe source tree.,"{'title': 'Experimental Design. ', 'number': '5'}"
-All trees are rooted with a distinguished TOP non-terminal which allows the ex plicit modelling of sentence spanning sub-trees.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"These grammars each had 44,199 (pivot), 7,813 (train) and 22,555 (copy) rules.","{'title': 'Experimental Design. ', 'number': '5'}"
-"We took their union, resulting in 58,281 unique rules and 13,619 unique source elementary trees.","{'title': 'Experimental Design. ', 'number': '5'}"
-"Model Parameters Our model was trainedon 480 sentences, 36 sentences were used for de velopment and 59 for testing.","{'title': 'Experimental Design. ', 'number': '5'}"
-"We used a variety of syntax-based, lexical and compression-specific 6 The software and corpus can be downloaded from http://homepages.inf.ed.ac.uk/tcohn/paraphrase.","{'title': 'Experimental Design. ', 'number': '5'}"
-"For every rule: origin of rule for each origin, o: log p o (s, t), log p o (s|t), log p o (t|s) s R , t R , s R ? t R s, t, s ? t, s = t both s and t are pre-terminals and s = t or s 6= t number of terminals/variables/dropped variables ordering of variables as numbers/non-terminals non-terminal sequence of vars identical after reordering pre-terminal or terminal sequences are identical number/identity of common/inserted/dropped terminals source is shorter/longer than target target is a compression of the source using deletes For every ngram : log p(w i |w i?1 i?(n?1) ) Table 3: The feature set.","{'title': 'Experimental Design. ', 'number': '5'}"
-"Rules were drawn from the training set, bilingual pivoting and directly from the source trees.","{'title': 'Experimental Design. ', 'number': '5'}"
-"s andt are the source and target elementary trees in a rule, the sub script R references the root non-terminal, w are the terminals in the target tree.","{'title': 'Experimental Design. ', 'number': '5'}"
-"features (196,419 in total).","{'title': 'Experimental Design. ', 'number': '5'}"
-These are summarised in Table 3.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"We also use a trigram language model trained on the BNC (100 million words) using the SRI Language Modeling toolkit (Stolcke, 2002), with modified Kneser-Ney smoothing.An important parameter in our modeling frame work is the choice of loss function.","{'title': 'Experimental Design. ', 'number': '5'}"
-We evaluatedthe loss functions presented in Section 4 on the de velopment set.,"{'title': 'Experimental Design. ', 'number': '5'}"
-We ran our system for each of the four loss functions and asked two human judgesto rate the output on a scale of 1 to 5.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"The Ham ming loss over tokens performed best with a meanrating of 3.18, closely followed by the edit dis tance (3.17).","{'title': 'Experimental Design. ', 'number': '5'}"
-We chose the former over the latter as it is less coarsely approximated during search.,"{'title': 'Experimental Design. ', 'number': '5'}"
-Baseline There are no existing models thatcan be readily trained on our abstractive com pression data.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"Instead, we use Cohn and Lapata?s (2007) extractive model as a baseline.","{'title': 'Experimental Design. ', 'number': '5'}"
-"The latter was trained on an extractive compression corpus drawn from the BNC (Clarke, 2008) and tunedto provide a similar compression rate to our sys tem.","{'title': 'Experimental Design. ', 'number': '5'}"
-"Note that their model is a strong baseline: it performed significantly better than competitive approaches (McDonald, 2006) across a variety of compression corpora.Evaluation Methodology Sentence compres sion output is commonly evaluated by eliciting human judgments.","{'title': 'Experimental Design. ', 'number': '5'}"
-"Following Knight and Marcu(2002), we asked participants to rate the grammati cality of the target compressions and howwell they preserved the most important information from the source.","{'title': 'Experimental Design. ', 'number': '5'}"
-In both cases they used a five pointrating scale where a high number indicates better performance.,"{'title': 'Experimental Design. ', 'number': '5'}"
-We randomly selected 30 sen tences from the test portion of our corpus.,"{'title': 'Experimental Design. ', 'number': '5'}"
-These 142 Models Grammaticality Importance CompR Extract 3.10 ? 2.43 ? 82.5 Abstract 3.38 ? 2.85 ? ?,"{'title': 'Experimental Design. ', 'number': '5'}"
-79.2 Gold 4.51 4.02 58.4Table 4: Mean ratings on compression output elicited by hu mans; ? : significantly different from the gold standard; ?: sig nificantly different from the baseline.,"{'title': 'Experimental Design. ', 'number': '5'}"
-sentences were compressed automatically by our model and the baseline.,"{'title': 'Experimental Design. ', 'number': '5'}"
-We also included goldstandard compressions.,"{'title': 'Experimental Design. ', 'number': '5'}"
-Our materials thus con sisted of 90 (30 ? 3) source-target sentences.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"We collected ratings from 22 unpaid volunteers, all self reported native English speakers.","{'title': 'Experimental Design. ', 'number': '5'}"
-Both studies were conducted over the Internet using a custom built web interface.,"{'title': 'Experimental Design. ', 'number': '5'}"
-"Our results are summarised in Table 4, where we show the mean ratings for our system (Abstract), the baseline (Extract), and the gold standard.","{'title': 'Results. ', 'number': '6'}"
-We first performed an Analysis of Variance (ANOVA)to examine the effect of different system compres sions.,"{'title': 'Results. ', 'number': '6'}"
-The ANOVA revealed a reliable effect on both grammaticality and importance (significant over both subjects and items (p < 0.01)).We next examined in more detail between system differences.,"{'title': 'Results. ', 'number': '6'}"
-Post-hoc Tukey tests revealed that our abstractive model received significantlyhigher ratings than the baseline in terms of impor tance (?,"{'title': 'Results. ', 'number': '6'}"
-< 0.01).,"{'title': 'Results. ', 'number': '6'}"
-We conjecture that this is due to the synchronous grammar we employ which is larger and more expressive than the baseline.,"{'title': 'Results. ', 'number': '6'}"
-"In the extractive case, a word sequence is eitherdeleted or retained.","{'title': 'Results. ', 'number': '6'}"
-"We may, however, want to re tain the meaning of the sequence while rendering the sentence shorter, and this is precisely what our model can achieve, e.g., by allowing substitutions.As far as grammaticality is concerned, our abstractive model is numerically better than the extrac tive baseline but the difference is not statistically significant.","{'title': 'Results. ', 'number': '6'}"
-"Note that our model has to work a lotharder than the baseline to preserve grammatical ity since we allow arbitrary rewrites which maylead to agreement or tense mismatches, and selec tional preference violations.","{'title': 'Results. ', 'number': '6'}"
-"The scope for errors is greatly reduced when performing solely deletions.Finally, both the abstractive and extractive out puts are perceived as significantly worse than the gold standard both in terms of grammaticalityand importance (?","{'title': 'Results. ', 'number': '6'}"
-< 0.01).,"{'title': 'Results. ', 'number': '6'}"
-This is not surpris ing: human-authored compressions are more fluentand tend to omit genuinely superfluous informa tion.,"{'title': 'Results. ', 'number': '6'}"
-This is also mirrored in the compression ratesshown in Table 4.,"{'title': 'Results. ', 'number': '6'}"
-"When compressing, humans emO: Kurtz came from Missouri, and at the age of 14, hitch hiked to Los Angeles seeking top diving coaches.","{'title': 'Results. ', 'number': '6'}"
-"E: Kurtz came from Missouri, and at 14, hitch-hiked to Los Angeles seeking top diving coaches.","{'title': 'Results. ', 'number': '6'}"
-A: Kurtz hitch-hiked to Los Angeles seeking top diving coaches.,"{'title': 'Results. ', 'number': '6'}"
-"G: Kurtz came from Missouri, and at 14, hitch-hiked to Los Angeles seeking diving coaches.","{'title': 'Results. ', 'number': '6'}"
-O: The scheme was intended for people of poor or moderate means.,"{'title': 'Results. ', 'number': '6'}"
-E: The scheme was intended for people of poor means.,"{'title': 'Results. ', 'number': '6'}"
-A: The scheme was planned for poor people.,"{'title': 'Results. ', 'number': '6'}"
-G: The scheme was intended for the poor.,"{'title': 'Results. ', 'number': '6'}"
-"O: He died last Thursday at his home from complications following a fall, said his wife author Margo Kurtz.","{'title': 'Results. ', 'number': '6'}"
-"E: He died last at his home from complications following a fall, said wife, author Margo Kurtz.","{'title': 'Results. ', 'number': '6'}"
-A: His wife author Margo Kurtz died from complications after a decline.,"{'title': 'Results. ', 'number': '6'}"
-"G: He died from complications following a fall.O: But a month ago, she returned to Britain, taking the chil dren with her.","{'title': 'Results. ', 'number': '6'}"
-"E: She returned to Britain, taking the children.","{'title': 'Results. ', 'number': '6'}"
-A: But she took the children with him.,"{'title': 'Results. ', 'number': '6'}"
-G: But she returned to Britain with the children.,"{'title': 'Results. ', 'number': '6'}"
-"Table 5: Compression examples including human and systemoutput (O: original sentence, E: Extractive model, A: Abstrac tive model, G: gold standard) ploy not only linguistic but also world knowledge which is not accessible to our model.","{'title': 'Results. ', 'number': '6'}"
-"Although thesystem can be forced to match the human compression rate, the grammaticality and information con tent both suffer.","{'title': 'Results. ', 'number': '6'}"
-More sophisticated features could allow the system to narrow this gap.,"{'title': 'Results. ', 'number': '6'}"
-"We next examined the output of our system inmore detail by recording the number of substitu tions, deletions and insertions it performed on the test data.","{'title': 'Results. ', 'number': '6'}"
-"Deletions accounted for 67% of rewrite operations, substitutions for 27%, and insertions for 6%.","{'title': 'Results. ', 'number': '6'}"
-"Interestingly, we observe a similar ratio in the human compressions.","{'title': 'Results. ', 'number': '6'}"
-"Here, deletions arealso the most common rewrite operation (69%) fol lowed by substitutions (24%), and insertions (7%).","{'title': 'Results. ', 'number': '6'}"
-"The ability to perform substitutions and insertions increases the compression potential of our system, but can also result in drastic meaning changes.","{'title': 'Results. ', 'number': '6'}"
-In most cases (63%) the compressions produced byour system did not distort the meaning of the orig inal.,"{'title': 'Results. ', 'number': '6'}"
-"Humans are clearly better at this, 96.5% of their compressions were meaning preserving.","{'title': 'Results. ', 'number': '6'}"
-We illustrate example output of our system in Table 5.,"{'title': 'Results. ', 'number': '6'}"
-For comparison we also present the gold standard compressions and baseline output.,"{'title': 'Results. ', 'number': '6'}"
-In thefirst sentence the system rendered Kurtz the sub ject of hitch-hiked.,"{'title': 'Results. ', 'number': '6'}"
-At the same time it deleted the verb and its adjunct from the first conjunct (camefrom Missouri ) as well as the temporal modi fier at the age of 14 from the second conjunct.,"{'title': 'Results. ', 'number': '6'}"
-"The second sentence shows some paraphrasing: the verb intended is substituted with planned and 143 poor is now modifying people rather than means.In the third example, our system applies multi ple rewrites.","{'title': 'Results. ', 'number': '6'}"
-"It deletes last Thursday at his home,moves wife author Margo Kurtz to the subject position, and substitutes fall with decline.","{'title': 'Results. ', 'number': '6'}"
-"Unfortu nately, the compressed sentence expresses a rather different meaning from the original.","{'title': 'Results. ', 'number': '6'}"
-It is not Margo Kurtz who died but her husband.,"{'title': 'Results. ', 'number': '6'}"
-"Finally, our last sentence illustrates a counter-intuitive substitution, the pronoun her is rewritten as him.","{'title': 'Results. ', 'number': '6'}"
-This is becausethey share the French translation lui and thus piv oting learns to replace the less common word (in legal corpora) her with him.,"{'title': 'Results. ', 'number': '6'}"
-This problem could be addressed by pivoting over multiple bitexts with different foreign languages.,"{'title': 'Results. ', 'number': '6'}"
-Possible extensions and improvements to the current model are many and varied.,"{'title': 'Results. ', 'number': '6'}"
-"Firstly, ashinted at above, the model would benefit from extensive feature engineering, including source con ditioned features and ngram features besides theLM.","{'title': 'Results. ', 'number': '6'}"
-A richer grammar would also boost perfor mance.,"{'title': 'Results. ', 'number': '6'}"
-This could be found by pivoting over more bitexts in many foreign languages or making use of existing or paraphrase corpora.,"{'title': 'Results. ', 'number': '6'}"
-"Finally, we planto apply the model to other paraphrasing tasks in cluding fully abstractive document summarisation (Daum?e III and Marcu, 2002).","{'title': 'Results. ', 'number': '6'}"
-Acknowledgements The authors acknowledge the support of EPSRC (grants GR/T04540/01 and GR/T04557/01).,"{'title': 'Results. ', 'number': '6'}"
-"Special thanks to Phil Blunsom, James Clarke and Miles Osborne for their insightful suggestions.","{'title': 'Results. ', 'number': '6'}"
+In this paper we generalise the sentence compression task.,Introduction
+"Rather than sim ply shorten a sentence by deleting words or constituents, as in previous work, we rewrite it using additional operations such as substitution, reordering, and insertion.",Introduction
+We present a new corpus that is suitedto our task and a discriminative tree-to tree transduction model that can naturallyaccount for structural and lexical mis matches.,Introduction
+"The model incorporates a novelgrammar extraction method, uses a lan guage model for coherent output, and canbe easily tuned to a wide range of compres sion specific loss functions.",Introduction
+Automatic sentence compression can be broadly described as the task of creating a grammaticalsummary of a single sentence with minimal information loss.,Experiment/Discussion
+"It has recently attracted much attention, in part because of its relevance to applications.",Experiment/Discussion
+"Examples include the generation of sub titles from spoken transcripts (Vandeghinste and Pan, 2004), the display of text on small screens such as mobile phones or PDAs (Corston-Oliver, 2001), and, notably, summarisation (Jing, 2000; Lin, 2003).",Experiment/Discussion
+"Most prior work has focused on a specific instantiation of sentence compression, namely word deletion.",Experiment/Discussion
+"Given an input sentence of words, w 1 , w 2 . . .",Experiment/Discussion
+"w n , a compression is formed by dropping any subset of these words (Knight c ? 2008.",Experiment/Discussion
+Licensed under the Creative CommonsAttribution-Noncommercial-Share Alike 3.0 Unported li cense (http://creativecommons.org/licenses/by-nc-sa/3.0/).,Experiment/Discussion
+Some rights reserved.,Experiment/Discussion
+"and Marcu, 2002).",Experiment/Discussion
+"The simplification renders the task computationally feasible, allowing efficient decoding using a dynamic program (Knight andMarcu, 2002; Turner and Charniak, 2005; McDon ald, 2006).",Experiment/Discussion
+"Furthermore, constraining the problemto word deletion affords substantial modeling flexibility.",Experiment/Discussion
+"Indeed, a variety of models have been successfully developed for this task ranging from in stantiations of the noisy-channel model (Knight and Marcu, 2002; Galley and McKeown, 2007;Turner and Charniak, 2005), to large-margin learn ing (McDonald, 2006; Cohn and Lapata, 2007), and Integer Linear Programming (Clarke, 2008).",Experiment/Discussion
+"However, the simplification also renders the tasksomewhat artificial.",Experiment/Discussion
+"There are many rewrite operations that could compress a sentence, besides deletion, including reordering, substitution, and inser tion.",Experiment/Discussion
+"In fact, professional abstractors tend to use these operations to transform selected sentences from an article into the corresponding summary sentences (Jing, 2000).",Experiment/Discussion
+"Therefore, in this paper we consider sentence compression from a more general perspective and generate abstracts rather than extracts.",Experiment/Discussion
+"In this framework, the goal is to find a summary of theoriginal sentence which is grammatical and conveys the most important information without necessarily using the same words in the same or der.",Experiment/Discussion
+"Our task is related to, but different from, paraphrase extraction (Barzilay, 2003).",Experiment/Discussion
+"We must not only have access to paraphrases (i.e., rewrite rules), but also be able to combine them in order to generate new text, while attempting to produce a shorter resulting string.",Experiment/Discussion
+Quirk et al (2004) present an end-to-end paraphrasing system inspired byphrase-based machine translation that can both ac quire paraphrases and use them to generate new strings.,Experiment/Discussion
+"However, their model is limited to lexical substitution ? no reordering takes place ? and is 137 lacking the compression objective.Once we move away from extractive compres sion we are faced with two problems.",Experiment/Discussion
+"First, wemust find an appropriate training set for our abstractive task.",Experiment/Discussion
+Compression corpora are not natu rally available and existing paraphrase corpora do not normally contain compressions.,Experiment/Discussion
+Our second problem concerns the modeling task itself.,Experiment/Discussion
+"Ideally, our learning framework should handle structural mismatches and complex rewriting operations.In what follows, we first present a new cor pus for abstractive compression which we created by having annotators compress sentences while rewriting them.",Experiment/Discussion
+"Besides obtaining useful data formodeling purposes, we also demonstrate that ab stractive compression is a meaningful task.",Experiment/Discussion
+We then present a tree-to-tree transducer capable of transforming an input parse tree into a compressed parse tree.,Experiment/Discussion
+"Our approach is based on synchronous tree substitution grammar (STSG, Eisner (2003)),a formalism that can account for structural mismatches, and is trained discriminatively.",Experiment/Discussion
+"Specifi cally, we generalise the model of Cohn and Lapata (2007) to our abstractive task.",Experiment/Discussion
+We present a noveltree-to-tree grammar extraction method which acquires paraphrases from bilingual corpora and ensure coherent output by including a ngram language model as a feature.,Experiment/Discussion
+We also develop a number of loss functions suited to the abstractive compression task.,Experiment/Discussion
+"We hope that some of the work described here might be of relevance to other gen eration tasks such as machine translation (Eisner, 2003), multi-document summarisation (Barzilay, 2003), and text simplification (Carroll et al, 1999).",Experiment/Discussion
+A stumbling block to studying abstractive sentence compression is the lack of widely available corpora for training and testing.,Experiment/Discussion
+"Previous work has beenconducted almost exclusively on Ziff-Davis, a cor pus derived automatically from document abstractpairs (Knight and Marcu, 2002), or on human authored corpora (Clarke, 2008).",Experiment/Discussion
+"Unfortunately,none of these data sources are suited to our problem since they have been produced with a single rewriting operation, namely word deletion.",Experiment/Discussion
+"Al though there is a greater supply of paraphrasing corpora, such as the Multiple-Translation Chinese (MTC) corpus 1 and theMicrosoft Research (MSR) Paraphrase Corpus (Quirk et al, 2004), they are also not ideal, since they have not been created 1 Available by the LDC, Catalog Number LDC2002T01, ISBN 1-58563-217-1.",Experiment/Discussion
+with compression in mind.,Experiment/Discussion
+"They contain amplerewriting operations, however they do not explic itly target information loss.",Experiment/Discussion
+"For the reasons just described, we created our own corpus.",Experiment/Discussion
+"We collected 30 newspaper articles (575 sentences) from the British National Corpus (BNC) and the American News Text corpus, forwhich we obtained manual compressions.",Experiment/Discussion
+"In or der to confirm that the task was feasible, five of these documents were initially compressed by two annotators (not the authors).",Experiment/Discussion
+The annotators weregiven instructions that explained the task and defined sentence compression with the aid of examples.,Experiment/Discussion
+"They were asked to paraphrase while preserv ing the most important information and ensuring the compressed sentences remained grammatical.They were encouraged to use any rewriting opera tions that seemed appropriate, e.g., to delete words, add new words, substitute them or reorder them.Assessing inter-annotator agreement is notori ously difficult for paraphrasing tasks (Barzilay, 2003) since there can be many valid outputs for a given input.",Experiment/Discussion
+Also our task is doubly subjective in deciding which information to remove from the sentence and how to rewrite it.,Experiment/Discussion
+"In default of an agreement measure that is well suited to the task and takes both decisions into account, we assessedthem separately.",Experiment/Discussion
+We first examined whether the annotators compressed at a similar level.,Experiment/Discussion
+The com pression rate was 56% for one annotator and 54% for the other.,Experiment/Discussion
+"2 We also assessed whether theyagreed in their rewrites by measuring BLEU (Pap ineni et al, 2002).",Experiment/Discussion
+"The inter-annotator BLEU score was 23.79%, compared with the source agreement BLEU of only 13.22%.",Experiment/Discussion
+Both the compression rateand BLEU score indicate that the task is welldefined and the compressions valid.,Experiment/Discussion
+The remaining 25 documents were compressed by a single an notator to ensure consistency.,Experiment/Discussion
+All our experiments used the data from this annotator.,Experiment/Discussion
+3Table 1 illustrates some examples from our corpus.,Experiment/Discussion
+"As can be seen, some sentences contain a single rewrite operation.",Experiment/Discussion
+"For instance, a PP is para phrased with a genitive (see (1)), a subordinate clause with a present participle (see (2)), a passive sentence with an active one (see (3)).",Experiment/Discussion
+"However, in most cases many rewrite decisions take place allat once.",Experiment/Discussion
+Consider sentence (4).,Experiment/Discussion
+"Here, the conjunc tion high winds and snowfalls is abbreviated to 2 The term ?compression rate?",Experiment/Discussion
+refers to the percentage of words retained in the compression.,Experiment/Discussion
+3 Available from http://homepages.inf.ed.ac.uk/ tcohn/paraphrase.,Experiment/Discussion
+138 1a.,Experiment/Discussion
+The future of the nation is in your hands.,Experiment/Discussion
+1b.,Experiment/Discussion
+The nation?s future is in your hands.,Experiment/Discussion
+2a.,Experiment/Discussion
+"As he entered a polling booth in Katutura, he said.",Experiment/Discussion
+2b.,Experiment/Discussion
+"Entering a polling booth in Katutura, he said.",Experiment/Discussion
+3a.,Experiment/Discussion
+"Mr Usta was examined by Dr Raymond Crockett, a Harley Street physician specialising in kidney disease.3b.",Experiment/Discussion
+"Dr Raymond Crockett, a Harley Street physician, ex amined Mr Usta.",Experiment/Discussion
+4a.,Experiment/Discussion
+"High winds and snowfalls have, however, grounded at a lower level the powerful US Navy Sea Stallion helicopters used to transport the slabs.",Experiment/Discussion
+4b.,Experiment/Discussion
+"Bad weather, however, has grounded the helicopters transporting the slabs.",Experiment/Discussion
+5a.,Experiment/Discussion
+"To experts in international law and relations, the USaction demonstrates a breach by a major power of in ternational conventions.5b.",Experiment/Discussion
+"Experts say the US are in breach of international con ventions.Table 1: Compression examples from our corpus; (a) sen tences are the source, (b) sentences the target.",Experiment/Discussion
+bad weather and the infinitive clause to transport to the present participle transporting.,Experiment/Discussion
+Note that the prenominal modifiers US Navy Sea Stallion and the verb used have been removed.,Experiment/Discussion
+"In sentence (5), the verb say is added and the NP a breach by amajor power of international conventions is para phrased by the sentence the US are in breach of international conventions.",Experiment/Discussion
+Our work builds on the model developed by Cohnand Lapata (2007).,Experiment/Discussion
+They formulate sentence compression as a tree-to-tree rewriting task.,Experiment/Discussion
+"A syn chronous tree substitution grammar (STSG, Eisner (2003)) licenses the space of all possible rewrites.",Experiment/Discussion
+"Each grammar rule is assigned a weight, and these weights are learnt in discriminative training.",Experiment/Discussion
+"For prediction, a specialised generation algorithmfinds the best scoring compression using the grammar rules.",Experiment/Discussion
+Cohn and Lapata apply this model to ex tractive compression with state-of-the-art results.,Experiment/Discussion
+This model is appealing for our task for severalreasons.,Experiment/Discussion
+"Firstly, the synchronous grammar provides expressive power to model consistent syntactic effects such as reordering, changes in nonterminal categories and lexical substitution.",Experiment/Discussion
+"Sec ondly, it is discriminatively trained, which allowsfor the incorporation of all manner of powerful features.",Experiment/Discussion
+"Thirdly, the learning framework can be tai lored to the task by choosing an appropriate loss function.",Experiment/Discussion
+"In the following we describe their model in more detail with emphasis on the synchronous grammar, the model structure, and the predictionand training algorithms.",Experiment/Discussion
+Section 4 presents our ex tensions and modifications.,Experiment/Discussion
+"Grammar The grammar defines a space oftree pairs over uncompressed and compressed sen Grammar rules: ?S, S?",Experiment/Discussion
+"?NP 1 VBD 2 NP 3 , NP 1 VBD 2 NP 3 ? ?S, S?",Experiment/Discussion
+"?NP 1 VBD 2 NP 3 , NP 3 was VBN 2 by NP 1 ? ?NP, NP?",Experiment/Discussion
+"?he, him?",Experiment/Discussion
+"?NP, NP?",Experiment/Discussion
+"?he, he?",Experiment/Discussion
+"?NP, NP?",Experiment/Discussion
+"?he, Peter?",Experiment/Discussion
+"?VBD, VBN?",Experiment/Discussion
+"?sang, sung?",Experiment/Discussion
+"?NP, NP?",Experiment/Discussion
+"?a song, a song?",Experiment/Discussion
+Input tree: [S [NP He NP [VP sang VBD [NP a DT song NN ]]] Output trees: [S [NP He] [VP sang [NP a song]]] [S [NP Him] [VP sang [NP a song]]] [S [NP Peter] [VP sang [NP a song]]] [S [NP A song] [VP was [VP sung [PP by he]]]] [S [NP A song] [VP was [VP sung [PP by him]]]] [S [NP A song] [VP was [VP sung [PP by Peter]]]] Figure 1: Example grammar and the output trees it licences for an input tree.,Experiment/Discussion
+The numbered boxes in the rules denote linked variables.,Experiment/Discussion
+Pre-terminal categories are not shown for the output trees for the sake of brevity.,Experiment/Discussion
+"tences, which we refer to henceforth as the source and target.",Experiment/Discussion
+We use the grammar to find the set of sister target sentences for a given source sentence.Figure 1 shows a toy grammar and the set of possi ble target (output) trees for the given source (input)tree.,Experiment/Discussion
+"Each output tree is created by applying a se ries of grammar rules, where each rule matches a fragment of the source and creates a fragment of the target tree.",Experiment/Discussion
+A rule in the grammar consists of a pair of elementary trees and a mapping between the variables (frontier non-terminals) in both trees.,Experiment/Discussion
+A derivation is a sequence of rules yielding a target tree with no remaining variables.,Experiment/Discussion
+"Cohn and Lapata (2007) extract a STSG froma parsed, word-aligned corpus of source and target sentences.",Experiment/Discussion
+"Specifically, they extract the mini mal set of synchronous rules which can describe each tree pair.",Experiment/Discussion
+"These rules are minimal in the sensethat they cannot be made smaller (e.g., by replac ing a subtree with a variable) while still honouring the word-alignment.",Experiment/Discussion
+Decoding The grammar allows us to search for all sister trees for a given tree.,Experiment/Discussion
+"The decoder maximises over this space: y ? =argmax y:S(y)=x ?(y) (1) where ?(y) = ? r?y ??(r, S(y)), ??",Experiment/Discussion
+"(2) Here x is the source (uncompressed) tree, y is a derivation which produces the source tree, S(y) = x, and a target tree, T (y), 4and r is a gram mar rule.",Experiment/Discussion
+The ? function scores the derivation and 4 Equation 1 optimises over derivations rather than target trees to allow tractable inference.,Experiment/Discussion
+139 is defined in (2) as a linear function over the rules used.,Experiment/Discussion
+"Each rule?s score is an inner product between its feature vector, ?(r,y S), and the model parame ters, ?.",Experiment/Discussion
+"The feature functions are set by hand, while the model parameters are learned in training.",Experiment/Discussion
+The maximisation problem in (1) can be solved efficiently using a dynamic program.,Experiment/Discussion
+Derivations will have common sub-structures whenever they transduce the same source sub-tree into a target sub-tree.,Experiment/Discussion
+"This is captured in a chart, leading to an efficient bottom-up algorithm.",Experiment/Discussion
+The asymptotic time complexity of this search is O(SR) where S is the number of source nodes andR is the number of rules matching a given node.,Experiment/Discussion
+"Training The model is trained using SVM struct , a large margin method for structured output problems (Joachims, 2005; Tsochantaridis et al, 2005).",Experiment/Discussion
+"This training method allows the use of a configurable loss function, ?(y ? ,y), whichmeasures the extent to which the model?s predic tion, y, differs from the reference, y ? .",Experiment/Discussion
+Central.,Experiment/Discussion
+to training is the search for a derivation which is both high scoring and has high loss compared to the gold standard.,Experiment/Discussion
+5 This requires finding the maximiser of H(y) in one of: H s = (1?,Experiment/Discussion
+"??(y ? )??(y), ??)?(y ? ,y) H m = ?(y ? ,y)?",Experiment/Discussion
+"??(y ? )??(y), ??",Experiment/Discussion
+"(3) where the subscripts s and m denote slack and margin rescaling, which are different formulations of the training problem (see Tsochantaridis et al (2005) and Taskar et al (2003) for details).",Experiment/Discussion
+The search for the maximiser of H(y) in (3) requires the tracking of the loss value.,Experiment/Discussion
+"This can be achieved by extending the decoding algorithmsuch that the chart cells also store the loss param eters (e.g., for precision, the number of true and false positives (Joachims, 2005)).",Experiment/Discussion
+"Consequently, this extension leads to a considerably higher time and space complexity compared to decoding.",Experiment/Discussion
+"For example, with precision loss the time complexity is O(S 3 R) as each step must consider O(S 2) pos sible loss parameter values.",Experiment/Discussion
+In this section we present our extensions of Cohnand Lapata?s (2007) model.,Experiment/Discussion
+The latter was de signed with the simpler extractive compression in mind and cannot be readily applied to our task.,Experiment/Discussion
+5 Spurious ambiguity in the grammar means that there areoften many derivations linking the source and target.,Experiment/Discussion
+"We fol low Cohn and Lapata (2007) by choosing the derivation with the most rules, which should provide good generalisation.",Experiment/Discussion
+Grammar It is relatively straightforward to extract a grammar from our corpus.,Experiment/Discussion
+"This grammar will contain many rules encoding deletions and structural transformations but there will be many unobserved paraphrases, no matter how good the extraction method (recall that our corpus consistssolely of 565 sentences).",Experiment/Discussion
+"For this reason, we ex tract a grammar from our abstractive corpus in the manner of Cohn and Lapata (2007) (see Section 5for details) and augment it with a larger grammar obtained from a parallel bilingual corpus.",Experiment/Discussion
+"Crucially, our second grammar will not contain com pression rules, just paraphrasing ones.",Experiment/Discussion
+We leave itto the model to learn which rules serve the com pression objective.,Experiment/Discussion
+"Our paraphrase grammar extraction method uses bilingual pivoting to learn paraphrases over syntax tree fragments, i.e., STSG rules.",Experiment/Discussion
+Pivoting treats the paraphrasing problem as a two-stage translation process.,Experiment/Discussion
+"Some English text is translated to a foreign language, and then translated back into English (Bannard and Callison-Burch, 2005): p(e ? |e) = ? f p(e ? |f)p(f |e) (4) where p(f |e) is the probability of translating an English string e into a foreign string f and p(e ?|f) the probability of translating the same for eign string into some other English string e ? .",Experiment/Discussion
+We.,Experiment/Discussion
+"thus obtain English-English translation probabili ties p(e ? |e) by marginalizing out the foreign text.Instead of using strings (Bannard and CallisonBurch, 2005), we use elementary trees on the En glish side, resulting in a monolingual STSG.",Experiment/Discussion
+"Weobtain the elementary trees and foreign strings us ing the GKHM algorithm (Galley et al, 2004).",Experiment/Discussion
+"This takes as input a bilingual word-aligned corpus with trees on one side, and finds the minimal set of tree fragments and their corresponding strings which is consistent with the word alignment.",Experiment/Discussion
+This process is illustrated in Figure 2 where the aligned pair on the left gives rise to the rules shown onthe right.,Experiment/Discussion
+Note that the English rules and for eign strings shown include variable indices where they have been generalised.,Experiment/Discussion
+We estimate p(f |e) and p(e ? |f) from the set of tree-to-string rules and then then pivot each tree fragment to produce STSG rules.,Experiment/Discussion
+Figure 3 illustrates the process for the [VP does not VP] fragment.,Experiment/Discussion
+Modeling and Decoding Our grammar is much larger and noisier than a grammar extractedsolely for deletion-based compression.,Experiment/Discussion
+"So, in order to encourage coherence and inform lexical se 140 SNP VP VBZ does RB goHe not ne pasIl va PRP VP NP He Il PRP go vaVP VP VBZ does RB not ne pas VP S NP VP 1 2 1 1 1 2 Figure 2: Tree-to-string grammar extraction using the GHKM algorithm, showing the aligned sentence pair and the resulting rules as tree fragments and their matching strings.",Experiment/Discussion
+The boxed numbers denote variables.,Experiment/Discussion
+VP VBZ does RB not ne pas VP n ' ne ne peut ...,Experiment/Discussion
+VP MD will RB not VB VP VBP do RB not VB 1 1 1 1 1 1 1 Figure 3: Pivoting the [VP does not VP] fragment.,Experiment/Discussion
+lection we incorporate a ngram language model(LM) as a feature.,Experiment/Discussion
+"This requires adapting the scor ing function, ?, in (2) to allow features over target ngrams: ?(y) = ? r?y ??(r, S(y)), ??+ ? m?T (y) ??(m,S(y)), ??",Experiment/Discussion
+(5)where m are the ngrams and ? is a new fea ture function over these ngrams (we use only one ngram feature: the trigram log-probability).,Experiment/Discussion
+"Sadly, the scoring function in (5) renders the chart-based search used for training and decoding intractable.In order to provide sufficient context to the chart based algorithm, we must also store in each chart cell the n ? 1 target tokens at the left and right edges of its yield.",Experiment/Discussion
+"This is equivalent to using as our grammar the intersection between the original grammar and the ngram LM (Chiang, 2007), and increases the decoding complexity to an infeasible O(SRL 2(n?1)V )whereL is the size of the lexicon.",Experiment/Discussion
+"We adopt a popular approach in syntax-inspiredmachine translation to address this problem (Chi ang, 2007).",Experiment/Discussion
+The idea is to use a beam-search overthe intersection grammar coupled with the cube pruning heuristic.,Experiment/Discussion
+"The beam limits the number ofitems in a given chart cell to a fixed constant, re gardless of the number of possible LM contexts and non-terminal categories.",Experiment/Discussion
+"Cube-pruning furtherlimits the number of items considered for inclu sion in the beam, reducing the time complexity to a more manageable O(SRBV ) where B is the beam size.",Experiment/Discussion
+We refer the interested reader to Chiang (2007) for details.,Experiment/Discussion
+Training The extensions to the model in (5)also necessitate changes in the training proce dure.,Experiment/Discussion
+Recall that training the basic model of Cohn and Lapata (2007) requires finding the maximiserof H(y) in (3).,Experiment/Discussion
+Their model uses a chart-based al gorithm for this purpose.,Experiment/Discussion
+"As in decoding we also use a beam search for training, thereby avoiding the exponential time complexity of exact search.The beam search requires an estimate of the qual ity for incomplete derivations.",Experiment/Discussion
+"We use the margin rescaling objective, H m in (3), and approximatethe loss using the current (incomplete) loss param eter values in each chart cell.",Experiment/Discussion
+We use a wide beam of 200 unique items or 500 items in total to reduce the impact of the approximation.,Experiment/Discussion
+Our loss functions are tailored to the task anddraw inspiration from metrics developed for ex tractive compression but also for summarisation and machine translation.,Experiment/Discussion
+They are based on the Hamming distance over unordered bags of items.,Experiment/Discussion
+"This measures the number of predicted items that did not appear in the reference, along with a penalty for short output: ? hamming (y ? ,y) = f+max (l ?",Experiment/Discussion
+"(t+ f), 0) (6) where t and f are the number of true and falsepositives, respectively, when comparing the pre dicted target, y, with the reference, y ? , and l isthe length of the reference.",Experiment/Discussion
+"The second term pe nalises short output, as predicting very little or nothing would otherwise be unpenalised.",Experiment/Discussion
+"We have three Hamming loss functions over: 1) tokens, 2) ngrams (n ? 3), or 3) CFG productions.",Experiment/Discussion
+Theselosses all operate on unordered bags and therefore might reward erroneous predictions.,Experiment/Discussion
+"For ex ample, a permutation of the reference tokens has zero token-loss.",Experiment/Discussion
+"The CFG and ngram losses have overlapping items which encode a partial order, and therefore are less affected.In addition, we developed a fourth loss func tion to measure the edit distance between themodel?s prediction and the reference, both as bags of-tokens.",Experiment/Discussion
+This measures the number of insertionsand deletions.,Experiment/Discussion
+"In contrast to the previous loss func tions, this requires the true positive counts to be clipped to the number of occurrences of each type in the reference.",Experiment/Discussion
+"The edit distance is given by: ? edit (y ? ,y) = p+ q ? 2 ? i min(p i , q i ) (7) where p and q denote the number of target tokensin the predicted and reference derivation, respec tively, and p i and q i are the counts for type i. 141 ?ADJP,NP?",Experiment/Discussion
+"?subject [PP to NP 1 ], part [PP of NP 1 ]?",Experiment/Discussion
+"(T) ?ADVP,RB?",Experiment/Discussion
+"?as well, also?",Experiment/Discussion
+"(T) ?ADJP,JJ?",Experiment/Discussion
+"?too little, insufficient?",Experiment/Discussion
+"(P) ?S,S? ? ?S 1 and S 2 , S 2 and S 1 ?",Experiment/Discussion
+"(P) ?NP,NP?",Experiment/Discussion
+"?DT 1 NN 2 , DT 1 NN 2 ?",Experiment/Discussion
+"(S) ?NP,NP?",Experiment/Discussion
+"?DT 1 NN 2 , NN 2 ?",Experiment/Discussion
+"(S) Table 2: Sample grammar rules extracted from the training set (T), pivoted set (P) or generated from the source (S).",Experiment/Discussion
+In this section we present our experimental set up for assessing the performance of our model.,Results/Conclusion
+"We give details on the corpora and grammars we used, model parameters and features, 6 the baselineused for comparison with our approach, and ex plain how our system output was evaluated.",Results/Conclusion
+"Grammar Extraction Our grammar usedrules extracted directly from our compression cor pus (the training partition, 480 sentences) and a bilingual corpus (see Table 2 for examples).",Results/Conclusion
+"Theformer corpus was word-aligned using the Berke ley aligner (Liang et al, 2006) initialised with a lexicon of word identity mappings, and parsed with Bikel?s (2002) parser.",Results/Conclusion
+From this we extracted grammar rules following the technique described in Cohn and Lapata (2007).,Results/Conclusion
+For the pivot grammarwe use the French-English Europarl v2 which con tains approximately 688K sentences.,Results/Conclusion
+"Again, the corpus was aligned using the Berkeley aligner and the English side was parsed with Bikel?s parser.",Results/Conclusion
+Weextracted tree-to-string rules using our implementation of the GHKM method.,Results/Conclusion
+"To ameliorate the effects of poor alignments on the grammar, we re moved singleton rules before pivoting.",Results/Conclusion
+"In addition to the two grammars described, wescanned the source trees in the compression cor pus and included STSG rules to copy each CFG production or delete up to two of its children.",Results/Conclusion
+This is illustrated in Table 2 where the last two rules are derived from the CFG production NP?DT NN inthe source tree.,Results/Conclusion
+All trees are rooted with a distinguished TOP non-terminal which allows the ex plicit modelling of sentence spanning sub-trees.,Results/Conclusion
+"These grammars each had 44,199 (pivot), 7,813 (train) and 22,555 (copy) rules.",Results/Conclusion
+"We took their union, resulting in 58,281 unique rules and 13,619 unique source elementary trees.",Results/Conclusion
+"Model Parameters Our model was trainedon 480 sentences, 36 sentences were used for de velopment and 59 for testing.",Results/Conclusion
+"We used a variety of syntax-based, lexical and compression-specific 6 The software and corpus can be downloaded from http://homepages.inf.ed.ac.uk/tcohn/paraphrase.",Results/Conclusion
+"For every rule: origin of rule for each origin, o: log p o (s, t), log p o (s|t), log p o (t|s) s R , t R , s R ? t R s, t, s ? t, s = t both s and t are pre-terminals and s = t or s 6= t number of terminals/variables/dropped variables ordering of variables as numbers/non-terminals non-terminal sequence of vars identical after reordering pre-terminal or terminal sequences are identical number/identity of common/inserted/dropped terminals source is shorter/longer than target target is a compression of the source using deletes For every ngram : log p(w i |w i?1 i?(n?1) ) Table 3: The feature set.",Results/Conclusion
+"Rules were drawn from the training set, bilingual pivoting and directly from the source trees.",Results/Conclusion
+"s andt are the source and target elementary trees in a rule, the sub script R references the root non-terminal, w are the terminals in the target tree.",Results/Conclusion
+"features (196,419 in total).",Results/Conclusion
+These are summarised in Table 3.,Results/Conclusion
+"We also use a trigram language model trained on the BNC (100 million words) using the SRI Language Modeling toolkit (Stolcke, 2002), with modified Kneser-Ney smoothing.An important parameter in our modeling frame work is the choice of loss function.",Results/Conclusion
+We evaluatedthe loss functions presented in Section 4 on the de velopment set.,Results/Conclusion
+We ran our system for each of the four loss functions and asked two human judgesto rate the output on a scale of 1 to 5.,Results/Conclusion
+"The Ham ming loss over tokens performed best with a meanrating of 3.18, closely followed by the edit dis tance (3.17).",Results/Conclusion
+We chose the former over the latter as it is less coarsely approximated during search.,Results/Conclusion
+Baseline There are no existing models thatcan be readily trained on our abstractive com pression data.,Results/Conclusion
+"Instead, we use Cohn and Lapata?s (2007) extractive model as a baseline.",Results/Conclusion
+"The latter was trained on an extractive compression corpus drawn from the BNC (Clarke, 2008) and tunedto provide a similar compression rate to our sys tem.",Results/Conclusion
+"Note that their model is a strong baseline: it performed significantly better than competitive approaches (McDonald, 2006) across a variety of compression corpora.Evaluation Methodology Sentence compres sion output is commonly evaluated by eliciting human judgments.",Results/Conclusion
+"Following Knight and Marcu(2002), we asked participants to rate the grammati cality of the target compressions and howwell they preserved the most important information from the source.",Results/Conclusion
+In both cases they used a five pointrating scale where a high number indicates better performance.,Results/Conclusion
+We randomly selected 30 sen tences from the test portion of our corpus.,Results/Conclusion
+These 142 Models Grammaticality Importance CompR Extract 3.10 ? 2.43 ? 82.5 Abstract 3.38 ? 2.85 ? ?,Results/Conclusion
+79.2 Gold 4.51 4.02 58.4Table 4: Mean ratings on compression output elicited by hu mans; ? : significantly different from the gold standard; ?: sig nificantly different from the baseline.,Results/Conclusion
+sentences were compressed automatically by our model and the baseline.,Results/Conclusion
+We also included goldstandard compressions.,Results/Conclusion
+Our materials thus con sisted of 90 (30 ? 3) source-target sentences.,Results/Conclusion
+"We collected ratings from 22 unpaid volunteers, all self reported native English speakers.",Results/Conclusion
+Both studies were conducted over the Internet using a custom built web interface.,Results/Conclusion
+"Our results are summarised in Table 4, where we show the mean ratings for our system (Abstract), the baseline (Extract), and the gold standard.",Results/Conclusion
+We first performed an Analysis of Variance (ANOVA)to examine the effect of different system compres sions.,Results/Conclusion
+The ANOVA revealed a reliable effect on both grammaticality and importance (significant over both subjects and items (p < 0.01)).We next examined in more detail between system differences.,Results/Conclusion
+Post-hoc Tukey tests revealed that our abstractive model received significantlyhigher ratings than the baseline in terms of impor tance (?,Results/Conclusion
+< 0.01).,Results/Conclusion
+We conjecture that this is due to the synchronous grammar we employ which is larger and more expressive than the baseline.,Results/Conclusion
+"In the extractive case, a word sequence is eitherdeleted or retained.",Results/Conclusion
+"We may, however, want to re tain the meaning of the sequence while rendering the sentence shorter, and this is precisely what our model can achieve, e.g., by allowing substitutions.As far as grammaticality is concerned, our abstractive model is numerically better than the extrac tive baseline but the difference is not statistically significant.",Results/Conclusion
+"Note that our model has to work a lotharder than the baseline to preserve grammatical ity since we allow arbitrary rewrites which maylead to agreement or tense mismatches, and selec tional preference violations.",Results/Conclusion
+"The scope for errors is greatly reduced when performing solely deletions.Finally, both the abstractive and extractive out puts are perceived as significantly worse than the gold standard both in terms of grammaticalityand importance (?",Results/Conclusion
+< 0.01).,Results/Conclusion
+This is not surpris ing: human-authored compressions are more fluentand tend to omit genuinely superfluous informa tion.,Results/Conclusion
+This is also mirrored in the compression ratesshown in Table 4.,Results/Conclusion
+"When compressing, humans emO: Kurtz came from Missouri, and at the age of 14, hitch hiked to Los Angeles seeking top diving coaches.",Results/Conclusion
+"E: Kurtz came from Missouri, and at 14, hitch-hiked to Los Angeles seeking top diving coaches.",Results/Conclusion
+A: Kurtz hitch-hiked to Los Angeles seeking top diving coaches.,Results/Conclusion
+"G: Kurtz came from Missouri, and at 14, hitch-hiked to Los Angeles seeking diving coaches.",Results/Conclusion
+O: The scheme was intended for people of poor or moderate means.,Results/Conclusion
+E: The scheme was intended for people of poor means.,Results/Conclusion
+A: The scheme was planned for poor people.,Results/Conclusion
+G: The scheme was intended for the poor.,Results/Conclusion
+"O: He died last Thursday at his home from complications following a fall, said his wife author Margo Kurtz.",Results/Conclusion
+"E: He died last at his home from complications following a fall, said wife, author Margo Kurtz.",Results/Conclusion
+A: His wife author Margo Kurtz died from complications after a decline.,Results/Conclusion
+"G: He died from complications following a fall.O: But a month ago, she returned to Britain, taking the chil dren with her.",Results/Conclusion
+"E: She returned to Britain, taking the children.",Results/Conclusion
+A: But she took the children with him.,Results/Conclusion
+G: But she returned to Britain with the children.,Results/Conclusion
+"Table 5: Compression examples including human and systemoutput (O: original sentence, E: Extractive model, A: Abstrac tive model, G: gold standard) ploy not only linguistic but also world knowledge which is not accessible to our model.",Results/Conclusion
+"Although thesystem can be forced to match the human compression rate, the grammaticality and information con tent both suffer.",Results/Conclusion
+More sophisticated features could allow the system to narrow this gap.,Results/Conclusion
+"We next examined the output of our system inmore detail by recording the number of substitu tions, deletions and insertions it performed on the test data.",Results/Conclusion
+"Deletions accounted for 67% of rewrite operations, substitutions for 27%, and insertions for 6%.",Results/Conclusion
+"Interestingly, we observe a similar ratio in the human compressions.",Results/Conclusion
+"Here, deletions arealso the most common rewrite operation (69%) fol lowed by substitutions (24%), and insertions (7%).",Results/Conclusion
+"The ability to perform substitutions and insertions increases the compression potential of our system, but can also result in drastic meaning changes.",Results/Conclusion
+In most cases (63%) the compressions produced byour system did not distort the meaning of the orig inal.,Results/Conclusion
+"Humans are clearly better at this, 96.5% of their compressions were meaning preserving.",Results/Conclusion
+We illustrate example output of our system in Table 5.,Results/Conclusion
+For comparison we also present the gold standard compressions and baseline output.,Results/Conclusion
+In thefirst sentence the system rendered Kurtz the sub ject of hitch-hiked.,Results/Conclusion
+At the same time it deleted the verb and its adjunct from the first conjunct (camefrom Missouri ) as well as the temporal modi fier at the age of 14 from the second conjunct.,Results/Conclusion
+"The second sentence shows some paraphrasing: the verb intended is substituted with planned and 143 poor is now modifying people rather than means.In the third example, our system applies multi ple rewrites.",Results/Conclusion
+"It deletes last Thursday at his home,moves wife author Margo Kurtz to the subject position, and substitutes fall with decline.",Results/Conclusion
+"Unfortu nately, the compressed sentence expresses a rather different meaning from the original.",Results/Conclusion
+It is not Margo Kurtz who died but her husband.,Results/Conclusion
+"Finally, our last sentence illustrates a counter-intuitive substitution, the pronoun her is rewritten as him.",Results/Conclusion
+This is becausethey share the French translation lui and thus piv oting learns to replace the less common word (in legal corpora) her with him.,Results/Conclusion
+This problem could be addressed by pivoting over multiple bitexts with different foreign languages.,Results/Conclusion
+Possible extensions and improvements to the current model are many and varied.,Results/Conclusion
+"Firstly, ashinted at above, the model would benefit from extensive feature engineering, including source con ditioned features and ngram features besides theLM.",Results/Conclusion
+A richer grammar would also boost perfor mance.,Results/Conclusion
+This could be found by pivoting over more bitexts in many foreign languages or making use of existing or paraphrase corpora.,Results/Conclusion
+"Finally, we planto apply the model to other paraphrasing tasks in cluding fully abstractive document summarisation (Daum?e III and Marcu, 2002).",Results/Conclusion
+Acknowledgements The authors acknowledge the support of EPSRC (grants GR/T04540/01 and GR/T04557/01).,Results/Conclusion
+"Special thanks to Phil Blunsom, James Clarke and Miles Osborne for their insightful suggestions.",Results/Conclusion

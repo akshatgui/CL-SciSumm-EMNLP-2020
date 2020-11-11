@@ -1,143 +1,143 @@
 col1,col2
-"Although disjunction has been used in several unificationbased grammar formalisms, existing methods of unification have been unsatisfactory for descriptions containing large quantities of disjunction, because they require exponential time.",{}
-"This paper describes a method of unification by successive approximation, resulting in better average performance.",{}
-Disjunction has been used in several unification-based grammar formalisms to represent alternative structures in descriptions of constituents.,"{'title': '1 Introduction', 'number': '1'}"
-"Disjunction is an essential component of grammatical descriptions in Kay's Functional Unification Grammar [6], and it has been proposed by Karttunen as a linguistically motivated extension to PATR-II [2].","{'title': '1 Introduction', 'number': '1'}"
-In previous work two methods have been used to handle disjunctive descriptions in parsing and other computational applications.,"{'title': '1 Introduction', 'number': '1'}"
-"The first method requires expanding descriptions to disjunctive normal form (DNF) so that the entire description can be interpreted as a set of structures, each of which contains no disjunction.","{'title': '1 Introduction', 'number': '1'}"
-"This method is exemplified by Definite Clause Grammar [8], which eliminates disjunctive terms by expanding each rule containing disjunction into alternative rules.","{'title': '1 Introduction', 'number': '1'}"
-It is also the method used by Kay [7] in parsing FUG.,"{'title': '1 Introduction', 'number': '1'}"
-"This method works reasonably well for small grammars, but it is clearly unsatisfactory for descriptions containing more than a small number of disjunctions, because the DNF expansion requires an amount of space which is exponential in the number of disjunctions.","{'title': '1 Introduction', 'number': '1'}"
-"The second method, developed by Karttunen [2], uses constraints on disjuncts which must be checked whenever a disjunct is modified.","{'title': '1 Introduction', 'number': '1'}"
-"Karttunen's method is only applicable to value disjunctions (i.e. those disjunctions used to specify the value of a single feature), and it becomes complicated and inefficient when disjuncts contain non-local dependencies (i.e. values specified by path expressions denoting another feature).","{'title': '1 Introduction', 'number': '1'}"
-"In previous research [4,5] we have shown how descriptions of feature structures can be represented by a certain type of logical formula, and that the consistency problem for disjunctive descriptions is NP-complete.","{'title': '1 Introduction', 'number': '1'}"
-"This result indicates, according to the widely accepted mathematical assumption that P NP, that any complete unification algorithm for disjunctive descriptions will require exponential time in the worst case.","{'title': '1 Introduction', 'number': '1'}"
-"However, this result does not preclude algorithms with better average performance, such as the method described in the remainder of this paper.","{'title': '1 Introduction', 'number': '1'}"
-"This method overcomes the shortcomings of previously existing methods, and has the following desirable properties:","{'title': '1 Introduction', 'number': '1'}"
-"The most common unification methods for non-disjunctive feature structures use a directed graph (DG) representation, in which arcs are labeled by names of features, and nodes correspond to values of features.","{'title': '2 Data Structures', 'number': '2'}"
-"For an introduction to these methods, the reader is referred to Shieber's survey [11].","{'title': '2 Data Structures', 'number': '2'}"
-"In the remainder of this section we will define a data structure for disjunctive descriptions, using DG structures as a basic component.","{'title': '2 Data Structures', 'number': '2'}"
-"In the following exposition, we will carefully observe the distinction between feature structures and their descriptions, as explained in [4].","{'title': '2 Data Structures', 'number': '2'}"
-"Feature structures will be represented by DGs, and descriptions of feature structures will be represented by logical formulas of the type described in [4].","{'title': '2 Data Structures', 'number': '2'}"
-"The NIL denoting no information; TOP denoting inconsistent information; a where a E A, to describe atomic values; I : where I E L and E FDL, to describe structures in which the feature labeled by I has a value described by 0; [< pi >,•••,< pes >I where each pi E L* , to describe an equivalence class of paths sharing a common value in a feature structure; where 0, E FDL; syntax for formulas of this feature description logic (hereafter called FDL) is given in Figure 1.1 Note, in particular, that disjunction is used in descriptions of feature structures, but not in the structures themselves.","{'title': '2 Data Structures', 'number': '2'}"
-"As we have shown (see [91) that there is a unique minimal satisfying DG structure for any nondisjunctive FDL formula, we can represent the parts of a formula which do not contain any disjunction by DGs.","{'title': '2 Data Structures', 'number': '2'}"
-"DGs are a more compact way of representing the same information that is contained in a FDL formula, provided the formula contains no disjunction.","{'title': '2 Data Structures', 'number': '2'}"
-Let us define an unconditional conjunct to be a conjunct of a formula which contains no occurrences of disjunction.,"{'title': '2 Data Structures', 'number': '2'}"
-"After path expansion any formula can be put into the form: where uconj contains no occurrences of disjunction, and each disji, for 1 < i < m, is a disjunction of two or more alternatives.","{'title': '2 Data Structures', 'number': '2'}"
-The uconj part of the formula is formed by using the commutative law to bring all unconditional conjuncts of the formula together at the front.,"{'title': '2 Data Structures', 'number': '2'}"
-"Of course, there may be no unconditional conjuncts in a formula, in which case uconj would be the formula NIL.","{'title': '2 Data Structures', 'number': '2'}"
-"Each disjunct may be any type of formula, so disjuncts can also be put into a similar form, with all unconditional conjuncts grouped together before all disjunctive components.","{'title': '2 Data Structures', 'number': '2'}"
-Thus the disjunctions of a formula can be put into the form (uconji Adi sj 11 A ...Adisji.),"{'title': '2 Data Structures', 'number': '2'}"
-V ... V (uconj.,"{'title': '2 Data Structures', 'number': '2'}"
-"Adi a jy, A ...A diejny).","{'title': '2 Data Structures', 'number': '2'}"
-"The embedding of conjuncts within disjuncts is preserved, but the order of conjuncts may be changed.","{'title': '2 Data Structures', 'number': '2'}"
-The unconditional conjuncts of a formula contain information that is more definite than the information contained in disjunctions.,"{'title': '2 Data Structures', 'number': '2'}"
-"Thus a formula can be regarded as having a definite part, containing only unconditional conjuncts, and an indefinite part, containing a set of disjunctions.","{'title': '2 Data Structures', 'number': '2'}"
-"The definite part contains no disjunction, and therefore it may be represented by a DG structure.","{'title': '2 Data Structures', 'number': '2'}"
-"To encode these parts of a formula, let us define a feature-description as a type of data structure, having two components: iLet A and L be sets of symbols which are used to denote atomic values and feature labels, respectively.","{'title': '2 Data Structures', 'number': '2'}"
-"Indefinite: a SET of disjunctions, where each disjunction is a SET of feature-descriptions.","{'title': '2 Data Structures', 'number': '2'}"
-"It is possible to convert any FDL formula into a featuredescription structure by a simple automatic procedure, as described in [51.","{'title': '2 Data Structures', 'number': '2'}"
-"This conversion does not add or subtract any information from a formula, nor increase its size in any significant way.","{'title': '2 Data Structures', 'number': '2'}"
-It simply identifies components of the formula which may be converted into a more efficient representation as DG structures.,"{'title': '2 Data Structures', 'number': '2'}"
-"A feature-description is conceptually equivalent to a special kind of AND/OR graph, in which the terminal nodes are represented by DG structures.","{'title': '2 Data Structures', 'number': '2'}"
-"For example, an AND/OR graph equivalent to the formula, is shown in Figure 2.","{'title': '2 Data Structures', 'number': '2'}"
-"In the AND/OR graph representation, each AND-node represents a feature-description.","{'title': '2 Data Structures', 'number': '2'}"
-"The first outgoing arc from an AND-node represents the definite component of a feature-description, and the remaining outgoing arcs represent the indefinite component.","{'title': '2 Data Structures', 'number': '2'}"
-Each OR-node represents a disjunction.,"{'title': '2 Data Structures', 'number': '2'}"
-"Function UNIFY-DESC (f, g) Returns feature-description: where f and g are feature-descriptions.","{'title': '2 Data Structures', 'number': '2'}"
-/.,"{'title': '2 Data Structures', 'number': '2'}"
-Unify definite components.,"{'title': '2 Data Structures', 'number': '2'}"
-"Let new-def = UNIFY-DGS (f.definite, g.definite).","{'title': '2 Data Structures', 'number': '2'}"
-"If new-def = TOP, then return (failure).","{'title': '2 Data Structures', 'number': '2'}"
-"Let desc = a feature-description with: desc.definite = new-def, desc.indefinite = tindefinite U g.indefinite.","{'title': '2 Data Structures', 'number': '2'}"
-"If desc.indefinite = 0, Then return (desc); Else begin; 2.","{'title': '2 Data Structures', 'number': '2'}"
-Check compatibility of indefinite components with new-def.,"{'title': '2 Data Structures', 'number': '2'}"
-"Let new-desc = CHECK-INDEF (desc, new-def).","{'title': '2 Data Structures', 'number': '2'}"
-"If new-desc = failure, then return (failure); S. Complete ezhau.stiue consistency checking, if necessary.","{'title': '2 Data Structures', 'number': '2'}"
-"Else if new-desc.indefinite = 0 OR if complete checking is not required, Then return (new-desc); Else begin; Let n = 1.","{'title': '2 Data Structures', 'number': '2'}"
-Repeat while n < cardinality of new-desc.indefinite:,"{'title': '2 Data Structures', 'number': '2'}"
-"In this section we will give a complete algorithm for unifying two feature-descriptions, where one or both may contain disjunction.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"This algorithm is designed so that it can be used as a relatively efficient approximation method, with an optional step to perform complete consistency checking when necessary.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"Given two feature-descriptions, the strategy of the unification algorithm is to unify the definite components of the descriptions first, and examine the compatibility of indefinite components later.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-Disjuncts are eliminated from the description when they are inconsistent with definite information.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-This strategy avoids exploring disjuncts more than once when they are inconsistent with definite information.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-The exact algorithm is described in Figure 3.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-It has three major steps.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In the first step, the definite components of the two descriptions are unified together, producing a DG structure, new-def, which represents the definite information of the result.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-This step can be performed by existing unification algorithms for DGs.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In the second step, the indefinite components of both descriptions are checked for compatibility with new-def, using the function CHECK-INDEF, which is defined in Figure 4.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"CHECK-INDEF uses the function CHECK-DISJ, defined in Figure 5, to check the compatibility of each disjunction with the DG structure given by the parameter cond.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"The compatibility of two DGs can be checked by almost the same procedure as unification, but the two structures being checked are not actually merged as they are in unification.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In the third major step, if any disjunctions remain, and it is necessary to do so, disjuncts of different disjunctions are considered in groups, to check whether they are compatible together.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"This step is performed by the function NWISECONSISTENCY, defined in Figure 6.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"When the parameter n to NWISE-CONSISTENCY has the value 1, then one disjunct is checked for compatibility with all other disjunctions of the description in a pairwise manner.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"The pairwise manner of checking compatibility can be generalized to groups of any size by increasing the value of the parameter n. While this third step of the algorithm is necessary in order to insure consistency of disjunctive descriptions, it is not necessary to use it every time a description is built during a parse.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In practice, we find that the performance of the algorithm can be tuned by using this step only at strategic points during a parse, since it is the most inefficient step of the alFunction CHECK-INDEF (desc, cond) Returns feature-description: where desc is a feature-description, and cond is a DG.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-Let indef = desc.indefinite (a set of disjunctions).,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-Let new-def = desc.definite (a DG).,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-Let unchecked-parts = true.,"{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"Function CHECK-DISJ (disj, cond) Returns disjunction: where disj is a disjunction of feature-descriptions, and cond is a DG. gorithm.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In our application, using the Earley chart parsing method, it has proved best to use NWISE-CONSISTENCY only when building descriptions for complete edges, but not when building descriptions for active edges.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"Note that two feature-descriptions do not become permanently linked when they are unified, unlike unification for DG stuctures.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"The result of unifying two descriptions is a new description, which is satisfied by the intersection of the sets of structures that satisfy the two given descriptions.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"The new description contains all the information that is contained in either of the given descriptions, subtracting any disjuncts which are no longer compatible.","{'title': '3 The Algorithm: Unification by Successive Approximation', 'number': '3'}"
-"In order to illustrate the effect of each step of the algorithm, let us consider an example of unifying the description of a known constituent with the description of a portion of a grammar.","{'title': '4 An example', 'number': '4'}"
-This exemplifies the predominant type of structure building operation needed in a parsing program for Functional Unification Grammar.,"{'title': '4 An example', 'number': '4'}"
-"The example given here is deliberately simple, in order to illustrate how the algorithm works with a minimum amount of detail.","{'title': '4 An example', 'number': '4'}"
-"It is not intended as an example of a linguistically motivated grammar. descriptions have been unified, and their indefinite components have been conjoined together.","{'title': '4 An example', 'number': '4'}"
-"In step 2 of the algorithm each of the disjuncts of DES C.INDEFINITE is checked for compatibility with DESC.DEFINITE, using the function CHECK-INDEF.","{'title': '4 An example', 'number': '4'}"
-"In this case, all disjuncts are compatible with the definite information, except for one; the disjunct of the third disjunction which contains the feature Number : Sing.","{'title': '4 An example', 'number': '4'}"
-"This disjunct is eliminated, and the only remaining disjunct in the disjunction (i.e., the disjunct containing Number : PO is unified with DESC.DEFINITE.","{'title': '4 An example', 'number': '4'}"
-The result after this step is shown in Figure 9.,"{'title': '4 An example', 'number': '4'}"
-The four disjuncts that remain are numbered for convenience.,"{'title': '4 An example', 'number': '4'}"
-"In step 3, NWISE-CONSISTENCY is used with 1 as the value of the parameter n. A new description is hypothesized by unifying disjunct (1) with the definite component of the description (i.e., NEW-DESC.DEFINITE).","{'title': '4 An example', 'number': '4'}"
-"Then disjuncts (3) and (4) are checked for compatibility with this hypothesized structure: (3) is not compatible, because the values of the Transitivity features do not unify.","{'title': '4 An example', 'number': '4'}"
-"Disjunct (4) is also incompatible, because it has Goal : Person : 3, and the hypothesized description has ri< Subj >,< Goal >1, along with Subj : Person : 2.","{'title': '4 An example', 'number': '4'}"
-"Therefore, since there is no compatible disjunct among (3) and (4), the hypothesis that (1) is compatible with the rest of the description has been shown to be invalid, and (1) can be eliminated.","{'title': '4 An example', 'number': '4'}"
-It follows that disjunct (2) should be unified with the definite part of the description.,"{'title': '4 An example', 'number': '4'}"
-"Now disjuncts (3) and (4) are checked for compatibility with the definite component of the new description: (3) is no longer compatible, but (4) is compatible.","{'title': '4 An example', 'number': '4'}"
-"Therefore, (3) is eliminated, and (4) is unified with the definite information.","{'title': '4 An example', 'number': '4'}"
-"No disjunctions remain in the result, as shown in Figure 10.","{'title': '4 An example', 'number': '4'}"
-"Referring to Figure 3, note that the function UNIFY-DESC may terminate after any of the three major steps.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"After each step it may detect inconsistency between the two descriptions and terminate, returning failure, or it may terminate because no disjunctions remain in the description.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Therefore, it is useful to examine the complexity of each of the three steps independently.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Let n represent the total number of symbols in the combined description f A g, and d represent the total number of disjuncts (in both top-level and embedded disjunctions) contained in f A g. Step /.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-This step performs the unification of two DG structures.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-Ait-Kaci [1] has shown how this operation can be performed in almost linear time by the UNION/FIND algorithm.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-Its time complexity has an upper bound of 0(n log n).,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Since an unknown amount of a description may be contained in the definite component, this step of the algorithm also requires 0(n log it) time.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-Step 2.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-For this step we examine the complexity of the function CHECK-INDEF.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"There are two nested loops in CHECK-INDEF, each of which may be executed at most once for each disjunct in the description.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"The inner loop checks the compatibility of two DG structures, which requires no more time than unification.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Thus, in the worst case, CHECKlNDEF requires 0(cen log n) time.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-Step 3.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-NWISE-CONSISTENCY requires at most 0(2d/2) time.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"In this step, NWISE-CONSISTENCY is called at most (d/2) — 1 times.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Therefore, the overall complexity of step 3 is 0(2d/2).","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-Discussion.,"{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"While the worst case complexity of the entire algorithm is 0(2d), an exponential, it is significant that it often terminates before step 3, even when a large number of disjunctions are present in one of the descriptions.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Thus, in many practical cases the actual cost of the algorithm is bounded by a polynomial that is at most d2n log it.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Since d must be less than n, this complexity function is almost cubic.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"Even when step 3 must be used, the number of remaining disjunctions is often much fewer than d/2, so the exponent is usually a small number.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"The algorithm performs well in most cases, because the three steps are ordered in increasing complexity, and the number of disjunctions can only decrease during unification.","{'title': '5 Complexity of the Algorithm', 'number': '5'}"
-"The algorithm presented in the previous sections has been implemented and tested as part of a general parsing method for Systemic Functional Grammar, which is described in [3].","{'title': '6 Implementation', 'number': '6'}"
-"The algorithm was integrated with the structure building module of the PATR-II system [101, written in the Zetalisp programming language.","{'title': '6 Implementation', 'number': '6'}"
-"While the feature-description corresponding to a grammar may have hundreds of disjunctions, the descriptions that result from parsing a sentence usually have only a small number of disjunctions, if any at all.","{'title': '6 Implementation', 'number': '6'}"
-Most disjunctions in a systemic grammar represent possible alternative values that some particular feature may have (along with the grammatical consequences entailed by choosing particular values for the feature).,"{'title': '6 Implementation', 'number': '6'}"
-"In the analysis of a particular sentence most features have a unique value, and some features are not present at all.","{'title': '6 Implementation', 'number': '6'}"
-"When disjunction remains in the description of a sentence after parsing, it usually represents ambiguity or an underspecified part of the grammar.","{'title': '6 Implementation', 'number': '6'}"
-"With this implementation of the algorithm, sentences of up to 10 words have been parsed correctly, using a grammar which contains over 300 disjunctions.","{'title': '6 Implementation', 'number': '6'}"
-"The time required for most sentences is in the range of 10 to 300 seconds, running on lisp machine hardware.","{'title': '6 Implementation', 'number': '6'}"
-"The fact that sentences can be parsed at all with a grammar containing this many disjunctions indicates that the algorithm is performing much better than its theoretical worst case time of 0(2d).2 The timings, shown in Table 1, obtained from the experimental parser for systemic grammar also indicate that a dramatic increase in the number of disjunctions in the grammar does not result in an exponential increase in parse time.","{'title': '6 Implementation', 'number': '6'}"
-"C08 is a grammar containing 98 disjunctions, 2Consider, 23&quot; i:.","{'title': '6 Implementation', 'number': '6'}"
-"28°, and 280 is taken to be a rough estimate of the number of particles in the universe. and G440 is a grammar containing 440 disjunctions.","{'title': '6 Implementation', 'number': '6'}"
-The total time used to parse each sentence is given in seconds.,"{'title': '6 Implementation', 'number': '6'}"
-The unification method presented here represents a general solution to a seemingly intractable problem.,"{'title': '7 Conclusions', 'number': '7'}"
-This method has been used successfully in an experimental parser for a grammar containing several hundred disjunctions in its description.,"{'title': '7 Conclusions', 'number': '7'}"
-"Therefore, we expect that it can be used as the basis for language processing systems requiring large grammatical descriptions that contain disjunctive information, and refined as necessary and appropriate for specific applications.","{'title': '7 Conclusions', 'number': '7'}"
-"While the range of speed achieved by a straightforward implementation of this algorithm is acceptable for grammar testing, even greater efficiency would be desirable (and necessary for applications demanding fast real-time performance).","{'title': '7 Conclusions', 'number': '7'}"
-"Therefore, we suggest two types of refinement to this algorithm as topics for future research: using heuristics to determine an opportune ordering of the disjuncts within a description, and using parallel hardware to implement the compatibility tests for different disjunctions.","{'title': '7 Conclusions', 'number': '7'}"
-"I would like to thank Bill Rounds, my advisor during graduate studies at the University of Michigan, for his helpful criticism of earlier versions of the algorithm which is presented here.","{'title': 'Acknowledgements', 'number': '8'}"
-"I would also like to thank Bill Mann for suggestions during its implementation at USC/ISI, and Stuart Shieber for providing help in the use of the PATR-II system.","{'title': 'Acknowledgements', 'number': '8'}"
-"This research was sponsored in part by the United States Air Force Office of Scientific Research contracts FQ8671-8401007 and F49620-87-C-0005, and in part by the United States Defense Advanced Research Projects Agency under contract MDA903-81-C-0335; the opinions expressed here are solely those of the author.","{'title': 'Acknowledgements', 'number': '8'}"
+"Although disjunction has been used in several unificationbased grammar formalisms, existing methods of unification have been unsatisfactory for descriptions containing large quantities of disjunction, because they require exponential time.",Introduction
+"This paper describes a method of unification by successive approximation, resulting in better average performance.",Introduction
+Disjunction has been used in several unification-based grammar formalisms to represent alternative structures in descriptions of constituents.,Experiment/Discussion
+"Disjunction is an essential component of grammatical descriptions in Kay's Functional Unification Grammar [6], and it has been proposed by Karttunen as a linguistically motivated extension to PATR-II [2].",Experiment/Discussion
+In previous work two methods have been used to handle disjunctive descriptions in parsing and other computational applications.,Experiment/Discussion
+"The first method requires expanding descriptions to disjunctive normal form (DNF) so that the entire description can be interpreted as a set of structures, each of which contains no disjunction.",Experiment/Discussion
+"This method is exemplified by Definite Clause Grammar [8], which eliminates disjunctive terms by expanding each rule containing disjunction into alternative rules.",Experiment/Discussion
+It is also the method used by Kay [7] in parsing FUG.,Experiment/Discussion
+"This method works reasonably well for small grammars, but it is clearly unsatisfactory for descriptions containing more than a small number of disjunctions, because the DNF expansion requires an amount of space which is exponential in the number of disjunctions.",Experiment/Discussion
+"The second method, developed by Karttunen [2], uses constraints on disjuncts which must be checked whenever a disjunct is modified.",Experiment/Discussion
+"Karttunen's method is only applicable to value disjunctions (i.e. those disjunctions used to specify the value of a single feature), and it becomes complicated and inefficient when disjuncts contain non-local dependencies (i.e. values specified by path expressions denoting another feature).",Experiment/Discussion
+"In previous research [4,5] we have shown how descriptions of feature structures can be represented by a certain type of logical formula, and that the consistency problem for disjunctive descriptions is NP-complete.",Experiment/Discussion
+"This result indicates, according to the widely accepted mathematical assumption that P NP, that any complete unification algorithm for disjunctive descriptions will require exponential time in the worst case.",Experiment/Discussion
+"However, this result does not preclude algorithms with better average performance, such as the method described in the remainder of this paper.",Experiment/Discussion
+"This method overcomes the shortcomings of previously existing methods, and has the following desirable properties:",Experiment/Discussion
+"The most common unification methods for non-disjunctive feature structures use a directed graph (DG) representation, in which arcs are labeled by names of features, and nodes correspond to values of features.",Experiment/Discussion
+"For an introduction to these methods, the reader is referred to Shieber's survey [11].",Experiment/Discussion
+"In the remainder of this section we will define a data structure for disjunctive descriptions, using DG structures as a basic component.",Experiment/Discussion
+"In the following exposition, we will carefully observe the distinction between feature structures and their descriptions, as explained in [4].",Experiment/Discussion
+"Feature structures will be represented by DGs, and descriptions of feature structures will be represented by logical formulas of the type described in [4].",Experiment/Discussion
+"The NIL denoting no information; TOP denoting inconsistent information; a where a E A, to describe atomic values; I : where I E L and E FDL, to describe structures in which the feature labeled by I has a value described by 0; [< pi >,•••,< pes >I where each pi E L* , to describe an equivalence class of paths sharing a common value in a feature structure; where 0, E FDL; syntax for formulas of this feature description logic (hereafter called FDL) is given in Figure 1.1 Note, in particular, that disjunction is used in descriptions of feature structures, but not in the structures themselves.",Experiment/Discussion
+"As we have shown (see [91) that there is a unique minimal satisfying DG structure for any nondisjunctive FDL formula, we can represent the parts of a formula which do not contain any disjunction by DGs.",Experiment/Discussion
+"DGs are a more compact way of representing the same information that is contained in a FDL formula, provided the formula contains no disjunction.",Experiment/Discussion
+Let us define an unconditional conjunct to be a conjunct of a formula which contains no occurrences of disjunction.,Experiment/Discussion
+"After path expansion any formula can be put into the form: where uconj contains no occurrences of disjunction, and each disji, for 1 < i < m, is a disjunction of two or more alternatives.",Experiment/Discussion
+The uconj part of the formula is formed by using the commutative law to bring all unconditional conjuncts of the formula together at the front.,Experiment/Discussion
+"Of course, there may be no unconditional conjuncts in a formula, in which case uconj would be the formula NIL.",Experiment/Discussion
+"Each disjunct may be any type of formula, so disjuncts can also be put into a similar form, with all unconditional conjuncts grouped together before all disjunctive components.",Experiment/Discussion
+Thus the disjunctions of a formula can be put into the form (uconji Adi sj 11 A ...Adisji.),Experiment/Discussion
+V ... V (uconj.,Experiment/Discussion
+"Adi a jy, A ...A diejny).",Experiment/Discussion
+"The embedding of conjuncts within disjuncts is preserved, but the order of conjuncts may be changed.",Experiment/Discussion
+The unconditional conjuncts of a formula contain information that is more definite than the information contained in disjunctions.,Experiment/Discussion
+"Thus a formula can be regarded as having a definite part, containing only unconditional conjuncts, and an indefinite part, containing a set of disjunctions.",Experiment/Discussion
+"The definite part contains no disjunction, and therefore it may be represented by a DG structure.",Experiment/Discussion
+"To encode these parts of a formula, let us define a feature-description as a type of data structure, having two components: iLet A and L be sets of symbols which are used to denote atomic values and feature labels, respectively.",Experiment/Discussion
+"Indefinite: a SET of disjunctions, where each disjunction is a SET of feature-descriptions.",Experiment/Discussion
+"It is possible to convert any FDL formula into a featuredescription structure by a simple automatic procedure, as described in [51.",Experiment/Discussion
+"This conversion does not add or subtract any information from a formula, nor increase its size in any significant way.",Experiment/Discussion
+It simply identifies components of the formula which may be converted into a more efficient representation as DG structures.,Experiment/Discussion
+"A feature-description is conceptually equivalent to a special kind of AND/OR graph, in which the terminal nodes are represented by DG structures.",Experiment/Discussion
+"For example, an AND/OR graph equivalent to the formula, is shown in Figure 2.",Experiment/Discussion
+"In the AND/OR graph representation, each AND-node represents a feature-description.",Experiment/Discussion
+"The first outgoing arc from an AND-node represents the definite component of a feature-description, and the remaining outgoing arcs represent the indefinite component.",Experiment/Discussion
+Each OR-node represents a disjunction.,Experiment/Discussion
+"Function UNIFY-DESC (f, g) Returns feature-description: where f and g are feature-descriptions.",Experiment/Discussion
+/.,Experiment/Discussion
+Unify definite components.,Experiment/Discussion
+"Let new-def = UNIFY-DGS (f.definite, g.definite).",Experiment/Discussion
+"If new-def = TOP, then return (failure).",Experiment/Discussion
+"Let desc = a feature-description with: desc.definite = new-def, desc.indefinite = tindefinite U g.indefinite.",Experiment/Discussion
+"If desc.indefinite = 0, Then return (desc); Else begin; 2.",Experiment/Discussion
+Check compatibility of indefinite components with new-def.,Experiment/Discussion
+"Let new-desc = CHECK-INDEF (desc, new-def).",Experiment/Discussion
+"If new-desc = failure, then return (failure); S. Complete ezhau.stiue consistency checking, if necessary.",Experiment/Discussion
+"Else if new-desc.indefinite = 0 OR if complete checking is not required, Then return (new-desc); Else begin; Let n = 1.",Experiment/Discussion
+Repeat while n < cardinality of new-desc.indefinite:,Experiment/Discussion
+"In this section we will give a complete algorithm for unifying two feature-descriptions, where one or both may contain disjunction.",Experiment/Discussion
+"This algorithm is designed so that it can be used as a relatively efficient approximation method, with an optional step to perform complete consistency checking when necessary.",Experiment/Discussion
+"Given two feature-descriptions, the strategy of the unification algorithm is to unify the definite components of the descriptions first, and examine the compatibility of indefinite components later.",Experiment/Discussion
+Disjuncts are eliminated from the description when they are inconsistent with definite information.,Experiment/Discussion
+This strategy avoids exploring disjuncts more than once when they are inconsistent with definite information.,Experiment/Discussion
+The exact algorithm is described in Figure 3.,Experiment/Discussion
+It has three major steps.,Experiment/Discussion
+"In the first step, the definite components of the two descriptions are unified together, producing a DG structure, new-def, which represents the definite information of the result.",Experiment/Discussion
+This step can be performed by existing unification algorithms for DGs.,Experiment/Discussion
+"In the second step, the indefinite components of both descriptions are checked for compatibility with new-def, using the function CHECK-INDEF, which is defined in Figure 4.",Experiment/Discussion
+"CHECK-INDEF uses the function CHECK-DISJ, defined in Figure 5, to check the compatibility of each disjunction with the DG structure given by the parameter cond.",Experiment/Discussion
+"The compatibility of two DGs can be checked by almost the same procedure as unification, but the two structures being checked are not actually merged as they are in unification.",Experiment/Discussion
+"In the third major step, if any disjunctions remain, and it is necessary to do so, disjuncts of different disjunctions are considered in groups, to check whether they are compatible together.",Experiment/Discussion
+"This step is performed by the function NWISECONSISTENCY, defined in Figure 6.",Experiment/Discussion
+"When the parameter n to NWISE-CONSISTENCY has the value 1, then one disjunct is checked for compatibility with all other disjunctions of the description in a pairwise manner.",Experiment/Discussion
+"The pairwise manner of checking compatibility can be generalized to groups of any size by increasing the value of the parameter n. While this third step of the algorithm is necessary in order to insure consistency of disjunctive descriptions, it is not necessary to use it every time a description is built during a parse.",Experiment/Discussion
+"In practice, we find that the performance of the algorithm can be tuned by using this step only at strategic points during a parse, since it is the most inefficient step of the alFunction CHECK-INDEF (desc, cond) Returns feature-description: where desc is a feature-description, and cond is a DG.",Experiment/Discussion
+Let indef = desc.indefinite (a set of disjunctions).,Experiment/Discussion
+Let new-def = desc.definite (a DG).,Experiment/Discussion
+Let unchecked-parts = true.,Experiment/Discussion
+"Function CHECK-DISJ (disj, cond) Returns disjunction: where disj is a disjunction of feature-descriptions, and cond is a DG. gorithm.",Experiment/Discussion
+"In our application, using the Earley chart parsing method, it has proved best to use NWISE-CONSISTENCY only when building descriptions for complete edges, but not when building descriptions for active edges.",Experiment/Discussion
+"Note that two feature-descriptions do not become permanently linked when they are unified, unlike unification for DG stuctures.",Experiment/Discussion
+"The result of unifying two descriptions is a new description, which is satisfied by the intersection of the sets of structures that satisfy the two given descriptions.",Experiment/Discussion
+"The new description contains all the information that is contained in either of the given descriptions, subtracting any disjuncts which are no longer compatible.",Experiment/Discussion
+"In order to illustrate the effect of each step of the algorithm, let us consider an example of unifying the description of a known constituent with the description of a portion of a grammar.",Experiment/Discussion
+This exemplifies the predominant type of structure building operation needed in a parsing program for Functional Unification Grammar.,Experiment/Discussion
+"The example given here is deliberately simple, in order to illustrate how the algorithm works with a minimum amount of detail.",Experiment/Discussion
+"It is not intended as an example of a linguistically motivated grammar. descriptions have been unified, and their indefinite components have been conjoined together.",Experiment/Discussion
+"In step 2 of the algorithm each of the disjuncts of DES C.INDEFINITE is checked for compatibility with DESC.DEFINITE, using the function CHECK-INDEF.",Experiment/Discussion
+"In this case, all disjuncts are compatible with the definite information, except for one; the disjunct of the third disjunction which contains the feature Number : Sing.",Experiment/Discussion
+"This disjunct is eliminated, and the only remaining disjunct in the disjunction (i.e., the disjunct containing Number : PO is unified with DESC.DEFINITE.",Experiment/Discussion
+The result after this step is shown in Figure 9.,Experiment/Discussion
+The four disjuncts that remain are numbered for convenience.,Experiment/Discussion
+"In step 3, NWISE-CONSISTENCY is used with 1 as the value of the parameter n. A new description is hypothesized by unifying disjunct (1) with the definite component of the description (i.e., NEW-DESC.DEFINITE).",Experiment/Discussion
+"Then disjuncts (3) and (4) are checked for compatibility with this hypothesized structure: (3) is not compatible, because the values of the Transitivity features do not unify.",Experiment/Discussion
+"Disjunct (4) is also incompatible, because it has Goal : Person : 3, and the hypothesized description has ri< Subj >,< Goal >1, along with Subj : Person : 2.",Experiment/Discussion
+"Therefore, since there is no compatible disjunct among (3) and (4), the hypothesis that (1) is compatible with the rest of the description has been shown to be invalid, and (1) can be eliminated.",Experiment/Discussion
+It follows that disjunct (2) should be unified with the definite part of the description.,Experiment/Discussion
+"Now disjuncts (3) and (4) are checked for compatibility with the definite component of the new description: (3) is no longer compatible, but (4) is compatible.",Experiment/Discussion
+"Therefore, (3) is eliminated, and (4) is unified with the definite information.",Experiment/Discussion
+"No disjunctions remain in the result, as shown in Figure 10.",Experiment/Discussion
+"Referring to Figure 3, note that the function UNIFY-DESC may terminate after any of the three major steps.",Experiment/Discussion
+"After each step it may detect inconsistency between the two descriptions and terminate, returning failure, or it may terminate because no disjunctions remain in the description.",Experiment/Discussion
+"Therefore, it is useful to examine the complexity of each of the three steps independently.",Experiment/Discussion
+"Let n represent the total number of symbols in the combined description f A g, and d represent the total number of disjuncts (in both top-level and embedded disjunctions) contained in f A g. Step /.",Experiment/Discussion
+This step performs the unification of two DG structures.,Experiment/Discussion
+Ait-Kaci [1] has shown how this operation can be performed in almost linear time by the UNION/FIND algorithm.,Experiment/Discussion
+Its time complexity has an upper bound of 0(n log n).,Experiment/Discussion
+"Since an unknown amount of a description may be contained in the definite component, this step of the algorithm also requires 0(n log it) time.",Experiment/Discussion
+Step 2.,Experiment/Discussion
+For this step we examine the complexity of the function CHECK-INDEF.,Experiment/Discussion
+"There are two nested loops in CHECK-INDEF, each of which may be executed at most once for each disjunct in the description.",Experiment/Discussion
+"The inner loop checks the compatibility of two DG structures, which requires no more time than unification.",Experiment/Discussion
+"Thus, in the worst case, CHECKlNDEF requires 0(cen log n) time.",Experiment/Discussion
+Step 3.,Experiment/Discussion
+NWISE-CONSISTENCY requires at most 0(2d/2) time.,Experiment/Discussion
+"In this step, NWISE-CONSISTENCY is called at most (d/2) — 1 times.",Experiment/Discussion
+"Therefore, the overall complexity of step 3 is 0(2d/2).",Experiment/Discussion
+Discussion.,Experiment/Discussion
+"While the worst case complexity of the entire algorithm is 0(2d), an exponential, it is significant that it often terminates before step 3, even when a large number of disjunctions are present in one of the descriptions.",Experiment/Discussion
+"Thus, in many practical cases the actual cost of the algorithm is bounded by a polynomial that is at most d2n log it.",Experiment/Discussion
+"Since d must be less than n, this complexity function is almost cubic.",Experiment/Discussion
+"Even when step 3 must be used, the number of remaining disjunctions is often much fewer than d/2, so the exponent is usually a small number.",Experiment/Discussion
+"The algorithm performs well in most cases, because the three steps are ordered in increasing complexity, and the number of disjunctions can only decrease during unification.",Experiment/Discussion
+"The algorithm presented in the previous sections has been implemented and tested as part of a general parsing method for Systemic Functional Grammar, which is described in [3].",Experiment/Discussion
+"The algorithm was integrated with the structure building module of the PATR-II system [101, written in the Zetalisp programming language.",Experiment/Discussion
+"While the feature-description corresponding to a grammar may have hundreds of disjunctions, the descriptions that result from parsing a sentence usually have only a small number of disjunctions, if any at all.",Experiment/Discussion
+Most disjunctions in a systemic grammar represent possible alternative values that some particular feature may have (along with the grammatical consequences entailed by choosing particular values for the feature).,Experiment/Discussion
+"In the analysis of a particular sentence most features have a unique value, and some features are not present at all.",Experiment/Discussion
+"When disjunction remains in the description of a sentence after parsing, it usually represents ambiguity or an underspecified part of the grammar.",Experiment/Discussion
+"With this implementation of the algorithm, sentences of up to 10 words have been parsed correctly, using a grammar which contains over 300 disjunctions.",Experiment/Discussion
+"The time required for most sentences is in the range of 10 to 300 seconds, running on lisp machine hardware.",Experiment/Discussion
+"The fact that sentences can be parsed at all with a grammar containing this many disjunctions indicates that the algorithm is performing much better than its theoretical worst case time of 0(2d).2 The timings, shown in Table 1, obtained from the experimental parser for systemic grammar also indicate that a dramatic increase in the number of disjunctions in the grammar does not result in an exponential increase in parse time.",Experiment/Discussion
+"C08 is a grammar containing 98 disjunctions, 2Consider, 23&quot; i:.",Experiment/Discussion
+"28°, and 280 is taken to be a rough estimate of the number of particles in the universe. and G440 is a grammar containing 440 disjunctions.",Experiment/Discussion
+The total time used to parse each sentence is given in seconds.,Experiment/Discussion
+The unification method presented here represents a general solution to a seemingly intractable problem.,Results/Conclusion
+This method has been used successfully in an experimental parser for a grammar containing several hundred disjunctions in its description.,Results/Conclusion
+"Therefore, we expect that it can be used as the basis for language processing systems requiring large grammatical descriptions that contain disjunctive information, and refined as necessary and appropriate for specific applications.",Results/Conclusion
+"While the range of speed achieved by a straightforward implementation of this algorithm is acceptable for grammar testing, even greater efficiency would be desirable (and necessary for applications demanding fast real-time performance).",Results/Conclusion
+"Therefore, we suggest two types of refinement to this algorithm as topics for future research: using heuristics to determine an opportune ordering of the disjuncts within a description, and using parallel hardware to implement the compatibility tests for different disjunctions.",Results/Conclusion
+"I would like to thank Bill Rounds, my advisor during graduate studies at the University of Michigan, for his helpful criticism of earlier versions of the algorithm which is presented here.",Results/Conclusion
+"I would also like to thank Bill Mann for suggestions during its implementation at USC/ISI, and Stuart Shieber for providing help in the use of the PATR-II system.",Results/Conclusion
+"This research was sponsored in part by the United States Air Force Office of Scientific Research contracts FQ8671-8401007 and F49620-87-C-0005, and in part by the United States Defense Advanced Research Projects Agency under contract MDA903-81-C-0335; the opinions expressed here are solely those of the author.",Results/Conclusion

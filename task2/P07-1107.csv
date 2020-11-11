@@ -1,204 +1,204 @@
 col1,col2
-"We present an unsupervised, nonparametric Bayesian approach to coreference resolution which models both global entity identity across a corpus as well as the sequential anaphoric structure within each document.",{}
-"While most existing coreference work is driven by pairwise decisions, our model is fully generative, producing each mention from a combination of global entity properties and local attentional state.",{}
-"Despite being unsupervised, our system achieves a 70.3 on the MUC-6 test set, broadly in the range of some recent supervised results.",{}
-Referring to an entity in natural language can broadly be decomposed into two processes.,"{'title': '1 Introduction', 'number': '1'}"
-"First, speakers directly introduce new entities into discourse, entities which may be shared across discourses.","{'title': '1 Introduction', 'number': '1'}"
-This initial reference is typically accomplished with proper or nominal expressions.,"{'title': '1 Introduction', 'number': '1'}"
-"Second, speakers refer back to entities already introduced.","{'title': '1 Introduction', 'number': '1'}"
-"This anaphoric reference is canonically, though of course not always, accomplished with pronouns, and is governed by linguistic and cognitive constraints.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present a nonparametric generative model of a document corpus which naturally connects these two processes.","{'title': '1 Introduction', 'number': '1'}"
-Most recent coreference resolution work has focused on the task of deciding which mentions (noun phrases) in a document are coreferent.,"{'title': '1 Introduction', 'number': '1'}"
-The dominant approach is to decompose the task into a collection of pairwise coreference decisions.,"{'title': '1 Introduction', 'number': '1'}"
-"One then applies discriminative learning methods to pairs of mentions, using features which encode properties such as distance, syntactic environment, and so on (Soon et al., 2001; Ng and Cardie, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"Although such approaches have been successful, they have several liabilities.","{'title': '1 Introduction', 'number': '1'}"
-"First, rich features require plentiful labeled data, which we do not have for coreference tasks in most domains and languages.","{'title': '1 Introduction', 'number': '1'}"
-"Second, coreference is inherently a clustering or partitioning task.","{'title': '1 Introduction', 'number': '1'}"
-Naive pairwise methods can and do fail to produce coherent partitions.,"{'title': '1 Introduction', 'number': '1'}"
-One classic solution is to make greedy left-to-right linkage decisions.,"{'title': '1 Introduction', 'number': '1'}"
-Recent work has addressed this issue in more global ways.,"{'title': '1 Introduction', 'number': '1'}"
-McCallum and Wellner (2004) use graph partioning in order to reconcile pairwise scores into a final coherent clustering.,"{'title': '1 Introduction', 'number': '1'}"
-"Nonetheless, all these systems crucially rely on pairwise models because clusterlevel models are much harder to work with, combinatorially, in discriminative approaches.","{'title': '1 Introduction', 'number': '1'}"
-"Another thread of coreference work has focused on the problem of identifying matches between documents (Milch et al., 2005; Bhattacharya and Getoor, 2006; Daume and Marcu, 2005).","{'title': '1 Introduction', 'number': '1'}"
-"These methods ignore the sequential anaphoric structure inside documents, but construct models of how and when entities are shared between them.1 These models, as ours, are generative ones, since the focus is on cluster discovery and the data is generally unlabeled.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present a novel, fully generative, nonparametric Bayesian model of mentions in a document corpus.","{'title': '1 Introduction', 'number': '1'}"
-Our model captures both withinand cross-document coreference.,"{'title': '1 Introduction', 'number': '1'}"
-"At the top, a hierarchical Dirichlet process (Teh et al., 2006) captures cross-document entity (and parameter) sharing, while, at the bottom, a sequential model of salience captures within-document sequential structure.","{'title': '1 Introduction', 'number': '1'}"
-"As a joint model of several kinds of discourse variables, it can be used to make predictions about either kind of coreference, though we focus experimentally on within-document measures.","{'title': '1 Introduction', 'number': '1'}"
-"To the best of our ability to compare, our model achieves the best unsupervised coreference performance.","{'title': '1 Introduction', 'number': '1'}"
-"We adopt the terminology of the Automatic Context Extraction (ACE) task (NIST, 2004).","{'title': '2 Experimental Setup', 'number': '2'}"
-"For this paper, we assume that each document in a corpus consists of a set of mentions, typically noun phrases.","{'title': '2 Experimental Setup', 'number': '2'}"
-Each mention is a reference to some entity in the domain of discourse.,"{'title': '2 Experimental Setup', 'number': '2'}"
-The coreference resolution task is to partition the mentions according to referent.,"{'title': '2 Experimental Setup', 'number': '2'}"
-"Mentions can be divided into three categories, proper mentions (names), nominal mentions (descriptions), and pronominal mentions (pronouns).","{'title': '2 Experimental Setup', 'number': '2'}"
-"In section 3, we present a sequence of increasingly enriched models, motivating each from shortcomings of the previous.","{'title': '2 Experimental Setup', 'number': '2'}"
-"As we go, we will indicate the performance of each model on data from ACE 2004 (NIST, 2004).","{'title': '2 Experimental Setup', 'number': '2'}"
-"In particular, we used as our development corpus the English translations of the Arabic and Chinese treebanks, comprising 95 documents and about 3,905 mentions.","{'title': '2 Experimental Setup', 'number': '2'}"
-This data was used heavily for model design and hyperparameter selection.,"{'title': '2 Experimental Setup', 'number': '2'}"
-"In section 5, we present final results for new test data from MUC-6 on which no tuning or development was performed.","{'title': '2 Experimental Setup', 'number': '2'}"
-This test data will form our basis for comparison to previous work.,"{'title': '2 Experimental Setup', 'number': '2'}"
-"In all experiments, as is common, we will assume that we have been given as part of our input the true mention boundaries, the head word of each mention and the mention type (proper, nominal, or pronominal).","{'title': '2 Experimental Setup', 'number': '2'}"
-"For the ACE data sets, the head and mention type are given as part of the mention annotation.","{'title': '2 Experimental Setup', 'number': '2'}"
-"For the MUC data, the head was crudely chosen to be the rightmost mention token, and the mention type was automatically detected.","{'title': '2 Experimental Setup', 'number': '2'}"
-We will not assume any other information to be present in the data beyond the text itself.,"{'title': '2 Experimental Setup', 'number': '2'}"
-"In particular, unlike much related work, we do not assume gold named entity recognition (NER) labels; indeed we do not assume observed NER labels or POS tags at all.","{'title': '2 Experimental Setup', 'number': '2'}"
-"Our primary performance metric will be the MUC F1 measure (Vilain et al., 1995), commonly used to evaluate coreference systems on a within-document basis.","{'title': '2 Experimental Setup', 'number': '2'}"
-"Since our system relies on sampling, all results are averaged over five random runs.","{'title': '2 Experimental Setup', 'number': '2'}"
-"In this section, we present a sequence of generative coreference resolution models for document corpora.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"All are essentially mixture models, where the mixture components correspond to entities.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"As far as notation, we assume a collection of I documents, each with Ji mentions.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We use random variables Z to refer to (indices of) entities.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We will use 0z to denote the parameters for an entity z, and 0 to refer to the concatenation of all such 0z.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-X will refer somewhat loosely to the collection of variables associated with a mention in our model (such as the head or gender).,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We will be explicit about X and 0z shortly.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Our goal will be to find the setting of the entity indices which maximize the posterior probability: where Z, X, and 0 denote all the entity indices, observed values, and parameters of the model.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-Note that we take a Bayesian approach in which all parameters are integrated out (or sampled).,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-The inference task is thus primarily a search problem over the index labels Z.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The Weir Group1, whose2 headquarters3 is in the US4, is a large, specialized corporation5 investing in the area of electricity generation.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This power plant6, which7 will be situated in Rudong8, Jiangsu9, has an annual generation capacity of 2.4 million kilowatts.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The Weir Group1, whose1 headquarters2 is in the US3, is a large, specialized corporation4 investing in the area of electricity generation.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This power plant5, which1 will be situated in Rudong6, Jiangsu7, has an annual generation capacity of 2.4 million kilowatts.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The Weir Group1, whose1 headquarters2 is in the US3, is a large, specialized corporation4 investing in the area of electricity generation.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This power plant5, which5 will be situated in Rudong6, Jiangsu7, has an annual generation capacity of 2.4 million kilowatts.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Our first, overly simplistic, corpus model is the standard finite mixture of multinomials shown in figure 1(a).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"In this model, each document is independent save for some global hyperparameters.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Inside each document, there is a finite mixture model with a fixed number K of components.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-The distribution Q over components (entities) is a draw from a symmetric Dirichlet distribution with concentration α.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"For each mention in the document, we choose a component (an entity index) z from Q.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Entity z is then associated with a multinomial emission distribution over head words with parameters Oh, which are drawn from a symmetric Dirichlet over possible mention heads with concentration AH.2 Note that here the X for a mention consists only of the mention head H. As we enrich our models, we simultaneously develop an accompanying Gibbs sampling procedure to obtain samples from P(Z|X).3 For now, all heads H are observed and all parameters (Q and 0) can be integrated out analytically: for details see Teh et al. (2006).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The only sampling is for the values of Zi,j, the entity index of mention j in document i.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The relevant conditional distribution is:4 where Hi,j is the head of mention j in document i.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Expanding each term, we have the contribution of the prior: 2In general, we will use a subscripted A to indicate concentration for finite Dirichlet distributions.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Unless otherwise specified, A concentration parameters will be set to a−4 and omitted from diagrams.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"3One could use the EM algorithm with this model, but EM will not extend effectively to the subsequent models.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"4Here, Z−i,j denotes Z − {Zi,j} where nz is the number of elements of Z−i,j with entity index z.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Similarly we have for the contribution of the emissions: where nh,z is the number of times we have seen head h associated with entity index z in (Z, H−i,j).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-A clear drawback of the finite mixture model is the requirement that we specify a priori a number of entities K for a document.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We would like our model to select K in an effective, principled way.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"A mechanism for doing so is to replace the finite Dirichlet prior on Q with the non-parametric Dirichlet process (DP) prior (Ferguson, 1973).5 Doing so gives the model in figure 1(b).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-Note that we now list an infinite number of mixture components in this model since there can be an unbounded number of entities.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Rather than a finite Q with a symmetric Dirichlet distribution, in which draws tend to have balanced clusters, we now have an infinite Q.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"However, most draws will have weights which decay exponentially quickly in the prior (though not necessarily in the posterior).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Therefore, there is a natural penalty for each cluster which is actually used.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"With Z observed during sampling, we can integrate out Q and calculate P(Zi,j|Z−i,j) analytically, using the Chinese restaurant process representation: where znew is a new entity index not used in Z−i,j and nz is the number of mentions that have entity index z.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Aside from this change, sampling is identical to the finite mixture case, though with the number of clusters actually occupied in each sample drifting upwards or downwards.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This model yielded a 54.5 Fi on our development data.6 This model is, however, hopelessly crude, capturing nothing of the structure of coreference.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Its largest empirical problem is that, unsurprisingly, pronoun mentions such as he are given their own clusters, not labeled as coreferent with any non-pronominal mention (see figure 2(a)).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"While an entity-specific multinomial distribution over heads makes sense for proper, and some nominal, mention heads, it does not make sense to generate pronominal mentions this same way.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"I.e., all entities can be referred to by generic pronouns, the choice of which depends on entity properties such as gender, not the specific entity.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We therefore enrich an entity’s parameters 0 to contain not only a distribution over lexical heads 0h, but also distributions (0t, 09, 0n) over properties, where 0t parametrizes a distribution over entity types (PER, LOC, ORG, MISC), and 09 for gender (MALE, FEMALE, NEUTER), and 0n for number (SG, PL).7 We assume each of these property distributions is drawn from a symmetric Dirichlet distribution with small concentration parameter in order to encourage a peaked posterior distribution.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Previously, when an entity z generated a mention, it drew a head word from 0hz .","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-It now undergoes a more complex and structured process.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"It first draws an entity type T, a gender G, a number N from the distributions 0t, 09, and 0n, respectively.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Once the properties are fetched, a mention type M is chosen (proper, nominal, pronoun), according to a global multinomial (again with a symmetric Dirichlet prior and parameter AM).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-This corresponds to the (temporary) assumption that the speaker makes a random i.i.d. choice for the type of each mention.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Our head model will then generate a head, conditioning on the entity, its properties, and the mention type, as shown in figure 3(b).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"If M is not a pronoun, the head is drawn directly from the entity head multinomial with parameters 0hz .","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Otherwise, it is drawn based on a global pronoun head distribution, conditioning on the entity properties and parametrized by 9.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Formally, it is given by: Although we can observe the number and gender draws for some mentions, like personal pronouns, there are some for which properties aren’t observed (e.g., it).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Because the entity property draws are not (all) observed, we must now sample the unobserved ones as well as the entity indices Z.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"For instance, we could sample Ti,j, the entity type of pronominal mention j in document i, using, P(Ti,j|Z, N, G, H, T−i,j) ∝ P(Ti,j|Z)P(Hi,j|T, N, G, H), where the posterior distributions on the right hand side are straightforward because the parameter priors are all finite Dirichlet.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-Sampling G and N are identical.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-Of course we have prior knowledge about the relationship between entity type and pronoun head choice.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"For example, we expect that he is used for mentions with T = PERSON.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"In general, we assume that for each pronominal head we have a list of compatible entity types, which we encode via the prior on 0.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We assume 0 is drawn from a Dirichlet distribution where each pronoun head is given a synthetic count of (1 + AP) for each (t, g, n) where t is compatible with the pronoun and given AP otherwise.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"So, while it will be possible in the posterior to use he to refer to a non-person, it will be biased towards being used with persons.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-This model gives substantially improved predictions: 64.1 Fi on our development data.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"As can be seen in figure 2(b), this model does correct the systematic problem of pronouns being considered their own entities.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"However, it still does not have a preference for associating pronominal references to entities which are in any way local.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We would like our model to capture how mention types are generated for a given entity in a robust and somewhat language independent way.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"The choice of entities may reasonably be considered to be independent given the mixing weights Q, but how we realize an entity is strongly dependent on context (Ge et al., 1998).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"In order to capture this in our model, we enrich it as shown in figure 4.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"As we proceed through a document, generating entities and their mentions, we maintain a list of the active entities and their saliences, or activity scores.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Every time an entity is mentioned, we increment its activity score by 1, and every time we move to generate the next mention, all activity scores decay by a constant factor of 0.5.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This gives rise to an ordered list of entity activations, L, where the rank of an entity decays exponentially as new mentions are generated.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We call this list a salience list.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Given a salience list, L, each possible entity z has some rank on this list.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We discretize these ranks into five buckets S: TOP (1), HIGH (23), MID (4-6), LOW (7+), and NONE.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Given the entity choices Z, both the list L and buckets S are deterministic (see figure 4).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We assume that the mention type M is conditioned on S as shown in figure 4.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-We note that correctly sampling an entity now requires that we incorporate terms for how a change will affect all future salience values.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"This changes our sampling equation for existing entities: where the product ranges over future mentions in the document and Si,j, is the value of future salience feature given the setting of all entities, including setting the current entity Zi,j to z.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-A similar equation holds for sampling a new entity.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Note that, as discussed below, this full product can be truncated as an approximation.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-This model gives a 71.5 Fi on our development data.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-Table 1 shows the posterior distribution of the mention type given the salience feature.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-This model fixes many anaphora errors and in particular fixes the second anaphora error in figure 2(c).,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"One advantage of a fully generative approach is that we can allow entities to be shared between documents in a principled way, giving us the capacity to do cross-document coreference.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Moreover, sharing across documents pools information about the properties of an entity across documents.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We can easily link entities across a corpus by assuming that the pool of entities is global, with global mixing weights Qo drawn from a DP prior with concentration parameter 'y.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Each document uses the same global entities, but each has a documentspecific distribution Qi drawn from a DP centered on Q0 with concentration parameter α.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Up to the point where entities are chosen, this formulation follows the basic hierarchical Dirichlet process prior of Teh et al. (2006).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Once the entities are chosen, our model for the realization of the mentions is as before.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-This model is depicted graphically in figure 5.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Although it is possible to integrate out Q0 as we did the individual Qi, we instead choose for efficiency and simplicity to sample the global mixture distribution Q0 from the posterior distribution P(Q0|Z).8 The mention generation terms in the model and sampler are unchanged.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"In the full hierarchical model, our equation (1) for sampling entities, ignoring the salience component of section 3.4, becomes: where Qz0 is the probability of the entity z under the sampled global entity distribution and Qu0 is the unknown component mass of this distribution.","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-The HDP layer of sharing improves the model’s predictions to 72.5 F1 on our development data.,"{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"We should emphasize that our evaluation is of course per-document and does not reflect cross-document coreference decisions, only the gains through crossdocument sharing (see section 6.2).","{'title': '3 Coreference Resolution Models', 'number': '3'}"
-"Up until now, we’ve discussed Gibbs sampling, but we are not interested in sampling from the posterior P(Z|X), but in finding its mode.","{'title': '4 Inference Details', 'number': '4'}"
-"Instead of sampling directly from the posterior distribution, we instead sample entities proportionally to exponentiated entity posteriors.","{'title': '4 Inference Details', 'number': '4'}"
-"The exponent is given by exp ci k−1, where i is the current round number (starting at i = 0), c = 1.5 and k = 20 is the total number of sampling epochs.","{'title': '4 Inference Details', 'number': '4'}"
-This slowly raises the posterior exponent from 1.0 to ec.,"{'title': '4 Inference Details', 'number': '4'}"
-"In our experiments, we found this procedure to outperform simulated annealing.","{'title': '4 Inference Details', 'number': '4'}"
-"We also found sampling the T, G, and N variables to be particularly inefficient, so instead we maintain soft counts over each of these variables and use these in place of a hard sampling scheme.","{'title': '4 Inference Details', 'number': '4'}"
-We also found that correctly accounting for the future impact of salience changes to be particularly inefficient.,"{'title': '4 Inference Details', 'number': '4'}"
-"However, ignoring those terms entirely made negligible difference in final accuracy.9","{'title': '4 Inference Details', 'number': '4'}"
-We present our final experiments using the full model developed in section 3.,"{'title': '5 Final Experiments', 'number': '5'}"
-"As in section 3, we use true mention boundaries and evaluate using the MUC F1 measure (Vilain et al., 1995).","{'title': '5 Final Experiments', 'number': '5'}"
-All hyperparameters were tuned on the development set only.,"{'title': '5 Final Experiments', 'number': '5'}"
-The document concentration parameter α was set by taking a constant proportion of the average number of mentions in a document across the corpus.,"{'title': '5 Final Experiments', 'number': '5'}"
-This number was chosen to minimize the squared error between the number of proposed entities and true entities in a document.,"{'title': '5 Final Experiments', 'number': '5'}"
-It was not tuned to maximize the F1 measure.,"{'title': '5 Final Experiments', 'number': '5'}"
-A coefficient of 0.4 was chosen.,"{'title': '5 Final Experiments', 'number': '5'}"
-"The global concentration coefficient -y was chosen to be a constant proportion of αM, where M is the number of documents in the corpus.","{'title': '5 Final Experiments', 'number': '5'}"
-We found 0.15 to be a good value using the same least-square procedure.,"{'title': '5 Final Experiments', 'number': '5'}"
-The values for these coefficients were not changed for the experiments on the test sets.,"{'title': '5 Final Experiments', 'number': '5'}"
-Our main evaluation is on the standard MUC-6 formal test set.10 The standard experimental setup for this data is a 30/30 document train/test split.,"{'title': '5 Final Experiments', 'number': '5'}"
-"Training our system on all 60 documents of the training and test set (as this is in an unsupervised system, the unlabeled test documents are present at training time), but evaluating only on the test documents, gave 63.9 F1 and is labeled MUC-6 in table 2(a).","{'title': '5 Final Experiments', 'number': '5'}"
-One advantage of an unsupervised approach is that we can easily utilize more data when learning a model.,"{'title': '5 Final Experiments', 'number': '5'}"
-We demonstrate the effectiveness of this fact by evaluating on the MUC-6 test documents with increasing amounts of unannotated training data.,"{'title': '5 Final Experiments', 'number': '5'}"
-We first added the 191 documents from the MUC-6 dryrun training set (which were not part of the training data for official MUC-6 evaluation).,"{'title': '5 Final Experiments', 'number': '5'}"
-This model gave 68.0 F1 and is labeled +DRYRUN-TRAIN in table 2(a).,"{'title': '5 Final Experiments', 'number': '5'}"
-"We then added the ACE ENGLISH-NWIRE training data, which is from a different corpora than the MUC-6 test set and from a different time period.","{'title': '5 Final Experiments', 'number': '5'}"
-This model gave 70.3 F1 and is labeled +ENGLISHNWIRE in table 2(a).,"{'title': '5 Final Experiments', 'number': '5'}"
-"Our results on this test set are surprisingly comparable to, though slightly lower than, some recent supervised systems.","{'title': '5 Final Experiments', 'number': '5'}"
-"McCallum and Wellner (2004) report 73.4 F1 on the formal MUC-6 test set, which is reasonably close to our best MUC-6 number of 70.3 F1.","{'title': '5 Final Experiments', 'number': '5'}"
-McCallum and Wellner (2004) also report a much lower 91.6 F1 on only proper nouns mentions.,"{'title': '5 Final Experiments', 'number': '5'}"
-Our system achieves a 89.8 F1 when evaluation is restricted to only proper mentions.11 The et al. (2004).,"{'title': '5 Final Experiments', 'number': '5'}"
-A mention is proper if it is annotated with NER information.,"{'title': '5 Final Experiments', 'number': '5'}"
-It is a pronoun if the head is on the list of English pronouns.,"{'title': '5 Final Experiments', 'number': '5'}"
-"Otherwise, it is a nominal mention.","{'title': '5 Final Experiments', 'number': '5'}"
-Note we do not use the NER information for any purpose but determining whether the mention is proper.,"{'title': '5 Final Experiments', 'number': '5'}"
-11The best results we know on the MUC-6 test set using the standard setting are due to Luo et al. (2004) who report a 81.3 Fl (much higher than others).,"{'title': '5 Final Experiments', 'number': '5'}"
-"However, it is not clear this is a comparable number, due to the apparent use of gold NER features, which provide a strong clue to coreference.","{'title': '5 Final Experiments', 'number': '5'}"
-"Regardless, it is unsurprising that their system, which has many rich features, would outperform ours. closest comparable unsupervised system is Cardie and Wagstaff (1999) who use pairwise NP distances to cluster document mentions.","{'title': '5 Final Experiments', 'number': '5'}"
-They report a 53.6 F1 on MUC6 when tuning distance metric weights to maximize F1 on the development set.,"{'title': '5 Final Experiments', 'number': '5'}"
-We also performed experiments on ACE 2004 data.,"{'title': '5 Final Experiments', 'number': '5'}"
-"Due to licensing restrictions, we did not have access to the ACE 2004 formal development and test sets, and so the results presented are on the training sets.","{'title': '5 Final Experiments', 'number': '5'}"
-We report results on the newswire section (NWIRE in table 2b) and the broadcast news section (BNEWS in table 2b).,"{'title': '5 Final Experiments', 'number': '5'}"
-"These datasets include the prenominal mention type, which is not present in the MUC6 data.","{'title': '5 Final Experiments', 'number': '5'}"
-We treated prenominals analogously to the treatment of proper and nominal mentions.,"{'title': '5 Final Experiments', 'number': '5'}"
-We also tested our system on the Chinese newswire and broadcast news sections of the ACE 2004 training sets.,"{'title': '5 Final Experiments', 'number': '5'}"
-"Our relatively higher performance on Chinese compared to English is perhaps due to the lack of prenominal mentions in the Chinese data, as well as the presence of fewer pronouns compared to English.","{'title': '5 Final Experiments', 'number': '5'}"
-Our ACE results are difficult to compare exactly to previous work because we did not have access to the restricted formal test set.,"{'title': '5 Final Experiments', 'number': '5'}"
-"However, we can perform a rough comparison between our results on the training data (without coreference annotation) to supervised work which has used the same training data (with coreference annotation) and evaluated on the formal test set.","{'title': '5 Final Experiments', 'number': '5'}"
-Denis and Baldridge (2007) report 67.1 F1 and 69.2 F1 on the English NWIRE and BNEWS respectively using true mention boundaries.,"{'title': '5 Final Experiments', 'number': '5'}"
-"While our system underperforms the supervised systems, its accuracy is nonetheless promising.","{'title': '5 Final Experiments', 'number': '5'}"
-The largest source of error in our system is between coreferent proper and nominal mentions.,"{'title': '6 Discussion', 'number': '6'}"
-The most common examples of this kind of error are appositive usages e.g.,"{'title': '6 Discussion', 'number': '6'}"
-"George W. Bush, president of the US, visited Idaho.","{'title': '6 Discussion', 'number': '6'}"
-"Another error of this sort can be seen in figure 2, where the corporation mention is not labeled coreferent with the The Weir Group mention.","{'title': '6 Discussion', 'number': '6'}"
-"Examples such as these illustrate the regular (at least in newswire) phenomenon that nominal mentions are used with informative intent, even when the entity is salient and a pronoun could have been used unambiguously.","{'title': '6 Discussion', 'number': '6'}"
-This aspect of nominal mentions is entirely unmodeled in our system.,"{'title': '6 Discussion', 'number': '6'}"
-"Since we do not have labeled cross-document coreference data, we cannot evaluate our system’s crossdocument performance quantitatively.","{'title': '6 Discussion', 'number': '6'}"
-"However, in addition to observing the within-document gains from sharing shown in section 3, we can manually inspect the most frequently occurring entities in our corpora.","{'title': '6 Discussion', 'number': '6'}"
-Table 3 shows some of the most frequently occurring entities across the English ACE NWIRE corpus.,"{'title': '6 Discussion', 'number': '6'}"
-"Note that Bush is the most frequent entity, though his (and others’) nominal cluster president is mistakenly its own entity.","{'title': '6 Discussion', 'number': '6'}"
-Merging of proper and nominal clusters does occur as can be seen in table 3.,"{'title': '6 Discussion', 'number': '6'}"
-"We can use our model to for unsupervised NER tagging: for each proper mention, assign the mode of the generating entity’s distribution over entity types.","{'title': '6 Discussion', 'number': '6'}"
-"Note that in our model the only way an entity becomes associated with an entity type is by the pronouns used to refer to it.12 If we evaluate our system as an unsupervised NER tagger for the proper mentions in the MUC-6 test set, it yields a 12Ge et al. (1998) exploit a similar idea to assign gender to proper mentions. per-label accuracy of 61.2% (on MUC labels).","{'title': '6 Discussion', 'number': '6'}"
-"Although nowhere near the performance of state-ofthe-art systems, this result beats a simple baseline of always guessing PERSON (the most common entity type), which yields 46.4%.","{'title': '6 Discussion', 'number': '6'}"
-This result is interesting given that the model was not developed for the purpose of inferring entity types whatsoever.,"{'title': '6 Discussion', 'number': '6'}"
-"We have presented a novel, unsupervised approach to coreference resolution: global entities are shared across documents, the number of entities is determined by the model, and mentions are generated by a sequential salience model and a model of pronounentity association.","{'title': '7 Conclusion', 'number': '7'}"
-"Although our system does not perform quite as well as state-of-the-art supervised systems, its performance is in the same general range, despite the system being unsupervised.","{'title': '7 Conclusion', 'number': '7'}"
+"We present an unsupervised, nonparametric Bayesian approach to coreference resolution which models both global entity identity across a corpus as well as the sequential anaphoric structure within each document.",Introduction
+"While most existing coreference work is driven by pairwise decisions, our model is fully generative, producing each mention from a combination of global entity properties and local attentional state.",Introduction
+"Despite being unsupervised, our system achieves a 70.3 on the MUC-6 test set, broadly in the range of some recent supervised results.",Introduction
+Referring to an entity in natural language can broadly be decomposed into two processes.,Experiment/Discussion
+"First, speakers directly introduce new entities into discourse, entities which may be shared across discourses.",Experiment/Discussion
+This initial reference is typically accomplished with proper or nominal expressions.,Experiment/Discussion
+"Second, speakers refer back to entities already introduced.",Experiment/Discussion
+"This anaphoric reference is canonically, though of course not always, accomplished with pronouns, and is governed by linguistic and cognitive constraints.",Experiment/Discussion
+"In this paper, we present a nonparametric generative model of a document corpus which naturally connects these two processes.",Experiment/Discussion
+Most recent coreference resolution work has focused on the task of deciding which mentions (noun phrases) in a document are coreferent.,Experiment/Discussion
+The dominant approach is to decompose the task into a collection of pairwise coreference decisions.,Experiment/Discussion
+"One then applies discriminative learning methods to pairs of mentions, using features which encode properties such as distance, syntactic environment, and so on (Soon et al., 2001; Ng and Cardie, 2002).",Experiment/Discussion
+"Although such approaches have been successful, they have several liabilities.",Experiment/Discussion
+"First, rich features require plentiful labeled data, which we do not have for coreference tasks in most domains and languages.",Experiment/Discussion
+"Second, coreference is inherently a clustering or partitioning task.",Experiment/Discussion
+Naive pairwise methods can and do fail to produce coherent partitions.,Experiment/Discussion
+One classic solution is to make greedy left-to-right linkage decisions.,Experiment/Discussion
+Recent work has addressed this issue in more global ways.,Experiment/Discussion
+McCallum and Wellner (2004) use graph partioning in order to reconcile pairwise scores into a final coherent clustering.,Experiment/Discussion
+"Nonetheless, all these systems crucially rely on pairwise models because clusterlevel models are much harder to work with, combinatorially, in discriminative approaches.",Experiment/Discussion
+"Another thread of coreference work has focused on the problem of identifying matches between documents (Milch et al., 2005; Bhattacharya and Getoor, 2006; Daume and Marcu, 2005).",Experiment/Discussion
+"These methods ignore the sequential anaphoric structure inside documents, but construct models of how and when entities are shared between them.1 These models, as ours, are generative ones, since the focus is on cluster discovery and the data is generally unlabeled.",Experiment/Discussion
+"In this paper, we present a novel, fully generative, nonparametric Bayesian model of mentions in a document corpus.",Experiment/Discussion
+Our model captures both withinand cross-document coreference.,Experiment/Discussion
+"At the top, a hierarchical Dirichlet process (Teh et al., 2006) captures cross-document entity (and parameter) sharing, while, at the bottom, a sequential model of salience captures within-document sequential structure.",Experiment/Discussion
+"As a joint model of several kinds of discourse variables, it can be used to make predictions about either kind of coreference, though we focus experimentally on within-document measures.",Experiment/Discussion
+"To the best of our ability to compare, our model achieves the best unsupervised coreference performance.",Experiment/Discussion
+"We adopt the terminology of the Automatic Context Extraction (ACE) task (NIST, 2004).",Experiment/Discussion
+"For this paper, we assume that each document in a corpus consists of a set of mentions, typically noun phrases.",Experiment/Discussion
+Each mention is a reference to some entity in the domain of discourse.,Experiment/Discussion
+The coreference resolution task is to partition the mentions according to referent.,Experiment/Discussion
+"Mentions can be divided into three categories, proper mentions (names), nominal mentions (descriptions), and pronominal mentions (pronouns).",Experiment/Discussion
+"In section 3, we present a sequence of increasingly enriched models, motivating each from shortcomings of the previous.",Experiment/Discussion
+"As we go, we will indicate the performance of each model on data from ACE 2004 (NIST, 2004).",Experiment/Discussion
+"In particular, we used as our development corpus the English translations of the Arabic and Chinese treebanks, comprising 95 documents and about 3,905 mentions.",Experiment/Discussion
+This data was used heavily for model design and hyperparameter selection.,Experiment/Discussion
+"In section 5, we present final results for new test data from MUC-6 on which no tuning or development was performed.",Experiment/Discussion
+This test data will form our basis for comparison to previous work.,Experiment/Discussion
+"In all experiments, as is common, we will assume that we have been given as part of our input the true mention boundaries, the head word of each mention and the mention type (proper, nominal, or pronominal).",Experiment/Discussion
+"For the ACE data sets, the head and mention type are given as part of the mention annotation.",Experiment/Discussion
+"For the MUC data, the head was crudely chosen to be the rightmost mention token, and the mention type was automatically detected.",Experiment/Discussion
+We will not assume any other information to be present in the data beyond the text itself.,Experiment/Discussion
+"In particular, unlike much related work, we do not assume gold named entity recognition (NER) labels; indeed we do not assume observed NER labels or POS tags at all.",Experiment/Discussion
+"Our primary performance metric will be the MUC F1 measure (Vilain et al., 1995), commonly used to evaluate coreference systems on a within-document basis.",Experiment/Discussion
+"Since our system relies on sampling, all results are averaged over five random runs.",Experiment/Discussion
+"In this section, we present a sequence of generative coreference resolution models for document corpora.",Experiment/Discussion
+"All are essentially mixture models, where the mixture components correspond to entities.",Experiment/Discussion
+"As far as notation, we assume a collection of I documents, each with Ji mentions.",Experiment/Discussion
+We use random variables Z to refer to (indices of) entities.,Experiment/Discussion
+"We will use 0z to denote the parameters for an entity z, and 0 to refer to the concatenation of all such 0z.",Experiment/Discussion
+X will refer somewhat loosely to the collection of variables associated with a mention in our model (such as the head or gender).,Experiment/Discussion
+We will be explicit about X and 0z shortly.,Experiment/Discussion
+"Our goal will be to find the setting of the entity indices which maximize the posterior probability: where Z, X, and 0 denote all the entity indices, observed values, and parameters of the model.",Experiment/Discussion
+Note that we take a Bayesian approach in which all parameters are integrated out (or sampled).,Experiment/Discussion
+The inference task is thus primarily a search problem over the index labels Z.,Experiment/Discussion
+"The Weir Group1, whose2 headquarters3 is in the US4, is a large, specialized corporation5 investing in the area of electricity generation.",Experiment/Discussion
+"This power plant6, which7 will be situated in Rudong8, Jiangsu9, has an annual generation capacity of 2.4 million kilowatts.",Experiment/Discussion
+"The Weir Group1, whose1 headquarters2 is in the US3, is a large, specialized corporation4 investing in the area of electricity generation.",Experiment/Discussion
+"This power plant5, which1 will be situated in Rudong6, Jiangsu7, has an annual generation capacity of 2.4 million kilowatts.",Experiment/Discussion
+"The Weir Group1, whose1 headquarters2 is in the US3, is a large, specialized corporation4 investing in the area of electricity generation.",Experiment/Discussion
+"This power plant5, which5 will be situated in Rudong6, Jiangsu7, has an annual generation capacity of 2.4 million kilowatts.",Experiment/Discussion
+"Our first, overly simplistic, corpus model is the standard finite mixture of multinomials shown in figure 1(a).",Experiment/Discussion
+"In this model, each document is independent save for some global hyperparameters.",Experiment/Discussion
+"Inside each document, there is a finite mixture model with a fixed number K of components.",Experiment/Discussion
+The distribution Q over components (entities) is a draw from a symmetric Dirichlet distribution with concentration α.,Experiment/Discussion
+"For each mention in the document, we choose a component (an entity index) z from Q.",Experiment/Discussion
+"Entity z is then associated with a multinomial emission distribution over head words with parameters Oh, which are drawn from a symmetric Dirichlet over possible mention heads with concentration AH.2 Note that here the X for a mention consists only of the mention head H. As we enrich our models, we simultaneously develop an accompanying Gibbs sampling procedure to obtain samples from P(Z|X).3 For now, all heads H are observed and all parameters (Q and 0) can be integrated out analytically: for details see Teh et al. (2006).",Experiment/Discussion
+"The only sampling is for the values of Zi,j, the entity index of mention j in document i.",Experiment/Discussion
+"The relevant conditional distribution is:4 where Hi,j is the head of mention j in document i.",Experiment/Discussion
+"Expanding each term, we have the contribution of the prior: 2In general, we will use a subscripted A to indicate concentration for finite Dirichlet distributions.",Experiment/Discussion
+"Unless otherwise specified, A concentration parameters will be set to a−4 and omitted from diagrams.",Experiment/Discussion
+"3One could use the EM algorithm with this model, but EM will not extend effectively to the subsequent models.",Experiment/Discussion
+"4Here, Z−i,j denotes Z − {Zi,j} where nz is the number of elements of Z−i,j with entity index z.",Experiment/Discussion
+"Similarly we have for the contribution of the emissions: where nh,z is the number of times we have seen head h associated with entity index z in (Z, H−i,j).",Experiment/Discussion
+A clear drawback of the finite mixture model is the requirement that we specify a priori a number of entities K for a document.,Experiment/Discussion
+"We would like our model to select K in an effective, principled way.",Experiment/Discussion
+"A mechanism for doing so is to replace the finite Dirichlet prior on Q with the non-parametric Dirichlet process (DP) prior (Ferguson, 1973).5 Doing so gives the model in figure 1(b).",Experiment/Discussion
+Note that we now list an infinite number of mixture components in this model since there can be an unbounded number of entities.,Experiment/Discussion
+"Rather than a finite Q with a symmetric Dirichlet distribution, in which draws tend to have balanced clusters, we now have an infinite Q.",Experiment/Discussion
+"However, most draws will have weights which decay exponentially quickly in the prior (though not necessarily in the posterior).",Experiment/Discussion
+"Therefore, there is a natural penalty for each cluster which is actually used.",Experiment/Discussion
+"With Z observed during sampling, we can integrate out Q and calculate P(Zi,j|Z−i,j) analytically, using the Chinese restaurant process representation: where znew is a new entity index not used in Z−i,j and nz is the number of mentions that have entity index z.",Experiment/Discussion
+"Aside from this change, sampling is identical to the finite mixture case, though with the number of clusters actually occupied in each sample drifting upwards or downwards.",Experiment/Discussion
+"This model yielded a 54.5 Fi on our development data.6 This model is, however, hopelessly crude, capturing nothing of the structure of coreference.",Experiment/Discussion
+"Its largest empirical problem is that, unsurprisingly, pronoun mentions such as he are given their own clusters, not labeled as coreferent with any non-pronominal mention (see figure 2(a)).",Experiment/Discussion
+"While an entity-specific multinomial distribution over heads makes sense for proper, and some nominal, mention heads, it does not make sense to generate pronominal mentions this same way.",Experiment/Discussion
+"I.e., all entities can be referred to by generic pronouns, the choice of which depends on entity properties such as gender, not the specific entity.",Experiment/Discussion
+"We therefore enrich an entity’s parameters 0 to contain not only a distribution over lexical heads 0h, but also distributions (0t, 09, 0n) over properties, where 0t parametrizes a distribution over entity types (PER, LOC, ORG, MISC), and 09 for gender (MALE, FEMALE, NEUTER), and 0n for number (SG, PL).7 We assume each of these property distributions is drawn from a symmetric Dirichlet distribution with small concentration parameter in order to encourage a peaked posterior distribution.",Experiment/Discussion
+"Previously, when an entity z generated a mention, it drew a head word from 0hz .",Experiment/Discussion
+It now undergoes a more complex and structured process.,Experiment/Discussion
+"It first draws an entity type T, a gender G, a number N from the distributions 0t, 09, and 0n, respectively.",Experiment/Discussion
+"Once the properties are fetched, a mention type M is chosen (proper, nominal, pronoun), according to a global multinomial (again with a symmetric Dirichlet prior and parameter AM).",Experiment/Discussion
+This corresponds to the (temporary) assumption that the speaker makes a random i.i.d. choice for the type of each mention.,Experiment/Discussion
+"Our head model will then generate a head, conditioning on the entity, its properties, and the mention type, as shown in figure 3(b).",Experiment/Discussion
+"If M is not a pronoun, the head is drawn directly from the entity head multinomial with parameters 0hz .",Experiment/Discussion
+"Otherwise, it is drawn based on a global pronoun head distribution, conditioning on the entity properties and parametrized by 9.",Experiment/Discussion
+"Formally, it is given by: Although we can observe the number and gender draws for some mentions, like personal pronouns, there are some for which properties aren’t observed (e.g., it).",Experiment/Discussion
+"Because the entity property draws are not (all) observed, we must now sample the unobserved ones as well as the entity indices Z.",Experiment/Discussion
+"For instance, we could sample Ti,j, the entity type of pronominal mention j in document i, using, P(Ti,j|Z, N, G, H, T−i,j) ∝ P(Ti,j|Z)P(Hi,j|T, N, G, H), where the posterior distributions on the right hand side are straightforward because the parameter priors are all finite Dirichlet.",Experiment/Discussion
+Sampling G and N are identical.,Experiment/Discussion
+Of course we have prior knowledge about the relationship between entity type and pronoun head choice.,Experiment/Discussion
+"For example, we expect that he is used for mentions with T = PERSON.",Experiment/Discussion
+"In general, we assume that for each pronominal head we have a list of compatible entity types, which we encode via the prior on 0.",Experiment/Discussion
+"We assume 0 is drawn from a Dirichlet distribution where each pronoun head is given a synthetic count of (1 + AP) for each (t, g, n) where t is compatible with the pronoun and given AP otherwise.",Experiment/Discussion
+"So, while it will be possible in the posterior to use he to refer to a non-person, it will be biased towards being used with persons.",Experiment/Discussion
+This model gives substantially improved predictions: 64.1 Fi on our development data.,Experiment/Discussion
+"As can be seen in figure 2(b), this model does correct the systematic problem of pronouns being considered their own entities.",Experiment/Discussion
+"However, it still does not have a preference for associating pronominal references to entities which are in any way local.",Experiment/Discussion
+We would like our model to capture how mention types are generated for a given entity in a robust and somewhat language independent way.,Experiment/Discussion
+"The choice of entities may reasonably be considered to be independent given the mixing weights Q, but how we realize an entity is strongly dependent on context (Ge et al., 1998).",Experiment/Discussion
+"In order to capture this in our model, we enrich it as shown in figure 4.",Experiment/Discussion
+"As we proceed through a document, generating entities and their mentions, we maintain a list of the active entities and their saliences, or activity scores.",Experiment/Discussion
+"Every time an entity is mentioned, we increment its activity score by 1, and every time we move to generate the next mention, all activity scores decay by a constant factor of 0.5.",Experiment/Discussion
+"This gives rise to an ordered list of entity activations, L, where the rank of an entity decays exponentially as new mentions are generated.",Experiment/Discussion
+We call this list a salience list.,Experiment/Discussion
+"Given a salience list, L, each possible entity z has some rank on this list.",Experiment/Discussion
+"We discretize these ranks into five buckets S: TOP (1), HIGH (23), MID (4-6), LOW (7+), and NONE.",Experiment/Discussion
+"Given the entity choices Z, both the list L and buckets S are deterministic (see figure 4).",Experiment/Discussion
+We assume that the mention type M is conditioned on S as shown in figure 4.,Experiment/Discussion
+We note that correctly sampling an entity now requires that we incorporate terms for how a change will affect all future salience values.,Experiment/Discussion
+"This changes our sampling equation for existing entities: where the product ranges over future mentions in the document and Si,j, is the value of future salience feature given the setting of all entities, including setting the current entity Zi,j to z.",Experiment/Discussion
+A similar equation holds for sampling a new entity.,Experiment/Discussion
+"Note that, as discussed below, this full product can be truncated as an approximation.",Experiment/Discussion
+This model gives a 71.5 Fi on our development data.,Experiment/Discussion
+Table 1 shows the posterior distribution of the mention type given the salience feature.,Experiment/Discussion
+This model fixes many anaphora errors and in particular fixes the second anaphora error in figure 2(c).,Experiment/Discussion
+"One advantage of a fully generative approach is that we can allow entities to be shared between documents in a principled way, giving us the capacity to do cross-document coreference.",Experiment/Discussion
+"Moreover, sharing across documents pools information about the properties of an entity across documents.",Experiment/Discussion
+"We can easily link entities across a corpus by assuming that the pool of entities is global, with global mixing weights Qo drawn from a DP prior with concentration parameter 'y.",Experiment/Discussion
+"Each document uses the same global entities, but each has a documentspecific distribution Qi drawn from a DP centered on Q0 with concentration parameter α.",Experiment/Discussion
+"Up to the point where entities are chosen, this formulation follows the basic hierarchical Dirichlet process prior of Teh et al. (2006).",Experiment/Discussion
+"Once the entities are chosen, our model for the realization of the mentions is as before.",Experiment/Discussion
+This model is depicted graphically in figure 5.,Experiment/Discussion
+"Although it is possible to integrate out Q0 as we did the individual Qi, we instead choose for efficiency and simplicity to sample the global mixture distribution Q0 from the posterior distribution P(Q0|Z).8 The mention generation terms in the model and sampler are unchanged.",Experiment/Discussion
+"In the full hierarchical model, our equation (1) for sampling entities, ignoring the salience component of section 3.4, becomes: where Qz0 is the probability of the entity z under the sampled global entity distribution and Qu0 is the unknown component mass of this distribution.",Experiment/Discussion
+The HDP layer of sharing improves the model’s predictions to 72.5 F1 on our development data.,Experiment/Discussion
+"We should emphasize that our evaluation is of course per-document and does not reflect cross-document coreference decisions, only the gains through crossdocument sharing (see section 6.2).",Experiment/Discussion
+"Up until now, we’ve discussed Gibbs sampling, but we are not interested in sampling from the posterior P(Z|X), but in finding its mode.",Experiment/Discussion
+"Instead of sampling directly from the posterior distribution, we instead sample entities proportionally to exponentiated entity posteriors.",Experiment/Discussion
+"The exponent is given by exp ci k−1, where i is the current round number (starting at i = 0), c = 1.5 and k = 20 is the total number of sampling epochs.",Experiment/Discussion
+This slowly raises the posterior exponent from 1.0 to ec.,Experiment/Discussion
+"In our experiments, we found this procedure to outperform simulated annealing.",Experiment/Discussion
+"We also found sampling the T, G, and N variables to be particularly inefficient, so instead we maintain soft counts over each of these variables and use these in place of a hard sampling scheme.",Experiment/Discussion
+We also found that correctly accounting for the future impact of salience changes to be particularly inefficient.,Experiment/Discussion
+"However, ignoring those terms entirely made negligible difference in final accuracy.9",Experiment/Discussion
+We present our final experiments using the full model developed in section 3.,Experiment/Discussion
+"As in section 3, we use true mention boundaries and evaluate using the MUC F1 measure (Vilain et al., 1995).",Experiment/Discussion
+All hyperparameters were tuned on the development set only.,Experiment/Discussion
+The document concentration parameter α was set by taking a constant proportion of the average number of mentions in a document across the corpus.,Experiment/Discussion
+This number was chosen to minimize the squared error between the number of proposed entities and true entities in a document.,Experiment/Discussion
+It was not tuned to maximize the F1 measure.,Experiment/Discussion
+A coefficient of 0.4 was chosen.,Experiment/Discussion
+"The global concentration coefficient -y was chosen to be a constant proportion of αM, where M is the number of documents in the corpus.",Experiment/Discussion
+We found 0.15 to be a good value using the same least-square procedure.,Experiment/Discussion
+The values for these coefficients were not changed for the experiments on the test sets.,Experiment/Discussion
+Our main evaluation is on the standard MUC-6 formal test set.10 The standard experimental setup for this data is a 30/30 document train/test split.,Experiment/Discussion
+"Training our system on all 60 documents of the training and test set (as this is in an unsupervised system, the unlabeled test documents are present at training time), but evaluating only on the test documents, gave 63.9 F1 and is labeled MUC-6 in table 2(a).",Experiment/Discussion
+One advantage of an unsupervised approach is that we can easily utilize more data when learning a model.,Experiment/Discussion
+We demonstrate the effectiveness of this fact by evaluating on the MUC-6 test documents with increasing amounts of unannotated training data.,Experiment/Discussion
+We first added the 191 documents from the MUC-6 dryrun training set (which were not part of the training data for official MUC-6 evaluation).,Experiment/Discussion
+This model gave 68.0 F1 and is labeled +DRYRUN-TRAIN in table 2(a).,Experiment/Discussion
+"We then added the ACE ENGLISH-NWIRE training data, which is from a different corpora than the MUC-6 test set and from a different time period.",Experiment/Discussion
+This model gave 70.3 F1 and is labeled +ENGLISHNWIRE in table 2(a).,Experiment/Discussion
+"Our results on this test set are surprisingly comparable to, though slightly lower than, some recent supervised systems.",Experiment/Discussion
+"McCallum and Wellner (2004) report 73.4 F1 on the formal MUC-6 test set, which is reasonably close to our best MUC-6 number of 70.3 F1.",Experiment/Discussion
+McCallum and Wellner (2004) also report a much lower 91.6 F1 on only proper nouns mentions.,Experiment/Discussion
+Our system achieves a 89.8 F1 when evaluation is restricted to only proper mentions.11 The et al. (2004).,Experiment/Discussion
+A mention is proper if it is annotated with NER information.,Experiment/Discussion
+It is a pronoun if the head is on the list of English pronouns.,Experiment/Discussion
+"Otherwise, it is a nominal mention.",Experiment/Discussion
+Note we do not use the NER information for any purpose but determining whether the mention is proper.,Experiment/Discussion
+11The best results we know on the MUC-6 test set using the standard setting are due to Luo et al. (2004) who report a 81.3 Fl (much higher than others).,Experiment/Discussion
+"However, it is not clear this is a comparable number, due to the apparent use of gold NER features, which provide a strong clue to coreference.",Experiment/Discussion
+"Regardless, it is unsurprising that their system, which has many rich features, would outperform ours. closest comparable unsupervised system is Cardie and Wagstaff (1999) who use pairwise NP distances to cluster document mentions.",Experiment/Discussion
+They report a 53.6 F1 on MUC6 when tuning distance metric weights to maximize F1 on the development set.,Experiment/Discussion
+We also performed experiments on ACE 2004 data.,Experiment/Discussion
+"Due to licensing restrictions, we did not have access to the ACE 2004 formal development and test sets, and so the results presented are on the training sets.",Experiment/Discussion
+We report results on the newswire section (NWIRE in table 2b) and the broadcast news section (BNEWS in table 2b).,Experiment/Discussion
+"These datasets include the prenominal mention type, which is not present in the MUC6 data.",Experiment/Discussion
+We treated prenominals analogously to the treatment of proper and nominal mentions.,Experiment/Discussion
+We also tested our system on the Chinese newswire and broadcast news sections of the ACE 2004 training sets.,Experiment/Discussion
+"Our relatively higher performance on Chinese compared to English is perhaps due to the lack of prenominal mentions in the Chinese data, as well as the presence of fewer pronouns compared to English.",Experiment/Discussion
+Our ACE results are difficult to compare exactly to previous work because we did not have access to the restricted formal test set.,Experiment/Discussion
+"However, we can perform a rough comparison between our results on the training data (without coreference annotation) to supervised work which has used the same training data (with coreference annotation) and evaluated on the formal test set.",Experiment/Discussion
+Denis and Baldridge (2007) report 67.1 F1 and 69.2 F1 on the English NWIRE and BNEWS respectively using true mention boundaries.,Experiment/Discussion
+"While our system underperforms the supervised systems, its accuracy is nonetheless promising.",Experiment/Discussion
+The largest source of error in our system is between coreferent proper and nominal mentions.,Results/Conclusion
+The most common examples of this kind of error are appositive usages e.g.,Results/Conclusion
+"George W. Bush, president of the US, visited Idaho.",Results/Conclusion
+"Another error of this sort can be seen in figure 2, where the corporation mention is not labeled coreferent with the The Weir Group mention.",Results/Conclusion
+"Examples such as these illustrate the regular (at least in newswire) phenomenon that nominal mentions are used with informative intent, even when the entity is salient and a pronoun could have been used unambiguously.",Results/Conclusion
+This aspect of nominal mentions is entirely unmodeled in our system.,Results/Conclusion
+"Since we do not have labeled cross-document coreference data, we cannot evaluate our system’s crossdocument performance quantitatively.",Results/Conclusion
+"However, in addition to observing the within-document gains from sharing shown in section 3, we can manually inspect the most frequently occurring entities in our corpora.",Results/Conclusion
+Table 3 shows some of the most frequently occurring entities across the English ACE NWIRE corpus.,Results/Conclusion
+"Note that Bush is the most frequent entity, though his (and others’) nominal cluster president is mistakenly its own entity.",Results/Conclusion
+Merging of proper and nominal clusters does occur as can be seen in table 3.,Results/Conclusion
+"We can use our model to for unsupervised NER tagging: for each proper mention, assign the mode of the generating entity’s distribution over entity types.",Results/Conclusion
+"Note that in our model the only way an entity becomes associated with an entity type is by the pronouns used to refer to it.12 If we evaluate our system as an unsupervised NER tagger for the proper mentions in the MUC-6 test set, it yields a 12Ge et al. (1998) exploit a similar idea to assign gender to proper mentions. per-label accuracy of 61.2% (on MUC labels).",Results/Conclusion
+"Although nowhere near the performance of state-ofthe-art systems, this result beats a simple baseline of always guessing PERSON (the most common entity type), which yields 46.4%.",Results/Conclusion
+This result is interesting given that the model was not developed for the purpose of inferring entity types whatsoever.,Results/Conclusion
+"We have presented a novel, unsupervised approach to coreference resolution: global entities are shared across documents, the number of entities is determined by the model, and mentions are generated by a sequential salience model and a model of pronounentity association.",Results/Conclusion
+"Although our system does not perform quite as well as state-of-the-art supervised systems, its performance is in the same general range, despite the system being unsupervised.",Results/Conclusion

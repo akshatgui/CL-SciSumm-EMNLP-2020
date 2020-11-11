@@ -1,151 +1,151 @@
 col1,col2
-We present a practical co-training method for bootstrapping statistical parsers using a small amount of manually parsed training material and a much larger pool of raw sentences.,{}
-Experimental results show that unlabelled sentences can be used to improve the performance of statistical parsers.,{}
-"In addition, we consider the problem of bootstrapping parsers when the manually parsed training material is in a different domain to either the raw sentences or the testing material.",{}
-"We show that bootstrapping continues to be useful, even though no manually produced parses from the target domain are used.",{}
-"In this paper we describe how co-training (Blum and Mitchell, 1998) can be used to bootstrap a pair of statistical parsers from a small amount of annotated training data.","{'title': '1 Introduction', 'number': '1'}"
-Co-training is a wealdy supervised learning algorithm in which two (or more) learners are iteratively retrained on each other's output.,"{'title': '1 Introduction', 'number': '1'}"
-"It has been applied to problems such as word-sense disambiguation (Yarowsky, 1995), web-page classification (Blum and Mitchell, 1998) and named-entity recognition (Collins and Singer, 1999).","{'title': '1 Introduction', 'number': '1'}"
-"However, these tasks typically involved a small set of labels (around 2-3) and a relatively small parameter space.","{'title': '1 Introduction', 'number': '1'}"
-It is therefore instructive to consider co-training for more complex models.,"{'title': '1 Introduction', 'number': '1'}"
-"Compared to these earlier models, a statistical parser has a larger parameter space, and instead of class labels, it produces recursively built parse trees as output.","{'title': '1 Introduction', 'number': '1'}"
-"Previous work in co-training statistical parsers (Sarkar, 2001) used two components of a single parsing framework (that is, a parser and a supertagger for that parser).","{'title': '1 Introduction', 'number': '1'}"
-"In contrast, this paper considers co-training two diverse statistical parsers: the Collins lexicalized PCFG parser and a Lexicalized Tree Adjoining Grammar (LTAG) parser.","{'title': '1 Introduction', 'number': '1'}"
-Section 2 reviews co-training theory.,"{'title': '1 Introduction', 'number': '1'}"
-Section 3 considers how co-training applied to training statistical parsers can be made computationally viable.,"{'title': '1 Introduction', 'number': '1'}"
-"In Section 4 we show that co-training outperforms self-training, and that co-training is most beneficial when the seed set of manually created parses is small.","{'title': '1 Introduction', 'number': '1'}"
-"Section 4.4 shows that co-training is possible even when the set of initially labelled data is drawn from a different distribution to either the unlabelled training material or the test set; that is, we show that co-training can help in porting a parser from one genre to another.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, section 5 reports summary results of our experiments.","{'title': '1 Introduction', 'number': '1'}"
-"Co-training can be informally described in the following manner (Blum and Mitchell, 1998): Effectively, by picking confidently labelled data from each model to add to the training data, one model is labelling data for the other.","{'title': '2 Co-training: theory', 'number': '2'}"
-"This is in contrast to self-training, in which a model is retrained only on the labelled examples that it produces (Nigam and Ghani, 2000).","{'title': '2 Co-training: theory', 'number': '2'}"
-"Blum and Mitchell prove that, when the two views are conditionally independent given the label, and each view is sufficient for learning the task, co-training can improve an initial weak learner using unlabelled data.","{'title': '2 Co-training: theory', 'number': '2'}"
-"Dasgupta et al. (2002) extend the theory of cotraining by showing that, by maximising their agreement over the unlabelled data, the two learners make few generalisation errors (under the same independence assumption adopted by Blum and Mitchell).","{'title': '2 Co-training: theory', 'number': '2'}"
-"Abney (2002) argues that this assumption is extremely restrictive and typically violated in the data, and he proposes a weaker independence assumption.","{'title': '2 Co-training: theory', 'number': '2'}"
-Abney also presents a greedy algorithm that maximises agreement on unlabelled data.,"{'title': '2 Co-training: theory', 'number': '2'}"
-"Goldman and Zhou (2000) show that, through careful selection of newly labelled examples, cotraining can work even when the classifiers' views do not fully satisfy the independence assumption.","{'title': '2 Co-training: theory', 'number': '2'}"
-"To apply the theory of co-training to parsing, we need to ensure that each parser is capable of learning the parsing task alone and that the two parsers have different views.","{'title': '3 Co-training: practice', 'number': '3'}"
-"We could also attempt to maximise the agreement of the two parsers over unlabelled data, using a similar approach to that given by Abney.","{'title': '3 Co-training: practice', 'number': '3'}"
-"This would be computationally very expensive for parsers, however, and we therefore propose some practical heuristics for determining which labelled examples to add to the training set for each parser.","{'title': '3 Co-training: practice', 'number': '3'}"
-Our approach is to decompose the problem into two steps.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"First, each parser assigns a score for every unlabelled sentence it parsed according to some scoring function, f, estimating the reliability of the label it assigned to the sentence (e.g. the probability of the parse).","{'title': '3 Co-training: practice', 'number': '3'}"
-Note that the scoring functions used by the two parsers do not necessarily have to be the same.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"Next, a selection method decides which parser is retrained upon which newly parsed sentences.","{'title': '3 Co-training: practice', 'number': '3'}"
-"Both scoring and selection phases are controlled by a simple incremental algorithm, which is detailed in section 3.2.","{'title': '3 Co-training: practice', 'number': '3'}"
-"An ideal scoring function would tell us the true accuracy rates (e.g., combined labelled precision and recall scores) of the trees that the parser produced.","{'title': '3 Co-training: practice', 'number': '3'}"
-"In practice, we rely on computable scoring functions that approximate the true accuracy scores, such as measures of uncertainty.","{'title': '3 Co-training: practice', 'number': '3'}"
-In this paper we use the probability of the most likely parse as the scoring function: where w is the sentence and V is the set of parses produced by the parser for the sentence.,"{'title': '3 Co-training: practice', 'number': '3'}"
-Scoring parses using parse probability is motivated by the idea that parse probability should increase with parse correctness.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"During the selection phase, we pick a subset of the newly labelled sentences to add to the training sets of both parsers.","{'title': '3 Co-training: practice', 'number': '3'}"
-"That is, a subset of those sentences labelled by the LTAG parser is added to the training set of the Collins PCFG parser, and vice versa.","{'title': '3 Co-training: practice', 'number': '3'}"
-It is important to find examples that are reliably labelled by the teacher as training data for the student.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"The term teacher refers to the parser providing data, and student to the parser receiving A and B are two different parsers.","{'title': '3 Co-training: practice', 'number': '3'}"
-MA and ivriB are models of A and B at step i. U is a large pool of unlabelled sentences.,"{'title': '3 Co-training: practice', 'number': '3'}"
-Ui is a small cache holding subset of U at step i. L is the manually labelled seed data.,"{'title': '3 Co-training: practice', 'number': '3'}"
-L'A and LiB are the labelled training examples for A and B at step i. and assign scores to them according to their scoring functions JA and fB.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"Select new parses {PA} and {PB} according to some selection method S, which uses the scores from fA and fB.","{'title': '3 Co-training: practice', 'number': '3'}"
-LiA+1- is LiA augmented with {PB} L1- is LiB augmented with {PA} data.,"{'title': '3 Co-training: practice', 'number': '3'}"
-In the co-training process the two parsers alternate between teacher and student.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"We use a method which builds on this idea, Stop-n, which chooses those sentences (using the teacher's labels) that belong to the teacher's n-highest scored sentences.","{'title': '3 Co-training: practice', 'number': '3'}"
-"For this paper we have used a simple scoring function and selection method, but there are alternatives.","{'title': '3 Co-training: practice', 'number': '3'}"
-"Other possible scoring functions include a normalized version of fprob which does not penalize longer sentences, and a scoring function based on the entropy of the probability distribution over all parses returned by the parser.","{'title': '3 Co-training: practice', 'number': '3'}"
-"Other possible selection methods include selecting examples that one parser scored highly and another parser scored lowly, and methods based on disagreements on the label between the two parsers.","{'title': '3 Co-training: practice', 'number': '3'}"
-"These methods build on the idea that the newly labelled data should not only be reliably labelled by the teacher, but also be as useful as possible for the student.","{'title': '3 Co-training: practice', 'number': '3'}"
-"The pseudo-code for the co-training process is given in Figure 1, and consists of two different parsers and a central control that interfaces between the two parsers and the data.","{'title': '3 Co-training: practice', 'number': '3'}"
-"At each co-training iteration, a small set of sentences is drawn from a large pool of unlabelled sentences and stored in a cache.","{'title': '3 Co-training: practice', 'number': '3'}"
-Both parsers then attempt to parse every sentence in the cache.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"Next, a subset of the sentences newly labelled by one parser is added to the training data of the other parser, and vice versa.","{'title': '3 Co-training: practice', 'number': '3'}"
-"The general control flow of our system is similar to the algorithm described by Blum and Mitchell; however, there are some differences in our treatment of the training data.","{'title': '3 Co-training: practice', 'number': '3'}"
-"First, the cache is flushed at each iteration: instead of only replacing just those sentences moved from the cache, the entire cache is refilled with new sentences.","{'title': '3 Co-training: practice', 'number': '3'}"
-This aims to ensure that the distribution of sentences in the cache is representative of the entire pool and also reduces the possibility of forcing the central control to select training examples from an entire set of unreliably labelled sentences.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"Second, we do not require the two parsers to have the same training sets.","{'title': '3 Co-training: practice', 'number': '3'}"
-This allows us to explore several selection schemes in addition to the one proposed by Blum and Mitchell.,"{'title': '3 Co-training: practice', 'number': '3'}"
-"In order to conduct co-training experiments between statistical parsers, it was necessary to choose two parsers that generate comparable output but use different statistical models.","{'title': '4 Experiments', 'number': '4'}"
-We therefore chose the following parsers:,"{'title': '4 Experiments', 'number': '4'}"
-"parser (Collins, 1999), model 2.","{'title': '1.', 'number': '5'}"
-Some code for (re)training this parser was added to make the co-training experiments possible.,"{'title': '1.', 'number': '5'}"
-We refer to this parser as Collins-CFG.,"{'title': '1.', 'number': '5'}"
-"In order to perform the co-training experiments reported in this paper, LTAG derivation events Collins-CFG LTAG Bi-lexical dependencies are between Bi-lexical dependencies are between lexicalized nonterminals elementary trees Can produce novel elementary Can produce novel hi-lexical trees for the LTAG parser dependencies for Collins-CFG When using small amounts of seed data, When using small amounts of seed data, abstains less often than LTAG abstains more often than Collins-CFG were extracted from the head-lexicalized parse tree output produced by the Collins-CFG parser.","{'title': '1.', 'number': '5'}"
-These events were used to retrain the statistical model used in the LTAG parser.,"{'title': '1.', 'number': '5'}"
-The output of the LTAG parser was also modified in order to provide input for the re-training phase in the Collins-CFG parser.,"{'title': '1.', 'number': '5'}"
-These steps ensured that the output of the Collins-CFG parser could be used as new labelled data to re-train the LTAG parser and vice versa.,"{'title': '1.', 'number': '5'}"
-The domains over which the two models operate are quite distinct.,"{'title': '1.', 'number': '5'}"
-"The LTAG model uses tree fragments of the final parse tree and combines them together, while the Collins-CFG model operates on a much smaller domain of individual lexicalized non-terminals.","{'title': '1.', 'number': '5'}"
-This provides a mechanism to bootstrap information between these two models when they are applied to unlabelled data.,"{'title': '1.', 'number': '5'}"
-"LTAG can provide a larger domain over which hi-lexical information is defined due to the arbitrary depth of the elementary trees it uses, and hence can provide novel lexical relationships for the Collins-CFG model, while the Collins-CFG model can paste together novel elementary trees for the LTAG model.","{'title': '1.', 'number': '5'}"
-"A summary of the differences between the two models is given in Figure 2, which provides an informal argument for why the two parsers provide contrastive views for the co-training experiments.","{'title': '1.', 'number': '5'}"
-Of course there is still the question of whether the two parsers really are independent enough for effective co-training to be possible; in the results section we show that the Collins-CFG parser is able to learn useful information from the output of the LTAG parser.,"{'title': '1.', 'number': '5'}"
-"Figure 3 shows how the performance of the Collins-CFG parser varies as the amount of manually annotated training data (from the Wall Street Journal (WSJ) Penn Treebank (Marcus et al., 1993)) is increased.","{'title': '1.', 'number': '5'}"
-The graph shows a rapid growth in accuracy which tails off as increasing amounts of training data are added.,"{'title': '1.', 'number': '5'}"
-"The learning curve shows that the maximum payoff from co-training is likely to occur between 500 and 1,000 sentences.","{'title': '1.', 'number': '5'}"
-"Therefore we used two sizes of seed data: 500 and 1,000 sentences, to see if cotraining could improve parser performance using these small amounts of labelled seed data.","{'title': '1.', 'number': '5'}"
-"For reference, Figure 4 shows a similar curve for the LTAG parser.","{'title': '1.', 'number': '5'}"
-Each parser was first initialized with some labelled seed data from the standard training split (sections 2 to 21) of the WSJ Penn Treebank.,"{'title': '1.', 'number': '5'}"
-"Evaluation was in terms of Parseval (Black et al., 1991), using a balanced F-score over labelled constituents from section 0 of the Treebank.","{'title': '1.', 'number': '5'}"
-I The Fscore values are reported for each iteration of cotraining on the development set (section 0 of the Treebank).,"{'title': '1.', 'number': '5'}"
-"Since we need to parse all sentences in section 0 at each iteration, in the experiments reported in this paper we only evaluated one of the parsers, the Collins-CFG parser, at each iteration.","{'title': '1.', 'number': '5'}"
-All results we mention (unless stated otherwise) are F-scores for the Collins-CFG parser.,"{'title': '1.', 'number': '5'}"
-Self-training experiments were conducted in which each parser was retrained on its own output.,"{'title': '1.', 'number': '5'}"
-Self-training provides a useful comparison with co-training because any difference in the results indicates how much the parsers are benefiting from being trained on the output of another parser.,"{'title': '1.', 'number': '5'}"
-This experiment also gives us some insight into the differences between the two parsing models.,"{'title': '1.', 'number': '5'}"
-"Self-training was used by Charniak (1997), where a modest gain was reported after re-training his parser on 30 million words.","{'title': '1.', 'number': '5'}"
-The results are shown in Figure 5.,"{'title': '1.', 'number': '5'}"
-"Here, both parsers were initialised with the first 500 sentences from the standard training split (sections 2 to 21) of the WSJ Penn Treebank.","{'title': '1.', 'number': '5'}"
-Subsequent unlabelled sentences were also drawn from this split.,"{'title': '1.', 'number': '5'}"
-"During each round of self-training, 30 sentences were parsed by each parser, and each parser was retrained upon the 20 self-labelled sentences which it scored most highly (each parser using its own joint probability (equation 1) as the score).","{'title': '1.', 'number': '5'}"
-"The results vary significantly between the Collins-CFG and the LTAG parser, which lends weight to the argument that the two parsers are largely independent of each other.","{'title': '1.', 'number': '5'}"
-"It also shows that, at least for the Collins-CFG model, a minor improvement in performance can be had from selftraining.","{'title': '1.', 'number': '5'}"
-"The LTAG parser, by contrast, is hurt by self-training The first co-training experiment used the first 500 sentences from sections 2-21 of the Treebank as seed data, and subsequent unlabelled sentences were drawn from the remainder of these sections.","{'title': '1.', 'number': '5'}"
-"During each co-training round, the LTAG parser parsed 30 sentences, and the 20 labelled sentences with the highest scores (according to the LTAG joint probability) were added to the training data of the Collins-CFG parser.","{'title': '1.', 'number': '5'}"
-"The training data of the LTAG parser was augmented in the same way, using the 20 highest scoring parses from the set of 30, but using the Collins-CFG parser to label the sentences and provide the joint probability for scoring.","{'title': '1.', 'number': '5'}"
-"Figure 6 gives the results for the Collins-CFG parser, and also shows the self-training curve for The upper curve is for co-training between Collins-CFG and LTAG; the lower curve is selftraining for Collins-CFG. comparison.2 The graph shows that co-training results in higher performance than self-training.","{'title': '1.', 'number': '5'}"
-"The graph also shows that co-training performance levels out after around 80 rounds, and then starts to degrade.","{'title': '1.', 'number': '5'}"
-The likely reason for this dip is noise in the parse trees added by cotraining.,"{'title': '1.', 'number': '5'}"
-"Pierce and Cardie (2001) noted a similar behaviour when they co-trained shallow parsers. upper curve is for 1,000 sentences labelled data from Brown plus 100 WSJ sentences; the lower curve only uses 1,000 sentences from Brown.","{'title': '1.', 'number': '5'}"
-"The second co-training experiment was the same as the first, except that more seed data was used: the first 1,000 sentences from sections 2-21 of the Treebank.","{'title': '1.', 'number': '5'}"
-"Figure 7 gives the results, and, for comparison, also shows the previous performance curve for the 500 seed set experiment.","{'title': '1.', 'number': '5'}"
-The key observation is that the benefit of co-training is greater when the amount of seed material is small.,"{'title': '1.', 'number': '5'}"
-"Our hypothesis is that, when there is a paucity of initial seed data, coverage is a major obstacle that co-training can address.","{'title': '1.', 'number': '5'}"
-"As the amount of seed data increases, coverage becomes less of a problem, and the co-training advantage is diminished.","{'title': '1.', 'number': '5'}"
-"This means that, when most sentences in the testing set can be parsed, subsequent changes in performance come from better parameter estimates.","{'title': '1.', 'number': '5'}"
-"Although co-training boosts the performance of the parser using the 500 seed sentences from 75% to 77.8% (the performance level after 100 rounds of co-training), it does not achieve the level of performance of a parser trained on 1,000 seed sentences.","{'title': '1.', 'number': '5'}"
-"Some possible explanations are: that the newly labelled sentences are not reliable (i.e., they contain too many errors); that the sentences deemed reliable are not informative training examples; or a combination of both factors.","{'title': '1.', 'number': '5'}"
-This experiment examines whether co-training can be used to boost performance when the unlabelled data are taken from a different source than the initial seed data.,"{'title': '1.', 'number': '5'}"
-Previous experiments in Gildea (2001) have shown that porting a statistical parser from a source genre to a target genre is a non-trivial task.,"{'title': '1.', 'number': '5'}"
-Our two different sources were the parsed section of the Brown corpus and the Penn Treebank WSJ.,"{'title': '1.', 'number': '5'}"
-"Unlike the WSJ, the Brown corpus does not contain newswire material, and so the two sources differ from each other in terms of vocabulary and syntactic constructs.","{'title': '1.', 'number': '5'}"
-"1,000 annotated sentences from the Brown section of the Penn Treebank were used as the seed data.","{'title': '1.', 'number': '5'}"
-"Co-training then proceeds using the WSJ.3 Note that no manually created parses in the WSJ domain are used by the parser, even though it is evaluated using WSJ material.","{'title': '1.', 'number': '5'}"
-"In Figure 8, the lower curve shows performance for the CollinsCFG parser (again evaluated on section 0).","{'title': '1.', 'number': '5'}"
-The difference in corpus domain does not hinder cotraining.,"{'title': '1.', 'number': '5'}"
-The parser performance is boosted from 75% to 77.3%.,"{'title': '1.', 'number': '5'}"
-Note that most of the improvement is within the first 5 iterations.,"{'title': '1.', 'number': '5'}"
-This suggests that the parsing model may be adapting to the vocabulary of the new domain.,"{'title': '1.', 'number': '5'}"
-We also conducted an experiment in which the initial seed data was supplemented with a tiny amount of annotated data (100 manually annotated WSJ sentences) from the domain of the unlabelled data.,"{'title': '1.', 'number': '5'}"
-This experiment simulates the situation where there is only a very limited amount of labelled material in the novel domain.,"{'title': '1.', 'number': '5'}"
-The upper curve in Figure 8 shows the outcome of this experiment.,"{'title': '1.', 'number': '5'}"
-"Not surprisingly, the 100 additional labelled WSJ sentences improved the initial performance of the parser (to 76.7%).","{'title': '1.', 'number': '5'}"
-"While the amount of improvement in performance is less than the previous case, co-training provides an additional boost to the parsing performance, to 78.7%.","{'title': '1.', 'number': '5'}"
-The various experiments are summarised in Table 1.,"{'title': '5 Experimental summary', 'number': '6'}"
-"As is customary in the statistical parsing literature, we view all our previous experiments using section 0 of the Penn Treebank WSJ as contributing towards development.","{'title': '5 Experimental summary', 'number': '6'}"
-Here we report on system performance on unseen material (namely section 23 of the WSJ).,"{'title': '5 Experimental summary', 'number': '6'}"
-We give F-score results for the Collins-CFG parser before and after cotraining for section 23.,"{'title': '5 Experimental summary', 'number': '6'}"
-"The results show a modest improvement under each co-training scenario, indicating that, for the Collins-CFG parser, there is useful information to be had from the output of the LTAG parser.","{'title': '5 Experimental summary', 'number': '6'}"
-"However, the results are not as dramatic as those reported in other co-training papers, such as Blum and Mitchell (1998) for web-page classification and Collins and Singer (1999) for namedentity recognition.","{'title': '5 Experimental summary', 'number': '6'}"
-A possible reason is that parsing is a much harder task than these problems.,"{'title': '5 Experimental summary', 'number': '6'}"
-An open question is whether co-training can produce results that improve upon the state-of-theart in statistical parsing.,"{'title': '5 Experimental summary', 'number': '6'}"
-"Investigation of the convergence curves (Figures 3 and 4) as the parsers are trained upon more and more manually-created treebank material suggests that, with the Penn Treebank, the Collins-CFG parser has nearly converged already.","{'title': '5 Experimental summary', 'number': '6'}"
-"Given 40,000 sentences of labelled data, we can obtain a projected value of how much performance can be improved with additional reliably labelled data.","{'title': '5 Experimental summary', 'number': '6'}"
-This projected value was obtained by fitting a curve to the observed convergence results using a least-squares method from MAT LAB.,"{'title': '5 Experimental summary', 'number': '6'}"
-"When training data is projected to a size of 400K manually created Treebank sentences, the performance of the Collins-CFG parser is projected to be 89.2% with an absolute upper bound of 89.3%.","{'title': '5 Experimental summary', 'number': '6'}"
-This suggests that there is very little room for performance improvement for the Collins-CFG parser by simply adding more labelled data (using co-training or other bootstrapping methods or even manually).,"{'title': '5 Experimental summary', 'number': '6'}"
-"However, models whose parameters have not already converged might benefit from co-training For instance, when training data is projected to a size of 400K manually created Treebank sentences, the performance of the LTAG statistical parser would be 90.4% with an absolute upper bound of 91.6%.","{'title': '5 Experimental summary', 'number': '6'}"
-"Thus, a bootstrapping method might improve performance of the LTAG statistical parser beyond the current state-of-the-art performance on the Treebank.","{'title': '5 Experimental summary', 'number': '6'}"
-"In this paper, we presented an experimental study in which a pair of statistical parsers were trained on labelled and unlabelled data using co-training Our results showed that simple heuristic methods for choosing which newly parsed sentences to add to the training data can be beneficial.","{'title': '6 Conclusion', 'number': '7'}"
-"We saw that co-training outperformed self-training, that it was most beneficial when the seed set was small, and that co-training was possible even when the seed material was from another distribution to both the unlabelled material or the testing set.","{'title': '6 Conclusion', 'number': '7'}"
-This final result is significant as it bears upon the general problem of having to build models when little or no labelled training material is available for some new domain.,"{'title': '6 Conclusion', 'number': '7'}"
-Co-training performance may improve if we consider co-training using sub-parses.,"{'title': '6 Conclusion', 'number': '7'}"
-"This is because a parse tree is really a large collection of individual decisions, and retraining upon an entire tree means committing to all such decisions.","{'title': '6 Conclusion', 'number': '7'}"
-"Our ongoing work is addressing this point, largely in terms of re-ranked parsers.","{'title': '6 Conclusion', 'number': '7'}"
-"Finally, future work will also track comparative performance between the LTAG and Collins-CFG models.","{'title': '6 Conclusion', 'number': '7'}"
-"This work has been supported, in part, by the NSF/DARPA funded 2002 Language Engineering Workshop at Johns Hopkins University.","{'title': 'Acknowledgements', 'number': '8'}"
-"We would like to thank Michael Collins, Andrew McCallum, and Fernando Pereira for helpful discussions, and the reviewers for their comments on this paper.","{'title': 'Acknowledgements', 'number': '8'}"
+We present a practical co-training method for bootstrapping statistical parsers using a small amount of manually parsed training material and a much larger pool of raw sentences.,Introduction
+Experimental results show that unlabelled sentences can be used to improve the performance of statistical parsers.,Introduction
+"In addition, we consider the problem of bootstrapping parsers when the manually parsed training material is in a different domain to either the raw sentences or the testing material.",Introduction
+"We show that bootstrapping continues to be useful, even though no manually produced parses from the target domain are used.",Introduction
+"In this paper we describe how co-training (Blum and Mitchell, 1998) can be used to bootstrap a pair of statistical parsers from a small amount of annotated training data.",Experiment/Discussion
+Co-training is a wealdy supervised learning algorithm in which two (or more) learners are iteratively retrained on each other's output.,Experiment/Discussion
+"It has been applied to problems such as word-sense disambiguation (Yarowsky, 1995), web-page classification (Blum and Mitchell, 1998) and named-entity recognition (Collins and Singer, 1999).",Experiment/Discussion
+"However, these tasks typically involved a small set of labels (around 2-3) and a relatively small parameter space.",Experiment/Discussion
+It is therefore instructive to consider co-training for more complex models.,Experiment/Discussion
+"Compared to these earlier models, a statistical parser has a larger parameter space, and instead of class labels, it produces recursively built parse trees as output.",Experiment/Discussion
+"Previous work in co-training statistical parsers (Sarkar, 2001) used two components of a single parsing framework (that is, a parser and a supertagger for that parser).",Experiment/Discussion
+"In contrast, this paper considers co-training two diverse statistical parsers: the Collins lexicalized PCFG parser and a Lexicalized Tree Adjoining Grammar (LTAG) parser.",Experiment/Discussion
+Section 2 reviews co-training theory.,Experiment/Discussion
+Section 3 considers how co-training applied to training statistical parsers can be made computationally viable.,Experiment/Discussion
+"In Section 4 we show that co-training outperforms self-training, and that co-training is most beneficial when the seed set of manually created parses is small.",Experiment/Discussion
+"Section 4.4 shows that co-training is possible even when the set of initially labelled data is drawn from a different distribution to either the unlabelled training material or the test set; that is, we show that co-training can help in porting a parser from one genre to another.",Experiment/Discussion
+"Finally, section 5 reports summary results of our experiments.",Experiment/Discussion
+"Co-training can be informally described in the following manner (Blum and Mitchell, 1998): Effectively, by picking confidently labelled data from each model to add to the training data, one model is labelling data for the other.",Experiment/Discussion
+"This is in contrast to self-training, in which a model is retrained only on the labelled examples that it produces (Nigam and Ghani, 2000).",Experiment/Discussion
+"Blum and Mitchell prove that, when the two views are conditionally independent given the label, and each view is sufficient for learning the task, co-training can improve an initial weak learner using unlabelled data.",Experiment/Discussion
+"Dasgupta et al. (2002) extend the theory of cotraining by showing that, by maximising their agreement over the unlabelled data, the two learners make few generalisation errors (under the same independence assumption adopted by Blum and Mitchell).",Experiment/Discussion
+"Abney (2002) argues that this assumption is extremely restrictive and typically violated in the data, and he proposes a weaker independence assumption.",Experiment/Discussion
+Abney also presents a greedy algorithm that maximises agreement on unlabelled data.,Experiment/Discussion
+"Goldman and Zhou (2000) show that, through careful selection of newly labelled examples, cotraining can work even when the classifiers' views do not fully satisfy the independence assumption.",Experiment/Discussion
+"To apply the theory of co-training to parsing, we need to ensure that each parser is capable of learning the parsing task alone and that the two parsers have different views.",Experiment/Discussion
+"We could also attempt to maximise the agreement of the two parsers over unlabelled data, using a similar approach to that given by Abney.",Experiment/Discussion
+"This would be computationally very expensive for parsers, however, and we therefore propose some practical heuristics for determining which labelled examples to add to the training set for each parser.",Experiment/Discussion
+Our approach is to decompose the problem into two steps.,Experiment/Discussion
+"First, each parser assigns a score for every unlabelled sentence it parsed according to some scoring function, f, estimating the reliability of the label it assigned to the sentence (e.g. the probability of the parse).",Experiment/Discussion
+Note that the scoring functions used by the two parsers do not necessarily have to be the same.,Experiment/Discussion
+"Next, a selection method decides which parser is retrained upon which newly parsed sentences.",Experiment/Discussion
+"Both scoring and selection phases are controlled by a simple incremental algorithm, which is detailed in section 3.2.",Experiment/Discussion
+"An ideal scoring function would tell us the true accuracy rates (e.g., combined labelled precision and recall scores) of the trees that the parser produced.",Experiment/Discussion
+"In practice, we rely on computable scoring functions that approximate the true accuracy scores, such as measures of uncertainty.",Experiment/Discussion
+In this paper we use the probability of the most likely parse as the scoring function: where w is the sentence and V is the set of parses produced by the parser for the sentence.,Experiment/Discussion
+Scoring parses using parse probability is motivated by the idea that parse probability should increase with parse correctness.,Experiment/Discussion
+"During the selection phase, we pick a subset of the newly labelled sentences to add to the training sets of both parsers.",Experiment/Discussion
+"That is, a subset of those sentences labelled by the LTAG parser is added to the training set of the Collins PCFG parser, and vice versa.",Experiment/Discussion
+It is important to find examples that are reliably labelled by the teacher as training data for the student.,Experiment/Discussion
+"The term teacher refers to the parser providing data, and student to the parser receiving A and B are two different parsers.",Experiment/Discussion
+MA and ivriB are models of A and B at step i. U is a large pool of unlabelled sentences.,Experiment/Discussion
+Ui is a small cache holding subset of U at step i. L is the manually labelled seed data.,Experiment/Discussion
+L'A and LiB are the labelled training examples for A and B at step i. and assign scores to them according to their scoring functions JA and fB.,Experiment/Discussion
+"Select new parses {PA} and {PB} according to some selection method S, which uses the scores from fA and fB.",Experiment/Discussion
+LiA+1- is LiA augmented with {PB} L1- is LiB augmented with {PA} data.,Experiment/Discussion
+In the co-training process the two parsers alternate between teacher and student.,Experiment/Discussion
+"We use a method which builds on this idea, Stop-n, which chooses those sentences (using the teacher's labels) that belong to the teacher's n-highest scored sentences.",Experiment/Discussion
+"For this paper we have used a simple scoring function and selection method, but there are alternatives.",Experiment/Discussion
+"Other possible scoring functions include a normalized version of fprob which does not penalize longer sentences, and a scoring function based on the entropy of the probability distribution over all parses returned by the parser.",Experiment/Discussion
+"Other possible selection methods include selecting examples that one parser scored highly and another parser scored lowly, and methods based on disagreements on the label between the two parsers.",Experiment/Discussion
+"These methods build on the idea that the newly labelled data should not only be reliably labelled by the teacher, but also be as useful as possible for the student.",Experiment/Discussion
+"The pseudo-code for the co-training process is given in Figure 1, and consists of two different parsers and a central control that interfaces between the two parsers and the data.",Experiment/Discussion
+"At each co-training iteration, a small set of sentences is drawn from a large pool of unlabelled sentences and stored in a cache.",Experiment/Discussion
+Both parsers then attempt to parse every sentence in the cache.,Experiment/Discussion
+"Next, a subset of the sentences newly labelled by one parser is added to the training data of the other parser, and vice versa.",Experiment/Discussion
+"The general control flow of our system is similar to the algorithm described by Blum and Mitchell; however, there are some differences in our treatment of the training data.",Experiment/Discussion
+"First, the cache is flushed at each iteration: instead of only replacing just those sentences moved from the cache, the entire cache is refilled with new sentences.",Experiment/Discussion
+This aims to ensure that the distribution of sentences in the cache is representative of the entire pool and also reduces the possibility of forcing the central control to select training examples from an entire set of unreliably labelled sentences.,Experiment/Discussion
+"Second, we do not require the two parsers to have the same training sets.",Experiment/Discussion
+This allows us to explore several selection schemes in addition to the one proposed by Blum and Mitchell.,Experiment/Discussion
+"In order to conduct co-training experiments between statistical parsers, it was necessary to choose two parsers that generate comparable output but use different statistical models.",Experiment/Discussion
+We therefore chose the following parsers:,Experiment/Discussion
+"parser (Collins, 1999), model 2.",Experiment/Discussion
+Some code for (re)training this parser was added to make the co-training experiments possible.,Experiment/Discussion
+We refer to this parser as Collins-CFG.,Experiment/Discussion
+"In order to perform the co-training experiments reported in this paper, LTAG derivation events Collins-CFG LTAG Bi-lexical dependencies are between Bi-lexical dependencies are between lexicalized nonterminals elementary trees Can produce novel elementary Can produce novel hi-lexical trees for the LTAG parser dependencies for Collins-CFG When using small amounts of seed data, When using small amounts of seed data, abstains less often than LTAG abstains more often than Collins-CFG were extracted from the head-lexicalized parse tree output produced by the Collins-CFG parser.",Experiment/Discussion
+These events were used to retrain the statistical model used in the LTAG parser.,Experiment/Discussion
+The output of the LTAG parser was also modified in order to provide input for the re-training phase in the Collins-CFG parser.,Experiment/Discussion
+These steps ensured that the output of the Collins-CFG parser could be used as new labelled data to re-train the LTAG parser and vice versa.,Experiment/Discussion
+The domains over which the two models operate are quite distinct.,Experiment/Discussion
+"The LTAG model uses tree fragments of the final parse tree and combines them together, while the Collins-CFG model operates on a much smaller domain of individual lexicalized non-terminals.",Experiment/Discussion
+This provides a mechanism to bootstrap information between these two models when they are applied to unlabelled data.,Experiment/Discussion
+"LTAG can provide a larger domain over which hi-lexical information is defined due to the arbitrary depth of the elementary trees it uses, and hence can provide novel lexical relationships for the Collins-CFG model, while the Collins-CFG model can paste together novel elementary trees for the LTAG model.",Experiment/Discussion
+"A summary of the differences between the two models is given in Figure 2, which provides an informal argument for why the two parsers provide contrastive views for the co-training experiments.",Experiment/Discussion
+Of course there is still the question of whether the two parsers really are independent enough for effective co-training to be possible; in the results section we show that the Collins-CFG parser is able to learn useful information from the output of the LTAG parser.,Experiment/Discussion
+"Figure 3 shows how the performance of the Collins-CFG parser varies as the amount of manually annotated training data (from the Wall Street Journal (WSJ) Penn Treebank (Marcus et al., 1993)) is increased.",Experiment/Discussion
+The graph shows a rapid growth in accuracy which tails off as increasing amounts of training data are added.,Experiment/Discussion
+"The learning curve shows that the maximum payoff from co-training is likely to occur between 500 and 1,000 sentences.",Experiment/Discussion
+"Therefore we used two sizes of seed data: 500 and 1,000 sentences, to see if cotraining could improve parser performance using these small amounts of labelled seed data.",Experiment/Discussion
+"For reference, Figure 4 shows a similar curve for the LTAG parser.",Experiment/Discussion
+Each parser was first initialized with some labelled seed data from the standard training split (sections 2 to 21) of the WSJ Penn Treebank.,Experiment/Discussion
+"Evaluation was in terms of Parseval (Black et al., 1991), using a balanced F-score over labelled constituents from section 0 of the Treebank.",Experiment/Discussion
+I The Fscore values are reported for each iteration of cotraining on the development set (section 0 of the Treebank).,Experiment/Discussion
+"Since we need to parse all sentences in section 0 at each iteration, in the experiments reported in this paper we only evaluated one of the parsers, the Collins-CFG parser, at each iteration.",Experiment/Discussion
+All results we mention (unless stated otherwise) are F-scores for the Collins-CFG parser.,Experiment/Discussion
+Self-training experiments were conducted in which each parser was retrained on its own output.,Experiment/Discussion
+Self-training provides a useful comparison with co-training because any difference in the results indicates how much the parsers are benefiting from being trained on the output of another parser.,Experiment/Discussion
+This experiment also gives us some insight into the differences between the two parsing models.,Experiment/Discussion
+"Self-training was used by Charniak (1997), where a modest gain was reported after re-training his parser on 30 million words.",Experiment/Discussion
+The results are shown in Figure 5.,Experiment/Discussion
+"Here, both parsers were initialised with the first 500 sentences from the standard training split (sections 2 to 21) of the WSJ Penn Treebank.",Experiment/Discussion
+Subsequent unlabelled sentences were also drawn from this split.,Experiment/Discussion
+"During each round of self-training, 30 sentences were parsed by each parser, and each parser was retrained upon the 20 self-labelled sentences which it scored most highly (each parser using its own joint probability (equation 1) as the score).",Experiment/Discussion
+"The results vary significantly between the Collins-CFG and the LTAG parser, which lends weight to the argument that the two parsers are largely independent of each other.",Experiment/Discussion
+"It also shows that, at least for the Collins-CFG model, a minor improvement in performance can be had from selftraining.",Experiment/Discussion
+"The LTAG parser, by contrast, is hurt by self-training The first co-training experiment used the first 500 sentences from sections 2-21 of the Treebank as seed data, and subsequent unlabelled sentences were drawn from the remainder of these sections.",Experiment/Discussion
+"During each co-training round, the LTAG parser parsed 30 sentences, and the 20 labelled sentences with the highest scores (according to the LTAG joint probability) were added to the training data of the Collins-CFG parser.",Experiment/Discussion
+"The training data of the LTAG parser was augmented in the same way, using the 20 highest scoring parses from the set of 30, but using the Collins-CFG parser to label the sentences and provide the joint probability for scoring.",Experiment/Discussion
+"Figure 6 gives the results for the Collins-CFG parser, and also shows the self-training curve for The upper curve is for co-training between Collins-CFG and LTAG; the lower curve is selftraining for Collins-CFG. comparison.2 The graph shows that co-training results in higher performance than self-training.",Experiment/Discussion
+"The graph also shows that co-training performance levels out after around 80 rounds, and then starts to degrade.",Experiment/Discussion
+The likely reason for this dip is noise in the parse trees added by cotraining.,Experiment/Discussion
+"Pierce and Cardie (2001) noted a similar behaviour when they co-trained shallow parsers. upper curve is for 1,000 sentences labelled data from Brown plus 100 WSJ sentences; the lower curve only uses 1,000 sentences from Brown.",Experiment/Discussion
+"The second co-training experiment was the same as the first, except that more seed data was used: the first 1,000 sentences from sections 2-21 of the Treebank.",Experiment/Discussion
+"Figure 7 gives the results, and, for comparison, also shows the previous performance curve for the 500 seed set experiment.",Experiment/Discussion
+The key observation is that the benefit of co-training is greater when the amount of seed material is small.,Experiment/Discussion
+"Our hypothesis is that, when there is a paucity of initial seed data, coverage is a major obstacle that co-training can address.",Experiment/Discussion
+"As the amount of seed data increases, coverage becomes less of a problem, and the co-training advantage is diminished.",Experiment/Discussion
+"This means that, when most sentences in the testing set can be parsed, subsequent changes in performance come from better parameter estimates.",Experiment/Discussion
+"Although co-training boosts the performance of the parser using the 500 seed sentences from 75% to 77.8% (the performance level after 100 rounds of co-training), it does not achieve the level of performance of a parser trained on 1,000 seed sentences.",Experiment/Discussion
+"Some possible explanations are: that the newly labelled sentences are not reliable (i.e., they contain too many errors); that the sentences deemed reliable are not informative training examples; or a combination of both factors.",Experiment/Discussion
+This experiment examines whether co-training can be used to boost performance when the unlabelled data are taken from a different source than the initial seed data.,Experiment/Discussion
+Previous experiments in Gildea (2001) have shown that porting a statistical parser from a source genre to a target genre is a non-trivial task.,Experiment/Discussion
+Our two different sources were the parsed section of the Brown corpus and the Penn Treebank WSJ.,Experiment/Discussion
+"Unlike the WSJ, the Brown corpus does not contain newswire material, and so the two sources differ from each other in terms of vocabulary and syntactic constructs.",Experiment/Discussion
+"1,000 annotated sentences from the Brown section of the Penn Treebank were used as the seed data.",Experiment/Discussion
+"Co-training then proceeds using the WSJ.3 Note that no manually created parses in the WSJ domain are used by the parser, even though it is evaluated using WSJ material.",Experiment/Discussion
+"In Figure 8, the lower curve shows performance for the CollinsCFG parser (again evaluated on section 0).",Experiment/Discussion
+The difference in corpus domain does not hinder cotraining.,Experiment/Discussion
+The parser performance is boosted from 75% to 77.3%.,Experiment/Discussion
+Note that most of the improvement is within the first 5 iterations.,Experiment/Discussion
+This suggests that the parsing model may be adapting to the vocabulary of the new domain.,Experiment/Discussion
+We also conducted an experiment in which the initial seed data was supplemented with a tiny amount of annotated data (100 manually annotated WSJ sentences) from the domain of the unlabelled data.,Experiment/Discussion
+This experiment simulates the situation where there is only a very limited amount of labelled material in the novel domain.,Experiment/Discussion
+The upper curve in Figure 8 shows the outcome of this experiment.,Experiment/Discussion
+"Not surprisingly, the 100 additional labelled WSJ sentences improved the initial performance of the parser (to 76.7%).",Experiment/Discussion
+"While the amount of improvement in performance is less than the previous case, co-training provides an additional boost to the parsing performance, to 78.7%.",Experiment/Discussion
+The various experiments are summarised in Table 1.,Experiment/Discussion
+"As is customary in the statistical parsing literature, we view all our previous experiments using section 0 of the Penn Treebank WSJ as contributing towards development.",Experiment/Discussion
+Here we report on system performance on unseen material (namely section 23 of the WSJ).,Experiment/Discussion
+We give F-score results for the Collins-CFG parser before and after cotraining for section 23.,Experiment/Discussion
+"The results show a modest improvement under each co-training scenario, indicating that, for the Collins-CFG parser, there is useful information to be had from the output of the LTAG parser.",Experiment/Discussion
+"However, the results are not as dramatic as those reported in other co-training papers, such as Blum and Mitchell (1998) for web-page classification and Collins and Singer (1999) for namedentity recognition.",Experiment/Discussion
+A possible reason is that parsing is a much harder task than these problems.,Experiment/Discussion
+An open question is whether co-training can produce results that improve upon the state-of-theart in statistical parsing.,Experiment/Discussion
+"Investigation of the convergence curves (Figures 3 and 4) as the parsers are trained upon more and more manually-created treebank material suggests that, with the Penn Treebank, the Collins-CFG parser has nearly converged already.",Experiment/Discussion
+"Given 40,000 sentences of labelled data, we can obtain a projected value of how much performance can be improved with additional reliably labelled data.",Experiment/Discussion
+This projected value was obtained by fitting a curve to the observed convergence results using a least-squares method from MAT LAB.,Experiment/Discussion
+"When training data is projected to a size of 400K manually created Treebank sentences, the performance of the Collins-CFG parser is projected to be 89.2% with an absolute upper bound of 89.3%.",Experiment/Discussion
+This suggests that there is very little room for performance improvement for the Collins-CFG parser by simply adding more labelled data (using co-training or other bootstrapping methods or even manually).,Experiment/Discussion
+"However, models whose parameters have not already converged might benefit from co-training For instance, when training data is projected to a size of 400K manually created Treebank sentences, the performance of the LTAG statistical parser would be 90.4% with an absolute upper bound of 91.6%.",Experiment/Discussion
+"Thus, a bootstrapping method might improve performance of the LTAG statistical parser beyond the current state-of-the-art performance on the Treebank.",Experiment/Discussion
+"In this paper, we presented an experimental study in which a pair of statistical parsers were trained on labelled and unlabelled data using co-training Our results showed that simple heuristic methods for choosing which newly parsed sentences to add to the training data can be beneficial.",Results/Conclusion
+"We saw that co-training outperformed self-training, that it was most beneficial when the seed set was small, and that co-training was possible even when the seed material was from another distribution to both the unlabelled material or the testing set.",Results/Conclusion
+This final result is significant as it bears upon the general problem of having to build models when little or no labelled training material is available for some new domain.,Results/Conclusion
+Co-training performance may improve if we consider co-training using sub-parses.,Results/Conclusion
+"This is because a parse tree is really a large collection of individual decisions, and retraining upon an entire tree means committing to all such decisions.",Results/Conclusion
+"Our ongoing work is addressing this point, largely in terms of re-ranked parsers.",Results/Conclusion
+"Finally, future work will also track comparative performance between the LTAG and Collins-CFG models.",Results/Conclusion
+"This work has been supported, in part, by the NSF/DARPA funded 2002 Language Engineering Workshop at Johns Hopkins University.",Results/Conclusion
+"We would like to thank Michael Collins, Andrew McCallum, and Fernando Pereira for helpful discussions, and the reviewers for their comments on this paper.",Results/Conclusion

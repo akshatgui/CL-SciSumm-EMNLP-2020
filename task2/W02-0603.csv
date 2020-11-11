@@ -1,263 +1,263 @@
 col1,col2
-We present two methods for unsupervised segmentation of words into morphemelike units.,{}
-"The model utilized is especially suited for languages with a rich morphology, such as Finnish.",{}
-The first method is based on the Minimum Description Length (MDL) principle and works online.,{}
-"In the second method, Maximum Likelihood (ML) optimization is used.",{}
-The quality of the segmentations is measured using an evaluation method that compares the segmentations produced to an existing morphological analysis.,{}
-Experiments on both Finnish and English corpora show that the presented methods perform well compared to a current stateof-the-art system.,{}
-"According to linguistic theory, morphemes are considered to be the smallest meaning-bearing elements of language, and they can be defined in a language-independent manner.","{'title': '1 Introduction', 'number': '1'}"
-"However, no adequate language-independent definition of the word as a unit has been agreed upon (Karlsson, 1998, p. 83).","{'title': '1 Introduction', 'number': '1'}"
-"If effective methods can be devised for the unsupervised discovery of morphemes, they could aid the formulation of a linguistic theory of morphology for a new language.","{'title': '1 Introduction', 'number': '1'}"
-It seems that even approximative automated morphological analysis would be beneficial for many natural language applications dealing with large vocabularies.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, in text retrieval it is customary to preprocess texts by returning words to their base forms, especially for morphologically rich languages.","{'title': '1 Introduction', 'number': '1'}"
-"Moreover, in large vocabulary speech recognition, predictive models of language are typically used for selecting the most plausible words suggested by an acoustic speech recognizer (see, e.g., Bellegarda, 2000).","{'title': '1 Introduction', 'number': '1'}"
-"Consider, for example the estimation of the standard n-gram model, which entails the estimation of the probabilities of all sequences of n words.","{'title': '1 Introduction', 'number': '1'}"
-"When the vocabulary is very large, say 100 000 words, the basic problems in the estimation of the language model are: (1) If words are used as basic representational units in the language model, the number of basic units is very high and the estimated word n-grams are poor due to sparse data.","{'title': '1 Introduction', 'number': '1'}"
-"(2) Due to the high number of possible word forms, many perfectly valid word forms will not be observed at all in the training data, even in large amounts of text.","{'title': '1 Introduction', 'number': '1'}"
-"These problems are particularly severe for languages with rich morphology, such as Finnish and Turkish.","{'title': '1 Introduction', 'number': '1'}"
-"For example, in Finnish, a single verb may appear in thousands of different forms (Karlsson, 1987).","{'title': '1 Introduction', 'number': '1'}"
-The utilization of morphemes as basic representational units in a statistical language model instead of words seems a promising course.,"{'title': '1 Introduction', 'number': '1'}"
-Even a rough morphological segmentation could then be sufficient.,"{'title': '1 Introduction', 'number': '1'}"
-"On the other hand, the construction of a comprehensive morphological analyzer for a language based on linguistic theory requires a considerable amount of work by experts.","{'title': '1 Introduction', 'number': '1'}"
-This is both slow and expensive and therefore not applicable to all languages.,"{'title': '1 Introduction', 'number': '1'}"
-"The problem is further compounded as languages evolve, new words appear and grammatical changes take place.","{'title': '1 Introduction', 'number': '1'}"
-"Consequently, it is important to develop methods that are able to discover a morphology for a language based on unsupervised analysis of large amounts of data.","{'title': '1 Introduction', 'number': '1'}"
-"As the morphology discovery from untagged corpora is a computationally hard problem, in practice one must make some assumptions about the structure of words.","{'title': '1 Introduction', 'number': '1'}"
-The appropriate specific assumptions are somewhat language-dedependent.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, for English it may be useful to assume that words consist of a stem, often followed by a suffix and possibly preceded by a prefix.","{'title': '1 Introduction', 'number': '1'}"
-"By contrast, a Finnish word typically consists of a stem followed by multiple suffixes.","{'title': '1 Introduction', 'number': '1'}"
-"In addition, compound words are common, containing an alternation of stems and suffixes, e.g., the word kahvinjuojallekin (Engl.","{'title': '1 Introduction', 'number': '1'}"
-’also for [the] coffee drinker’; cf.,"{'title': '1 Introduction', 'number': '1'}"
-Table 1)1.,"{'title': '1 Introduction', 'number': '1'}"
-"Moreover, one may ask, whether a morphologically complex word exhibits some hierarchical structure, or whether it is merely a flat concatenation of stems and suffices.","{'title': '1 Introduction', 'number': '1'}"
-"Many existing morphology discovery algorithms concentrate on identifying prefixes, suffixes and stems, i.e., assume a rather simple inflectional morphology.","{'title': '1 Introduction', 'number': '1'}"
-D´ejean (1998) concentrates on the problem of finding the list of frequent affixes for a language rather than attempting to produce a morphological analysis of each word.,"{'title': '1 Introduction', 'number': '1'}"
-"Following the work of Zellig Harris he identifies possible morpheme boundaries by looking at the number of possible letters following a given sequence of letters, and then utilizes frequency limits for accepting morphemes.","{'title': '1 Introduction', 'number': '1'}"
-"Goldsmith (2000) concentrates on stem+suffixlanguages, in particular Indo-European languages, and tries to produce output that would match as closely as possible with the analysis given by a human morphologist.","{'title': '1 Introduction', 'number': '1'}"
-"He further assumes that stems form groups that he calls signatures, and each signature shares a set of possible affixes.","{'title': '1 Introduction', 'number': '1'}"
-He applies an MDL criterion for model optimization.,"{'title': '1 Introduction', 'number': '1'}"
-"The previously discussed approaches consider only individual words without regard to their contexts, or to their semantic content.","{'title': '1 Introduction', 'number': '1'}"
-"In a different approach, Schone and Jurafsky (2000) utilize the context of each term to obtain a semantic representation for it using LSA.","{'title': '1 Introduction', 'number': '1'}"
-The division to morphemes is then accepted only when the stem and stem+affix are sufficiently similar semantically.,"{'title': '1 Introduction', 'number': '1'}"
-"Their method is shown to improve on the performance of Goldsmith’s Linguistica on CELEX, a morphologically analyzed English corpus.","{'title': '1 Introduction', 'number': '1'}"
-"In the related field of text segmentation, one can sometimes obtain morphemes.","{'title': '1 Introduction', 'number': '1'}"
-"Some of the approaches remove spaces from text and try to identify word boundaries utilizing e.g. entropy-based measures, as in (Redlich, 1993).","{'title': '1 Introduction', 'number': '1'}"
-"Word induction from natural language text without word boundaries is also studied in (Deligne and Bimbot, 1997; Hua, 2000), where MDL-based model optimization measures are used.","{'title': '1 Introduction', 'number': '1'}"
-Viterbi or the forward-backward algorithm (an EM algorithm) is used for improving the segmentation of the corpus2.,"{'title': '1 Introduction', 'number': '1'}"
-"Also de Marcken (1995; 1996) studies the problem of learning a lexicon, but instead of optimizing the cost of the whole corpus, as in (Redlich, 1993; Hua, 2000), de Marcken starts with sentences.","{'title': '1 Introduction', 'number': '1'}"
-Spaces are included as any other characters.,"{'title': '1 Introduction', 'number': '1'}"
-"Utterances are also analyzed in (Kit and Wilks, 1999) where optimal segmentation for an utterance is sought so that the compression effect over the segments is maximal.","{'title': '1 Introduction', 'number': '1'}"
-"The compression effect is measured in what the authors call Description Length Gain, defined as the relative reduction in entropy.","{'title': '1 Introduction', 'number': '1'}"
-The Viterbi algorithm is used for searching for the optimal segmentation given a model.,"{'title': '1 Introduction', 'number': '1'}"
-The input utterances include spaces and punctuation as ordinary characters.,"{'title': '1 Introduction', 'number': '1'}"
-The method is evaluated in terms of precision and recall on word boundary prediction.,"{'title': '1 Introduction', 'number': '1'}"
-"Brent presents a general, modular probabilistic model structure for word discovery (Brent, 1999).","{'title': '1 Introduction', 'number': '1'}"
-"He uses a minimum representation length criterion for model optimization and applies an incremental, greedy search algorithm which is suitable for on-line learning such that children might employ.","{'title': '1 Introduction', 'number': '1'}"
-"In this work, we use a model where words may consist of lengthy sequences of segments.","{'title': '1 Introduction', 'number': '1'}"
-This model is especially suitable for languages with agglutinative morphological structure.,"{'title': '1 Introduction', 'number': '1'}"
-We call the segments morphs and at this point no distinction is made between stems and affixes.,"{'title': '1 Introduction', 'number': '1'}"
-The practical purpose of the segmentation is to provide a vocabulary of language units that is smaller and generalizes better than a vocabulary consisting of words as they appear in text.,"{'title': '1 Introduction', 'number': '1'}"
-"Such a vocabulary could be utilized in statistical language modeling, e.g., for speech recognition.","{'title': '1 Introduction', 'number': '1'}"
-"Moreover, one could assume that such a discovered morph vocabulary would correspond rather closely to linguistic morphemes of the language.","{'title': '1 Introduction', 'number': '1'}"
-"We examine two methods for unsupervised learning of the model, presented in Sections 2 and 3.","{'title': '1 Introduction', 'number': '1'}"
-"The cost function for the first method is derived from the Minimum Description Length principle from classic information theory (Rissanen, 1989), which simultaneously measures the goodness of the representation and the model complexity.","{'title': '1 Introduction', 'number': '1'}"
-"Including a model complexity term generally improves generalization by inhibiting overlearning, a problem especially severe for sparse data.","{'title': '1 Introduction', 'number': '1'}"
-An incremental (online) search algorithm is utilized that applies a hierarchical splitting strategy for words.,"{'title': '1 Introduction', 'number': '1'}"
-In the second method the cost function is defined as the maximum likelihood of the data given the model.,"{'title': '1 Introduction', 'number': '1'}"
-Sequential splitting is applied and a batch learning algorithm is utilized.,"{'title': '1 Introduction', 'number': '1'}"
-"In Section 4, we develop a method for evaluating the quality of the morph segmentations produced by the unsupervised segmentation methods.","{'title': '1 Introduction', 'number': '1'}"
-"Even though the morph segmentations obtained are not intended to correspond exactly to the morphemes of linguistic theory, a basis for comparison is provided by existing, linguistically motivated morphological analyses of the words.","{'title': '1 Introduction', 'number': '1'}"
-Both segmentation methods are applied to the segmentation of both Finnish and English words.,"{'title': '1 Introduction', 'number': '1'}"
-"In Section 5, we compare the results obtained from our methods to results produced by Goldsmith’s Linguistica on the same data.","{'title': '1 Introduction', 'number': '1'}"
-The task is to find the optimal segmentation of the source text into morphs.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"One can think of this as constructing a model of the data in which the model consists of a vocabulary of morphs, i.e. the codebook and the data is the sequence of text.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"We try to find a set of morphs that is concise, and moreover gives a concise representation for the data.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-This is achieved by utilizing an MDL cost function.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The total cost consists of two parts: the cost of the source text in this model and the cost of the codebook.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Let M be the morph codebook (the vocabulary of morph types) and D = m1m2 ... mn the sequence of morph tokens that makes up the string of words.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"We then define the total cost C as The cost of the source text is thus the negative loglikelihood of the morph, summed over all the morph tokens that comprise the source text.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"The cost of the codebook is simply the length in bits needed to represent each morph separately as a string of characters, summed over the morphs in the codebook.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The length in characters of the morph mj is denoted by l(mj) and k is the number of bits needed to code a character (we have used a value of 5 since that is sufficient for coding 32 lower-case letters).,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"For p(mi) we use the ML estimate, i.e., the token count of mi divided by the total count of morph tokens.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The online search algorithm works by incrementally suggesting changes that could improve the cost function.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Each time a new word token is read from the input, different ways of segmenting it into morphs are evaluated, and the one with minimum cost is selected.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Recursive segmentation.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The search for the optimal morph segmentation proceeds recursively.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"First, the word as a whole is considered to be a morph and added to the codebook.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Next, every possible split of the word into two parts is evaluated.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The algorithm selects the split (or no split) that yields the minimum total cost.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"In case of no split, the processing of the word is finished and the next word is read from input.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Otherwise, the search for a split is performed recursively on the two segments.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"The order of splits can be represented as a binary tree for each word, where the leafs represent the morphs making up the word, and the tree structure describes the ordering of the splits.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"During model search, an overall hierarchical data structure is used for keeping track of the current segmentation of every word type encountered so far.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Let us assume that we have seen seven instances of linja-auton (Engl.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-’of [the] bus’) and two instances of autonkuljettajallakaan (Engl.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-’not even by/at/with [the] car driver’).,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Figure 1 then shows a possible structure used for representing the segmentations of the data.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Each chunk is provided with an occurrence count of the chunk in the data set and the split location in this chunk.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"A zero split location denotes a leaf node, i.e., a morph.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"The occurrence counts flow down through the hierachical structure, so that the count of a child always equals the sum of the counts of its parents.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The occurrence counts of the leaf nodes are used for computing the relative frequencies of the morphs.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"To find out the morph sequence that a word consists of, we look up the chunk that is identical to the word, and trace the split indices recursively until we reach the leafs, which are the morphs.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Note that the hierarchical structure is used only during model search: It is not part of the final model, and accordingly no cost is associated with any other nodes than the leaf nodes.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Adding and removing morphs.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Adding new morphs to the codebook increases the codebook cost.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Consequently, a new word token will tend to be split into morphs already listed in the codebook, which may lead to local optima.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"To better escape local optima, each time a new word token is encounFigure 1: Hierarchical structure of the segmentation of the words linja-auton and autonkuljettajallakaan.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-The boxes represent chunks.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Boxes with bold text are morphs, and are part of the codebook.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"The numbers above each box are the split location (to the left of the colon sign) and the occurrence count of the chunk (to the right of the colon sign). tered, it is resegmented, whether or not this word has been observed before.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"If the word has been observed (i.e. the corresponding chunk is found in the hierarchical structure), we first remove the chunk and decrease the counts of all its children.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Chunks with zero count are removed (remember that removal of leaf nodes corresponds to removal of morphs from the codebook).,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Next, we increase the count of the observed word chunk by one and re-insert it as an unsplit chunk.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Finally, we apply the recursive splitting to the chunk, which may lead to a new, different segmentation of the word.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-“Dreaming”.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Due to the online learning, as the number of processed words increases, the quality of the set of morphs in the codebook gradually improves.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Consequently, words encountered in the beginning of the input data, and not observed since, may have a sub-optimal segmentation in the new model, since at some point more suitable morphs have emerged in the codebook.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"We have therefore introduced a ’dreaming’ stage: At regular intervals the system stops reading words from the input, and instead iterates over the words already encountered in random order.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"These words are resegmented and thus compressed further, if possible.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Dreaming continues for a limited time or until no considerable decrease in the total cost can be observed.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Figure 2 shows the development of the average cost per word as a function of the increasing amount of source text.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-Figure 2: Development of the average word cost when processing newspaper text.,"{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"Dreaming, i.e., the re-processing of the words encountered so far, takes place five times, which can be seen as sudden drops on the curve.","{'title': '2 Method 1: Recursive Segmentation and MDL Cost', 'number': '2'}"
-"In this case, we use as cost function the likelihood of the data, i.e., P(data|model).","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"Thus, the model cost is not included.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-This corresponds to MaximumLikelihood (ML) learning.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-The cost is then where the summation is over all morph tokens in the source data.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"As before, for p(mi) we use the ML estimate, i.e., the token count of mi divided by the total count of morph tokens.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"In this case, we utilize batch learning where an EMlike (Expectation-Maximization) algorithm is used for optimizing the model.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"Moreover, splitting is not recursive but proceeds linearly.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-Note that the possibility of introducing a random segmentation at step (c) is the only thing that allows for the addition of new morphs.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"(In the cost function their cost would be infinite, due to ML probability estimates).","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"In fact, without this step the algorithm seems to get seriously stuck in suboptimal solutions.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-Rejection criteria.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-(1) Rare morphs.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-Reject the segmentation of a word if the segmentation contains a morph that was used in only one word type in the previous iteration.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-This is motivated by the fact that extremely rare morphs are often incorrect.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-(2) Sequences of one-letter morphs.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-Reject the segmentation if it contains two or more one-letter morphs in a sequence.,"{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"For instance, accept the segmentation halua + n (Engl.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"’I want’, i.e. present stem of the verb ’to want’ followed by the ending for the first person singular), but reject the segmentation halu + a + n (stem of the noun ’desire’ followed by a strange sequence of endings).","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"Long sequences of one-letter morphs are usually a sign of a very bad local optimum that may even get worse in future iterations, in case too much probability mass is transferred onto these short morphs3.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"3Nevertheless, for Finnish there do exist some one-letter morphemes that can occur in a sequence.","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"However, these morphemes can be thought of as a group that belongs together: e.g.,","{'title': '3 Method 2: Sequential Segmentation and ML Cost', 'number': '3'}"
-"We wish to evaluate the method quantitatively from the following perspectives: (1) correspondence with linguistic morphemes, (2) efficiency of compression of the data, and (3) computational efficiency.","{'title': '4 Evaluation Measures', 'number': '4'}"
-The efficiency of compression can be evaluated as the total description length of the corpus and the codebook (the MDL cost function).,"{'title': '4 Evaluation Measures', 'number': '4'}"
-The computational efficiency of the algorithm can be estimated from the running time and memory consumption of the program.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"However, the linguistic evaluation is in general not so straightforward.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"If a corpus with marked morpheme boundaries is available, the linguistic evaluation can be computed as the precision and recall of the segmentation.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"Unfortunately, we did not have such data sets at our disposal, and for Finnish such do not even exist.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"In addition, it is not always clear exactly where the morpheme boundary should be placed.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"Several alternatives maybe possible, cf.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"Engl. hope + d vs. hop + ed, (past tense of to hope).","{'title': '4 Evaluation Measures', 'number': '4'}"
-"Instead, we utilized an existing tool for providing a morphological analysis, although not a segmentation, of words, based on the two-level morphology of Koskenniemi (1983).","{'title': '4 Evaluation Measures', 'number': '4'}"
-The analyzer is a finite-state transducer that reads a word form as input and outputs the base form of the word together with grammatical tags.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-Sample analyses are shown in Figure 3.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"The tag set consists of tags corresponding to morphological affixes and other tags, for example, part-of-speech tags.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"We preprocessed the analyses by removing other tags than those corresponding to affixes, and further split compound base forms (marked using the # character by the analyzer) into their constituents.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"As a result, we obtained for each word a sequence of labels that corresponds well to a linguistic morphemic analysis of the word.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"A label can often be considered to correspond to a single word segment, and the labels appear in the order of the segments.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The following step consists in retrieving the segmentation produced by one of the unsupervised segmentation algorithms, and trying to align this segand Finnish word forms.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The Finnish words are auton (car’s), puutaloja ([some/ wooden houses) and tehnyt ([has/ done).","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The tags are A (adjective), ACT (active voice), ADV (adverb), CMP (comparative), GEN (genitive), N (noun), PCP2 (2nd participle), PL (plural), PTV (partitive), SG (singular), V (verb), and <DER:ly> (-ly derivative). mentation with the desired morphemic label sequence (cf.","{'title': '4 Evaluation Measures', 'number': '4'}"
-Figure 4).,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"A good segmentation algorithm will produce morphs that align gracefully with the correct morphemic labels, preferably producing a one-to-one mapping.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"A one-to-many mapping from morphs to labels is also acceptable, when a morph forms a common entity, such as the suffix ja in puutaloja, which contains both the plural and partitive element.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"By contrast, a many-to-one mapping from morphs to a label is a sign of excessive splitting, e.g., t + alo for talo (cf.","{'title': '4 Evaluation Measures', 'number': '4'}"
-English h + ouse for house). with their respective correct morphemic analyses.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"We assume that the segmentation algorithm has split the word bigger into the morphs bigg + er, hours’ into hour + s + ’ and puutaloja into puu + t + alo + ja.","{'title': '4 Evaluation Measures', 'number': '4'}"
-Alignment procedure.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"We align the morph sequence with the morphemic label sequence using dynamic programming, namely Viterbi alignment, to find the best sequence of mappings between morphs and morphemic labels.","{'title': '4 Evaluation Measures', 'number': '4'}"
-Each possible pair of morph/morphemic label has a distance associated with it.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"For each segmented word, the algorithm searches for the alignment that minimizes the total alignment distance for the word.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The distance d(M, L) for a pair of morph M and label L is given by: where cM,L is the number of word tokens in which the morph M has been aligned with the label L; and cM is the number of word tokens that contain the morph M in their segmentation.","{'title': '4 Evaluation Measures', 'number': '4'}"
-The distance measure can be thought of as the negative logarithm of a conditional probability P(L|M).,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"This indicates the probability that a morph M is a realisation of a morpheme represented by the label L. Put another way, if the unsupervised segmentation algorithm discovers morphs that are allomorphs of real morphemes, a particular allomorph will ideally always be aligned with the same (correct) morphemic label, which leads to a high probability P(L|M), and a short distance d(M, L)4.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"In contrast, if the segmentation algorithm does not discover meaningful morphs, each of the segments will be aligned with a number of different morphemic labels throughout the corpus, and as a consequence, the probabilities will be low and the distances high.","{'title': '4 Evaluation Measures', 'number': '4'}"
-We then utilize the EM algorithm for iteratively improving the alignment.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"The initial alignment that is used for computing initial distance values is obtained through a string matching procedure: String matching is efficient for aligning the stem of the word with the base form (e.g., the morph puu with the label PUU, and the morphs t + alo with the label TALO).","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The suffix morphs that do not match well with the base form labels will end up aligned somehow with the morphological tags (e.g., the morph ja with the labels PL + PTV).","{'title': '4 Evaluation Measures', 'number': '4'}"
-Comparison of methods.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"In order to compare two segmentation algorithms, the segmentation of each is aligned with the linguistic morpheme labels, and the total distance of the alignment is computed.","{'title': '4 Evaluation Measures', 'number': '4'}"
-Shorter total distance indicates better segmentation.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"However, one should note that the distance measure used favors long morphs.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"If a particular “segmentation” algorithm does not split one single word of the corpus, the total distance can be zero.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"In such a situation, the single morph that a word is composed of is aligned with all morphemic labels of the word.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"The morph M, i.e., the word, is unique, which means that all probabilities P(L|M) are equal to one: e.g., the morph puutaloja is always aligned with the labels PUU + TALO + PL + PTV and no other labels, which yields the probabilities P(PUU | Therefore, part of the corpus should be used as training data, and the rest as test data.","{'title': '4 Evaluation Measures', 'number': '4'}"
-Both data sets are segmented using the unsupervised segmentation algorithms.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"The training set is then used for estimating the distance values d(M, L).","{'title': '4 Evaluation Measures', 'number': '4'}"
-These values are used when the test set is aligned.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-The better segmentation algorithm is the one that yields a better alignment distance for the test set.,"{'title': '4 Evaluation Measures', 'number': '4'}"
-"For morph/label pairs that were never observed in the training set, a maximum distance value is assigned.","{'title': '4 Evaluation Measures', 'number': '4'}"
-"A good segmentation algorithm will find segments that are good building blocks of entirely new word forms, and thus the maximum distance values will occur only rarely.","{'title': '4 Evaluation Measures', 'number': '4'}"
-We compared the two proposed methods as well as Goldsmith’s program Linguistica5 on both Finnish and English corpora.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The Finnish corpus consisted of newspaper text from CSC6.,"{'title': '5 Experiments and Results', 'number': '5'}"
-A morphosyntactic analysis of the text was performed using the Conexor FDG parser7.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"All characters were converted to lower case, and words containing other characters than a through z and the Scandinavian letters ˚a, a¨ and o¨ were removed.","{'title': '5 Experiments and Results', 'number': '5'}"
-Other than morphemic tags were removed from the morphological analyses of the words.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The remaining tags correspond to inflectional affixes (i.e. endings and markers) and clitics.,"{'title': '5 Experiments and Results', 'number': '5'}"
-Unfortunately the parser does not distinguish derivational affixes.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"The first 100 000 word tokens were used as training data, and the following 100 000 word tokens were used as test data.","{'title': '5 Experiments and Results', 'number': '5'}"
-The test data contained 34 821 word types.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The English corpus consisted of mainly newspaper text from the Brown corpus8.,"{'title': '5 Experiments and Results', 'number': '5'}"
-A morphological analysis of the words was performed using the Lingsoft ENGTWOL analyzer9.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"In case of multiple alternative morphological analyses, the shortest analysis was selected.","{'title': '5 Experiments and Results', 'number': '5'}"
-"All characters were converted to lower case, and words containing other characters than a through z, an apostrophe or a hyphen were removed.","{'title': '5 Experiments and Results', 'number': '5'}"
-Other than morphemic tags were removed from the morphological analyses of the words.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The remaining tags correspond to inflectional or derivational affixes.,"{'title': '5 Experiments and Results', 'number': '5'}"
-A set of 100 000 word tokens from the corpus sections Press Reportage and Press Editorial were used as training data.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"A separate set of 100 000 word tokens from the sections Press Editorial, Press Reviews, Religion, and Skills Hobbies were used as test data.","{'title': '5 Experiments and Results', 'number': '5'}"
-The test data contained 12 053 word types.,"{'title': '5 Experiments and Results', 'number': '5'}"
-Test results for the three methods and the two languages are shown in Table 2.,"{'title': '5 Experiments and Results', 'number': '5'}"
-We observe different tendencies for Finnish and English.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"For Finnish, there is a correlation between the compression of the corpus and the linguistic generalization capacity to new word forms.","{'title': '5 Experiments and Results', 'number': '5'}"
-"The Recursive splitting with the MDL cost function is clearly superior to the Sequential splitting with ML cost, which in turn is superior to Linguistica.","{'title': '5 Experiments and Results', 'number': '5'}"
-"The Recursive MDL method is best in terms of data compression: it produces the smallest morph lexicon (codebook), and the codebook naturally occupies a small part of the total cost.","{'title': '5 Experiments and Results', 'number': '5'}"
-"It is best also in terms of the linguistic measure, the total alignment distance on test data.","{'title': '5 Experiments and Results', 'number': '5'}"
-"Linguistica, on the other hand, employs a more restricted segmentation, which leads to a larger codebook and to the fact that the codebook occupies a large part of the total MDL cost.","{'title': '5 Experiments and Results', 'number': '5'}"
-This also appears to lead to a poor generalization ability to new word forms.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"The linguistic alignment distance is the highest, and so is the percentage of aligned morph/morphemic label pairs that were never observed in the training set.","{'title': '5 Experiments and Results', 'number': '5'}"
-"On the other hand, Linguistica is the fastest program10.","{'title': '5 Experiments and Results', 'number': '5'}"
-"Also for English, the Recursive MDL method achieves the best alignment, but here Linguistica achieves nearly the same result.","{'title': '5 Experiments and Results', 'number': '5'}"
-"The rate of compression follows the same pattern as for Finnish, in that Linguistica produces a much larger morph lexicon than the methods presented in this paper.","{'title': '5 Experiments and Results', 'number': '5'}"
-"In spite of this fact, the percentage of unseen morph/morphemic label pairs is about the same for all three methods.","{'title': '5 Experiments and Results', 'number': '5'}"
-"This suggests that in a morphologically poor language such as English a restrictive segmentation method, such as Linguistica, can compensate for new word forms – that it does not recognize at all – with old, familiar words, that it “gets just right”.","{'title': '5 Experiments and Results', 'number': '5'}"
-"In contrast, the methods presented in this paper produce a morph lexicon that is smaller and able to generalize better to new word forms but has somewhat lower accuracy for already observed word forms.","{'title': '5 Experiments and Results', 'number': '5'}"
-Visual inspection of a sample of words.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"In an attempt to analyze the segmentations more thoroughly, we randomly picked 1000 different words from the Finnish test set.","{'title': '5 Experiments and Results', 'number': '5'}"
-The total number of occurrences of these words constitute about 2.5% of the whole set.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"We inspected the segmentation of each word visually and classified it into one of three categories: (1) correct and complete segmentation (i.e., all relevant morpheme boundaries were identified), (2) correct but incomplete segmentation (i.e., not all relevant morpheme boundaries were identified, but no proposed boundary was incorrect), (3) incorrect segmentation (i.e., some proposed boundary did not correspond to an actual morpheme boundary).","{'title': '5 Experiments and Results', 'number': '5'}"
-The results of the inspection for each of the three segmentation methods are shown in Table 3.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The Recursive MDL method performs best and segments about half of the words correctly.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The Sequential ML method comes second and Linguistica third with a share of 43% correctly segmented words.,"{'title': '5 Experiments and Results', 'number': '5'}"
-When considering the incomplete and incorrect segmentations the methods behave differently.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"The Recursive MDL method leaves very common word forms unsplit, and often produces excessive splitting for rare mentation and MDL cost (Rec.","{'title': '5 Experiments and Results', 'number': '5'}"
-"MDL), Sequential segmentation and ML cost (Seq.","{'title': '5 Experiments and Results', 'number': '5'}"
-"ML), and Linguistica (Ling.).","{'title': '5 Experiments and Results', 'number': '5'}"
-The total MDL cost measures the compression of the corpus.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"However, the cost is computed according to Equation (1), which favors the Recursive MDL method.","{'title': '5 Experiments and Results', 'number': '5'}"
-The final number of morphs in the codebook (#morphs in codebook) is a measure of the size of the morph “vocabulary”.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The relative codebook cost gives the share of the total MDL cost that goes into coding the codebook.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The alignment distance is the total distance computed over the sequence of morph/morphemic label pairs in the test data.,"{'title': '5 Experiments and Results', 'number': '5'}"
-The unseen aligned pairs is the percentage of all aligned morph/label pairs in the test set that were never observed in the training set.,"{'title': '5 Experiments and Results', 'number': '5'}"
-"This gives an indication of the generalization capacity of the method to new word forms. not allow representation of contextual dependencies, i.e., that some morphs appear only in particular contexts (allomorphy).","{'title': '5 Experiments and Results', 'number': '5'}"
-"Moreover, languages have rules regarding the ordering of stems and affixes (morphotax).","{'title': '5 Experiments and Results', 'number': '5'}"
-"However, the current model has no way of representing such contextual dependencies.","{'title': '5 Experiments and Results', 'number': '5'}"
-words.,"{'title': '7 Conclusions', 'number': '6'}"
-"The Sequential ML method is more prone to excessive splitting, even for words that are not rare.","{'title': '7 Conclusions', 'number': '6'}"
-"Linguistica, on the other hand, employs a more conservative splitting strategy, but makes incorrect segmentations for many common word forms.","{'title': '7 Conclusions', 'number': '6'}"
-The behaviour of the methods is illustrated by example segmentations in Table 4.,"{'title': '7 Conclusions', 'number': '6'}"
-Often the Recursive MDL method produces complete and correct segmentations.,"{'title': '7 Conclusions', 'number': '6'}"
-"However, both it and the Sequential ML method can produce excessive splitting, as is shown for the latter, e.g. affecti + on + at + e. In contrast, Linguistica refrains from splitting words when they should be split, e.g., the Finnish compound words in the table.","{'title': '7 Conclusions', 'number': '6'}"
-"Regarding the model, there is always room for improvement.","{'title': '6 Discussion of the Model', 'number': '7'}"
-"In particular, the current model does In the experiments the online method with the MDL cost function and recursive splitting appeared most successful especially for Finnish, whereas for English the compared methods were rather equal in performance.","{'title': '6 Discussion of the Model', 'number': '7'}"
-This is likely to be partially due to the model structure of the presented methods which is especially suitable for languages such as Finnish.,"{'title': '6 Discussion of the Model', 'number': '7'}"
-"However, there is still room for considerable improvement in the model structure, especially regarding the representation of contextual dependencies.","{'title': '6 Discussion of the Model', 'number': '7'}"
-"Considering the two examined model optimization methods, the Recursive MDL method performed consistently somewhat better.","{'title': '6 Discussion of the Model', 'number': '7'}"
-Whether this is due to the cost function or the splitting strategy cannot be deduced based on these experiments.,"{'title': '6 Discussion of the Model', 'number': '7'}"
-"In the future, we intend to extend the latter method to utilize an MDL-like cost function.","{'title': '6 Discussion of the Model', 'number': '7'}"
-Table 4: Some English and Finnish word segmentations produced by the three methods.,"{'title': '6 Discussion of the Model', 'number': '7'}"
-"The Finnish words are el¨ainl¨a¨ak¨ari (veterinarian, lit. animal doctor), el¨ainmuseo (zoological museum, lit. animal museum), el¨ainpuisto (zoologicalpark, lit. animalpark), and el¨aintarha (zoo, lit. animalgarden).","{'title': '6 Discussion of the Model', 'number': '7'}"
-"The suffixes -lle, -n, -on, and -sta are linguistically correct.","{'title': '6 Discussion of the Model', 'number': '7'}"
-(Note that in the Sequential ML method the rejection criteria mentioned are not applied on the last round of Viterbi segmentation.,"{'title': '6 Discussion of the Model', 'number': '7'}"
-This is why two one letter morphs appear in a sequence in the segmentation el¨ain + tarh + a + n.),"{'title': '6 Discussion of the Model', 'number': '7'}"
+We present two methods for unsupervised segmentation of words into morphemelike units.,Introduction
+"The model utilized is especially suited for languages with a rich morphology, such as Finnish.",Introduction
+The first method is based on the Minimum Description Length (MDL) principle and works online.,Introduction
+"In the second method, Maximum Likelihood (ML) optimization is used.",Introduction
+The quality of the segmentations is measured using an evaluation method that compares the segmentations produced to an existing morphological analysis.,Introduction
+Experiments on both Finnish and English corpora show that the presented methods perform well compared to a current stateof-the-art system.,Introduction
+"According to linguistic theory, morphemes are considered to be the smallest meaning-bearing elements of language, and they can be defined in a language-independent manner.",Experiment/Discussion
+"However, no adequate language-independent definition of the word as a unit has been agreed upon (Karlsson, 1998, p. 83).",Experiment/Discussion
+"If effective methods can be devised for the unsupervised discovery of morphemes, they could aid the formulation of a linguistic theory of morphology for a new language.",Experiment/Discussion
+It seems that even approximative automated morphological analysis would be beneficial for many natural language applications dealing with large vocabularies.,Experiment/Discussion
+"For example, in text retrieval it is customary to preprocess texts by returning words to their base forms, especially for morphologically rich languages.",Experiment/Discussion
+"Moreover, in large vocabulary speech recognition, predictive models of language are typically used for selecting the most plausible words suggested by an acoustic speech recognizer (see, e.g., Bellegarda, 2000).",Experiment/Discussion
+"Consider, for example the estimation of the standard n-gram model, which entails the estimation of the probabilities of all sequences of n words.",Experiment/Discussion
+"When the vocabulary is very large, say 100 000 words, the basic problems in the estimation of the language model are: (1) If words are used as basic representational units in the language model, the number of basic units is very high and the estimated word n-grams are poor due to sparse data.",Experiment/Discussion
+"(2) Due to the high number of possible word forms, many perfectly valid word forms will not be observed at all in the training data, even in large amounts of text.",Experiment/Discussion
+"These problems are particularly severe for languages with rich morphology, such as Finnish and Turkish.",Experiment/Discussion
+"For example, in Finnish, a single verb may appear in thousands of different forms (Karlsson, 1987).",Experiment/Discussion
+The utilization of morphemes as basic representational units in a statistical language model instead of words seems a promising course.,Experiment/Discussion
+Even a rough morphological segmentation could then be sufficient.,Experiment/Discussion
+"On the other hand, the construction of a comprehensive morphological analyzer for a language based on linguistic theory requires a considerable amount of work by experts.",Experiment/Discussion
+This is both slow and expensive and therefore not applicable to all languages.,Experiment/Discussion
+"The problem is further compounded as languages evolve, new words appear and grammatical changes take place.",Experiment/Discussion
+"Consequently, it is important to develop methods that are able to discover a morphology for a language based on unsupervised analysis of large amounts of data.",Experiment/Discussion
+"As the morphology discovery from untagged corpora is a computationally hard problem, in practice one must make some assumptions about the structure of words.",Experiment/Discussion
+The appropriate specific assumptions are somewhat language-dedependent.,Experiment/Discussion
+"For example, for English it may be useful to assume that words consist of a stem, often followed by a suffix and possibly preceded by a prefix.",Experiment/Discussion
+"By contrast, a Finnish word typically consists of a stem followed by multiple suffixes.",Experiment/Discussion
+"In addition, compound words are common, containing an alternation of stems and suffixes, e.g., the word kahvinjuojallekin (Engl.",Experiment/Discussion
+’also for [the] coffee drinker’; cf.,Experiment/Discussion
+Table 1)1.,Experiment/Discussion
+"Moreover, one may ask, whether a morphologically complex word exhibits some hierarchical structure, or whether it is merely a flat concatenation of stems and suffices.",Experiment/Discussion
+"Many existing morphology discovery algorithms concentrate on identifying prefixes, suffixes and stems, i.e., assume a rather simple inflectional morphology.",Experiment/Discussion
+D´ejean (1998) concentrates on the problem of finding the list of frequent affixes for a language rather than attempting to produce a morphological analysis of each word.,Experiment/Discussion
+"Following the work of Zellig Harris he identifies possible morpheme boundaries by looking at the number of possible letters following a given sequence of letters, and then utilizes frequency limits for accepting morphemes.",Experiment/Discussion
+"Goldsmith (2000) concentrates on stem+suffixlanguages, in particular Indo-European languages, and tries to produce output that would match as closely as possible with the analysis given by a human morphologist.",Experiment/Discussion
+"He further assumes that stems form groups that he calls signatures, and each signature shares a set of possible affixes.",Experiment/Discussion
+He applies an MDL criterion for model optimization.,Experiment/Discussion
+"The previously discussed approaches consider only individual words without regard to their contexts, or to their semantic content.",Experiment/Discussion
+"In a different approach, Schone and Jurafsky (2000) utilize the context of each term to obtain a semantic representation for it using LSA.",Experiment/Discussion
+The division to morphemes is then accepted only when the stem and stem+affix are sufficiently similar semantically.,Experiment/Discussion
+"Their method is shown to improve on the performance of Goldsmith’s Linguistica on CELEX, a morphologically analyzed English corpus.",Experiment/Discussion
+"In the related field of text segmentation, one can sometimes obtain morphemes.",Experiment/Discussion
+"Some of the approaches remove spaces from text and try to identify word boundaries utilizing e.g. entropy-based measures, as in (Redlich, 1993).",Experiment/Discussion
+"Word induction from natural language text without word boundaries is also studied in (Deligne and Bimbot, 1997; Hua, 2000), where MDL-based model optimization measures are used.",Experiment/Discussion
+Viterbi or the forward-backward algorithm (an EM algorithm) is used for improving the segmentation of the corpus2.,Experiment/Discussion
+"Also de Marcken (1995; 1996) studies the problem of learning a lexicon, but instead of optimizing the cost of the whole corpus, as in (Redlich, 1993; Hua, 2000), de Marcken starts with sentences.",Experiment/Discussion
+Spaces are included as any other characters.,Experiment/Discussion
+"Utterances are also analyzed in (Kit and Wilks, 1999) where optimal segmentation for an utterance is sought so that the compression effect over the segments is maximal.",Experiment/Discussion
+"The compression effect is measured in what the authors call Description Length Gain, defined as the relative reduction in entropy.",Experiment/Discussion
+The Viterbi algorithm is used for searching for the optimal segmentation given a model.,Experiment/Discussion
+The input utterances include spaces and punctuation as ordinary characters.,Experiment/Discussion
+The method is evaluated in terms of precision and recall on word boundary prediction.,Experiment/Discussion
+"Brent presents a general, modular probabilistic model structure for word discovery (Brent, 1999).",Experiment/Discussion
+"He uses a minimum representation length criterion for model optimization and applies an incremental, greedy search algorithm which is suitable for on-line learning such that children might employ.",Experiment/Discussion
+"In this work, we use a model where words may consist of lengthy sequences of segments.",Experiment/Discussion
+This model is especially suitable for languages with agglutinative morphological structure.,Experiment/Discussion
+We call the segments morphs and at this point no distinction is made between stems and affixes.,Experiment/Discussion
+The practical purpose of the segmentation is to provide a vocabulary of language units that is smaller and generalizes better than a vocabulary consisting of words as they appear in text.,Experiment/Discussion
+"Such a vocabulary could be utilized in statistical language modeling, e.g., for speech recognition.",Experiment/Discussion
+"Moreover, one could assume that such a discovered morph vocabulary would correspond rather closely to linguistic morphemes of the language.",Experiment/Discussion
+"We examine two methods for unsupervised learning of the model, presented in Sections 2 and 3.",Experiment/Discussion
+"The cost function for the first method is derived from the Minimum Description Length principle from classic information theory (Rissanen, 1989), which simultaneously measures the goodness of the representation and the model complexity.",Experiment/Discussion
+"Including a model complexity term generally improves generalization by inhibiting overlearning, a problem especially severe for sparse data.",Experiment/Discussion
+An incremental (online) search algorithm is utilized that applies a hierarchical splitting strategy for words.,Experiment/Discussion
+In the second method the cost function is defined as the maximum likelihood of the data given the model.,Experiment/Discussion
+Sequential splitting is applied and a batch learning algorithm is utilized.,Experiment/Discussion
+"In Section 4, we develop a method for evaluating the quality of the morph segmentations produced by the unsupervised segmentation methods.",Experiment/Discussion
+"Even though the morph segmentations obtained are not intended to correspond exactly to the morphemes of linguistic theory, a basis for comparison is provided by existing, linguistically motivated morphological analyses of the words.",Experiment/Discussion
+Both segmentation methods are applied to the segmentation of both Finnish and English words.,Experiment/Discussion
+"In Section 5, we compare the results obtained from our methods to results produced by Goldsmith’s Linguistica on the same data.",Experiment/Discussion
+The task is to find the optimal segmentation of the source text into morphs.,Experiment/Discussion
+"One can think of this as constructing a model of the data in which the model consists of a vocabulary of morphs, i.e. the codebook and the data is the sequence of text.",Experiment/Discussion
+"We try to find a set of morphs that is concise, and moreover gives a concise representation for the data.",Experiment/Discussion
+This is achieved by utilizing an MDL cost function.,Experiment/Discussion
+The total cost consists of two parts: the cost of the source text in this model and the cost of the codebook.,Experiment/Discussion
+Let M be the morph codebook (the vocabulary of morph types) and D = m1m2 ... mn the sequence of morph tokens that makes up the string of words.,Experiment/Discussion
+"We then define the total cost C as The cost of the source text is thus the negative loglikelihood of the morph, summed over all the morph tokens that comprise the source text.",Experiment/Discussion
+"The cost of the codebook is simply the length in bits needed to represent each morph separately as a string of characters, summed over the morphs in the codebook.",Experiment/Discussion
+The length in characters of the morph mj is denoted by l(mj) and k is the number of bits needed to code a character (we have used a value of 5 since that is sufficient for coding 32 lower-case letters).,Experiment/Discussion
+"For p(mi) we use the ML estimate, i.e., the token count of mi divided by the total count of morph tokens.",Experiment/Discussion
+The online search algorithm works by incrementally suggesting changes that could improve the cost function.,Experiment/Discussion
+"Each time a new word token is read from the input, different ways of segmenting it into morphs are evaluated, and the one with minimum cost is selected.",Experiment/Discussion
+Recursive segmentation.,Experiment/Discussion
+The search for the optimal morph segmentation proceeds recursively.,Experiment/Discussion
+"First, the word as a whole is considered to be a morph and added to the codebook.",Experiment/Discussion
+"Next, every possible split of the word into two parts is evaluated.",Experiment/Discussion
+The algorithm selects the split (or no split) that yields the minimum total cost.,Experiment/Discussion
+"In case of no split, the processing of the word is finished and the next word is read from input.",Experiment/Discussion
+"Otherwise, the search for a split is performed recursively on the two segments.",Experiment/Discussion
+"The order of splits can be represented as a binary tree for each word, where the leafs represent the morphs making up the word, and the tree structure describes the ordering of the splits.",Experiment/Discussion
+"During model search, an overall hierarchical data structure is used for keeping track of the current segmentation of every word type encountered so far.",Experiment/Discussion
+Let us assume that we have seen seven instances of linja-auton (Engl.,Experiment/Discussion
+’of [the] bus’) and two instances of autonkuljettajallakaan (Engl.,Experiment/Discussion
+’not even by/at/with [the] car driver’).,Experiment/Discussion
+Figure 1 then shows a possible structure used for representing the segmentations of the data.,Experiment/Discussion
+Each chunk is provided with an occurrence count of the chunk in the data set and the split location in this chunk.,Experiment/Discussion
+"A zero split location denotes a leaf node, i.e., a morph.",Experiment/Discussion
+"The occurrence counts flow down through the hierachical structure, so that the count of a child always equals the sum of the counts of its parents.",Experiment/Discussion
+The occurrence counts of the leaf nodes are used for computing the relative frequencies of the morphs.,Experiment/Discussion
+"To find out the morph sequence that a word consists of, we look up the chunk that is identical to the word, and trace the split indices recursively until we reach the leafs, which are the morphs.",Experiment/Discussion
+"Note that the hierarchical structure is used only during model search: It is not part of the final model, and accordingly no cost is associated with any other nodes than the leaf nodes.",Experiment/Discussion
+Adding and removing morphs.,Experiment/Discussion
+Adding new morphs to the codebook increases the codebook cost.,Experiment/Discussion
+"Consequently, a new word token will tend to be split into morphs already listed in the codebook, which may lead to local optima.",Experiment/Discussion
+"To better escape local optima, each time a new word token is encounFigure 1: Hierarchical structure of the segmentation of the words linja-auton and autonkuljettajallakaan.",Experiment/Discussion
+The boxes represent chunks.,Experiment/Discussion
+"Boxes with bold text are morphs, and are part of the codebook.",Experiment/Discussion
+"The numbers above each box are the split location (to the left of the colon sign) and the occurrence count of the chunk (to the right of the colon sign). tered, it is resegmented, whether or not this word has been observed before.",Experiment/Discussion
+"If the word has been observed (i.e. the corresponding chunk is found in the hierarchical structure), we first remove the chunk and decrease the counts of all its children.",Experiment/Discussion
+Chunks with zero count are removed (remember that removal of leaf nodes corresponds to removal of morphs from the codebook).,Experiment/Discussion
+"Next, we increase the count of the observed word chunk by one and re-insert it as an unsplit chunk.",Experiment/Discussion
+"Finally, we apply the recursive splitting to the chunk, which may lead to a new, different segmentation of the word.",Experiment/Discussion
+“Dreaming”.,Experiment/Discussion
+"Due to the online learning, as the number of processed words increases, the quality of the set of morphs in the codebook gradually improves.",Experiment/Discussion
+"Consequently, words encountered in the beginning of the input data, and not observed since, may have a sub-optimal segmentation in the new model, since at some point more suitable morphs have emerged in the codebook.",Experiment/Discussion
+"We have therefore introduced a ’dreaming’ stage: At regular intervals the system stops reading words from the input, and instead iterates over the words already encountered in random order.",Experiment/Discussion
+"These words are resegmented and thus compressed further, if possible.",Experiment/Discussion
+Dreaming continues for a limited time or until no considerable decrease in the total cost can be observed.,Experiment/Discussion
+Figure 2 shows the development of the average cost per word as a function of the increasing amount of source text.,Experiment/Discussion
+Figure 2: Development of the average word cost when processing newspaper text.,Experiment/Discussion
+"Dreaming, i.e., the re-processing of the words encountered so far, takes place five times, which can be seen as sudden drops on the curve.",Experiment/Discussion
+"In this case, we use as cost function the likelihood of the data, i.e., P(data|model).",Experiment/Discussion
+"Thus, the model cost is not included.",Experiment/Discussion
+This corresponds to MaximumLikelihood (ML) learning.,Experiment/Discussion
+The cost is then where the summation is over all morph tokens in the source data.,Experiment/Discussion
+"As before, for p(mi) we use the ML estimate, i.e., the token count of mi divided by the total count of morph tokens.",Experiment/Discussion
+"In this case, we utilize batch learning where an EMlike (Expectation-Maximization) algorithm is used for optimizing the model.",Experiment/Discussion
+"Moreover, splitting is not recursive but proceeds linearly.",Experiment/Discussion
+Note that the possibility of introducing a random segmentation at step (c) is the only thing that allows for the addition of new morphs.,Experiment/Discussion
+"(In the cost function their cost would be infinite, due to ML probability estimates).",Experiment/Discussion
+"In fact, without this step the algorithm seems to get seriously stuck in suboptimal solutions.",Experiment/Discussion
+Rejection criteria.,Experiment/Discussion
+(1) Rare morphs.,Experiment/Discussion
+Reject the segmentation of a word if the segmentation contains a morph that was used in only one word type in the previous iteration.,Experiment/Discussion
+This is motivated by the fact that extremely rare morphs are often incorrect.,Experiment/Discussion
+(2) Sequences of one-letter morphs.,Experiment/Discussion
+Reject the segmentation if it contains two or more one-letter morphs in a sequence.,Experiment/Discussion
+"For instance, accept the segmentation halua + n (Engl.",Experiment/Discussion
+"’I want’, i.e. present stem of the verb ’to want’ followed by the ending for the first person singular), but reject the segmentation halu + a + n (stem of the noun ’desire’ followed by a strange sequence of endings).",Experiment/Discussion
+"Long sequences of one-letter morphs are usually a sign of a very bad local optimum that may even get worse in future iterations, in case too much probability mass is transferred onto these short morphs3.",Experiment/Discussion
+"3Nevertheless, for Finnish there do exist some one-letter morphemes that can occur in a sequence.",Experiment/Discussion
+"However, these morphemes can be thought of as a group that belongs together: e.g.,",Experiment/Discussion
+"We wish to evaluate the method quantitatively from the following perspectives: (1) correspondence with linguistic morphemes, (2) efficiency of compression of the data, and (3) computational efficiency.",Experiment/Discussion
+The efficiency of compression can be evaluated as the total description length of the corpus and the codebook (the MDL cost function).,Experiment/Discussion
+The computational efficiency of the algorithm can be estimated from the running time and memory consumption of the program.,Experiment/Discussion
+"However, the linguistic evaluation is in general not so straightforward.",Experiment/Discussion
+"If a corpus with marked morpheme boundaries is available, the linguistic evaluation can be computed as the precision and recall of the segmentation.",Experiment/Discussion
+"Unfortunately, we did not have such data sets at our disposal, and for Finnish such do not even exist.",Experiment/Discussion
+"In addition, it is not always clear exactly where the morpheme boundary should be placed.",Experiment/Discussion
+"Several alternatives maybe possible, cf.",Experiment/Discussion
+"Engl. hope + d vs. hop + ed, (past tense of to hope).",Experiment/Discussion
+"Instead, we utilized an existing tool for providing a morphological analysis, although not a segmentation, of words, based on the two-level morphology of Koskenniemi (1983).",Experiment/Discussion
+The analyzer is a finite-state transducer that reads a word form as input and outputs the base form of the word together with grammatical tags.,Experiment/Discussion
+Sample analyses are shown in Figure 3.,Experiment/Discussion
+"The tag set consists of tags corresponding to morphological affixes and other tags, for example, part-of-speech tags.",Experiment/Discussion
+"We preprocessed the analyses by removing other tags than those corresponding to affixes, and further split compound base forms (marked using the # character by the analyzer) into their constituents.",Experiment/Discussion
+"As a result, we obtained for each word a sequence of labels that corresponds well to a linguistic morphemic analysis of the word.",Experiment/Discussion
+"A label can often be considered to correspond to a single word segment, and the labels appear in the order of the segments.",Experiment/Discussion
+"The following step consists in retrieving the segmentation produced by one of the unsupervised segmentation algorithms, and trying to align this segand Finnish word forms.",Experiment/Discussion
+"The Finnish words are auton (car’s), puutaloja ([some/ wooden houses) and tehnyt ([has/ done).",Experiment/Discussion
+"The tags are A (adjective), ACT (active voice), ADV (adverb), CMP (comparative), GEN (genitive), N (noun), PCP2 (2nd participle), PL (plural), PTV (partitive), SG (singular), V (verb), and <DER:ly> (-ly derivative). mentation with the desired morphemic label sequence (cf.",Experiment/Discussion
+Figure 4).,Experiment/Discussion
+"A good segmentation algorithm will produce morphs that align gracefully with the correct morphemic labels, preferably producing a one-to-one mapping.",Experiment/Discussion
+"A one-to-many mapping from morphs to labels is also acceptable, when a morph forms a common entity, such as the suffix ja in puutaloja, which contains both the plural and partitive element.",Experiment/Discussion
+"By contrast, a many-to-one mapping from morphs to a label is a sign of excessive splitting, e.g., t + alo for talo (cf.",Experiment/Discussion
+English h + ouse for house). with their respective correct morphemic analyses.,Experiment/Discussion
+"We assume that the segmentation algorithm has split the word bigger into the morphs bigg + er, hours’ into hour + s + ’ and puutaloja into puu + t + alo + ja.",Experiment/Discussion
+Alignment procedure.,Experiment/Discussion
+"We align the morph sequence with the morphemic label sequence using dynamic programming, namely Viterbi alignment, to find the best sequence of mappings between morphs and morphemic labels.",Experiment/Discussion
+Each possible pair of morph/morphemic label has a distance associated with it.,Experiment/Discussion
+"For each segmented word, the algorithm searches for the alignment that minimizes the total alignment distance for the word.",Experiment/Discussion
+"The distance d(M, L) for a pair of morph M and label L is given by: where cM,L is the number of word tokens in which the morph M has been aligned with the label L; and cM is the number of word tokens that contain the morph M in their segmentation.",Experiment/Discussion
+The distance measure can be thought of as the negative logarithm of a conditional probability P(L|M).,Experiment/Discussion
+"This indicates the probability that a morph M is a realisation of a morpheme represented by the label L. Put another way, if the unsupervised segmentation algorithm discovers morphs that are allomorphs of real morphemes, a particular allomorph will ideally always be aligned with the same (correct) morphemic label, which leads to a high probability P(L|M), and a short distance d(M, L)4.",Experiment/Discussion
+"In contrast, if the segmentation algorithm does not discover meaningful morphs, each of the segments will be aligned with a number of different morphemic labels throughout the corpus, and as a consequence, the probabilities will be low and the distances high.",Experiment/Discussion
+We then utilize the EM algorithm for iteratively improving the alignment.,Experiment/Discussion
+"The initial alignment that is used for computing initial distance values is obtained through a string matching procedure: String matching is efficient for aligning the stem of the word with the base form (e.g., the morph puu with the label PUU, and the morphs t + alo with the label TALO).",Experiment/Discussion
+"The suffix morphs that do not match well with the base form labels will end up aligned somehow with the morphological tags (e.g., the morph ja with the labels PL + PTV).",Experiment/Discussion
+Comparison of methods.,Experiment/Discussion
+"In order to compare two segmentation algorithms, the segmentation of each is aligned with the linguistic morpheme labels, and the total distance of the alignment is computed.",Experiment/Discussion
+Shorter total distance indicates better segmentation.,Experiment/Discussion
+"However, one should note that the distance measure used favors long morphs.",Experiment/Discussion
+"If a particular “segmentation” algorithm does not split one single word of the corpus, the total distance can be zero.",Experiment/Discussion
+"In such a situation, the single morph that a word is composed of is aligned with all morphemic labels of the word.",Experiment/Discussion
+"The morph M, i.e., the word, is unique, which means that all probabilities P(L|M) are equal to one: e.g., the morph puutaloja is always aligned with the labels PUU + TALO + PL + PTV and no other labels, which yields the probabilities P(PUU | Therefore, part of the corpus should be used as training data, and the rest as test data.",Experiment/Discussion
+Both data sets are segmented using the unsupervised segmentation algorithms.,Experiment/Discussion
+"The training set is then used for estimating the distance values d(M, L).",Experiment/Discussion
+These values are used when the test set is aligned.,Experiment/Discussion
+The better segmentation algorithm is the one that yields a better alignment distance for the test set.,Experiment/Discussion
+"For morph/label pairs that were never observed in the training set, a maximum distance value is assigned.",Experiment/Discussion
+"A good segmentation algorithm will find segments that are good building blocks of entirely new word forms, and thus the maximum distance values will occur only rarely.",Experiment/Discussion
+We compared the two proposed methods as well as Goldsmith’s program Linguistica5 on both Finnish and English corpora.,Experiment/Discussion
+The Finnish corpus consisted of newspaper text from CSC6.,Experiment/Discussion
+A morphosyntactic analysis of the text was performed using the Conexor FDG parser7.,Experiment/Discussion
+"All characters were converted to lower case, and words containing other characters than a through z and the Scandinavian letters ˚a, a¨ and o¨ were removed.",Experiment/Discussion
+Other than morphemic tags were removed from the morphological analyses of the words.,Experiment/Discussion
+The remaining tags correspond to inflectional affixes (i.e. endings and markers) and clitics.,Experiment/Discussion
+Unfortunately the parser does not distinguish derivational affixes.,Experiment/Discussion
+"The first 100 000 word tokens were used as training data, and the following 100 000 word tokens were used as test data.",Experiment/Discussion
+The test data contained 34 821 word types.,Experiment/Discussion
+The English corpus consisted of mainly newspaper text from the Brown corpus8.,Experiment/Discussion
+A morphological analysis of the words was performed using the Lingsoft ENGTWOL analyzer9.,Experiment/Discussion
+"In case of multiple alternative morphological analyses, the shortest analysis was selected.",Experiment/Discussion
+"All characters were converted to lower case, and words containing other characters than a through z, an apostrophe or a hyphen were removed.",Experiment/Discussion
+Other than morphemic tags were removed from the morphological analyses of the words.,Experiment/Discussion
+The remaining tags correspond to inflectional or derivational affixes.,Experiment/Discussion
+A set of 100 000 word tokens from the corpus sections Press Reportage and Press Editorial were used as training data.,Experiment/Discussion
+"A separate set of 100 000 word tokens from the sections Press Editorial, Press Reviews, Religion, and Skills Hobbies were used as test data.",Experiment/Discussion
+The test data contained 12 053 word types.,Experiment/Discussion
+Test results for the three methods and the two languages are shown in Table 2.,Experiment/Discussion
+We observe different tendencies for Finnish and English.,Experiment/Discussion
+"For Finnish, there is a correlation between the compression of the corpus and the linguistic generalization capacity to new word forms.",Experiment/Discussion
+"The Recursive splitting with the MDL cost function is clearly superior to the Sequential splitting with ML cost, which in turn is superior to Linguistica.",Experiment/Discussion
+"The Recursive MDL method is best in terms of data compression: it produces the smallest morph lexicon (codebook), and the codebook naturally occupies a small part of the total cost.",Experiment/Discussion
+"It is best also in terms of the linguistic measure, the total alignment distance on test data.",Experiment/Discussion
+"Linguistica, on the other hand, employs a more restricted segmentation, which leads to a larger codebook and to the fact that the codebook occupies a large part of the total MDL cost.",Experiment/Discussion
+This also appears to lead to a poor generalization ability to new word forms.,Experiment/Discussion
+"The linguistic alignment distance is the highest, and so is the percentage of aligned morph/morphemic label pairs that were never observed in the training set.",Experiment/Discussion
+"On the other hand, Linguistica is the fastest program10.",Experiment/Discussion
+"Also for English, the Recursive MDL method achieves the best alignment, but here Linguistica achieves nearly the same result.",Experiment/Discussion
+"The rate of compression follows the same pattern as for Finnish, in that Linguistica produces a much larger morph lexicon than the methods presented in this paper.",Experiment/Discussion
+"In spite of this fact, the percentage of unseen morph/morphemic label pairs is about the same for all three methods.",Experiment/Discussion
+"This suggests that in a morphologically poor language such as English a restrictive segmentation method, such as Linguistica, can compensate for new word forms – that it does not recognize at all – with old, familiar words, that it “gets just right”.",Experiment/Discussion
+"In contrast, the methods presented in this paper produce a morph lexicon that is smaller and able to generalize better to new word forms but has somewhat lower accuracy for already observed word forms.",Experiment/Discussion
+Visual inspection of a sample of words.,Experiment/Discussion
+"In an attempt to analyze the segmentations more thoroughly, we randomly picked 1000 different words from the Finnish test set.",Experiment/Discussion
+The total number of occurrences of these words constitute about 2.5% of the whole set.,Experiment/Discussion
+"We inspected the segmentation of each word visually and classified it into one of three categories: (1) correct and complete segmentation (i.e., all relevant morpheme boundaries were identified), (2) correct but incomplete segmentation (i.e., not all relevant morpheme boundaries were identified, but no proposed boundary was incorrect), (3) incorrect segmentation (i.e., some proposed boundary did not correspond to an actual morpheme boundary).",Experiment/Discussion
+The results of the inspection for each of the three segmentation methods are shown in Table 3.,Experiment/Discussion
+The Recursive MDL method performs best and segments about half of the words correctly.,Experiment/Discussion
+The Sequential ML method comes second and Linguistica third with a share of 43% correctly segmented words.,Experiment/Discussion
+When considering the incomplete and incorrect segmentations the methods behave differently.,Experiment/Discussion
+"The Recursive MDL method leaves very common word forms unsplit, and often produces excessive splitting for rare mentation and MDL cost (Rec.",Experiment/Discussion
+"MDL), Sequential segmentation and ML cost (Seq.",Experiment/Discussion
+"ML), and Linguistica (Ling.).",Experiment/Discussion
+The total MDL cost measures the compression of the corpus.,Experiment/Discussion
+"However, the cost is computed according to Equation (1), which favors the Recursive MDL method.",Experiment/Discussion
+The final number of morphs in the codebook (#morphs in codebook) is a measure of the size of the morph “vocabulary”.,Experiment/Discussion
+The relative codebook cost gives the share of the total MDL cost that goes into coding the codebook.,Experiment/Discussion
+The alignment distance is the total distance computed over the sequence of morph/morphemic label pairs in the test data.,Experiment/Discussion
+The unseen aligned pairs is the percentage of all aligned morph/label pairs in the test set that were never observed in the training set.,Experiment/Discussion
+"This gives an indication of the generalization capacity of the method to new word forms. not allow representation of contextual dependencies, i.e., that some morphs appear only in particular contexts (allomorphy).",Experiment/Discussion
+"Moreover, languages have rules regarding the ordering of stems and affixes (morphotax).",Experiment/Discussion
+"However, the current model has no way of representing such contextual dependencies.",Experiment/Discussion
+words.,Results/Conclusion
+"The Sequential ML method is more prone to excessive splitting, even for words that are not rare.",Results/Conclusion
+"Linguistica, on the other hand, employs a more conservative splitting strategy, but makes incorrect segmentations for many common word forms.",Results/Conclusion
+The behaviour of the methods is illustrated by example segmentations in Table 4.,Results/Conclusion
+Often the Recursive MDL method produces complete and correct segmentations.,Results/Conclusion
+"However, both it and the Sequential ML method can produce excessive splitting, as is shown for the latter, e.g. affecti + on + at + e. In contrast, Linguistica refrains from splitting words when they should be split, e.g., the Finnish compound words in the table.",Results/Conclusion
+"Regarding the model, there is always room for improvement.",Results/Conclusion
+"In particular, the current model does In the experiments the online method with the MDL cost function and recursive splitting appeared most successful especially for Finnish, whereas for English the compared methods were rather equal in performance.",Results/Conclusion
+This is likely to be partially due to the model structure of the presented methods which is especially suitable for languages such as Finnish.,Results/Conclusion
+"However, there is still room for considerable improvement in the model structure, especially regarding the representation of contextual dependencies.",Results/Conclusion
+"Considering the two examined model optimization methods, the Recursive MDL method performed consistently somewhat better.",Results/Conclusion
+Whether this is due to the cost function or the splitting strategy cannot be deduced based on these experiments.,Results/Conclusion
+"In the future, we intend to extend the latter method to utilize an MDL-like cost function.",Results/Conclusion
+Table 4: Some English and Finnish word segmentations produced by the three methods.,Results/Conclusion
+"The Finnish words are el¨ainl¨a¨ak¨ari (veterinarian, lit. animal doctor), el¨ainmuseo (zoological museum, lit. animal museum), el¨ainpuisto (zoologicalpark, lit. animalpark), and el¨aintarha (zoo, lit. animalgarden).",Results/Conclusion
+"The suffixes -lle, -n, -on, and -sta are linguistically correct.",Results/Conclusion
+(Note that in the Sequential ML method the rejection criteria mentioned are not applied on the last round of Viterbi segmentation.,Results/Conclusion
+This is why two one letter morphs appear in a sequence in the segmentation el¨ain + tarh + a + n.),Results/Conclusion

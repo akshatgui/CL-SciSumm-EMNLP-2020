@@ -1,206 +1,206 @@
 col1,col2
-"We propose a new phrase-based translation model and decoding algorithm that enables us to evaluate and compare several, previously proposed phrase-based translation models.",{}
-"Within our framework, we carry out a large number of experiments to understand better and explain why phrase-based models outperform word-based models.",{}
-"Our empirical results, which hold for all examined language pairs, suggest that the highest levels of performance can be obtained through relatively simple means: heuristic learning of phrase translations from word-based alignments and lexical weighting of phrase translations.",{}
-"Surprisingly, learning phrases longer than three words and learning phrases from high-accuracy wordlevel alignment models does not have a strong impact on performance.",{}
-Learning only syntactically motivated phrases degrades the performance of our systems.,{}
-Various researchers have improved the quality of statistical machine translation system with the use of phrase translation.,"{'title': '1 Introduction', 'number': '1'}"
-Och et al. [1999]’s alignment template model can be reframed as a phrase translation system; Yamada and Knight [2001] use phrase translation in a syntaxbased translation system; Marcu and Wong [2002] introduced a joint-probability model for phrase translation; and the CMU and IBM word-based statistical machine translation systems' are augmented with phrase translation capability.,"{'title': '1 Introduction', 'number': '1'}"
-"Phrase translation clearly helps, as we will also show with the experiments in this paper.","{'title': '1 Introduction', 'number': '1'}"
-But what is the best method to extract phrase translation pairs?,"{'title': '1 Introduction', 'number': '1'}"
-"In order to investigate this question, we created a uniform evaluation framework that enables the comparison of different ways to build a phrase translation table.","{'title': '1 Introduction', 'number': '1'}"
-Our experiments show that high levels of performance can be achieved with fairly simple means.,"{'title': '1 Introduction', 'number': '1'}"
-"In fact, for most of the steps necessary to build a phrase-based system, tools and resources are freely available for researchers in the field.","{'title': '1 Introduction', 'number': '1'}"
-More sophisticated approaches that make use of syntax do not lead to better performance.,"{'title': '1 Introduction', 'number': '1'}"
-"In fact, imposing syntactic restrictions on phrases, as used in recently proposed syntax-based translation models [Yamada and Knight, 2001], proves to be harmful.","{'title': '1 Introduction', 'number': '1'}"
-"Our experiments also show, that small phrases of up to three words are sufficient for obtaining high levels of accuracy.","{'title': '1 Introduction', 'number': '1'}"
-Performance differs widely depending on the methods used to build the phrase translation table.,"{'title': '1 Introduction', 'number': '1'}"
-We found extraction heuristics based on word alignments to be better than a more principled phrase-based alignment method.,"{'title': '1 Introduction', 'number': '1'}"
-"However, what constitutes the best heuristic differs from language pair to language pair and varies with the size of the training corpus.","{'title': '1 Introduction', 'number': '1'}"
-"In order to compare different phrase extraction methods, we designed a uniform framework.","{'title': '2 Evaluation Framework', 'number': '2'}"
-We present a phrase translation model and decoder that works with any phrase translation table.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The phrase translation model is based on the noisy channel model.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"We use Bayes rule to reformulate the translation probability for translating a foreign sentence into English as This allows for a language model and a separate translation model . argmax argmax During decoding, the foreign input sentence is segmented into a sequence of phrases .","{'title': '2 Evaluation Framework', 'number': '2'}"
-We assume a uniform probability distribution over all possible segmentations.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-Each foreign phrase in is translated into an English phrase .,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The English phrases may be reordered.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-Phrase translation is modeled by a probability distribution .,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"Recall that due to the Bayes rule, the translation direction is inverted from a modeling standpoint.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Reordering of the English output phrases is modeled by a relative distortion probability distribution , where denotes the start position of the foreign phrase that was translated into the th English phrase, and denotes the end position of the foreign phrase translated into the th English phrase.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"In all our experiments, the distortion probability distribution is trained using a joint probability model (see Section 3.3).","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Alternatively, we could also use a simpler distortion model with an appropriate value for the parameter .","{'title': '2 Evaluation Framework', 'number': '2'}"
-"In order to calibrate the output length, we introduce a factor for each generated English word in addition to the trigram language model LM.","{'title': '2 Evaluation Framework', 'number': '2'}"
-This is a simple means to optimize performance.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"Usually, this factor is larger than 1, biasing longer output.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"In summary, the best English output sentence best given a foreign input sentence according to our model is For all our experiments we use the same training data, trigram language model [Seymore and Rosenfeld, 1997], and a specialized decoder.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"The phrase-based decoder we developed for purpose of comparing different phrase-based translation models employs a beam search algorithm, similar to the one by Jelinek [1998].","{'title': '2 Evaluation Framework', 'number': '2'}"
-The English output sentence is generated left to right in form of partial translations (or hypotheses).,"{'title': '2 Evaluation Framework', 'number': '2'}"
-We start with an initial empty hypothesis.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-A new hypothesis is expanded from an existing hypothesis by the translation of a phrase as follows: A sequence of untranslated foreign words and a possible English phrase translation for them is selected.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The English phrase is attached to the existing English output sequence.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The foreign words are marked as translated and the probability cost of the hypothesis is updated.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The cheapest (highest probability) final hypothesis with no untranslated foreign words is the output of the search.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The hypotheses are stored in stacks.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-The stack contains all hypotheses in which foreign words have been translated.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-We recombine search hypotheses as done by Och et al. [2001].,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"While this reduces the number of hypotheses stored in each stack somewhat, stack size is exponential with respect to input sentence length.","{'title': '2 Evaluation Framework', 'number': '2'}"
-This makes an exhaustive search impractical.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"Thus, we prune out weak hypotheses based on the cost they incurred so far and a future cost estimate.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"For each stack, we only keep a beam of the best hypotheses.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Since the future cost estimate is not perfect, this leads to search errors.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Our future cost estimate takes into account the estimated phrase translation cost, but not the expected distortion cost.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"We compute this estimate as follows: For each possible phrase translation anywhere in the sentence (we call it a translation option), we multiply its phrase translation probability with the language model probability for the generated English phrase.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"As language model probability we use the unigram probability for the first word, the bigram probability for the second, and the trigram probability for all following words.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Given the costs for the translation options, we can compute the estimated future cost for any sequence of consecutive foreign words by dynamic programming.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Note that this is only possible, since we ignore distortion costs.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Since there are only such sequences for a foreign input sentence of length , we can pre-compute these cost estimates beforehand and store them in a table.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"During translation, future costs for uncovered foreign words can be quickly computed by consulting this table.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"If a hypothesis has broken sequences of untranslated foreign words, we look up the cost for each sequence and take the product of their costs.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"The beam size, e.g. the maximum number of hypotheses in each stack, is fixed to a certain number.","{'title': '2 Evaluation Framework', 'number': '2'}"
-The number of translation options is linear with the sentence length.,"{'title': '2 Evaluation Framework', 'number': '2'}"
-"Hence, the time complexity of the beam search is quadratic with sentence length, and linear with the beam size.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"Since the beam size limits the search space and therefore search quality, we have to find the proper trade-off between speed (low beam size) and performance (high beam size).","{'title': '2 Evaluation Framework', 'number': '2'}"
-"For our experiments, a beam size of only 100 proved to be sufficient.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"With larger beams sizes, only few sentences are translated differently.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"With our decoder, translating 1755 sentence of length 5-15 words takes about 10 minutes on a 2 GHz Linux system.","{'title': '2 Evaluation Framework', 'number': '2'}"
-"In other words, we achieved fast decoding, while ensuring high quality. argmax best length argmax LM where is decomposed into","{'title': '2 Evaluation Framework', 'number': '2'}"
-We carried out experiments to compare the performance of three different methods to build phrase translation probability tables.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-We also investigate a number of variations.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"We report most experimental results on a GermanEnglish translation task, since we had sufficient resources available for this language pair.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-We confirm the major points in experiments on additional language pairs.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"As the first method, we learn phrase alignments from a corpus that has been word-aligned by a training toolkit for a word-based translation model: the Giza++ [Och and Ney, 2000] toolkit for the IBM models [Brown et al., 1993].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-The extraction heuristic is similar to the one used in the alignment template work by Och et al. [1999].,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"A number of researchers have proposed to focus on the translation of phrases that have a linguistic motivation [Yamada and Knight, 2001; Imamura, 2002].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"They only consider word sequences as phrases, if they are constituents, i.e. subtrees in a syntax tree (such as a noun phrase).","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"To identify these, we use a word-aligned corpus annotated with parse trees generated by statistical syntactic parsers [Collins, 1997; Schmidt and Schulte im Walde, 2000].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-The third method for comparison is the joint phrase model proposed by Marcu and Wong [2002].,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-This model learns directly a phrase-level alignment of the parallel corpus.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-The Giza++ toolkit was developed to train word-based translation models from parallel corpora.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"As a byproduct, it generates word alignments for this data.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"We improve this alignment with a number of heuristics, which are described in more detail in Section 4.5.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"We collect all aligned phrase pairs that are consistent with the word alignment: The words in a legal phrase pair are only aligned to each other, and not to words outside [Och et al., 1999].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Given the collected phrase pairs, we estimate the phrase translation probability distribution by relative frequency: count count No smoothing is performed.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"If we collect all phrase pairs that are consistent with word alignments, this includes many non-intuitive phrases.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"For instance, translations for phrases such as “house the” may be learned.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-Intuitively we would be inclined to believe that such phrases do not help: Restricting possible phrases to syntactically motivated phrases could filter out such non-intuitive pairs.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Another motivation to evaluate the performance of a phrase translation model that contains only syntactic phrases comes from recent efforts to built syntactic translation models [Yamada and Knight, 2001; Wu, 1997].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"In these models, reordering of words is restricted to reordering of constituents in well-formed syntactic parse trees.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"When augmenting such models with phrase translations, typically only translation of phrases that span entire syntactic subtrees is possible.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-It is important to know if this is a helpful or harmful restriction.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Consistent with Imamura [2002], we define a syntactic phrase as a word sequence that is covered by a single subtree in a syntactic parse tree.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"We collect syntactic phrase pairs as follows: We wordalign a parallel corpus, as described in Section 3.1.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"We then parse both sides of the corpus with syntactic parsers [Collins, 1997; Schmidt and Schulte im Walde, 2000].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"For all phrase pairs that are consistent with the word alignment, we additionally check if both phrases are subtrees in the parse trees.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-Only these phrases are included in the model.,"{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Hence, the syntactically motivated phrase pairs learned are a subset of the phrase pairs learned without knowledge of syntax (Section 3.1).","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"As in Section 3.1, the phrase translation probability distribution is estimated by relative frequency.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Marcu and Wong [2002] proposed a translation model that assumes that lexical correspondences can be established not only at the word level, but at the phrase level as well.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"To learn such correspondences, they introduced a phrase-based joint probability model that simultaneously generates both the Source and Target sentences in a parallel corpus.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Expectation Maximization learning in Marcu and Wong’s framework yields both (i) a joint probability distribution , which reflects the probability that phrases and are translation equivalents; (ii) and a joint distribution , which reflects the probability that a phrase at position is translated into a phrase at position .","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"To use this model in the context of our framework, we simply marginalize to conditional probabilities the joint probabilities estimated by Marcu and Wong [2002].","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-"Note that this approach is consistent with the approach taken by Marcu and Wong themselves, who use conditional models during decoding.","{'title': '3 Methods for Learning Phrase Translation', 'number': '3'}"
-We used the freely available Europarl corpus 2 to carry out experiments.,"{'title': '4 Experiments', 'number': '4'}"
-"This corpus contains over 20 million words in each of the eleven official languages of the European Union, covering the proceedings of the European Parliament 1996-2001.","{'title': '4 Experiments', 'number': '4'}"
-1755 sentences of length 5-15 were reserved for testing.,"{'title': '4 Experiments', 'number': '4'}"
-In all experiments in Section 4.1-4.6 we translate from German to English.,"{'title': '4 Experiments', 'number': '4'}"
-"We measure performance using the BLEU score [Papineni et al., 2001], which estimates the accuracy of translation output with respect to a reference translation.","{'title': '4 Experiments', 'number': '4'}"
-"First, we compared the performance of the three methods for phrase extraction head-on, using the same decoder (Section 2) and the same trigram language model.","{'title': '4 Experiments', 'number': '4'}"
-Figure 1 displays the results.,"{'title': '4 Experiments', 'number': '4'}"
-"In direct comparison, learning all phrases consistent with the word alignment (AP) is superior to the joint model (Joint), although not by much.","{'title': '4 Experiments', 'number': '4'}"
-The restriction to only syntactic phrases (Syn) is harmful.,"{'title': '4 Experiments', 'number': '4'}"
-"We also included in the figure the performance of an IBM Model 4 wordbased translation system (M4), which uses a greedy decoder [Germann et al., 2001].","{'title': '4 Experiments', 'number': '4'}"
-Its performance is worse than both AP and Joint.,"{'title': '4 Experiments', 'number': '4'}"
-"These results are consistent over training corpus sizes from 10,000 sentence pairs to 320,000 sentence pairs.","{'title': '4 Experiments', 'number': '4'}"
-All systems improve with more data.,"{'title': '4 Experiments', 'number': '4'}"
-Table 1 lists the number of distinct phrase translation pairs learned by each method and each corpus.,"{'title': '4 Experiments', 'number': '4'}"
-"The number grows almost linearly with the training corpus size, due to the large number of singletons.","{'title': '4 Experiments', 'number': '4'}"
-The syntactic restriction eliminates over 80% of all phrase pairs.,"{'title': '4 Experiments', 'number': '4'}"
-Note that the millions of phrase pairs learned fit easily into the working memory of modern computers.,"{'title': '4 Experiments', 'number': '4'}"
-Even the largest models take up only a few hundred megabyte of RAM.,"{'title': '4 Experiments', 'number': '4'}"
-"The restriction on syntactic phrases is harmful, because too many phrases are eliminated.","{'title': '4 Experiments', 'number': '4'}"
-"But still, we might suspect, that these lead to more reliable phrase pairs. pairs consistent with a word alignment (AP), phrase pairs from the joint model (Joint), IBM Model 4 (M4), and only syntactic phrases (Syn) One way to check this is to use all phrase pairs and give more weight to syntactic phrase translations.","{'title': '4 Experiments', 'number': '4'}"
-"This can be done either during the data collection – say, by counting syntactic phrase pairs twice – or during translation – each time the decoder uses a syntactic phrase pair, it credits a bonus factor to the hypothesis score.","{'title': '4 Experiments', 'number': '4'}"
-We found that neither of these methods result in significant improvement of translation performance.,"{'title': '4 Experiments', 'number': '4'}"
-Even penalizing the use of syntactic phrase pairs does not harm performance significantly.,"{'title': '4 Experiments', 'number': '4'}"
-"These results suggest that requiring phrases to be syntactically motivated does not lead to better phrase pairs, but only to fewer phrase pairs, with the loss of a good amount of valuable knowledge.","{'title': '4 Experiments', 'number': '4'}"
-"One illustration for this is the common German “es gibt”, which literally translates as “it gives”, but really means “there is”.","{'title': '4 Experiments', 'number': '4'}"
-“Es gibt” and “there is” are not syntactic constituents.,"{'title': '4 Experiments', 'number': '4'}"
-"Note that also constructions such as “with regard to” and “note that” have fairly complex syntactic representations, but often simple one word translations.","{'title': '4 Experiments', 'number': '4'}"
-Allowing to learn phrase translations over such sentence fragments is important for achieving high performance.,"{'title': '4 Experiments', 'number': '4'}"
-How long do phrases have to be to achieve high performance?,"{'title': '4 Experiments', 'number': '4'}"
-Figure 2 displays results from experiments with different maximum phrase lengths.,"{'title': '4 Experiments', 'number': '4'}"
-All phrases consistent with the word alignment (AP) are used.,"{'title': '4 Experiments', 'number': '4'}"
-"Surprisingly, limiting the length to a maximum of only three words show that length 3 is enough per phrase already achieves top performance.","{'title': '4 Experiments', 'number': '4'}"
-"Learning longer phrases does not yield much improvement, and occasionally leads to worse results.","{'title': '4 Experiments', 'number': '4'}"
-"Reducing the limit to only two, however, is clearly detrimental.","{'title': '4 Experiments', 'number': '4'}"
-Allowing for longer phrases increases the phrase translation table size (see Table 2).,"{'title': '4 Experiments', 'number': '4'}"
-The increase is almost linear with the maximum length limit.,"{'title': '4 Experiments', 'number': '4'}"
-"Still, none of these model sizes cause memory problems.","{'title': '4 Experiments', 'number': '4'}"
-"One way to validate the quality of a phrase translation pair is to check, how well its words translate to each other.","{'title': '4 Experiments', 'number': '4'}"
-"For this, we need a lexical translation probability distribution .","{'title': '4 Experiments', 'number': '4'}"
-We estimated it by relative frequency from the same word alignments as the phrase model. count count A special English NULL token is added to each English sentence and aligned to each unaligned foreign word.,"{'title': '4 Experiments', 'number': '4'}"
-"Given a phrase pair and a word alignment between the foreign word positions and the English word positions , we compute the lexical weight by an alignment and a lexical translation probability distribution See Figure 3 for an example.","{'title': '4 Experiments', 'number': '4'}"
-"If there are multiple alignments for a phrase pair , we use the one with the highest lexical weight: We use the lexical weight during translation as a additional factor.","{'title': '4 Experiments', 'number': '4'}"
-This means that the model is extended to The parameter defines the strength of the lexical weight .,"{'title': '4 Experiments', 'number': '4'}"
-Good values for this parameter are around 0.25.,"{'title': '4 Experiments', 'number': '4'}"
-Figure 4 shows the impact of lexical weighting on machine translation performance.,"{'title': '4 Experiments', 'number': '4'}"
-"In our experiments, we achieved improvements of up to 0.01 on the BLEU score scale.","{'title': '4 Experiments', 'number': '4'}"
-"Again, all phrases consistent with the word alignment are used (Section 3.1).","{'title': '4 Experiments', 'number': '4'}"
-"Note that phrase translation with a lexical weight is a special case of the alignment template model [Och et al., 1999] with one word class for each word.","{'title': '4 Experiments', 'number': '4'}"
-"Our simplification has the advantage that the lexical weights can be factored into the phrase translation table beforehand, speeding up decoding.","{'title': '4 Experiments', 'number': '4'}"
-"In contrast to the beam search decoder for the alignment template model, our decoder is able to search all possible phrase segmentations of the input sentence, instead of choosing one segmentation before decoding.","{'title': '4 Experiments', 'number': '4'}"
-Recall from Section 3.1 that we learn phrase pairs from word alignments generated by Giza++.,"{'title': '4 Experiments', 'number': '4'}"
-The IBM Models that this toolkit implements only allow at most one English word to be aligned with a foreign word.,"{'title': '4 Experiments', 'number': '4'}"
-We remedy this problem with a heuristic approach.,"{'title': '4 Experiments', 'number': '4'}"
-"First, we align a parallel corpus bidirectionally – foreign to English and English to foreign.","{'title': '4 Experiments', 'number': '4'}"
-This gives us two word alignments that we try to reconcile.,"{'title': '4 Experiments', 'number': '4'}"
-"If we intersect the two alignments, we get a high-precision alignment of high-confidence alignment points.","{'title': '4 Experiments', 'number': '4'}"
-"If we take the union of the two alignments, we get a high-recall alignment with additional alignment points.","{'title': '4 Experiments', 'number': '4'}"
-We explore the space between intersection and union with expansion heuristics that start with the intersection and add additional alignment points.,"{'title': '4 Experiments', 'number': '4'}"
-The decision which points to add may depend on a number of criteria: In which alignment does the potential alignment point exist?,"{'title': '4 Experiments', 'number': '4'}"
-Foreign-English or English-foreign?,"{'title': '4 Experiments', 'number': '4'}"
-Does the potential point neighbor already established points?,"{'title': '4 Experiments', 'number': '4'}"
-"Does “neighboring” mean directly adjacent (blockdistance), or also diagonally adjacent?","{'title': '4 Experiments', 'number': '4'}"
-Is the English or the foreign word that the potential point connects unaligned so far?,"{'title': '4 Experiments', 'number': '4'}"
-Are both unaligned?,"{'title': '4 Experiments', 'number': '4'}"
-What is the lexical probability for the potential point?,"{'title': '4 Experiments', 'number': '4'}"
-"The base heuristic [Och et al., 1999] proceeds as follows: We start with intersection of the two word alignments.","{'title': '4 Experiments', 'number': '4'}"
-We only add new alignment points that exist in the union of two word alignments.,"{'title': '4 Experiments', 'number': '4'}"
-We also always require that a new alignment point connects at least one previously unaligned word.,"{'title': '4 Experiments', 'number': '4'}"
-"First, we expand to only directly adjacent alignment points.","{'title': '4 Experiments', 'number': '4'}"
-"We check for potential points starting from the top right corner of the alignment matrix, checking for alignment points for the first English word, then continue with alignment points for the second English word, and so on.","{'title': '4 Experiments', 'number': '4'}"
-This is done iteratively until no alignment point can be added anymore.,"{'title': '4 Experiments', 'number': '4'}"
-"In a final step, we add non-adjacent alignment points, with otherwise the same requirements.","{'title': '4 Experiments', 'number': '4'}"
-"Figure 5 shows the performance of this heuristic (base) compared against the two mono-directional alignments (e2f, f2e) and their union (union).","{'title': '4 Experiments', 'number': '4'}"
-The figure also contains two modifications of the base heuristic: In the first (diag) we also permit diagonal neighborhood in the iterative expansion stage.,"{'title': '4 Experiments', 'number': '4'}"
-"In a variation of this (diag-and), we require in the final step that both words are unaligned.","{'title': '4 Experiments', 'number': '4'}"
-The ranking of these different methods varies for different training corpus sizes.,"{'title': '4 Experiments', 'number': '4'}"
-"For instance, the alignment f2e starts out second to worst for the 10,000 sentence pair corpus, but ultimately is competitive with the best method at 320,000 sentence pairs.","{'title': '4 Experiments', 'number': '4'}"
-"The base heuristic is initially the best, but then drops off.","{'title': '4 Experiments', 'number': '4'}"
-"The discrepancy between the best and the worst method is quite large, about 0.02 BLEU.","{'title': '4 Experiments', 'number': '4'}"
-"For almost all training corpus sizes, the heuristic diag-and performs best, albeit not always significantly.","{'title': '4 Experiments', 'number': '4'}"
-The initial word alignment for collecting phrase pairs is generated by symmetrizing IBM Model 4 alignments.,"{'title': '4 Experiments', 'number': '4'}"
-"Model 4 is computationally expensive, and only approximate solutions exist to estimate its parameters.","{'title': '4 Experiments', 'number': '4'}"
-The IBM Models 1-3 are faster and easier to implement.,"{'title': '4 Experiments', 'number': '4'}"
-For IBM Model 1 and 2 word alignments can be computed efficiently without relying on approximations.,"{'title': '4 Experiments', 'number': '4'}"
-"For more information on these models, please refer to Brown et al. [1993].","{'title': '4 Experiments', 'number': '4'}"
-"Again, we use the heuristics from the Section 4.5 to reconcile the mono-directional alignments obtained through training parameters using models of increasing complexity.","{'title': '4 Experiments', 'number': '4'}"
-"How much is performance affected, if we base word alignments on these simpler methods?","{'title': '4 Experiments', 'number': '4'}"
-"As Figure 6 indicates, not much.","{'title': '4 Experiments', 'number': '4'}"
-"While Model 1 clearly results in worse performance, the difference is less striking for Model 2 and 3.","{'title': '4 Experiments', 'number': '4'}"
-Using different expansion heuristics during symmetrizing the word alignments has a bigger effect.,"{'title': '4 Experiments', 'number': '4'}"
-"We can conclude from this, that high quality phrase alignments can be learned with fairly simple means.","{'title': '4 Experiments', 'number': '4'}"
-The simpler and faster Model 2 provides similar performance to the complex Model 4.,"{'title': '4 Experiments', 'number': '4'}"
-We validated our findings for additional language pairs.,"{'title': '4 Experiments', 'number': '4'}"
-Table 3 displays some of the results.,"{'title': '4 Experiments', 'number': '4'}"
-"For all language pairs the phrase model (based on word alignments, Section 3.1) outperforms IBM Model 4.","{'title': '4 Experiments', 'number': '4'}"
-Lexicalization (Lex) always helps as well.,"{'title': '4 Experiments', 'number': '4'}"
-We created a framework (translation model and decoder) that enables us to evaluate and compare various phrase translation methods.,"{'title': '5 Conclusion', 'number': '5'}"
-Our results show that phrase translation gives better performance than traditional word-based methods.,"{'title': '5 Conclusion', 'number': '5'}"
-We obtain the best results even with small phrases of up to three words.,"{'title': '5 Conclusion', 'number': '5'}"
-Lexical weighting ofphrase translation helps.,"{'title': '5 Conclusion', 'number': '5'}"
-Straight-forward syntactic models that map constituents into constituents fail to account for important phrase alignments.,"{'title': '5 Conclusion', 'number': '5'}"
-"As a consequence, straight-forward syntax-based mappings do not lead to better translations than unmotivated phrase mappings.","{'title': '5 Conclusion', 'number': '5'}"
-This is a challenge for syntactic translation models.,"{'title': '5 Conclusion', 'number': '5'}"
-It matters how phrases are extracted.,"{'title': '5 Conclusion', 'number': '5'}"
-The results suggest that choosing the right alignment heuristic is more important than which model is used to create the initial word alignments.,"{'title': '5 Conclusion', 'number': '5'}"
+"We propose a new phrase-based translation model and decoding algorithm that enables us to evaluate and compare several, previously proposed phrase-based translation models.",Introduction
+"Within our framework, we carry out a large number of experiments to understand better and explain why phrase-based models outperform word-based models.",Introduction
+"Our empirical results, which hold for all examined language pairs, suggest that the highest levels of performance can be obtained through relatively simple means: heuristic learning of phrase translations from word-based alignments and lexical weighting of phrase translations.",Introduction
+"Surprisingly, learning phrases longer than three words and learning phrases from high-accuracy wordlevel alignment models does not have a strong impact on performance.",Introduction
+Learning only syntactically motivated phrases degrades the performance of our systems.,Introduction
+Various researchers have improved the quality of statistical machine translation system with the use of phrase translation.,Experiment/Discussion
+Och et al. [1999]’s alignment template model can be reframed as a phrase translation system; Yamada and Knight [2001] use phrase translation in a syntaxbased translation system; Marcu and Wong [2002] introduced a joint-probability model for phrase translation; and the CMU and IBM word-based statistical machine translation systems' are augmented with phrase translation capability.,Experiment/Discussion
+"Phrase translation clearly helps, as we will also show with the experiments in this paper.",Experiment/Discussion
+But what is the best method to extract phrase translation pairs?,Experiment/Discussion
+"In order to investigate this question, we created a uniform evaluation framework that enables the comparison of different ways to build a phrase translation table.",Experiment/Discussion
+Our experiments show that high levels of performance can be achieved with fairly simple means.,Experiment/Discussion
+"In fact, for most of the steps necessary to build a phrase-based system, tools and resources are freely available for researchers in the field.",Experiment/Discussion
+More sophisticated approaches that make use of syntax do not lead to better performance.,Experiment/Discussion
+"In fact, imposing syntactic restrictions on phrases, as used in recently proposed syntax-based translation models [Yamada and Knight, 2001], proves to be harmful.",Experiment/Discussion
+"Our experiments also show, that small phrases of up to three words are sufficient for obtaining high levels of accuracy.",Experiment/Discussion
+Performance differs widely depending on the methods used to build the phrase translation table.,Experiment/Discussion
+We found extraction heuristics based on word alignments to be better than a more principled phrase-based alignment method.,Experiment/Discussion
+"However, what constitutes the best heuristic differs from language pair to language pair and varies with the size of the training corpus.",Experiment/Discussion
+"In order to compare different phrase extraction methods, we designed a uniform framework.",Experiment/Discussion
+We present a phrase translation model and decoder that works with any phrase translation table.,Experiment/Discussion
+The phrase translation model is based on the noisy channel model.,Experiment/Discussion
+"We use Bayes rule to reformulate the translation probability for translating a foreign sentence into English as This allows for a language model and a separate translation model . argmax argmax During decoding, the foreign input sentence is segmented into a sequence of phrases .",Experiment/Discussion
+We assume a uniform probability distribution over all possible segmentations.,Experiment/Discussion
+Each foreign phrase in is translated into an English phrase .,Experiment/Discussion
+The English phrases may be reordered.,Experiment/Discussion
+Phrase translation is modeled by a probability distribution .,Experiment/Discussion
+"Recall that due to the Bayes rule, the translation direction is inverted from a modeling standpoint.",Experiment/Discussion
+"Reordering of the English output phrases is modeled by a relative distortion probability distribution , where denotes the start position of the foreign phrase that was translated into the th English phrase, and denotes the end position of the foreign phrase translated into the th English phrase.",Experiment/Discussion
+"In all our experiments, the distortion probability distribution is trained using a joint probability model (see Section 3.3).",Experiment/Discussion
+"Alternatively, we could also use a simpler distortion model with an appropriate value for the parameter .",Experiment/Discussion
+"In order to calibrate the output length, we introduce a factor for each generated English word in addition to the trigram language model LM.",Experiment/Discussion
+This is a simple means to optimize performance.,Experiment/Discussion
+"Usually, this factor is larger than 1, biasing longer output.",Experiment/Discussion
+"In summary, the best English output sentence best given a foreign input sentence according to our model is For all our experiments we use the same training data, trigram language model [Seymore and Rosenfeld, 1997], and a specialized decoder.",Experiment/Discussion
+"The phrase-based decoder we developed for purpose of comparing different phrase-based translation models employs a beam search algorithm, similar to the one by Jelinek [1998].",Experiment/Discussion
+The English output sentence is generated left to right in form of partial translations (or hypotheses).,Experiment/Discussion
+We start with an initial empty hypothesis.,Experiment/Discussion
+A new hypothesis is expanded from an existing hypothesis by the translation of a phrase as follows: A sequence of untranslated foreign words and a possible English phrase translation for them is selected.,Experiment/Discussion
+The English phrase is attached to the existing English output sequence.,Experiment/Discussion
+The foreign words are marked as translated and the probability cost of the hypothesis is updated.,Experiment/Discussion
+The cheapest (highest probability) final hypothesis with no untranslated foreign words is the output of the search.,Experiment/Discussion
+The hypotheses are stored in stacks.,Experiment/Discussion
+The stack contains all hypotheses in which foreign words have been translated.,Experiment/Discussion
+We recombine search hypotheses as done by Och et al. [2001].,Experiment/Discussion
+"While this reduces the number of hypotheses stored in each stack somewhat, stack size is exponential with respect to input sentence length.",Experiment/Discussion
+This makes an exhaustive search impractical.,Experiment/Discussion
+"Thus, we prune out weak hypotheses based on the cost they incurred so far and a future cost estimate.",Experiment/Discussion
+"For each stack, we only keep a beam of the best hypotheses.",Experiment/Discussion
+"Since the future cost estimate is not perfect, this leads to search errors.",Experiment/Discussion
+"Our future cost estimate takes into account the estimated phrase translation cost, but not the expected distortion cost.",Experiment/Discussion
+"We compute this estimate as follows: For each possible phrase translation anywhere in the sentence (we call it a translation option), we multiply its phrase translation probability with the language model probability for the generated English phrase.",Experiment/Discussion
+"As language model probability we use the unigram probability for the first word, the bigram probability for the second, and the trigram probability for all following words.",Experiment/Discussion
+"Given the costs for the translation options, we can compute the estimated future cost for any sequence of consecutive foreign words by dynamic programming.",Experiment/Discussion
+"Note that this is only possible, since we ignore distortion costs.",Experiment/Discussion
+"Since there are only such sequences for a foreign input sentence of length , we can pre-compute these cost estimates beforehand and store them in a table.",Experiment/Discussion
+"During translation, future costs for uncovered foreign words can be quickly computed by consulting this table.",Experiment/Discussion
+"If a hypothesis has broken sequences of untranslated foreign words, we look up the cost for each sequence and take the product of their costs.",Experiment/Discussion
+"The beam size, e.g. the maximum number of hypotheses in each stack, is fixed to a certain number.",Experiment/Discussion
+The number of translation options is linear with the sentence length.,Experiment/Discussion
+"Hence, the time complexity of the beam search is quadratic with sentence length, and linear with the beam size.",Experiment/Discussion
+"Since the beam size limits the search space and therefore search quality, we have to find the proper trade-off between speed (low beam size) and performance (high beam size).",Experiment/Discussion
+"For our experiments, a beam size of only 100 proved to be sufficient.",Experiment/Discussion
+"With larger beams sizes, only few sentences are translated differently.",Experiment/Discussion
+"With our decoder, translating 1755 sentence of length 5-15 words takes about 10 minutes on a 2 GHz Linux system.",Experiment/Discussion
+"In other words, we achieved fast decoding, while ensuring high quality. argmax best length argmax LM where is decomposed into",Experiment/Discussion
+We carried out experiments to compare the performance of three different methods to build phrase translation probability tables.,Experiment/Discussion
+We also investigate a number of variations.,Experiment/Discussion
+"We report most experimental results on a GermanEnglish translation task, since we had sufficient resources available for this language pair.",Experiment/Discussion
+We confirm the major points in experiments on additional language pairs.,Experiment/Discussion
+"As the first method, we learn phrase alignments from a corpus that has been word-aligned by a training toolkit for a word-based translation model: the Giza++ [Och and Ney, 2000] toolkit for the IBM models [Brown et al., 1993].",Experiment/Discussion
+The extraction heuristic is similar to the one used in the alignment template work by Och et al. [1999].,Experiment/Discussion
+"A number of researchers have proposed to focus on the translation of phrases that have a linguistic motivation [Yamada and Knight, 2001; Imamura, 2002].",Experiment/Discussion
+"They only consider word sequences as phrases, if they are constituents, i.e. subtrees in a syntax tree (such as a noun phrase).",Experiment/Discussion
+"To identify these, we use a word-aligned corpus annotated with parse trees generated by statistical syntactic parsers [Collins, 1997; Schmidt and Schulte im Walde, 2000].",Experiment/Discussion
+The third method for comparison is the joint phrase model proposed by Marcu and Wong [2002].,Experiment/Discussion
+This model learns directly a phrase-level alignment of the parallel corpus.,Experiment/Discussion
+The Giza++ toolkit was developed to train word-based translation models from parallel corpora.,Experiment/Discussion
+"As a byproduct, it generates word alignments for this data.",Experiment/Discussion
+"We improve this alignment with a number of heuristics, which are described in more detail in Section 4.5.",Experiment/Discussion
+"We collect all aligned phrase pairs that are consistent with the word alignment: The words in a legal phrase pair are only aligned to each other, and not to words outside [Och et al., 1999].",Experiment/Discussion
+"Given the collected phrase pairs, we estimate the phrase translation probability distribution by relative frequency: count count No smoothing is performed.",Experiment/Discussion
+"If we collect all phrase pairs that are consistent with word alignments, this includes many non-intuitive phrases.",Experiment/Discussion
+"For instance, translations for phrases such as “house the” may be learned.",Experiment/Discussion
+Intuitively we would be inclined to believe that such phrases do not help: Restricting possible phrases to syntactically motivated phrases could filter out such non-intuitive pairs.,Experiment/Discussion
+"Another motivation to evaluate the performance of a phrase translation model that contains only syntactic phrases comes from recent efforts to built syntactic translation models [Yamada and Knight, 2001; Wu, 1997].",Experiment/Discussion
+"In these models, reordering of words is restricted to reordering of constituents in well-formed syntactic parse trees.",Experiment/Discussion
+"When augmenting such models with phrase translations, typically only translation of phrases that span entire syntactic subtrees is possible.",Experiment/Discussion
+It is important to know if this is a helpful or harmful restriction.,Experiment/Discussion
+"Consistent with Imamura [2002], we define a syntactic phrase as a word sequence that is covered by a single subtree in a syntactic parse tree.",Experiment/Discussion
+"We collect syntactic phrase pairs as follows: We wordalign a parallel corpus, as described in Section 3.1.",Experiment/Discussion
+"We then parse both sides of the corpus with syntactic parsers [Collins, 1997; Schmidt and Schulte im Walde, 2000].",Experiment/Discussion
+"For all phrase pairs that are consistent with the word alignment, we additionally check if both phrases are subtrees in the parse trees.",Experiment/Discussion
+Only these phrases are included in the model.,Experiment/Discussion
+"Hence, the syntactically motivated phrase pairs learned are a subset of the phrase pairs learned without knowledge of syntax (Section 3.1).",Experiment/Discussion
+"As in Section 3.1, the phrase translation probability distribution is estimated by relative frequency.",Experiment/Discussion
+"Marcu and Wong [2002] proposed a translation model that assumes that lexical correspondences can be established not only at the word level, but at the phrase level as well.",Experiment/Discussion
+"To learn such correspondences, they introduced a phrase-based joint probability model that simultaneously generates both the Source and Target sentences in a parallel corpus.",Experiment/Discussion
+"Expectation Maximization learning in Marcu and Wong’s framework yields both (i) a joint probability distribution , which reflects the probability that phrases and are translation equivalents; (ii) and a joint distribution , which reflects the probability that a phrase at position is translated into a phrase at position .",Experiment/Discussion
+"To use this model in the context of our framework, we simply marginalize to conditional probabilities the joint probabilities estimated by Marcu and Wong [2002].",Experiment/Discussion
+"Note that this approach is consistent with the approach taken by Marcu and Wong themselves, who use conditional models during decoding.",Experiment/Discussion
+We used the freely available Europarl corpus 2 to carry out experiments.,Results/Conclusion
+"This corpus contains over 20 million words in each of the eleven official languages of the European Union, covering the proceedings of the European Parliament 1996-2001.",Results/Conclusion
+1755 sentences of length 5-15 were reserved for testing.,Results/Conclusion
+In all experiments in Section 4.1-4.6 we translate from German to English.,Results/Conclusion
+"We measure performance using the BLEU score [Papineni et al., 2001], which estimates the accuracy of translation output with respect to a reference translation.",Results/Conclusion
+"First, we compared the performance of the three methods for phrase extraction head-on, using the same decoder (Section 2) and the same trigram language model.",Results/Conclusion
+Figure 1 displays the results.,Results/Conclusion
+"In direct comparison, learning all phrases consistent with the word alignment (AP) is superior to the joint model (Joint), although not by much.",Results/Conclusion
+The restriction to only syntactic phrases (Syn) is harmful.,Results/Conclusion
+"We also included in the figure the performance of an IBM Model 4 wordbased translation system (M4), which uses a greedy decoder [Germann et al., 2001].",Results/Conclusion
+Its performance is worse than both AP and Joint.,Results/Conclusion
+"These results are consistent over training corpus sizes from 10,000 sentence pairs to 320,000 sentence pairs.",Results/Conclusion
+All systems improve with more data.,Results/Conclusion
+Table 1 lists the number of distinct phrase translation pairs learned by each method and each corpus.,Results/Conclusion
+"The number grows almost linearly with the training corpus size, due to the large number of singletons.",Results/Conclusion
+The syntactic restriction eliminates over 80% of all phrase pairs.,Results/Conclusion
+Note that the millions of phrase pairs learned fit easily into the working memory of modern computers.,Results/Conclusion
+Even the largest models take up only a few hundred megabyte of RAM.,Results/Conclusion
+"The restriction on syntactic phrases is harmful, because too many phrases are eliminated.",Results/Conclusion
+"But still, we might suspect, that these lead to more reliable phrase pairs. pairs consistent with a word alignment (AP), phrase pairs from the joint model (Joint), IBM Model 4 (M4), and only syntactic phrases (Syn) One way to check this is to use all phrase pairs and give more weight to syntactic phrase translations.",Results/Conclusion
+"This can be done either during the data collection – say, by counting syntactic phrase pairs twice – or during translation – each time the decoder uses a syntactic phrase pair, it credits a bonus factor to the hypothesis score.",Results/Conclusion
+We found that neither of these methods result in significant improvement of translation performance.,Results/Conclusion
+Even penalizing the use of syntactic phrase pairs does not harm performance significantly.,Results/Conclusion
+"These results suggest that requiring phrases to be syntactically motivated does not lead to better phrase pairs, but only to fewer phrase pairs, with the loss of a good amount of valuable knowledge.",Results/Conclusion
+"One illustration for this is the common German “es gibt”, which literally translates as “it gives”, but really means “there is”.",Results/Conclusion
+“Es gibt” and “there is” are not syntactic constituents.,Results/Conclusion
+"Note that also constructions such as “with regard to” and “note that” have fairly complex syntactic representations, but often simple one word translations.",Results/Conclusion
+Allowing to learn phrase translations over such sentence fragments is important for achieving high performance.,Results/Conclusion
+How long do phrases have to be to achieve high performance?,Results/Conclusion
+Figure 2 displays results from experiments with different maximum phrase lengths.,Results/Conclusion
+All phrases consistent with the word alignment (AP) are used.,Results/Conclusion
+"Surprisingly, limiting the length to a maximum of only three words show that length 3 is enough per phrase already achieves top performance.",Results/Conclusion
+"Learning longer phrases does not yield much improvement, and occasionally leads to worse results.",Results/Conclusion
+"Reducing the limit to only two, however, is clearly detrimental.",Results/Conclusion
+Allowing for longer phrases increases the phrase translation table size (see Table 2).,Results/Conclusion
+The increase is almost linear with the maximum length limit.,Results/Conclusion
+"Still, none of these model sizes cause memory problems.",Results/Conclusion
+"One way to validate the quality of a phrase translation pair is to check, how well its words translate to each other.",Results/Conclusion
+"For this, we need a lexical translation probability distribution .",Results/Conclusion
+We estimated it by relative frequency from the same word alignments as the phrase model. count count A special English NULL token is added to each English sentence and aligned to each unaligned foreign word.,Results/Conclusion
+"Given a phrase pair and a word alignment between the foreign word positions and the English word positions , we compute the lexical weight by an alignment and a lexical translation probability distribution See Figure 3 for an example.",Results/Conclusion
+"If there are multiple alignments for a phrase pair , we use the one with the highest lexical weight: We use the lexical weight during translation as a additional factor.",Results/Conclusion
+This means that the model is extended to The parameter defines the strength of the lexical weight .,Results/Conclusion
+Good values for this parameter are around 0.25.,Results/Conclusion
+Figure 4 shows the impact of lexical weighting on machine translation performance.,Results/Conclusion
+"In our experiments, we achieved improvements of up to 0.01 on the BLEU score scale.",Results/Conclusion
+"Again, all phrases consistent with the word alignment are used (Section 3.1).",Results/Conclusion
+"Note that phrase translation with a lexical weight is a special case of the alignment template model [Och et al., 1999] with one word class for each word.",Results/Conclusion
+"Our simplification has the advantage that the lexical weights can be factored into the phrase translation table beforehand, speeding up decoding.",Results/Conclusion
+"In contrast to the beam search decoder for the alignment template model, our decoder is able to search all possible phrase segmentations of the input sentence, instead of choosing one segmentation before decoding.",Results/Conclusion
+Recall from Section 3.1 that we learn phrase pairs from word alignments generated by Giza++.,Results/Conclusion
+The IBM Models that this toolkit implements only allow at most one English word to be aligned with a foreign word.,Results/Conclusion
+We remedy this problem with a heuristic approach.,Results/Conclusion
+"First, we align a parallel corpus bidirectionally – foreign to English and English to foreign.",Results/Conclusion
+This gives us two word alignments that we try to reconcile.,Results/Conclusion
+"If we intersect the two alignments, we get a high-precision alignment of high-confidence alignment points.",Results/Conclusion
+"If we take the union of the two alignments, we get a high-recall alignment with additional alignment points.",Results/Conclusion
+We explore the space between intersection and union with expansion heuristics that start with the intersection and add additional alignment points.,Results/Conclusion
+The decision which points to add may depend on a number of criteria: In which alignment does the potential alignment point exist?,Results/Conclusion
+Foreign-English or English-foreign?,Results/Conclusion
+Does the potential point neighbor already established points?,Results/Conclusion
+"Does “neighboring” mean directly adjacent (blockdistance), or also diagonally adjacent?",Results/Conclusion
+Is the English or the foreign word that the potential point connects unaligned so far?,Results/Conclusion
+Are both unaligned?,Results/Conclusion
+What is the lexical probability for the potential point?,Results/Conclusion
+"The base heuristic [Och et al., 1999] proceeds as follows: We start with intersection of the two word alignments.",Results/Conclusion
+We only add new alignment points that exist in the union of two word alignments.,Results/Conclusion
+We also always require that a new alignment point connects at least one previously unaligned word.,Results/Conclusion
+"First, we expand to only directly adjacent alignment points.",Results/Conclusion
+"We check for potential points starting from the top right corner of the alignment matrix, checking for alignment points for the first English word, then continue with alignment points for the second English word, and so on.",Results/Conclusion
+This is done iteratively until no alignment point can be added anymore.,Results/Conclusion
+"In a final step, we add non-adjacent alignment points, with otherwise the same requirements.",Results/Conclusion
+"Figure 5 shows the performance of this heuristic (base) compared against the two mono-directional alignments (e2f, f2e) and their union (union).",Results/Conclusion
+The figure also contains two modifications of the base heuristic: In the first (diag) we also permit diagonal neighborhood in the iterative expansion stage.,Results/Conclusion
+"In a variation of this (diag-and), we require in the final step that both words are unaligned.",Results/Conclusion
+The ranking of these different methods varies for different training corpus sizes.,Results/Conclusion
+"For instance, the alignment f2e starts out second to worst for the 10,000 sentence pair corpus, but ultimately is competitive with the best method at 320,000 sentence pairs.",Results/Conclusion
+"The base heuristic is initially the best, but then drops off.",Results/Conclusion
+"The discrepancy between the best and the worst method is quite large, about 0.02 BLEU.",Results/Conclusion
+"For almost all training corpus sizes, the heuristic diag-and performs best, albeit not always significantly.",Results/Conclusion
+The initial word alignment for collecting phrase pairs is generated by symmetrizing IBM Model 4 alignments.,Results/Conclusion
+"Model 4 is computationally expensive, and only approximate solutions exist to estimate its parameters.",Results/Conclusion
+The IBM Models 1-3 are faster and easier to implement.,Results/Conclusion
+For IBM Model 1 and 2 word alignments can be computed efficiently without relying on approximations.,Results/Conclusion
+"For more information on these models, please refer to Brown et al. [1993].",Results/Conclusion
+"Again, we use the heuristics from the Section 4.5 to reconcile the mono-directional alignments obtained through training parameters using models of increasing complexity.",Results/Conclusion
+"How much is performance affected, if we base word alignments on these simpler methods?",Results/Conclusion
+"As Figure 6 indicates, not much.",Results/Conclusion
+"While Model 1 clearly results in worse performance, the difference is less striking for Model 2 and 3.",Results/Conclusion
+Using different expansion heuristics during symmetrizing the word alignments has a bigger effect.,Results/Conclusion
+"We can conclude from this, that high quality phrase alignments can be learned with fairly simple means.",Results/Conclusion
+The simpler and faster Model 2 provides similar performance to the complex Model 4.,Results/Conclusion
+We validated our findings for additional language pairs.,Results/Conclusion
+Table 3 displays some of the results.,Results/Conclusion
+"For all language pairs the phrase model (based on word alignments, Section 3.1) outperforms IBM Model 4.",Results/Conclusion
+Lexicalization (Lex) always helps as well.,Results/Conclusion
+We created a framework (translation model and decoder) that enables us to evaluate and compare various phrase translation methods.,Results/Conclusion
+Our results show that phrase translation gives better performance than traditional word-based methods.,Results/Conclusion
+We obtain the best results even with small phrases of up to three words.,Results/Conclusion
+Lexical weighting ofphrase translation helps.,Results/Conclusion
+Straight-forward syntactic models that map constituents into constituents fail to account for important phrase alignments.,Results/Conclusion
+"As a consequence, straight-forward syntax-based mappings do not lead to better translations than unmotivated phrase mappings.",Results/Conclusion
+This is a challenge for syntactic translation models.,Results/Conclusion
+It matters how phrases are extracted.,Results/Conclusion
+The results suggest that choosing the right alignment heuristic is more important than which model is used to create the initial word alignments.,Results/Conclusion

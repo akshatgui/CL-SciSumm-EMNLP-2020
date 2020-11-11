@@ -1,187 +1,187 @@
 col1,col2
-We present a syntax-based statistical translation model.,{}
-Our model transforms a source-language parse tree into a target-language string by applying stochastic operations at each node.,{}
-These operations capture linguistic differences such as word order and case marking.,{}
-Model parameters are estimated in polynomial time using an EM algorithm.,{}
-The model produces word alignments that are better than those,{}
-A statistical translation model (TM) is a mathematical model in which the process of humanlanguage translation is statistically modeled.,"{'title': '1 Introduction', 'number': '1'}"
-Model parameters are automatically estimated using a corpus of translation pairs.,"{'title': '1 Introduction', 'number': '1'}"
-"TMs have been used for statistical machine translation (Berger et al., 1996), word alignment of a translation corpus (Melamed, 2000), multilingual document retrieval (Franz et al., 1999), automatic dictionary construction (Resnik and Melamed, 1997), and data preparation for word sense disambiguation programs (Brown et al., 1991).","{'title': '1 Introduction', 'number': '1'}"
-Developing a better TM is a fundamental issue for those applications.,"{'title': '1 Introduction', 'number': '1'}"
-"Researchers at IBM first described such a statistical TM in (Brown et al., 1988).","{'title': '1 Introduction', 'number': '1'}"
-Their models are based on a string-to-string noisy channel model.,"{'title': '1 Introduction', 'number': '1'}"
-The channel converts a sequence of words in one language (such as English) into another (such as French).,"{'title': '1 Introduction', 'number': '1'}"
-"The channel operations are movements, duplications, and translations, applied to each word independently.","{'title': '1 Introduction', 'number': '1'}"
-"The movement is conditioned only on word classes and positions in the string, and the duplication and translation are conditioned only on the word identity.","{'title': '1 Introduction', 'number': '1'}"
-"Mathematical details are fully described in (Brown et al., 1993).","{'title': '1 Introduction', 'number': '1'}"
-One criticism of the IBM-style TM is that it does not model structural or syntactic aspects of the language.,"{'title': '1 Introduction', 'number': '1'}"
-The TM was only demonstrated for a structurally similar language pair (English and French).,"{'title': '1 Introduction', 'number': '1'}"
-It has been suspected that a language pair with very different word order such as English and Japanese would not be modeled well by these TMs.,"{'title': '1 Introduction', 'number': '1'}"
-"To incorporate structural aspects of the language, our channel model accepts a parse tree as an input, i.e., the input sentence is preprocessed by a syntactic parser.","{'title': '1 Introduction', 'number': '1'}"
-The channel performs operations on each node of the parse tree.,"{'title': '1 Introduction', 'number': '1'}"
-"The operations are reordering child nodes, inserting extra words at each node, and translating leaf words.","{'title': '1 Introduction', 'number': '1'}"
-Figure 1 shows the overview of the operations of our model.,"{'title': '1 Introduction', 'number': '1'}"
-"Note that the output of our model is a string, not a parse tree.","{'title': '1 Introduction', 'number': '1'}"
-"Therefore, parsing is only needed on the channel input side.","{'title': '1 Introduction', 'number': '1'}"
-"The reorder operation is intended to model translation between languages with different word orders, such as SVO-languages (English or Chinese) and SOV-languages (Japanese or Turkish).","{'title': '1 Introduction', 'number': '1'}"
-The word-insertion operation is intended to capture linguistic differences in specifying syntactic cases.,"{'title': '1 Introduction', 'number': '1'}"
-"E.g., English and French use structural position to specify case, while Japanese and Korean use case-marker particles.","{'title': '1 Introduction', 'number': '1'}"
-"Wang (1998) enhanced the IBM models by introducing phrases, and Och et al. (1999) used templates to capture phrasal sequences in a sentence.","{'title': '1 Introduction', 'number': '1'}"
-"Both also tried to incorporate structural aspects of the language, however, neither handles nested structures.","{'title': '1 Introduction', 'number': '1'}"
-Wu (1997) and Alshawi et al. (2000) showed statistical models based on syntactic structure.,"{'title': '1 Introduction', 'number': '1'}"
-"The way we handle syntactic parse trees is inspired by their work, although their approach is not to model the translation process, but to formalize a model that generates two languages at the same time.","{'title': '1 Introduction', 'number': '1'}"
-"Our channel operations are also similar to the mechanism in Twisted Pair Grammar (Jones and Havrilla, 1998) used in their knowledge-based system.","{'title': '1 Introduction', 'number': '1'}"
-"Following (Brown et al., 1993) and the other literature in TM, this paper only focuses the details of TM.","{'title': '1 Introduction', 'number': '1'}"
-"Applications of our TM, such as machine translation or dictionary construction, will be described in a separate paper.","{'title': '1 Introduction', 'number': '1'}"
-Section 2 describes our model in detail.,"{'title': '1 Introduction', 'number': '1'}"
-Section 3 shows experimental results.,"{'title': '1 Introduction', 'number': '1'}"
-"We conclude with Section 4, followed by an Appendix describing the training algorithm in more detail.","{'title': '1 Introduction', 'number': '1'}"
-We first introduce our translation model with an example.,"{'title': '2 The Model', 'number': '2'}"
-Section 2.2 will describe the model more formally.,"{'title': '2 The Model', 'number': '2'}"
-We assume that an English parse tree is fed into a noisy channel and that it is translated to a Japanese sentence.1 PRP-VB1-VB2.,"{'title': '2 The Model', 'number': '2'}"
-The probability of reordering it into PRP-VB2-VB1 is 0.723 (the second row in the r-table in Table 1).,"{'title': '2 The Model', 'number': '2'}"
-"We also reorder VB-TO into TO-VB, and TO-NN into NN-TO, so therefore the probability of the second tree in Figure 1 is Next, an extra word is stochastically inserted at each node.","{'title': '2 The Model', 'number': '2'}"
-"A word can be inserted either to the left of the node, to the right of the node, or nowhere.","{'title': '2 The Model', 'number': '2'}"
-Brown et al. (1993) assumes that there is an invisible NULL word in the input sentence and it generates output words that are distributed into random positions.,"{'title': '2 The Model', 'number': '2'}"
-"Here, we instead decide the position on the basis of the nodes of the input parse tree.","{'title': '2 The Model', 'number': '2'}"
-The insertion probability is determined by the n-table.,"{'title': '2 The Model', 'number': '2'}"
-"For simplicity, we split the n-table into two: a table for insert positions and a table for words to be inserted (Table 1).","{'title': '2 The Model', 'number': '2'}"
-The node’s label and its parent’s label are used to index the table for insert positions.,"{'title': '2 The Model', 'number': '2'}"
-"For example, the PRP node in Figure 1 has parent VB, thus . n−table t−table r−table parent=VBnode=PRP is the conditioning index.","{'title': '2 The Model', 'number': '2'}"
-"Using this label pair captures, for example, the regularity of inserting case-marker particles.","{'title': '2 The Model', 'number': '2'}"
-"When we decide which word to insert, no conditioning variable is used.","{'title': '2 The Model', 'number': '2'}"
-"That is, a function word like ga is just as likely to be inserted in one place as any other.","{'title': '2 The Model', 'number': '2'}"
-"In Figure 1, we inserted four words (ha, no, ga and desu) to create the third tree.","{'title': '2 The Model', 'number': '2'}"
-"The top VB node, two TO nodes, and the NN node inserted nothing.","{'title': '2 The Model', 'number': '2'}"
-"Therefore, the probability of obtaining the third tree given the second tree is 3.498e-9.","{'title': '2 The Model', 'number': '2'}"
-"Finally, we apply the translate operation to each leaf.","{'title': '2 The Model', 'number': '2'}"
-We assume that this operation is dependent only on the word itself and that no context is consulted.2 The model’s t-table specifies the probability for all cases.,"{'title': '2 The Model', 'number': '2'}"
-Suppose we obtained the translations shown in the fourth tree of Figure 1.,"{'title': '2 The Model', 'number': '2'}"
-The probability of the translate operation here is .,"{'title': '2 The Model', 'number': '2'}"
-"The total probability of the reorder, insert and translate operations in this example is 3.498e-9 1.828e-11.","{'title': '2 The Model', 'number': '2'}"
-"Note that there 2When a TM is used in machine translation, the TM’s role is to provide a list of possible translations, and a language model addresses the context.","{'title': '2 The Model', 'number': '2'}"
-"See (Berger et al., 1996). are many other combinations of such operations that yield the same Japanese sentence.","{'title': '2 The Model', 'number': '2'}"
-"Therefore, the probability of the Japanese sentence given the English parse tree is the sum of all these probabilities.","{'title': '2 The Model', 'number': '2'}"
-"We actually obtained the probability tables (Table 1) from a corpus of about two thousand pairs of English parse trees and Japanese sentences, completely automatically.","{'title': '2 The Model', 'number': '2'}"
-Section 2.3 and Appendix 4 describe the training algorithm.,"{'title': '2 The Model', 'number': '2'}"
-This section formally describes our translation model.,"{'title': '2 The Model', 'number': '2'}"
-"To make this paper comparable to (Brown et al., 1993), we use English-French notation in this section.","{'title': '2 The Model', 'number': '2'}"
-We assume that an English parse tree is transformed into a French sentence.,"{'title': '2 The Model', 'number': '2'}"
-"Let the English parse tree consist of nodes , and let the output French sentence consist of French words .","{'title': '2 The Model', 'number': '2'}"
-"Three random variables, ,, and are channel operations applied to each node.","{'title': '2 The Model', 'number': '2'}"
-Insertion is an operation that inserts a French word just before or after the node.,"{'title': '2 The Model', 'number': '2'}"
-"The insertion can be none, left, or right.","{'title': '2 The Model', 'number': '2'}"
-Also it decides what French word to insert.,"{'title': '2 The Model', 'number': '2'}"
-Reorder is an operation that changes the order of the children of the node.,"{'title': '2 The Model', 'number': '2'}"
-"If a node has three children, e.g., there are ways to reorder them.","{'title': '2 The Model', 'number': '2'}"
-This operation applies only to non-terminal nodes in the tree.,"{'title': '2 The Model', 'number': '2'}"
-Translation is an operation that translates a terminal English leaf word into a French word.,"{'title': '2 The Model', 'number': '2'}"
-This operation applies only to terminal nodes.,"{'title': '2 The Model', 'number': '2'}"
-Note that an English word can be translated into a French NULL word.,"{'title': '2 The Model', 'number': '2'}"
-The notation stands for a set of values of . is a set of values of random variables associated with .,"{'title': '2 The Model', 'number': '2'}"
-And is the set of all random variables associated with a parse tree .,"{'title': '2 The Model', 'number': '2'}"
-The probability of getting a French sentence given an English parse tree is where Str is the sequence of leaf words of a tree transformed by from .,"{'title': '2 The Model', 'number': '2'}"
-The probability of having a particular set of values of random variables in a parse tree is This is an exact equation.,"{'title': '2 The Model', 'number': '2'}"
-"Then, we assume that a transform operation is independent from other transform operations, and the random variables of each node are determined only by the node itself.","{'title': '2 The Model', 'number': '2'}"
-"So, we obtain sumed to be independent of each other.","{'title': '2 The Model', 'number': '2'}"
-We also assume that they are dependent on particular features of the node.,"{'title': '2 The Model', 'number': '2'}"
-"Then, of children was used for .","{'title': '2 The Model', 'number': '2'}"
-"The last line in the above formula introduces a change in notation, meaning that those probabilities are the model parameters ,, and , where ,, and are the possible values for , , and , respectively.","{'title': '2 The Model', 'number': '2'}"
-"In summary, the probability of getting a French sentence given an English parse tree is P Str where and , P and P , decide the behavior of the translation model, and these are the probabilities we want to estimate from a training corpus.","{'title': '2 The Model', 'number': '2'}"
-"To estimate the model parameters, we use the EM algorithm (Dempster et al., 1977).","{'title': '2 The Model', 'number': '2'}"
-The algorithm iteratively updates the model parameters to maximize the likelihood of the training corpus.,"{'title': '2 The Model', 'number': '2'}"
-"First, the model parameters are initialized.","{'title': '2 The Model', 'number': '2'}"
-"We used a uniform distribution, but it can be a distribution taken from other models.","{'title': '2 The Model', 'number': '2'}"
-"For each iteration, the number of events are counted and weighted by the probabilities of the events.","{'title': '2 The Model', 'number': '2'}"
-The probabilities of events are calculated from the current model parameters.,"{'title': '2 The Model', 'number': '2'}"
-"The model parameters are re-estimated based on the counts, and used for the next iteration.","{'title': '2 The Model', 'number': '2'}"
-"In our case, an event is a pair of a value of a random variable (such as,, or) and a feature value (such as , , or ).","{'title': '2 The Model', 'number': '2'}"
-A separate counter is used for each event.,"{'title': '2 The Model', 'number': '2'}"
-"Therefore, we need the same number of counters, The model parameters ,, and , that is, the probabilities P , as the number of entries in the probability tables, , , and .","{'title': '2 The Model', 'number': '2'}"
-"The training procedure is the following: where ,, and are the relevant features to , , and , respectively.","{'title': '2 The Model', 'number': '2'}"
-"For example, we saw that the parent node label and the node label were used for , and the syntactic category sequence For all, such that Str , Let cnt = P P Str A straightforward implementation that tries all possible combinations of parameters , is very expensive, since there are possible combinations, where and are the number of possible values for and, respectively ( is uniquely decided when and are given for a particular ).","{'title': '2 The Model', 'number': '2'}"
-"Appendix describes an efficient implementation that estimates the probability in polynomial time.3 With this efficient implementation, it took about 50 minutes per iteration on our corpus (about two thousand pairs of English parse trees and Japanese sentences.","{'title': '2 The Model', 'number': '2'}"
-See the next section).,"{'title': '2 The Model', 'number': '2'}"
-"To experiment, we trained our model on a small English-Japanese corpus.","{'title': '3 Experiment', 'number': '3'}"
-"To evaluate performance, we examined alignments produced by the learned model.","{'title': '3 Experiment', 'number': '3'}"
-"For comparison, we also trained IBM Model 5 on the same corpus.","{'title': '3 Experiment', 'number': '3'}"
-We extracted 2121 translation sentence pairs from a Japanese-English dictionary.,"{'title': '3 Experiment', 'number': '3'}"
-These sentences were mostly short ones.,"{'title': '3 Experiment', 'number': '3'}"
-The average sentence length was 6.9 for English and 9.7 for Japanese.,"{'title': '3 Experiment', 'number': '3'}"
-"However, many rare words were used, which made the task difficult.","{'title': '3 Experiment', 'number': '3'}"
-"The vocabulary size was 3463 tokens for English, and 3983 tokens for Japanese, with 2029 tokens for English and 2507 tokens for Japanese occurring only once in the corpus.","{'title': '3 Experiment', 'number': '3'}"
-"Brill’s part-of-speech (POS) tagger (Brill, 1995) and Collins’ parser (Collins, 1999) were used to obtain parse trees for the English side of the corpus.","{'title': '3 Experiment', 'number': '3'}"
-"The output of Collins’ parser was 3Note that the algorithm performs full EM counting, whereas the IBM models only permit counting over a subset of possible alignments. modified in the following way.","{'title': '3 Experiment', 'number': '3'}"
-"First, to reduce the number of parameters in the model, each node was re-labelled with the POS of the node’s head word, and some POS labels were collapsed.","{'title': '3 Experiment', 'number': '3'}"
-"For example, labels for different verb endings (such as VBD for -ed and VBG for -ing) were changed to the same label VB.","{'title': '3 Experiment', 'number': '3'}"
-"There were then 30 different node labels, and 474 unique child label sequences.","{'title': '3 Experiment', 'number': '3'}"
-"Second, a subtree was flattened if the node’s head-word was the same as the parent’s headword.","{'title': '3 Experiment', 'number': '3'}"
-"For example, (NN1 (VB NN2)) was flattened to (NN1 VB NN2) if the VB was a head word for both NN1 and NN2.","{'title': '3 Experiment', 'number': '3'}"
-This flattening was motivated by various word orders in different languages.,"{'title': '3 Experiment', 'number': '3'}"
-"An English SVO structure is translated into SOV in Japanese, or into VSO in Arabic.","{'title': '3 Experiment', 'number': '3'}"
-"These differences are easily modeled by the flattened subtree (NN1 VB NN2), rather than (NN1 (VB NN2)).","{'title': '3 Experiment', 'number': '3'}"
-We ran 20 iterations of the EM algorithm as described in Section 2.2.,"{'title': '3 Experiment', 'number': '3'}"
-"IBM Model 5 was sequentially bootstrapped with Model 1, an HMM Model, and Model 3 (Och and Ney, 2000).","{'title': '3 Experiment', 'number': '3'}"
-Each preceding model and the final Model 5 were trained with five iterations (total 20 iterations).,"{'title': '3 Experiment', 'number': '3'}"
-The training procedure resulted in the tables of estimated model parameters.,"{'title': '3 Experiment', 'number': '3'}"
-Table 1 in Section 2.1 shows part of those parameters obtained by the training above.,"{'title': '3 Experiment', 'number': '3'}"
-"To evaluate performance, we let the models generate the most probable alignment of the training corpus (called the Viterbi alignment).","{'title': '3 Experiment', 'number': '3'}"
-The alignment shows how the learned model induces the internal structure of the training data.,"{'title': '3 Experiment', 'number': '3'}"
-Figure 2 shows alignments produced by our model and IBM Model 5.,"{'title': '3 Experiment', 'number': '3'}"
-Darker lines indicates that the particular alignment link was judged correct by humans.,"{'title': '3 Experiment', 'number': '3'}"
-"Three humans were asked to rate each alignment as okay (1.0 point), not sure (0.5 point), or wrong (0 point).","{'title': '3 Experiment', 'number': '3'}"
-The darkness of the lines in the figure reflects the human score.,"{'title': '3 Experiment', 'number': '3'}"
-We obtained the average score of the first 50 sentence pairs in the corpus.,"{'title': '3 Experiment', 'number': '3'}"
-We also counted the number of perfectly aligned sentence pairs in the 50 pairs.,"{'title': '3 Experiment', 'number': '3'}"
-Perfect means that all alignments in a sentence pair were judged okay by all the human judges.,"{'title': '3 Experiment', 'number': '3'}"
-4.,"{'title': '3 Experiment', 'number': '3'}"
-"For each , For , += cnt += cnt += cnt , and , he adores listening to music he adores listening to music he has unusual ability in english hypocrisy is abhorrent to them he has unusual ability in english he was ablaze with anger hypocrisy is abhorrent to them he was ablaze with anger Our model got a better result compared to IBM Model 5.","{'title': '3 Experiment', 'number': '3'}"
-Note that there were no perfect alignments from the IBM Model.,"{'title': '3 Experiment', 'number': '3'}"
-"Errors by the IBM Model were spread out over the whole set, while our errors were localized to some sentences.","{'title': '3 Experiment', 'number': '3'}"
-We expect that our model will therefore be easier to improve.,"{'title': '3 Experiment', 'number': '3'}"
-"Also, localized errors are good if the TM is used for corpus preparation or filtering.","{'title': '3 Experiment', 'number': '3'}"
-We also measured training perplexity of the models.,"{'title': '3 Experiment', 'number': '3'}"
-"The perplexity of our model was 15.79, and that of IBM Model 5 was 9.84.","{'title': '3 Experiment', 'number': '3'}"
-"For reference, the perplexity after 5 iterations of Model 1 was 24.01.","{'title': '3 Experiment', 'number': '3'}"
-Perplexity values roughly indicate the predictive power of the model.,"{'title': '3 Experiment', 'number': '3'}"
-"Generally, lower perplexity means a better model, but it might cause over-fitting to a training data.","{'title': '3 Experiment', 'number': '3'}"
-"Since the IBM Model usually requires millions of training sentences, the lower perplexity value for the IBM Model is likely due to over-fitting.","{'title': '3 Experiment', 'number': '3'}"
-We have presented a syntax-based translation model that statistically models the translation process from an English parse tree into a foreignlanguage sentence.,"{'title': '4 Conclusion', 'number': '4'}"
-The model can make use of syntactic information and performs better for language pairs with different word orders and case marking schema.,"{'title': '4 Conclusion', 'number': '4'}"
-"We conducted a small-scale experiment to compare the performance with IBM Model 5, and got better alignment results.","{'title': '4 Conclusion', 'number': '4'}"
-This appendix describes an efficient implementation of the EM algorithm for our translation model.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-This implementation uses a graph structure for a pair .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A graph node is either a major-node or a subnode.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A major-node shows a pairing of a subtree of and a substring of.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A subnode shows a selection of a value for the subtree-substring pair (Figure 3).,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-Let be a substring of from the word with length.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"Note this notation is different from (Brown et al., 1993).","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A subtree is a subtree of below the node.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-We assume that a subtree is .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A major-node is a pair of a subtree and a substring.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"The root of the graph is , where is the length of.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-Each majornode connects to several-subnodes .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"A-subnode connects to a finalnode with weight P if is a terminal node , showing which value of is selected.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The arc between and has weight in .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"If is a non-terminal node, a-subnode connects to several -subnodes , showing a selection of a value.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The weight of the arc is P .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A-subnode is then connected to -subnodes .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"The partition variable, , shows a particular way of partitioning.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"A -subnode is then connected to major-nodes which correspond to the children ofand the substring of , decided by .","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-A major-node can be connected from different subnodes.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The arc weights between-subnodes and major-nodes are always 1.0. .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"A trace starting from the graph root, selecting one of the arcs from major-nodes,-subnodes, and-subnodes, and all the arcs from -subnodes, corresponds to a particular, and the product of the weight on the trace corresponds to P .","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"Note that a trace forms a tree, making branches at the -subnodes.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"We define an alpha probability and a beta probability for each major-node, in analogy with the measures used in the inside-outside algorithm for probabilistic context free grammars (Baker, 1979).","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The alpha probability (outside probability) is a path probability from the graph root to the node and the side branches of the node.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The beta probability (inside probability) is a path probability below the node.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-Figure 4 shows formulae for alphabeta probabilities.,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"From these definitions, .","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"The counts ,, and for each pair are also in the figure.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"Those formulae replace the step 3 (in Section 2.3) for each training pair, and these counts are used in the step 4.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The graph structure is generated by expanding the root node .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"The beta probability for each node is first calculated bottom-up, then the alpha probability for each node is calculated topdown.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-"Once the alpha and beta probabilities for each node are obtained, the counts are calculated as above and used for updating the parameters.","{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The complexity of this training algorithm is .,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-The cube comes from the number of parse tree nodes ( ) and the number of possible French substrings ( ).,"{'title': 'Appendix: An Efficient EM algorithm', 'number': '5'}"
-This work was supported by DARPA-ITO grant N66001-00-1-9814.,"{'title': 'Acknowledgments', 'number': '6'}"
+We present a syntax-based statistical translation model.,Introduction
+Our model transforms a source-language parse tree into a target-language string by applying stochastic operations at each node.,Introduction
+These operations capture linguistic differences such as word order and case marking.,Introduction
+Model parameters are estimated in polynomial time using an EM algorithm.,Introduction
+The model produces word alignments that are better than those,Introduction
+A statistical translation model (TM) is a mathematical model in which the process of humanlanguage translation is statistically modeled.,Experiment/Discussion
+Model parameters are automatically estimated using a corpus of translation pairs.,Experiment/Discussion
+"TMs have been used for statistical machine translation (Berger et al., 1996), word alignment of a translation corpus (Melamed, 2000), multilingual document retrieval (Franz et al., 1999), automatic dictionary construction (Resnik and Melamed, 1997), and data preparation for word sense disambiguation programs (Brown et al., 1991).",Experiment/Discussion
+Developing a better TM is a fundamental issue for those applications.,Experiment/Discussion
+"Researchers at IBM first described such a statistical TM in (Brown et al., 1988).",Experiment/Discussion
+Their models are based on a string-to-string noisy channel model.,Experiment/Discussion
+The channel converts a sequence of words in one language (such as English) into another (such as French).,Experiment/Discussion
+"The channel operations are movements, duplications, and translations, applied to each word independently.",Experiment/Discussion
+"The movement is conditioned only on word classes and positions in the string, and the duplication and translation are conditioned only on the word identity.",Experiment/Discussion
+"Mathematical details are fully described in (Brown et al., 1993).",Experiment/Discussion
+One criticism of the IBM-style TM is that it does not model structural or syntactic aspects of the language.,Experiment/Discussion
+The TM was only demonstrated for a structurally similar language pair (English and French).,Experiment/Discussion
+It has been suspected that a language pair with very different word order such as English and Japanese would not be modeled well by these TMs.,Experiment/Discussion
+"To incorporate structural aspects of the language, our channel model accepts a parse tree as an input, i.e., the input sentence is preprocessed by a syntactic parser.",Experiment/Discussion
+The channel performs operations on each node of the parse tree.,Experiment/Discussion
+"The operations are reordering child nodes, inserting extra words at each node, and translating leaf words.",Experiment/Discussion
+Figure 1 shows the overview of the operations of our model.,Experiment/Discussion
+"Note that the output of our model is a string, not a parse tree.",Experiment/Discussion
+"Therefore, parsing is only needed on the channel input side.",Experiment/Discussion
+"The reorder operation is intended to model translation between languages with different word orders, such as SVO-languages (English or Chinese) and SOV-languages (Japanese or Turkish).",Experiment/Discussion
+The word-insertion operation is intended to capture linguistic differences in specifying syntactic cases.,Experiment/Discussion
+"E.g., English and French use structural position to specify case, while Japanese and Korean use case-marker particles.",Experiment/Discussion
+"Wang (1998) enhanced the IBM models by introducing phrases, and Och et al. (1999) used templates to capture phrasal sequences in a sentence.",Experiment/Discussion
+"Both also tried to incorporate structural aspects of the language, however, neither handles nested structures.",Experiment/Discussion
+Wu (1997) and Alshawi et al. (2000) showed statistical models based on syntactic structure.,Experiment/Discussion
+"The way we handle syntactic parse trees is inspired by their work, although their approach is not to model the translation process, but to formalize a model that generates two languages at the same time.",Experiment/Discussion
+"Our channel operations are also similar to the mechanism in Twisted Pair Grammar (Jones and Havrilla, 1998) used in their knowledge-based system.",Experiment/Discussion
+"Following (Brown et al., 1993) and the other literature in TM, this paper only focuses the details of TM.",Experiment/Discussion
+"Applications of our TM, such as machine translation or dictionary construction, will be described in a separate paper.",Experiment/Discussion
+Section 2 describes our model in detail.,Experiment/Discussion
+Section 3 shows experimental results.,Experiment/Discussion
+"We conclude with Section 4, followed by an Appendix describing the training algorithm in more detail.",Experiment/Discussion
+We first introduce our translation model with an example.,Experiment/Discussion
+Section 2.2 will describe the model more formally.,Experiment/Discussion
+We assume that an English parse tree is fed into a noisy channel and that it is translated to a Japanese sentence.1 PRP-VB1-VB2.,Experiment/Discussion
+The probability of reordering it into PRP-VB2-VB1 is 0.723 (the second row in the r-table in Table 1).,Experiment/Discussion
+"We also reorder VB-TO into TO-VB, and TO-NN into NN-TO, so therefore the probability of the second tree in Figure 1 is Next, an extra word is stochastically inserted at each node.",Experiment/Discussion
+"A word can be inserted either to the left of the node, to the right of the node, or nowhere.",Experiment/Discussion
+Brown et al. (1993) assumes that there is an invisible NULL word in the input sentence and it generates output words that are distributed into random positions.,Experiment/Discussion
+"Here, we instead decide the position on the basis of the nodes of the input parse tree.",Experiment/Discussion
+The insertion probability is determined by the n-table.,Experiment/Discussion
+"For simplicity, we split the n-table into two: a table for insert positions and a table for words to be inserted (Table 1).",Experiment/Discussion
+The node’s label and its parent’s label are used to index the table for insert positions.,Experiment/Discussion
+"For example, the PRP node in Figure 1 has parent VB, thus . n−table t−table r−table parent=VBnode=PRP is the conditioning index.",Experiment/Discussion
+"Using this label pair captures, for example, the regularity of inserting case-marker particles.",Experiment/Discussion
+"When we decide which word to insert, no conditioning variable is used.",Experiment/Discussion
+"That is, a function word like ga is just as likely to be inserted in one place as any other.",Experiment/Discussion
+"In Figure 1, we inserted four words (ha, no, ga and desu) to create the third tree.",Experiment/Discussion
+"The top VB node, two TO nodes, and the NN node inserted nothing.",Experiment/Discussion
+"Therefore, the probability of obtaining the third tree given the second tree is 3.498e-9.",Experiment/Discussion
+"Finally, we apply the translate operation to each leaf.",Experiment/Discussion
+We assume that this operation is dependent only on the word itself and that no context is consulted.2 The model’s t-table specifies the probability for all cases.,Experiment/Discussion
+Suppose we obtained the translations shown in the fourth tree of Figure 1.,Experiment/Discussion
+The probability of the translate operation here is .,Experiment/Discussion
+"The total probability of the reorder, insert and translate operations in this example is 3.498e-9 1.828e-11.",Experiment/Discussion
+"Note that there 2When a TM is used in machine translation, the TM’s role is to provide a list of possible translations, and a language model addresses the context.",Experiment/Discussion
+"See (Berger et al., 1996). are many other combinations of such operations that yield the same Japanese sentence.",Experiment/Discussion
+"Therefore, the probability of the Japanese sentence given the English parse tree is the sum of all these probabilities.",Experiment/Discussion
+"We actually obtained the probability tables (Table 1) from a corpus of about two thousand pairs of English parse trees and Japanese sentences, completely automatically.",Experiment/Discussion
+Section 2.3 and Appendix 4 describe the training algorithm.,Experiment/Discussion
+This section formally describes our translation model.,Experiment/Discussion
+"To make this paper comparable to (Brown et al., 1993), we use English-French notation in this section.",Experiment/Discussion
+We assume that an English parse tree is transformed into a French sentence.,Experiment/Discussion
+"Let the English parse tree consist of nodes , and let the output French sentence consist of French words .",Experiment/Discussion
+"Three random variables, ,, and are channel operations applied to each node.",Experiment/Discussion
+Insertion is an operation that inserts a French word just before or after the node.,Experiment/Discussion
+"The insertion can be none, left, or right.",Experiment/Discussion
+Also it decides what French word to insert.,Experiment/Discussion
+Reorder is an operation that changes the order of the children of the node.,Experiment/Discussion
+"If a node has three children, e.g., there are ways to reorder them.",Experiment/Discussion
+This operation applies only to non-terminal nodes in the tree.,Experiment/Discussion
+Translation is an operation that translates a terminal English leaf word into a French word.,Experiment/Discussion
+This operation applies only to terminal nodes.,Experiment/Discussion
+Note that an English word can be translated into a French NULL word.,Experiment/Discussion
+The notation stands for a set of values of . is a set of values of random variables associated with .,Experiment/Discussion
+And is the set of all random variables associated with a parse tree .,Experiment/Discussion
+The probability of getting a French sentence given an English parse tree is where Str is the sequence of leaf words of a tree transformed by from .,Experiment/Discussion
+The probability of having a particular set of values of random variables in a parse tree is This is an exact equation.,Experiment/Discussion
+"Then, we assume that a transform operation is independent from other transform operations, and the random variables of each node are determined only by the node itself.",Experiment/Discussion
+"So, we obtain sumed to be independent of each other.",Experiment/Discussion
+We also assume that they are dependent on particular features of the node.,Experiment/Discussion
+"Then, of children was used for .",Experiment/Discussion
+"The last line in the above formula introduces a change in notation, meaning that those probabilities are the model parameters ,, and , where ,, and are the possible values for , , and , respectively.",Experiment/Discussion
+"In summary, the probability of getting a French sentence given an English parse tree is P Str where and , P and P , decide the behavior of the translation model, and these are the probabilities we want to estimate from a training corpus.",Experiment/Discussion
+"To estimate the model parameters, we use the EM algorithm (Dempster et al., 1977).",Experiment/Discussion
+The algorithm iteratively updates the model parameters to maximize the likelihood of the training corpus.,Experiment/Discussion
+"First, the model parameters are initialized.",Experiment/Discussion
+"We used a uniform distribution, but it can be a distribution taken from other models.",Experiment/Discussion
+"For each iteration, the number of events are counted and weighted by the probabilities of the events.",Experiment/Discussion
+The probabilities of events are calculated from the current model parameters.,Experiment/Discussion
+"The model parameters are re-estimated based on the counts, and used for the next iteration.",Experiment/Discussion
+"In our case, an event is a pair of a value of a random variable (such as,, or) and a feature value (such as , , or ).",Experiment/Discussion
+A separate counter is used for each event.,Experiment/Discussion
+"Therefore, we need the same number of counters, The model parameters ,, and , that is, the probabilities P , as the number of entries in the probability tables, , , and .",Experiment/Discussion
+"The training procedure is the following: where ,, and are the relevant features to , , and , respectively.",Experiment/Discussion
+"For example, we saw that the parent node label and the node label were used for , and the syntactic category sequence For all, such that Str , Let cnt = P P Str A straightforward implementation that tries all possible combinations of parameters , is very expensive, since there are possible combinations, where and are the number of possible values for and, respectively ( is uniquely decided when and are given for a particular ).",Experiment/Discussion
+"Appendix describes an efficient implementation that estimates the probability in polynomial time.3 With this efficient implementation, it took about 50 minutes per iteration on our corpus (about two thousand pairs of English parse trees and Japanese sentences.",Experiment/Discussion
+See the next section).,Experiment/Discussion
+"To experiment, we trained our model on a small English-Japanese corpus.",Experiment/Discussion
+"To evaluate performance, we examined alignments produced by the learned model.",Experiment/Discussion
+"For comparison, we also trained IBM Model 5 on the same corpus.",Experiment/Discussion
+We extracted 2121 translation sentence pairs from a Japanese-English dictionary.,Experiment/Discussion
+These sentences were mostly short ones.,Experiment/Discussion
+The average sentence length was 6.9 for English and 9.7 for Japanese.,Experiment/Discussion
+"However, many rare words were used, which made the task difficult.",Experiment/Discussion
+"The vocabulary size was 3463 tokens for English, and 3983 tokens for Japanese, with 2029 tokens for English and 2507 tokens for Japanese occurring only once in the corpus.",Experiment/Discussion
+"Brill’s part-of-speech (POS) tagger (Brill, 1995) and Collins’ parser (Collins, 1999) were used to obtain parse trees for the English side of the corpus.",Experiment/Discussion
+"The output of Collins’ parser was 3Note that the algorithm performs full EM counting, whereas the IBM models only permit counting over a subset of possible alignments. modified in the following way.",Experiment/Discussion
+"First, to reduce the number of parameters in the model, each node was re-labelled with the POS of the node’s head word, and some POS labels were collapsed.",Experiment/Discussion
+"For example, labels for different verb endings (such as VBD for -ed and VBG for -ing) were changed to the same label VB.",Experiment/Discussion
+"There were then 30 different node labels, and 474 unique child label sequences.",Experiment/Discussion
+"Second, a subtree was flattened if the node’s head-word was the same as the parent’s headword.",Experiment/Discussion
+"For example, (NN1 (VB NN2)) was flattened to (NN1 VB NN2) if the VB was a head word for both NN1 and NN2.",Experiment/Discussion
+This flattening was motivated by various word orders in different languages.,Experiment/Discussion
+"An English SVO structure is translated into SOV in Japanese, or into VSO in Arabic.",Experiment/Discussion
+"These differences are easily modeled by the flattened subtree (NN1 VB NN2), rather than (NN1 (VB NN2)).",Experiment/Discussion
+We ran 20 iterations of the EM algorithm as described in Section 2.2.,Experiment/Discussion
+"IBM Model 5 was sequentially bootstrapped with Model 1, an HMM Model, and Model 3 (Och and Ney, 2000).",Experiment/Discussion
+Each preceding model and the final Model 5 were trained with five iterations (total 20 iterations).,Experiment/Discussion
+The training procedure resulted in the tables of estimated model parameters.,Experiment/Discussion
+Table 1 in Section 2.1 shows part of those parameters obtained by the training above.,Experiment/Discussion
+"To evaluate performance, we let the models generate the most probable alignment of the training corpus (called the Viterbi alignment).",Experiment/Discussion
+The alignment shows how the learned model induces the internal structure of the training data.,Experiment/Discussion
+Figure 2 shows alignments produced by our model and IBM Model 5.,Experiment/Discussion
+Darker lines indicates that the particular alignment link was judged correct by humans.,Experiment/Discussion
+"Three humans were asked to rate each alignment as okay (1.0 point), not sure (0.5 point), or wrong (0 point).",Experiment/Discussion
+The darkness of the lines in the figure reflects the human score.,Experiment/Discussion
+We obtained the average score of the first 50 sentence pairs in the corpus.,Experiment/Discussion
+We also counted the number of perfectly aligned sentence pairs in the 50 pairs.,Experiment/Discussion
+Perfect means that all alignments in a sentence pair were judged okay by all the human judges.,Experiment/Discussion
+4.,Experiment/Discussion
+"For each , For , += cnt += cnt += cnt , and , he adores listening to music he adores listening to music he has unusual ability in english hypocrisy is abhorrent to them he has unusual ability in english he was ablaze with anger hypocrisy is abhorrent to them he was ablaze with anger Our model got a better result compared to IBM Model 5.",Experiment/Discussion
+Note that there were no perfect alignments from the IBM Model.,Experiment/Discussion
+"Errors by the IBM Model were spread out over the whole set, while our errors were localized to some sentences.",Experiment/Discussion
+We expect that our model will therefore be easier to improve.,Experiment/Discussion
+"Also, localized errors are good if the TM is used for corpus preparation or filtering.",Experiment/Discussion
+We also measured training perplexity of the models.,Experiment/Discussion
+"The perplexity of our model was 15.79, and that of IBM Model 5 was 9.84.",Experiment/Discussion
+"For reference, the perplexity after 5 iterations of Model 1 was 24.01.",Experiment/Discussion
+Perplexity values roughly indicate the predictive power of the model.,Experiment/Discussion
+"Generally, lower perplexity means a better model, but it might cause over-fitting to a training data.",Experiment/Discussion
+"Since the IBM Model usually requires millions of training sentences, the lower perplexity value for the IBM Model is likely due to over-fitting.",Experiment/Discussion
+We have presented a syntax-based translation model that statistically models the translation process from an English parse tree into a foreignlanguage sentence.,Experiment/Discussion
+The model can make use of syntactic information and performs better for language pairs with different word orders and case marking schema.,Experiment/Discussion
+"We conducted a small-scale experiment to compare the performance with IBM Model 5, and got better alignment results.",Experiment/Discussion
+This appendix describes an efficient implementation of the EM algorithm for our translation model.,Results/Conclusion
+This implementation uses a graph structure for a pair .,Results/Conclusion
+A graph node is either a major-node or a subnode.,Results/Conclusion
+A major-node shows a pairing of a subtree of and a substring of.,Results/Conclusion
+A subnode shows a selection of a value for the subtree-substring pair (Figure 3).,Results/Conclusion
+Let be a substring of from the word with length.,Results/Conclusion
+"Note this notation is different from (Brown et al., 1993).",Results/Conclusion
+A subtree is a subtree of below the node.,Results/Conclusion
+We assume that a subtree is .,Results/Conclusion
+A major-node is a pair of a subtree and a substring.,Results/Conclusion
+"The root of the graph is , where is the length of.",Results/Conclusion
+Each majornode connects to several-subnodes .,Results/Conclusion
+"A-subnode connects to a finalnode with weight P if is a terminal node , showing which value of is selected.",Results/Conclusion
+The arc between and has weight in .,Results/Conclusion
+"If is a non-terminal node, a-subnode connects to several -subnodes , showing a selection of a value.",Results/Conclusion
+The weight of the arc is P .,Results/Conclusion
+A-subnode is then connected to -subnodes .,Results/Conclusion
+"The partition variable, , shows a particular way of partitioning.",Results/Conclusion
+"A -subnode is then connected to major-nodes which correspond to the children ofand the substring of , decided by .",Results/Conclusion
+A major-node can be connected from different subnodes.,Results/Conclusion
+The arc weights between-subnodes and major-nodes are always 1.0. .,Results/Conclusion
+"A trace starting from the graph root, selecting one of the arcs from major-nodes,-subnodes, and-subnodes, and all the arcs from -subnodes, corresponds to a particular, and the product of the weight on the trace corresponds to P .",Results/Conclusion
+"Note that a trace forms a tree, making branches at the -subnodes.",Results/Conclusion
+"We define an alpha probability and a beta probability for each major-node, in analogy with the measures used in the inside-outside algorithm for probabilistic context free grammars (Baker, 1979).",Results/Conclusion
+The alpha probability (outside probability) is a path probability from the graph root to the node and the side branches of the node.,Results/Conclusion
+The beta probability (inside probability) is a path probability below the node.,Results/Conclusion
+Figure 4 shows formulae for alphabeta probabilities.,Results/Conclusion
+"From these definitions, .",Results/Conclusion
+"The counts ,, and for each pair are also in the figure.",Results/Conclusion
+"Those formulae replace the step 3 (in Section 2.3) for each training pair, and these counts are used in the step 4.",Results/Conclusion
+The graph structure is generated by expanding the root node .,Results/Conclusion
+"The beta probability for each node is first calculated bottom-up, then the alpha probability for each node is calculated topdown.",Results/Conclusion
+"Once the alpha and beta probabilities for each node are obtained, the counts are calculated as above and used for updating the parameters.",Results/Conclusion
+The complexity of this training algorithm is .,Results/Conclusion
+The cube comes from the number of parse tree nodes ( ) and the number of possible French substrings ( ).,Results/Conclusion
+This work was supported by DARPA-ITO grant N66001-00-1-9814.,Results/Conclusion

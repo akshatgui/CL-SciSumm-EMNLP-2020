@@ -1,211 +1,211 @@
 col1,col2
-We explore the idea of creating a subjectivity classifier that uses lists of subjective nouns learned by bootstrapping algorithms.,{}
-The goal of our research is to develop a system that can distinguish subjective sentences from objective sentences.,{}
-"First, we use two bootstrapping algorithms that exploit extraction patterns to learn sets of subjective nouns.",{}
-"Then we train a Naive Bayes classifier using the subjective nouns, discourse features, and subjectivity clues identified in prior research.",{}
-"The bootstrapping algorithms learned over 1000 subjective nouns, and the subjectivity classifier performed well, achieving 77% recall with 81% precision.",{}
-Many natural language processing applications could benefit from being able to distinguish between factual and subjective information.,"{'title': '1 Introduction', 'number': '1'}"
-"Subjective remarks come in a variety of forms, including opinions, rants, allegations, accusations, suspicions, and speculation.","{'title': '1 Introduction', 'number': '1'}"
-"Ideally, information extraction systems should be able to distinguish between factual information (which should be extracted) and non-factual information (which should be discarded or labeled as uncertain).","{'title': '1 Introduction', 'number': '1'}"
-Question answering systems should distinguish between factual and speculative answers.,"{'title': '1 Introduction', 'number': '1'}"
-Multi-perspective question answering aims to present multiple answers to the user based upon speculation or opinions derived from different sources.,"{'title': '1 Introduction', 'number': '1'}"
-Multidocument summarization systems need to summarize different opinions and perspectives.,"{'title': '1 Introduction', 'number': '1'}"
-"Spam filtering systems must recognize rants and emotional tirades, among other things.","{'title': '1 Introduction', 'number': '1'}"
-"In general, nearly any system that seeks to identify information could benefit from being able to separate factual and subjective information.","{'title': '1 Introduction', 'number': '1'}"
-"Subjective language has been previously studied in fields such as linguistics, literary theory, psychology, and content analysis.","{'title': '1 Introduction', 'number': '1'}"
-"Some manually-developed knowledge resources exist, but there is no comprehensive dictionary of subjective language.","{'title': '1 Introduction', 'number': '1'}"
-"Meta-Bootstrapping (Riloff and Jones, 1999) and Basilisk (Thelen and Riloff, 2002) are bootstrapping algorithms that use automatically generated extraction patterns to identify words belonging to a semantic category.","{'title': '1 Introduction', 'number': '1'}"
-We hypothesized that extraction patterns could also identify subjective words.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, the pattern “expressed <direct object>” often extracts subjective nouns, such as “concern”, “hope”, and “support”.","{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, these bootstrapping algorithms require only a handful of seed words and unannotated texts for training; no annotated data is needed at all.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we use the Meta-Bootstrapping and Basilisk algorithms to learn lists of subjective nouns from a large collection of unannotated texts.","{'title': '1 Introduction', 'number': '1'}"
-"Then we train a subjectivity classifier on a small set of annotated data, using the subjective nouns as features along with some other previously identified subjectivity features.","{'title': '1 Introduction', 'number': '1'}"
-"Our experimental results show that the subjectivity classifier performs well (77% recall with 81% precision) and that the learned nouns improve upon previous state-of-the-art subjectivity results (Wiebe et al., 1999).","{'title': '1 Introduction', 'number': '1'}"
-"In 2002, an annotation scheme was developed for a U.S. government-sponsored project with a team of 10 researchers (the annotation instructions and project reports are available on the Web at http://www.cs.pitt.edu/˜wiebe/pubs/ardasummer02/).","{'title': '2 Subjectivity Data', 'number': '2'}"
-"The scheme was inspired by work in linguistics and literary theory on subjectivity, which focuses on how opinions, emotions, etc. are expressed linguistically in context (Banfield, 1982).","{'title': '2 Subjectivity Data', 'number': '2'}"
-The scheme is more detailed and comprehensive than previous ones.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-We mention only those aspects of the annotation scheme relevant to this paper.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-The goal of the annotation scheme is to identify and characterize expressions of private states in a sentence.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"Private state is a general covering term for opinions, evaluations, emotions, and speculations (Quirk et al., 1985).","{'title': '2 Subjectivity Data', 'number': '2'}"
-"For example, in sentence (1) the writer is expressing a negative evaluation.","{'title': '2 Subjectivity Data', 'number': '2'}"
-Sentence (2) reflects the private state of Western countries.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"Mugabe’s use of “overwhelmingly” also reflects a private state, his positive reaction to and characterization of his victory.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"Our data consists of English-language versions of foreign news documents from FBIS, the U.S. Foreign Broadcast Information Service.","{'title': '2 Subjectivity Data', 'number': '2'}"
-The data is from a variety of publications and countries.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-The annotated corpus used to train and test our subjectivity classifiers (the experiment corpus) consists of 109 documents with a total of 2197 sentences.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"We used a separate, annotated tuning corpus of 33 documents with a total of 698 sentences to establish some experimental parameters.'","{'title': '2 Subjectivity Data', 'number': '2'}"
-"Each document was annotated by one or both of two annotators, A and T. To allow us to measure interannotator agreement, the annotators independently annotated the same 12 documents with a total of 178 sentences.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"We began with a strict measure of agreement at the sentence level by first considering whether the annotator marked any private-state expression, of any strength, anywhere in the sentence.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"If so, the sentence should be subjective.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"Otherwise, it is objective.","{'title': '2 Subjectivity Data', 'number': '2'}"
-Table 1 shows the contingency table.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"The percentage agreement is 88%, and the rc value is 0.71.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"One would expect that there are clear cases of objective sentences, clear cases of subjective sentences, and borderline sentences in between.","{'title': '2 Subjectivity Data', 'number': '2'}"
-The agreement study supports this.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"In terms of our annotations, we define a sentence as borderline if it has at least one privatestate expression identified by at least one annotator, and all strength ratings of private-state expressions are low.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"Table 2 shows the agreement results when such borderline sentences are removed (19 sentences, or 11% of the agreement test corpus).","{'title': '2 Subjectivity Data', 'number': '2'}"
-The percentage agreement increases to 94% and the rc value increases to 0.87.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"As expected, the majority of disagreement cases involve low-strength subjectivity.","{'title': '2 Subjectivity Data', 'number': '2'}"
-The annotators consistently agree about which are the clear cases of subjective sentences.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-This leads us to define the gold-standard that we use in our experiments.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-A sentence is subjective if it contains at least one private-state expression of medium or higher strength.,"{'title': '2 Subjectivity Data', 'number': '2'}"
-"The second class, which we call objective, consists of everything else.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"Thus, sentences with only mild traces of subjectivity are tossed into the objective category, making the system’s goal to find the clearly subjective sentences.","{'title': '2 Subjectivity Data', 'number': '2'}"
-"In the last few years, two bootstrapping algorithms have been developed to create semantic dictionaries by exploiting extraction patterns: Meta-Bootstrapping (Riloff and Jones, 1999) and Basilisk (Thelen and Riloff, 2002).","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Extraction patterns were originally developed for information extraction tasks (Cardie, 1997).","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-They represent lexico-syntactic expressions that typically rely on shallow parsing and syntactic role assignment.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"For example, the pattern “<subject> was hired” would apply to sentences that contain the verb “hired” in the passive voice.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The subject would be extracted as the hiree.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Meta-Bootstrapping and Basilisk were designed to learn words that belong to a semantic category (e.g., Tagger A Subj Obj “truck” is a VEHICLE and “seashore” is a LOCATION).","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Both algorithms begin with unannotated texts and seed words that represent a semantic category.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-A bootstrapping process looks for words that appear in the same extraction patterns as the seeds and hypothesizes that those words belong to the same semantic class.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The principle behind this approach is that words of the same semantic class appear in similar pattern contexts.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"For example, the phrases “lived in” and “traveled to” will co-occur with many noun phrases that represent LOCATIONS.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"In our research, we want to automatically identify words that are subjective.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Subjective terms have many different semantic meanings, but we believe that the same contextual principle applies to subjectivity.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"In this section, we briefly overview these bootstrapping algorithms and explain how we used them to generate lists of subjective nouns.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"The Meta-Bootstrapping (“MetaBoot”) process (Riloff and Jones, 1999) begins with a small set of seed words that represent a targeted semantic category (e.g., 10 words that represent LOCATIONS) and an unannotated corpus.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"First, MetaBoot automatically creates a set of extraction patterns for the corpus by applying and instantiating syntactic templates.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"This process literally produces thousands of extraction patterns that, collectively, will extract every noun phrase in the corpus.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Next, MetaBoot computes a score for each pattern based upon the number of seed words among its extractions.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"The best pattern is saved and all of its extracted noun phrases are automatically labeled as the targeted semantic category.2 MetaBoot then re-scores the extraction patterns, using the original seed words as well as the newly labeled words, and the process repeats.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-This procedure is called mutual bootstrapping.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-A second level of bootstrapping (the “meta-” bootstrapping part) makes the algorithm more robust.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"When the mutual bootstrapping process is finished, all nouns that were put into the semantic dictionary are reevaluated.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Each noun is assigned a score based on how many different patterns extracted it.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Only the five best nouns are allowed to remain in the dictionary.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"The other entries are discarded, and the mutual bootstrapping process starts over again using the revised semantic dictionary.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Basilisk (Thelen and Riloff, 2002) is a more recent bootstrapping algorithm that also utilizes extraction patterns to create a semantic dictionary.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Similarly, Basilisk begins with an unannotated text corpus and a small set of seed words for a semantic category.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The bootstrapping process involves three steps.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-(1) Basilisk automatically generates a set of extraction patterns for the corpus and scores each pattern based upon the number of seed words among its extractions.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-This step is identical to the first step of Meta-Bootstrapping.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Basilisk then puts the best patterns into a Pattern Pool.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-(2) All nouns3 extracted by a pattern in the Pattern Pool are put into a Candidate Word Pool.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Basilisk scores each noun based upon the set of patterns that extracted it and their collective association with the seed words.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-(3) The top 10 nouns are labeled as the targeted semantic class and are added to the dictionary.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"The bootstrapping process then repeats, using the original seeds and the newly labeled words.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The main difference between Basilisk and MetaBootstrapping is that Basilisk scores each noun based on collective information gathered from all patterns that extracted it.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"In contrast, Meta-Bootstrapping identifies a single best pattern and assumes that everything it extracted belongs to the same semantic class.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The second level of bootstrapping smoothes over some of the problems caused by this assumption.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"In comparative experiments (Thelen and Riloff, 2002), Basilisk outperformed Meta-Bootstrapping.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"But since our goal of learning subjective nouns is different from the original intent of the algorithms, we tried them both.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"We also suspected they might learn different words, in which case using both algorithms could be worthwhile.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The Meta-Bootstrapping and Basilisk algorithms need seed words and an unannotated text corpus as input.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Since we did not need annotated texts, we created a much larger training corpus, the bootstrapping corpus, by gathering 950 new texts from the FBIS source mentioned in Section 2.2.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"To find candidate seed words, we automatically identified 850 nouns that were positively correlated with subjective sentences in another data set.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"However, it is crucial that the seed words occur frequently in our FBIS texts or the bootstrapping process will not get off the ground.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"So we searched for each of the 850 nouns in the bootstrapping corpus, sorted them by frequency, and manually selected 20 high-frequency words that we judged to be strongly subjective.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Table 3 shows the 20 seed words used for both Meta-Bootstrapping and Basilisk.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"We ran each bootstrapping algorithm for 400 iterations, generating 5 words per iteration.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Basilisk generated 2000 nouns and Meta-Bootstrapping generated 1996 nouns.4 Table 4 shows some examples of extraction patterns that were discovered to be associated with subjective nouns.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Meta-Bootstrapping and Basilisk are semi-automatic lexicon generation tools because, although the bootstrapping process is 100% automatic, the resulting lexicons need to be reviewed by a human.5 So we manually reviewed the 3996 words proposed by the algorithms.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-This process is very fast; it takes only a few seconds to classify each word.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The entire review process took approximately 3-4 hours.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-One author did this labeling; this person did not look at or run tests on the experiment corpus.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"We classified the words as StrongSubjective, WeakSubjective, or Objective.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Objective terms are not subjective at all (e.g., “chair” or “city”).","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"StrongSubjective terms have strong, unambiguously subjective connotations, such as “bully” or “barbarian”.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"WeakSubjective was used for three situations: (1) words that have weak subjective connotations, such as “aberration” which implies something out of the ordinary but does not evoke a strong sense of judgement, (2) words that have multiple senses or uses, where one is subjective but the other is not.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"For example, the word “plague” can refer to a disease (objective) or an onslaught of something negative (subjective), (3) words that are objective by themselves but appear in idiomatic expressions that are subjective.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"For example, the word “eyebrows” was labeled WeakSubjective because the expression “raised eyebrows” probably occurs more often in our corpus than literal references to “eyebrows”.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Table 5 shows examples of learned words that were classified as StrongSubjective or WeakSubjective.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Once the words had been manually classified, we could go back and measure the effectiveness of the algorithms.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The graph in Figure 1 tracks their accuracy as the bootstrapping progressed.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The X-axis shows the number of words generated so far.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The Y-axis shows the percentage of those words that were manually classified as subjective.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"As is typical of bootstrapping algorithms, accuracy was high during the initial iterations but tapered off as the bootstrapping continued.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"After 20 words, both algorithms were 95% accurate.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-After 100 words Basilisk was 75% accurate and MetaBoot was 81% accurate.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"After 1000 words, accuracy dropped to about 28% for MetaBoot, but Basilisk was still performing reasonably well at 53%.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Although 53% accuracy is not high for a fully automatic process, Basilisk depends on a human to review the words so 53% accuracy means that the human is accepting every other word, on average.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Thus, the reviewer’s time was still being spent productively even after 1000 words had been hypothesized.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-Table 6 shows the size of the final lexicons created by the bootstrapping algorithms.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The first two columns show the number of subjective terms learned by Basilisk and Meta-Bootstrapping.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"Basilisk was more prolific, generating 825 subjective terms compared to 522 for MetaBootstrapping.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The third column shows the intersection between their word lists.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"There was substantial overlap, but both algorithms produced many words that the other did not.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-The last column shows the results of merging their lists.,"{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"In total, the bootstrapping algorithms produced 1052 subjective nouns.","{'title': '3 Using Extraction Patterns to Learn Subjective Nouns', 'number': '3'}"
-"To evaluate the subjective nouns, we trained a Naive Bayes classifier using the nouns as features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We also incorporated previously established subjectivity clues, and added some new discourse features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"In this section, we describe all the feature sets and present performance results for subjectivity classifiers trained on different combinations of these features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The threshold values and feature representations used in this section are the ones that produced the best results on our separate tuning corpus.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We defined four features to represent the sets of subjective nouns produced by the bootstrapping algorithms.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"BA-Strong: the set of StrongSubjective nouns generated by Basilisk BA-Weak: the set of WeakSubjective nouns generated by Basilisk MB-Strong: the set of StrongSubjective nouns generated by Meta-Bootstrapping MB-Weak: the set of WeakSubjective nouns generated by Meta-Bootstrapping For each set, we created a three-valued feature based on the presence of 0, 1, or > 2 words from that set.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We used the nouns as feature sets, rather than define a separate feature for each word, so the classifier could generalize over the set to minimize sparse data problems.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We will refer to these as the SubjNoun features.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Wiebe, Bruce, & O’Hara (1999) developed a machine learning system to classify subjective sentences.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We experimented with the features that they used, both to compare their results to ours and to see if we could benefit from their features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We will refer to these as the WBO features.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-WBO includes a set of stems positively correlated with the subjective training examples (subjStems) and a set of stems positively correlated with the objective training examples (objStems).,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We defined a three-valued feature for the presence of 0, 1, or > 2 members of subjStems in a sentence, and likewise for objStems.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"For our experiments, subjStems includes stems that appear > 7 times in the training set, and for which the precision is 1.25 times the baseline word precision for that training set. objStems contains the stems that appear > 7 times and for which at least 50% of their occurrences in the training set are in objective sentences.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"WBO also includes a binary feature for each of the following: the presence in the sentence of a pronoun, an adjective, a cardinal number, a modal other than will, and an adverb other than not.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We also added manually-developed features found by other researchers.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We created 14 feature sets representing some classes from (Levin, 1993; Ballmer and Brennenstuhl, 1981), some Framenet lemmas with frame element experiencer (Baker et al., 1998), adjectives manually annotated for polarity (Hatzivassiloglou and McKeown, 1997), and some subjectivity clues listed in (Wiebe, 1990).","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We represented each set as a three-valued feature based on the presence of 0, 1, or > 2 members of the set.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We will refer to these as the manual features.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We created discourse features to capture the density of clues in the text surrounding a sentence.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"First, we computed the average number of subjective clues and objective clues per sentence, normalized by sentence length.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"The subjective clues, subjClues, are all sets for which 3-valued features were defined above (except objStems).","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The objective clues consist only of objStems.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-For senAvgClueRatesubj to be the average of ClueRate(S) over all sentences S and similarly for AvgClueRateobj.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Next, we characterize the number of subjective and objective clues in the previous and next sentences as: higher-than-expected (high), lower-than-expected (low), or expected (medium).","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The value for ClueRatesubj(S) is high if ClueRatesubj(S) > AvgClueRatesubj * 1.3; low if ClueRatesubj(S) <_ AvgClueRatesubj/1.3; otherwise it is medium.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The values for ClueRateobj(S) are defined similarly.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Using these definitions we created four features: ClueRatesubj for the previous and following sentences, and ClueRateobj for the previous and following sentences.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We also defined a feature for sentence length.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Let AvgSentLen be the average sentence length.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-SentLen(S) is high if length(S) > AvgSentLen*1.3; low if length(S) < AvgSentLen/1.3; and medium otherwise.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"We conducted experiments to evaluate the performance of the feature sets, both individually and in various combinations.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Unless otherwise noted, all experiments involved training a Naive Bayes classifier using a particular set of features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We evaluated each classifier using 25fold cross validation on the experiment corpus and used paired t-tests to measure significance at the 95% confidence level.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"As our evaluation metrics, we computed accuracy (Acc) as the percentage of the system’s classifications that match the gold-standard, and precision (Prec) and recall (Rec) with respect to subjective sentences. represents the common baseline of assigning every sentence to the most frequent class.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The Most-Frequent baseline achieves 59% accuracy because 59% of the sentences in the gold-standard are subjective.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Row (2) is a Naive Bayes classifier that uses the WBO features, which performed well in prior research on sentence-level subjectivity classification (Wiebe et al., 1999).","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Row (1) shows a Naive Bayes classifier that uses unigram bag-ofwords features, with one binary feature for the absence or presence in the sentence of each word that appeared during training.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Pang et al. (2002) reported that a similar experiment produced their best results on a related classification task.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The difference in accuracy between Rows (1) and (2) is not statistically significant (Bag-of-Word’s higher precision is balanced by WBO’s higher recall).,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Next, we trained a Naive Bayes classifier using only the SubjNoun features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-This classifier achieved good precision (77%) but only moderate recall (64%).,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Upon further inspection, we discovered that the subjective nouns are good subjectivity indicators when they appear, but not every subjective sentence contains one of them.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"And, relatively few sentences contain more than one, making it difficult to recognize contextual effects (i.e., multiple clues in a region).","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-We concluded that the appropriate way to benefit from the subjective nouns is to use them in tandem with other subjectivity clues.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Table 8 shows the results of Naive Bayes classifiers trained with different combinations of features.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The accuracy differences between all pairs of experiments in Table 8 are statistically significant.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Row (3) uses only the WBO features (also shown in Table 7 as a baseline).,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Row (2) uses the WBO features as well as the SubjNoun features.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-There is a synergy between these feature sets: using both types of features achieves better performance than either one alone.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"The difference is mainly precision, presumably because the classifier found more and better combinations of features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"In Row (1), we also added the manual and discourse features.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The discourse features explicitly identify contexts in which multiple clues are found.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"This classifier produced even better performance, achieving 81.3% precision with 77.4% recall.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-The 76.1% accuracy result is significantly higher than the accuracy results for all of the other classifiers (in both Table 8 and Table 7).,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"Finally, higher precision classification can be obtained by simply classifying a sentence as subjective if it contains any of the StrongSubjective nouns.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-"On our data, this method produces 87% precision with 26% recall.","{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-This approach could support applications for which precision is paramount.,"{'title': '4 Creating Subjectivity Classifiers', 'number': '4'}"
-Several types of research have involved document-level subjectivity classification.,"{'title': '5 Related Work', 'number': '5'}"
-"Some work identifies inflammatory texts (e.g., (Spertus, 1997)) or classifies reviews as positive or negative ((Turney, 2002; Pang et al., 2002)).","{'title': '5 Related Work', 'number': '5'}"
-"Tong’s system (Tong, 2001) generates sentiment timelines, tracking online discussions and creating graphs of positive and negative opinion messages over time.","{'title': '5 Related Work', 'number': '5'}"
-"Research in genre classification may include recognition of subjective genres such as editorials (e.g., (Karlgren and Cutting, 1994; Kessler et al., 1997; Wiebe et al., 2001)).","{'title': '5 Related Work', 'number': '5'}"
-"In contrast, our work classifies individual sentences, as does the research in (Wiebe et al., 1999).","{'title': '5 Related Work', 'number': '5'}"
-Sentence-level subjectivity classification is useful because most documents contain a mix of subjective and objective sentences.,"{'title': '5 Related Work', 'number': '5'}"
-"For example, newspaper articles are typically thought to be relatively objective, but (Wiebe et al., 2001) reported that, in their corpus, 44% of sentences (in articles that are not editorials or reviews) were subjective.","{'title': '5 Related Work', 'number': '5'}"
-Some previous work has focused explicitly on learning subjective words and phrases.,"{'title': '5 Related Work', 'number': '5'}"
-"(Hatzivassiloglou and McKeown, 1997) describes a method for identifying the semantic orientation of words, for example that beautiful expresses positive sentiments.","{'title': '5 Related Work', 'number': '5'}"
-"Researchers have focused on learning adjectives or adjectival phrases (Turney, 2002; Hatzivassiloglou and McKeown, 1997; Wiebe, 2000) and verbs (Wiebe et al., 2001), but no previous work has focused on learning nouns.","{'title': '5 Related Work', 'number': '5'}"
-A unique aspect of our work is the use of bootstrapping methods that exploit extraction patterns.,"{'title': '5 Related Work', 'number': '5'}"
-"(Turney, 2002) used patterns representing part-of-speech sequences, (Hatzivassiloglou and McKeown, 1997) recognized adjectival phrases, and (Wiebe et al., 2001) learned N-grams.","{'title': '5 Related Work', 'number': '5'}"
-"The extraction patterns used in our research are linguistically richer patterns, requiring shallow parsing and syntactic role assignment.","{'title': '5 Related Work', 'number': '5'}"
-"In recent years several techniques have been developed for semantic lexicon creation (e.g., (Hearst, 1992; Riloff and Shepherd, 1997; Roark and Charniak, 1998; Caraballo, 1999)).","{'title': '5 Related Work', 'number': '5'}"
-"Semantic word learning is different from subjective word learning, but we have shown that MetaBootstrapping and Basilisk could be successfully applied to subjectivity learning.","{'title': '5 Related Work', 'number': '5'}"
-Perhaps some of these other methods could also be used to learn subjective words.,"{'title': '5 Related Work', 'number': '5'}"
-This research produced interesting insights as well as performance results.,"{'title': '6 Conclusions', 'number': '6'}"
-"First, we demonstrated that weakly supervised bootstrapping techniques can learn subjective terms from unannotated texts.","{'title': '6 Conclusions', 'number': '6'}"
-Subjective features learned from unannotated documents can augment or enhance features learned from annotated training data using more traditional supervised learning techniques.,"{'title': '6 Conclusions', 'number': '6'}"
-"Second, Basilisk and Meta-Bootstrapping proved to be useful for a different task than they were originally intended.","{'title': '6 Conclusions', 'number': '6'}"
-"By seeding the algorithms with subjective words, the extraction patterns identified expressions that are associated with subjective nouns.","{'title': '6 Conclusions', 'number': '6'}"
-"This suggests that the bootstrapping algorithms should be able to learn not only general semantic categories, but any category for which words appear in similar linguistic phrases.","{'title': '6 Conclusions', 'number': '6'}"
-"Third, our best subjectivity classifier used a wide variety of features.","{'title': '6 Conclusions', 'number': '6'}"
-Subjectivity is a complex linguistic phenomenon and our evidence suggests that reliable subjectivity classification requires a broad array of features.,"{'title': '6 Conclusions', 'number': '6'}"
+We explore the idea of creating a subjectivity classifier that uses lists of subjective nouns learned by bootstrapping algorithms.,Introduction
+The goal of our research is to develop a system that can distinguish subjective sentences from objective sentences.,Introduction
+"First, we use two bootstrapping algorithms that exploit extraction patterns to learn sets of subjective nouns.",Introduction
+"Then we train a Naive Bayes classifier using the subjective nouns, discourse features, and subjectivity clues identified in prior research.",Introduction
+"The bootstrapping algorithms learned over 1000 subjective nouns, and the subjectivity classifier performed well, achieving 77% recall with 81% precision.",Introduction
+Many natural language processing applications could benefit from being able to distinguish between factual and subjective information.,Experiment/Discussion
+"Subjective remarks come in a variety of forms, including opinions, rants, allegations, accusations, suspicions, and speculation.",Experiment/Discussion
+"Ideally, information extraction systems should be able to distinguish between factual information (which should be extracted) and non-factual information (which should be discarded or labeled as uncertain).",Experiment/Discussion
+Question answering systems should distinguish between factual and speculative answers.,Experiment/Discussion
+Multi-perspective question answering aims to present multiple answers to the user based upon speculation or opinions derived from different sources.,Experiment/Discussion
+Multidocument summarization systems need to summarize different opinions and perspectives.,Experiment/Discussion
+"Spam filtering systems must recognize rants and emotional tirades, among other things.",Experiment/Discussion
+"In general, nearly any system that seeks to identify information could benefit from being able to separate factual and subjective information.",Experiment/Discussion
+"Subjective language has been previously studied in fields such as linguistics, literary theory, psychology, and content analysis.",Experiment/Discussion
+"Some manually-developed knowledge resources exist, but there is no comprehensive dictionary of subjective language.",Experiment/Discussion
+"Meta-Bootstrapping (Riloff and Jones, 1999) and Basilisk (Thelen and Riloff, 2002) are bootstrapping algorithms that use automatically generated extraction patterns to identify words belonging to a semantic category.",Experiment/Discussion
+We hypothesized that extraction patterns could also identify subjective words.,Experiment/Discussion
+"For example, the pattern “expressed <direct object>” often extracts subjective nouns, such as “concern”, “hope”, and “support”.",Experiment/Discussion
+"Furthermore, these bootstrapping algorithms require only a handful of seed words and unannotated texts for training; no annotated data is needed at all.",Experiment/Discussion
+"In this paper, we use the Meta-Bootstrapping and Basilisk algorithms to learn lists of subjective nouns from a large collection of unannotated texts.",Experiment/Discussion
+"Then we train a subjectivity classifier on a small set of annotated data, using the subjective nouns as features along with some other previously identified subjectivity features.",Experiment/Discussion
+"Our experimental results show that the subjectivity classifier performs well (77% recall with 81% precision) and that the learned nouns improve upon previous state-of-the-art subjectivity results (Wiebe et al., 1999).",Experiment/Discussion
+"In 2002, an annotation scheme was developed for a U.S. government-sponsored project with a team of 10 researchers (the annotation instructions and project reports are available on the Web at http://www.cs.pitt.edu/˜wiebe/pubs/ardasummer02/).",Experiment/Discussion
+"The scheme was inspired by work in linguistics and literary theory on subjectivity, which focuses on how opinions, emotions, etc. are expressed linguistically in context (Banfield, 1982).",Experiment/Discussion
+The scheme is more detailed and comprehensive than previous ones.,Experiment/Discussion
+We mention only those aspects of the annotation scheme relevant to this paper.,Experiment/Discussion
+The goal of the annotation scheme is to identify and characterize expressions of private states in a sentence.,Experiment/Discussion
+"Private state is a general covering term for opinions, evaluations, emotions, and speculations (Quirk et al., 1985).",Experiment/Discussion
+"For example, in sentence (1) the writer is expressing a negative evaluation.",Experiment/Discussion
+Sentence (2) reflects the private state of Western countries.,Experiment/Discussion
+"Mugabe’s use of “overwhelmingly” also reflects a private state, his positive reaction to and characterization of his victory.",Experiment/Discussion
+"Our data consists of English-language versions of foreign news documents from FBIS, the U.S. Foreign Broadcast Information Service.",Experiment/Discussion
+The data is from a variety of publications and countries.,Experiment/Discussion
+The annotated corpus used to train and test our subjectivity classifiers (the experiment corpus) consists of 109 documents with a total of 2197 sentences.,Experiment/Discussion
+"We used a separate, annotated tuning corpus of 33 documents with a total of 698 sentences to establish some experimental parameters.'",Experiment/Discussion
+"Each document was annotated by one or both of two annotators, A and T. To allow us to measure interannotator agreement, the annotators independently annotated the same 12 documents with a total of 178 sentences.",Experiment/Discussion
+"We began with a strict measure of agreement at the sentence level by first considering whether the annotator marked any private-state expression, of any strength, anywhere in the sentence.",Experiment/Discussion
+"If so, the sentence should be subjective.",Experiment/Discussion
+"Otherwise, it is objective.",Experiment/Discussion
+Table 1 shows the contingency table.,Experiment/Discussion
+"The percentage agreement is 88%, and the rc value is 0.71.",Experiment/Discussion
+"One would expect that there are clear cases of objective sentences, clear cases of subjective sentences, and borderline sentences in between.",Experiment/Discussion
+The agreement study supports this.,Experiment/Discussion
+"In terms of our annotations, we define a sentence as borderline if it has at least one privatestate expression identified by at least one annotator, and all strength ratings of private-state expressions are low.",Experiment/Discussion
+"Table 2 shows the agreement results when such borderline sentences are removed (19 sentences, or 11% of the agreement test corpus).",Experiment/Discussion
+The percentage agreement increases to 94% and the rc value increases to 0.87.,Experiment/Discussion
+"As expected, the majority of disagreement cases involve low-strength subjectivity.",Experiment/Discussion
+The annotators consistently agree about which are the clear cases of subjective sentences.,Experiment/Discussion
+This leads us to define the gold-standard that we use in our experiments.,Experiment/Discussion
+A sentence is subjective if it contains at least one private-state expression of medium or higher strength.,Experiment/Discussion
+"The second class, which we call objective, consists of everything else.",Experiment/Discussion
+"Thus, sentences with only mild traces of subjectivity are tossed into the objective category, making the system’s goal to find the clearly subjective sentences.",Experiment/Discussion
+"In the last few years, two bootstrapping algorithms have been developed to create semantic dictionaries by exploiting extraction patterns: Meta-Bootstrapping (Riloff and Jones, 1999) and Basilisk (Thelen and Riloff, 2002).",Experiment/Discussion
+"Extraction patterns were originally developed for information extraction tasks (Cardie, 1997).",Experiment/Discussion
+They represent lexico-syntactic expressions that typically rely on shallow parsing and syntactic role assignment.,Experiment/Discussion
+"For example, the pattern “<subject> was hired” would apply to sentences that contain the verb “hired” in the passive voice.",Experiment/Discussion
+The subject would be extracted as the hiree.,Experiment/Discussion
+"Meta-Bootstrapping and Basilisk were designed to learn words that belong to a semantic category (e.g., Tagger A Subj Obj “truck” is a VEHICLE and “seashore” is a LOCATION).",Experiment/Discussion
+Both algorithms begin with unannotated texts and seed words that represent a semantic category.,Experiment/Discussion
+A bootstrapping process looks for words that appear in the same extraction patterns as the seeds and hypothesizes that those words belong to the same semantic class.,Experiment/Discussion
+The principle behind this approach is that words of the same semantic class appear in similar pattern contexts.,Experiment/Discussion
+"For example, the phrases “lived in” and “traveled to” will co-occur with many noun phrases that represent LOCATIONS.",Experiment/Discussion
+"In our research, we want to automatically identify words that are subjective.",Experiment/Discussion
+"Subjective terms have many different semantic meanings, but we believe that the same contextual principle applies to subjectivity.",Experiment/Discussion
+"In this section, we briefly overview these bootstrapping algorithms and explain how we used them to generate lists of subjective nouns.",Experiment/Discussion
+"The Meta-Bootstrapping (“MetaBoot”) process (Riloff and Jones, 1999) begins with a small set of seed words that represent a targeted semantic category (e.g., 10 words that represent LOCATIONS) and an unannotated corpus.",Experiment/Discussion
+"First, MetaBoot automatically creates a set of extraction patterns for the corpus by applying and instantiating syntactic templates.",Experiment/Discussion
+"This process literally produces thousands of extraction patterns that, collectively, will extract every noun phrase in the corpus.",Experiment/Discussion
+"Next, MetaBoot computes a score for each pattern based upon the number of seed words among its extractions.",Experiment/Discussion
+"The best pattern is saved and all of its extracted noun phrases are automatically labeled as the targeted semantic category.2 MetaBoot then re-scores the extraction patterns, using the original seed words as well as the newly labeled words, and the process repeats.",Experiment/Discussion
+This procedure is called mutual bootstrapping.,Experiment/Discussion
+A second level of bootstrapping (the “meta-” bootstrapping part) makes the algorithm more robust.,Experiment/Discussion
+"When the mutual bootstrapping process is finished, all nouns that were put into the semantic dictionary are reevaluated.",Experiment/Discussion
+Each noun is assigned a score based on how many different patterns extracted it.,Experiment/Discussion
+Only the five best nouns are allowed to remain in the dictionary.,Experiment/Discussion
+"The other entries are discarded, and the mutual bootstrapping process starts over again using the revised semantic dictionary.",Experiment/Discussion
+"Basilisk (Thelen and Riloff, 2002) is a more recent bootstrapping algorithm that also utilizes extraction patterns to create a semantic dictionary.",Experiment/Discussion
+"Similarly, Basilisk begins with an unannotated text corpus and a small set of seed words for a semantic category.",Experiment/Discussion
+The bootstrapping process involves three steps.,Experiment/Discussion
+(1) Basilisk automatically generates a set of extraction patterns for the corpus and scores each pattern based upon the number of seed words among its extractions.,Experiment/Discussion
+This step is identical to the first step of Meta-Bootstrapping.,Experiment/Discussion
+Basilisk then puts the best patterns into a Pattern Pool.,Experiment/Discussion
+(2) All nouns3 extracted by a pattern in the Pattern Pool are put into a Candidate Word Pool.,Experiment/Discussion
+Basilisk scores each noun based upon the set of patterns that extracted it and their collective association with the seed words.,Experiment/Discussion
+(3) The top 10 nouns are labeled as the targeted semantic class and are added to the dictionary.,Experiment/Discussion
+"The bootstrapping process then repeats, using the original seeds and the newly labeled words.",Experiment/Discussion
+The main difference between Basilisk and MetaBootstrapping is that Basilisk scores each noun based on collective information gathered from all patterns that extracted it.,Experiment/Discussion
+"In contrast, Meta-Bootstrapping identifies a single best pattern and assumes that everything it extracted belongs to the same semantic class.",Experiment/Discussion
+The second level of bootstrapping smoothes over some of the problems caused by this assumption.,Experiment/Discussion
+"In comparative experiments (Thelen and Riloff, 2002), Basilisk outperformed Meta-Bootstrapping.",Experiment/Discussion
+"But since our goal of learning subjective nouns is different from the original intent of the algorithms, we tried them both.",Experiment/Discussion
+"We also suspected they might learn different words, in which case using both algorithms could be worthwhile.",Experiment/Discussion
+The Meta-Bootstrapping and Basilisk algorithms need seed words and an unannotated text corpus as input.,Experiment/Discussion
+"Since we did not need annotated texts, we created a much larger training corpus, the bootstrapping corpus, by gathering 950 new texts from the FBIS source mentioned in Section 2.2.",Experiment/Discussion
+"To find candidate seed words, we automatically identified 850 nouns that were positively correlated with subjective sentences in another data set.",Experiment/Discussion
+"However, it is crucial that the seed words occur frequently in our FBIS texts or the bootstrapping process will not get off the ground.",Experiment/Discussion
+"So we searched for each of the 850 nouns in the bootstrapping corpus, sorted them by frequency, and manually selected 20 high-frequency words that we judged to be strongly subjective.",Experiment/Discussion
+Table 3 shows the 20 seed words used for both Meta-Bootstrapping and Basilisk.,Experiment/Discussion
+"We ran each bootstrapping algorithm for 400 iterations, generating 5 words per iteration.",Experiment/Discussion
+Basilisk generated 2000 nouns and Meta-Bootstrapping generated 1996 nouns.4 Table 4 shows some examples of extraction patterns that were discovered to be associated with subjective nouns.,Experiment/Discussion
+"Meta-Bootstrapping and Basilisk are semi-automatic lexicon generation tools because, although the bootstrapping process is 100% automatic, the resulting lexicons need to be reviewed by a human.5 So we manually reviewed the 3996 words proposed by the algorithms.",Experiment/Discussion
+This process is very fast; it takes only a few seconds to classify each word.,Experiment/Discussion
+The entire review process took approximately 3-4 hours.,Experiment/Discussion
+One author did this labeling; this person did not look at or run tests on the experiment corpus.,Experiment/Discussion
+"We classified the words as StrongSubjective, WeakSubjective, or Objective.",Experiment/Discussion
+"Objective terms are not subjective at all (e.g., “chair” or “city”).",Experiment/Discussion
+"StrongSubjective terms have strong, unambiguously subjective connotations, such as “bully” or “barbarian”.",Experiment/Discussion
+"WeakSubjective was used for three situations: (1) words that have weak subjective connotations, such as “aberration” which implies something out of the ordinary but does not evoke a strong sense of judgement, (2) words that have multiple senses or uses, where one is subjective but the other is not.",Experiment/Discussion
+"For example, the word “plague” can refer to a disease (objective) or an onslaught of something negative (subjective), (3) words that are objective by themselves but appear in idiomatic expressions that are subjective.",Experiment/Discussion
+"For example, the word “eyebrows” was labeled WeakSubjective because the expression “raised eyebrows” probably occurs more often in our corpus than literal references to “eyebrows”.",Experiment/Discussion
+Table 5 shows examples of learned words that were classified as StrongSubjective or WeakSubjective.,Experiment/Discussion
+"Once the words had been manually classified, we could go back and measure the effectiveness of the algorithms.",Experiment/Discussion
+The graph in Figure 1 tracks their accuracy as the bootstrapping progressed.,Experiment/Discussion
+The X-axis shows the number of words generated so far.,Experiment/Discussion
+The Y-axis shows the percentage of those words that were manually classified as subjective.,Experiment/Discussion
+"As is typical of bootstrapping algorithms, accuracy was high during the initial iterations but tapered off as the bootstrapping continued.",Experiment/Discussion
+"After 20 words, both algorithms were 95% accurate.",Experiment/Discussion
+After 100 words Basilisk was 75% accurate and MetaBoot was 81% accurate.,Experiment/Discussion
+"After 1000 words, accuracy dropped to about 28% for MetaBoot, but Basilisk was still performing reasonably well at 53%.",Experiment/Discussion
+"Although 53% accuracy is not high for a fully automatic process, Basilisk depends on a human to review the words so 53% accuracy means that the human is accepting every other word, on average.",Experiment/Discussion
+"Thus, the reviewer’s time was still being spent productively even after 1000 words had been hypothesized.",Experiment/Discussion
+Table 6 shows the size of the final lexicons created by the bootstrapping algorithms.,Experiment/Discussion
+The first two columns show the number of subjective terms learned by Basilisk and Meta-Bootstrapping.,Experiment/Discussion
+"Basilisk was more prolific, generating 825 subjective terms compared to 522 for MetaBootstrapping.",Experiment/Discussion
+The third column shows the intersection between their word lists.,Experiment/Discussion
+"There was substantial overlap, but both algorithms produced many words that the other did not.",Experiment/Discussion
+The last column shows the results of merging their lists.,Experiment/Discussion
+"In total, the bootstrapping algorithms produced 1052 subjective nouns.",Experiment/Discussion
+"To evaluate the subjective nouns, we trained a Naive Bayes classifier using the nouns as features.",Experiment/Discussion
+"We also incorporated previously established subjectivity clues, and added some new discourse features.",Experiment/Discussion
+"In this section, we describe all the feature sets and present performance results for subjectivity classifiers trained on different combinations of these features.",Experiment/Discussion
+The threshold values and feature representations used in this section are the ones that produced the best results on our separate tuning corpus.,Experiment/Discussion
+We defined four features to represent the sets of subjective nouns produced by the bootstrapping algorithms.,Experiment/Discussion
+"BA-Strong: the set of StrongSubjective nouns generated by Basilisk BA-Weak: the set of WeakSubjective nouns generated by Basilisk MB-Strong: the set of StrongSubjective nouns generated by Meta-Bootstrapping MB-Weak: the set of WeakSubjective nouns generated by Meta-Bootstrapping For each set, we created a three-valued feature based on the presence of 0, 1, or > 2 words from that set.",Experiment/Discussion
+"We used the nouns as feature sets, rather than define a separate feature for each word, so the classifier could generalize over the set to minimize sparse data problems.",Experiment/Discussion
+We will refer to these as the SubjNoun features.,Experiment/Discussion
+"Wiebe, Bruce, & O’Hara (1999) developed a machine learning system to classify subjective sentences.",Experiment/Discussion
+"We experimented with the features that they used, both to compare their results to ours and to see if we could benefit from their features.",Experiment/Discussion
+We will refer to these as the WBO features.,Experiment/Discussion
+WBO includes a set of stems positively correlated with the subjective training examples (subjStems) and a set of stems positively correlated with the objective training examples (objStems).,Experiment/Discussion
+"We defined a three-valued feature for the presence of 0, 1, or > 2 members of subjStems in a sentence, and likewise for objStems.",Experiment/Discussion
+"For our experiments, subjStems includes stems that appear > 7 times in the training set, and for which the precision is 1.25 times the baseline word precision for that training set. objStems contains the stems that appear > 7 times and for which at least 50% of their occurrences in the training set are in objective sentences.",Experiment/Discussion
+"WBO also includes a binary feature for each of the following: the presence in the sentence of a pronoun, an adjective, a cardinal number, a modal other than will, and an adverb other than not.",Experiment/Discussion
+We also added manually-developed features found by other researchers.,Experiment/Discussion
+"We created 14 feature sets representing some classes from (Levin, 1993; Ballmer and Brennenstuhl, 1981), some Framenet lemmas with frame element experiencer (Baker et al., 1998), adjectives manually annotated for polarity (Hatzivassiloglou and McKeown, 1997), and some subjectivity clues listed in (Wiebe, 1990).",Experiment/Discussion
+"We represented each set as a three-valued feature based on the presence of 0, 1, or > 2 members of the set.",Experiment/Discussion
+We will refer to these as the manual features.,Experiment/Discussion
+We created discourse features to capture the density of clues in the text surrounding a sentence.,Experiment/Discussion
+"First, we computed the average number of subjective clues and objective clues per sentence, normalized by sentence length.",Experiment/Discussion
+"The subjective clues, subjClues, are all sets for which 3-valued features were defined above (except objStems).",Experiment/Discussion
+The objective clues consist only of objStems.,Experiment/Discussion
+For senAvgClueRatesubj to be the average of ClueRate(S) over all sentences S and similarly for AvgClueRateobj.,Experiment/Discussion
+"Next, we characterize the number of subjective and objective clues in the previous and next sentences as: higher-than-expected (high), lower-than-expected (low), or expected (medium).",Experiment/Discussion
+The value for ClueRatesubj(S) is high if ClueRatesubj(S) > AvgClueRatesubj * 1.3; low if ClueRatesubj(S) <_ AvgClueRatesubj/1.3; otherwise it is medium.,Experiment/Discussion
+The values for ClueRateobj(S) are defined similarly.,Experiment/Discussion
+"Using these definitions we created four features: ClueRatesubj for the previous and following sentences, and ClueRateobj for the previous and following sentences.",Experiment/Discussion
+We also defined a feature for sentence length.,Experiment/Discussion
+Let AvgSentLen be the average sentence length.,Experiment/Discussion
+SentLen(S) is high if length(S) > AvgSentLen*1.3; low if length(S) < AvgSentLen/1.3; and medium otherwise.,Experiment/Discussion
+"We conducted experiments to evaluate the performance of the feature sets, both individually and in various combinations.",Experiment/Discussion
+"Unless otherwise noted, all experiments involved training a Naive Bayes classifier using a particular set of features.",Experiment/Discussion
+We evaluated each classifier using 25fold cross validation on the experiment corpus and used paired t-tests to measure significance at the 95% confidence level.,Experiment/Discussion
+"As our evaluation metrics, we computed accuracy (Acc) as the percentage of the system’s classifications that match the gold-standard, and precision (Prec) and recall (Rec) with respect to subjective sentences. represents the common baseline of assigning every sentence to the most frequent class.",Experiment/Discussion
+The Most-Frequent baseline achieves 59% accuracy because 59% of the sentences in the gold-standard are subjective.,Experiment/Discussion
+"Row (2) is a Naive Bayes classifier that uses the WBO features, which performed well in prior research on sentence-level subjectivity classification (Wiebe et al., 1999).",Experiment/Discussion
+"Row (1) shows a Naive Bayes classifier that uses unigram bag-ofwords features, with one binary feature for the absence or presence in the sentence of each word that appeared during training.",Experiment/Discussion
+Pang et al. (2002) reported that a similar experiment produced their best results on a related classification task.,Experiment/Discussion
+The difference in accuracy between Rows (1) and (2) is not statistically significant (Bag-of-Word’s higher precision is balanced by WBO’s higher recall).,Experiment/Discussion
+"Next, we trained a Naive Bayes classifier using only the SubjNoun features.",Experiment/Discussion
+This classifier achieved good precision (77%) but only moderate recall (64%).,Experiment/Discussion
+"Upon further inspection, we discovered that the subjective nouns are good subjectivity indicators when they appear, but not every subjective sentence contains one of them.",Experiment/Discussion
+"And, relatively few sentences contain more than one, making it difficult to recognize contextual effects (i.e., multiple clues in a region).",Experiment/Discussion
+We concluded that the appropriate way to benefit from the subjective nouns is to use them in tandem with other subjectivity clues.,Experiment/Discussion
+Table 8 shows the results of Naive Bayes classifiers trained with different combinations of features.,Experiment/Discussion
+The accuracy differences between all pairs of experiments in Table 8 are statistically significant.,Experiment/Discussion
+Row (3) uses only the WBO features (also shown in Table 7 as a baseline).,Experiment/Discussion
+Row (2) uses the WBO features as well as the SubjNoun features.,Experiment/Discussion
+There is a synergy between these feature sets: using both types of features achieves better performance than either one alone.,Experiment/Discussion
+"The difference is mainly precision, presumably because the classifier found more and better combinations of features.",Experiment/Discussion
+"In Row (1), we also added the manual and discourse features.",Experiment/Discussion
+The discourse features explicitly identify contexts in which multiple clues are found.,Experiment/Discussion
+"This classifier produced even better performance, achieving 81.3% precision with 77.4% recall.",Experiment/Discussion
+The 76.1% accuracy result is significantly higher than the accuracy results for all of the other classifiers (in both Table 8 and Table 7).,Experiment/Discussion
+"Finally, higher precision classification can be obtained by simply classifying a sentence as subjective if it contains any of the StrongSubjective nouns.",Experiment/Discussion
+"On our data, this method produces 87% precision with 26% recall.",Experiment/Discussion
+This approach could support applications for which precision is paramount.,Experiment/Discussion
+Several types of research have involved document-level subjectivity classification.,Results/Conclusion
+"Some work identifies inflammatory texts (e.g., (Spertus, 1997)) or classifies reviews as positive or negative ((Turney, 2002; Pang et al., 2002)).",Results/Conclusion
+"Tong’s system (Tong, 2001) generates sentiment timelines, tracking online discussions and creating graphs of positive and negative opinion messages over time.",Results/Conclusion
+"Research in genre classification may include recognition of subjective genres such as editorials (e.g., (Karlgren and Cutting, 1994; Kessler et al., 1997; Wiebe et al., 2001)).",Results/Conclusion
+"In contrast, our work classifies individual sentences, as does the research in (Wiebe et al., 1999).",Results/Conclusion
+Sentence-level subjectivity classification is useful because most documents contain a mix of subjective and objective sentences.,Results/Conclusion
+"For example, newspaper articles are typically thought to be relatively objective, but (Wiebe et al., 2001) reported that, in their corpus, 44% of sentences (in articles that are not editorials or reviews) were subjective.",Results/Conclusion
+Some previous work has focused explicitly on learning subjective words and phrases.,Results/Conclusion
+"(Hatzivassiloglou and McKeown, 1997) describes a method for identifying the semantic orientation of words, for example that beautiful expresses positive sentiments.",Results/Conclusion
+"Researchers have focused on learning adjectives or adjectival phrases (Turney, 2002; Hatzivassiloglou and McKeown, 1997; Wiebe, 2000) and verbs (Wiebe et al., 2001), but no previous work has focused on learning nouns.",Results/Conclusion
+A unique aspect of our work is the use of bootstrapping methods that exploit extraction patterns.,Results/Conclusion
+"(Turney, 2002) used patterns representing part-of-speech sequences, (Hatzivassiloglou and McKeown, 1997) recognized adjectival phrases, and (Wiebe et al., 2001) learned N-grams.",Results/Conclusion
+"The extraction patterns used in our research are linguistically richer patterns, requiring shallow parsing and syntactic role assignment.",Results/Conclusion
+"In recent years several techniques have been developed for semantic lexicon creation (e.g., (Hearst, 1992; Riloff and Shepherd, 1997; Roark and Charniak, 1998; Caraballo, 1999)).",Results/Conclusion
+"Semantic word learning is different from subjective word learning, but we have shown that MetaBootstrapping and Basilisk could be successfully applied to subjectivity learning.",Results/Conclusion
+Perhaps some of these other methods could also be used to learn subjective words.,Results/Conclusion
+This research produced interesting insights as well as performance results.,Results/Conclusion
+"First, we demonstrated that weakly supervised bootstrapping techniques can learn subjective terms from unannotated texts.",Results/Conclusion
+Subjective features learned from unannotated documents can augment or enhance features learned from annotated training data using more traditional supervised learning techniques.,Results/Conclusion
+"Second, Basilisk and Meta-Bootstrapping proved to be useful for a different task than they were originally intended.",Results/Conclusion
+"By seeding the algorithms with subjective words, the extraction patterns identified expressions that are associated with subjective nouns.",Results/Conclusion
+"This suggests that the bootstrapping algorithms should be able to learn not only general semantic categories, but any category for which words appear in similar linguistic phrases.",Results/Conclusion
+"Third, our best subjectivity classifier used a wide variety of features.",Results/Conclusion
+Subjectivity is a complex linguistic phenomenon and our evidence suggests that reliable subjectivity classification requires a broad array of features.,Results/Conclusion

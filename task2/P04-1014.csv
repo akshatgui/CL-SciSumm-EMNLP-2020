@@ -1,174 +1,174 @@
 col1,col2
-"This paper describes and evaluates log-linear parsing models for Combinatory Categorial A parallel implementation of algorithm is described, which runs on a Beowulf cluster allowing the complete Penn Treebank to be used for estimation.",{}
-We also develop a new efficient parsing for maximises expected recall of dependencies.,{}
-"We compare models use all including nonstandard derivations, with normal-form models.",{}
-The performances of the two models are comparable and the results are competitive with ex,{}
-"A number of statistical parsing models have recently been developed for Combinatory Categorial Grammar (CCG; Steedman, 2000) and used in parsers applied to the WSJ Penn Treebank (Clark et al., 2002; Hockenmaier and Steedman, 2002; Hockenmaier, 2003b).","{'title': '1 Introduction', 'number': '1'}"
-In Clark and Curran (2003) we argued for the use of log-linear parsing models for CCG.,"{'title': '1 Introduction', 'number': '1'}"
-"However, estimating a log-linear model for a widecoverage CCG grammar is very computationally expensive.","{'title': '1 Introduction', 'number': '1'}"
-"Following Miyao and Tsujii (2002), we showed how the estimation can be performed efficiently by applying the inside-outside algorithm to a packed chart.","{'title': '1 Introduction', 'number': '1'}"
-We also showed how the complete WSJ Penn Treebank can be used for training by developing a parallel version of Generalised Iterative Scaling (GIS) to perform the estimation.,"{'title': '1 Introduction', 'number': '1'}"
-This paper significantly extends our earlier work in a number of ways.,"{'title': '1 Introduction', 'number': '1'}"
-"First, we evaluate a number of log-linear models, obtaining results which are competitive with the state-of-the-art for CCG parsing.","{'title': '1 Introduction', 'number': '1'}"
-"We also compare log-linear models which use all CCG derivations, including non-standard derivations, with normal-form models.","{'title': '1 Introduction', 'number': '1'}"
-"Second, we find that GIS is unsuitable for estimating a model of the size being considered, and develop a parallel version of the L-BFGS algorithm (Nocedal and Wright, 1999).","{'title': '1 Introduction', 'number': '1'}"
-"And finally, we show that the parsing algorithm described in Clark and Curran (2003) is extremely slow in some cases, and suggest an efficient alternative based on Goodman (1996).","{'title': '1 Introduction', 'number': '1'}"
-"The development of parsing and estimation algorithms for models which use all derivations extends existing CCG parsing techniques, and allows us to test whether there is useful information in the additional derivations.","{'title': '1 Introduction', 'number': '1'}"
-"However, we find that the performance of the normal-form model is at least as good as the all-derivations model, in our experiments todate.","{'title': '1 Introduction', 'number': '1'}"
-"The normal-form approach allows the use of additional constraints on rule applications, leading to a smaller model, reducing the computational resources required for estimation, and resulting in an extremely efficient parser.","{'title': '1 Introduction', 'number': '1'}"
-"This paper assumes a basic understanding of CCG; see Steedman (2000) for an introduction, and Clark et al. (2002) and Hockenmaier (2003a) for an introduction to statistical parsing with CCG.","{'title': '1 Introduction', 'number': '1'}"
-"CCG is unusual among grammar formalisms in that, for each derived structure for a sentence, there can be many derivations leading to that structure.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"The presence of such ambiguity, sometimes referred to as spurious ambiguity, enables CCG to produce elegant analyses of coordination and extraction phenomena (Steedman, 2000).","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"However, the introduction of extra derivations increases the complexity of the modelling and parsing problem.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"Clark et al. (2002) handle the additional derivations by modelling the derived structure, in their case dependency structures.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"They use a conditional model, based on Collins (1996), which, as the authors acknowledge, has a number of theoretical deficiencies; thus the results of Clark et al. provide a useful baseline for the new models presented here.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"Hockenmaier (2003a) uses a model which favours only one of the derivations leading to a derived structure, namely the normal-form derivation (Eisner, 1996).","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-In this paper we compare the normal-form approach with a dependency model.,"{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"For the dependency model, we define the probability of a dependency structure as follows: where  is a dependency structure, S is a sentence and A() is the set of derivations which lead to .","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"This extends the approach of Clark et al. (2002) who modelled the dependency structures directly, not using any information from the derivations.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"In contrast to the dependency model, the normal-form model simply defines a distribution over normalform derivations.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-The dependency structures considered in this paper are described in detail in Clark et al. (2002) and Clark and Curran (2003).,"{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"Each argument slot in a CCG lexical category represents a dependency relation, and a dependency is defined as a 5-tuple (hf, f, s, ha, l), where hf is the head word of the lexical category, f is the lexical category, s is the argument slot, ha is the head word of the argument, and l indicates whether the dependency is long-range.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-"For example, the long-range dependency encoding company as the extracted object of bought (as in the company that IBM bought) is represented as the following 5-tuple: (bought, (S[dcl]\NP,)/NP,, 2, company, *) where * is the category (NP\NP)/(S[dcl]/NP) assigned to the relative pronoun.","{'title': '2 Parsing Models for CCG', 'number': '2'}"
-For local dependencies l is assigned a null value.,"{'title': '2 Parsing Models for CCG', 'number': '2'}"
-A dependency structure is a multiset of these dependencies.,"{'title': '2 Parsing Models for CCG', 'number': '2'}"
-Log-linear models (also known as Maximum Entropy models) are popular in NLP because of the ease with which discriminating features can be included in the model.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"Log-linear models have been applied to the parsing problem across a range of grammar formalisms, e.g.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Riezler et al. (2002) and Toutanova et al.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-(2002).,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-One motivation for using a log-linear model is that long-range dependencies which CCG was designed to handle can easily be encoded as features.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"A conditional log-linear model of a parse  E SZ, given a sentence S, is defined as follows: where A.f() = i ifi().","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-The function fi is a feature of the parse which can be any real-valued function over the space of parses SZ.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Each feature fi has an associated weight i which is a parameter of the model to be estimated.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"ZS is a normalising constant which ensures that P(|S) is a probability distribution: where (S) is the set of possible parses for S. For the dependency model a parse, , is a (d, ) pair (as given in (1)).","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-A feature is a count of the number of times some configuration occurs in d or the number of times some dependency occurs in .,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Section 6 gives examples of features.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-We follow Riezler et al. (2002) in using a discriminative estimation method by maximising the conditional likelihood of the model given the data.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"For the dependency model, the data consists of sentences S 1, ... , Sm, together with gold standard dependency structures, 1, ... , m.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"The gold standard structures are multisets of dependencies, as described earlier.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Section 6 explains how the gold standard structures are obtained.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"The objective function of a model A is the conditional log-likelihood, L(A), minus a Gaussian prior term, G(A), used to reduce overfitting (Chen and Rosenfeld, 1999).","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"Hence, given the definition of the probability of a dependency structure (1), the objective function is as follows: where n is the number of features.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"Rather than have a different smoothing parameter i for each feature, we use a single parameter .","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"We use a technique from the numerical optimisation literature, the L-BFGS algorithm (Nocedal and Wright, 1999), to optimise the objective function.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-L-BFGS is an iterative algorithm which requires the gradient of the objective function to be computed at each iteration.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-The components of the gradient vecThe first two terms in (5) are expectations of feature fi: the first expectation is over all derivations leading to each gold standard dependency structure; the second is over all derivations for each sentence in the training data.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"Setting the gradient to zero yields the usual maximum entropy constraints (Berger et al., 1996), except that in this case the empirical values are themselves expectations (over all derivations leading to each gold standard dependency structure).","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"The estimation process attempts to make the expectations equal, by putting as much mass as possible on the derivations leading to the gold standard structures.1 The Gaussian prior term penalises any model whose weights get too large in absolute value.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"Calculation of the feature expectations requires summing over all derivations for a sentence, and summing over all derivations leading to a gold standard dependency structure.","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"In both cases there can be exponentially many derivations, and so enumerating all derivations is not possible (at least for wide-coverage automatically extracted grammars).","{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Clark and Curran (2003) show how the sum over the complete derivation space can be performed efficiently using a packed chart and a variant of the inside-outside algorithm.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Section 5 shows how the same technique can also be applied to all derivations leading to a gold standard dependency structure.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-The objective function and gradient vector for the normal-form model are as follows: where dj is the the gold standard derivation for sentence Sj and B(Sj) is the set of possible derivations for Sj.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-Note that the empirical expectation in (7) is simply a count of the number of times the feature appears in the gold-standard derivations.,"{'title': '3 Log-Linear Parsing Models', 'number': '3'}"
-"The packed charts perform a number of roles: they are a compact representation of a very large number of CCG derivations; they allow recovery of the highest scoring parse or dependency structure without enumerating all derivations; and they represent an instance of what Miyao and Tsujii (2002) call a feature forest, which is used to efficiently estimate a log-linear model.","{'title': '4 Packed Charts', 'number': '4'}"
-"The idea behind a packed chart is simple: equivalent chart entries of the same type, in the same cell, are grouped together, and back pointers to the daughters indicate how an individual entry was created.","{'title': '4 Packed Charts', 'number': '4'}"
-Equivalent entries form the same structures in any subsequent parsing.,"{'title': '4 Packed Charts', 'number': '4'}"
-"Since the packed charts are used for model estimation and recovery of the highest scoring parse or dependency structure, the features in the model partly determine which entries can be grouped together.","{'title': '4 Packed Charts', 'number': '4'}"
-"In this paper we use features from the dependency structure, and features defined on the local rule instantiations.2 Hence, any two entries with identical category type, identical head, and identical unfilled dependencies are equivalent.","{'title': '4 Packed Charts', 'number': '4'}"
-"Note that not all features are local to a rule instantiation; for example, features encoding long-range dependencies may involve words which are a long way apart in the sentence.","{'title': '4 Packed Charts', 'number': '4'}"
-"For the purposes of estimation and finding the highest scoring parse or dependency structure, only entries which are part of a derivation spanning the whole sentence are relevant.","{'title': '4 Packed Charts', 'number': '4'}"
-"These entries can be easily found by traversing the chart top-down, starting with the entries which span the sentence.","{'title': '4 Packed Charts', 'number': '4'}"
-"The entries within spanning derivations form a feature forest (Miyao and Tsujii, 2002).","{'title': '4 Packed Charts', 'number': '4'}"
-"A feature forest (D is a tuple (C, D, R, y, 6) where: The individual entries in a cell are conjunctive nodes, and the equivalence classes of entries are dis2By rule instantiation we mean the local tree arising from the application of a CCG combinatory rule. junctive nodes.","{'title': '4 Packed Charts', 'number': '4'}"
-The roots of the CCG derivations represent the root disjunctive nodes.3,"{'title': '4 Packed Charts', 'number': '4'}"
-"The L-BFGS algorithm requires the following values at each iteration: the expected value, and the empirical expected value, of each feature (to calculate the gradient); and the value of the likelihood function.","{'title': '5 Efficient Estimation', 'number': '5'}"
-"For the normal-form model, the empirical expected values and the likelihood can easily be obtained, since these only involve the single goldstandard derivation for each sentence.","{'title': '5 Efficient Estimation', 'number': '5'}"
-The expected values can be calculated using the method in Clark and Curran (2003).,"{'title': '5 Efficient Estimation', 'number': '5'}"
-"For the dependency model, the computations of the empirical expected values (5) and the likelihood function (4) are more complex, since these require sums over just those derivations leading to the gold standard dependency structure.","{'title': '5 Efficient Estimation', 'number': '5'}"
-We will refer to such derivations as correct derivations.,"{'title': '5 Efficient Estimation', 'number': '5'}"
-"Figure 1 gives an algorithm for finding nodes in a packed chart which appear in correct derivations. cdeps(c) is the number of correct dependencies on conjunctive node c, and takes the value −1 if there are any incorrect dependencies on c. dmax(c) is the maximum number of correct dependencies produced by any sub-derivation headed by c, and takes the value −1 if there are no sub-derivations producing only correct dependencies. dmax(d) is the same value but for disjunctive node d. Recursive definitions for calculating these values are given in Figure 1; the base case occurs when conjunctive nodes have no disjunctive daughters.","{'title': '5 Efficient Estimation', 'number': '5'}"
-"The algorithm identifies all those root nodes heading derivations which produce just the correct dependencies, and traverses the chart top-down marking the nodes in those derivations.","{'title': '5 Efficient Estimation', 'number': '5'}"
-"The insight behind the algorithm is that, for two conjunctive nodes in the same equivalence class, if one node heads a sub-derivation producing more correct dependencies than the other node (and each sub-derivation only produces correct dependencies), then the node with less correct dependencies cannot be part of a correct derivation.","{'title': '5 Efficient Estimation', 'number': '5'}"
-The conjunctive and disjunctive nodes appearing in correct derivations form a new correct feature forest.,"{'title': '5 Efficient Estimation', 'number': '5'}"
-"The correct forest, and the complete forest containing all derivations spanning the sentence, can be used to estimate the required likelihood value and feature expectations.","{'title': '5 Efficient Estimation', 'number': '5'}"
-"Let E fi be the expected value of fi over the forest (D for model A; then the values in (5) can be obtained by calculating Ej  fi for the complete forest (Dj for each sentence Sj in the training data (the second sum in (5)), and also Ej fi for each forest Tj of correct derivations (the first sum in (5)): where log Z is the normalisation constant for (D.","{'title': '5 Efficient Estimation', 'number': '5'}"
-"The gold standard dependency structures are produced by running our CCG parser over the normal-form derivations in CCGbank (Hockenmaier, 2003a).","{'title': '6 Estimation in Practice', 'number': '6'}"
-"Not all rule instantiations in CCGbank are instances of combinatory rules, and not all can be produced by the parser, and so gold standard structures were created for 85.5% of the sentences in sections 2-21 (33,777 sentences).","{'title': '6 Estimation in Practice', 'number': '6'}"
-The same parser is used to produce the packed charts.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-"The parser uses a maximum entropy supertagger (Clark and Curran, 2004) to assign lexical categories to the words in a sentence, and applies the CKY chart parsing algorithm described in Steedman (2000).","{'title': '6 Estimation in Practice', 'number': '6'}"
-"For parsing the training data, we ensure that the correct category is a member of the set assigned to each word.","{'title': '6 Estimation in Practice', 'number': '6'}"
-The average number of categories assigned to each word is determined by a parameter in the supertagger.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-"For the first set of experiments, we used a setting which assigns 1.7 categories on average per word.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"The feature set for the dependency model consists of the following types of features: dependency features (with and without distance measures), rule instantiation features (with and without a lexical head), lexical category features, and root category features.","{'title': '6 Estimation in Practice', 'number': '6'}"
-Dependency features are the 5-tuples defined in Section 1.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-"There are also three additional dependency feature types which have an extra distance field (and only include the head of the lexical category, and not the head of the argument); these count the number of words (0, 1, 2 or more), punctuation marks (0, 1, 2 or more), and verbs (0, 1 or more) between head and dependent.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"Lexical category features are word–category pairs at the leaf nodes, and root features are headword–category pairs at the root nodes.","{'title': '6 Estimation in Practice', 'number': '6'}"
-Rule instantiation features simply encode the combining categories together with the result category.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-There is an additional rule feature type which also encodes the lexical head of the resulting category.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-Additional generalised features for each feature type are formed by replacing words with their POS tags.,"{'title': '6 Estimation in Practice', 'number': '6'}"
-"The feature set for the normal-form model is the same except that, following Hockenmaier and Steedman (2002), the dependency features are defined in terms of the local rule instantiations, by adding the heads of the combining categories to the rule instantiation features.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"Again there are 3 additional distance feature types, as above, which only include the head of the resulting category.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"We had hoped that by modelling the predicate-argument dependencies produced by the parser, rather than local rule dependencies, we would improve performance.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"However, using the predicate-argument dependencies in the normal-form model instead of, or in addition to, the local rule dependencies, has not led to an improvement in parsing accuracy.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"Only features which occurred more than once in the training data were included, except that, for the dependency model, the cutoff for the rule features was 9 and the counting was performed across all derivations, not just the gold-standard derivation.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"The normal-form model has 482,007 features and the dependency model has 984,522 features.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"We used 45 machines of a 64-node Beowulf cluster to estimate the dependency model, with an average memory usage of approximately 550 MB for each machine.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"For the normal-form model we were able to reduce the size of the charts considerably by applying two types of restriction to the parser: first, categories can only combine if they appear together in a rule instantiation in sections 2–21 of CCGbank; and second, we apply the normal-form restrictions described in Eisner (1996).","{'title': '6 Estimation in Practice', 'number': '6'}"
-(See Clark and Curran (2004) for a description of the Eisner constraints.),"{'title': '6 Estimation in Practice', 'number': '6'}"
-"The normal-form model requires only 5 machines for estimation, with an average memory usage of 730 MB for each machine.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"Initially we tried the parallel version of GIS described in Clark and Curran (2003) to perform the estimation, running over the Beowulf cluster.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"However, we found that GIS converged extremely slowly; this is in line with other recent results in the literature applying GIS to globally optimised models such as conditional random fields, e.g.","{'title': '6 Estimation in Practice', 'number': '6'}"
-Sha and Pereira (2003).,"{'title': '6 Estimation in Practice', 'number': '6'}"
-"As an alternative to GIS, we have implemented a parallel version of our L-BFGS code using the Message Passing Interface (MPI) standard.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"L-BFGS over forests can be parallelised, using the method described in Clark and Curran (2003) to calculate the feature expectations.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"The L-BFGS algorithm, run to convergence on the cluster, takes 479 iterations and 2 hours for the normal-form model, and 1,550 iterations and roughly 17 hours for the dependency model.","{'title': '6 Estimation in Practice', 'number': '6'}"
-"For the normal-form model, the Viterbi algorithm is used to find the most probable derivation.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-"For the dependency model, the highest scoring dependency structure is required.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-"Clark and Curran (2003) outlines an algorithm for finding the most probable dependency structure, which keeps track of the highest scoring set of dependencies for each node in the chart.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-"For a set of equivalent entries in the chart (a disjunctive node), this involves summing over all conjunctive node daughters which head subderivations leading to the same set of high scoring dependencies.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-In practice large numbers of such conjunctive nodes lead to very long parse times.,"{'title': '7 Parsing Algorithm', 'number': '7'}"
-"As an alternative to finding the most probable dependency structure, we have developed an algorithm which maximises the expected labelled recall over dependencies.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-Our algorithm is based on Goodman’s (1996) labelled recall algorithm for the phrase-structure PARSEVAL measures.,"{'title': '7 Parsing Algorithm', 'number': '7'}"
-"Let L, be the number of correct dependencies in 7r with respect to a gold standard dependency structure G; then the dependency structure, 7rmax, which maximises the expected recall rate is: LP LR UP UR cat where S is the sentence for gold standard dependency structure G and i ranges over the dependency structures for S. This expression can be expanded further: The final score for a dependency structure  is a sum of the scores for each dependency  in ; and the score for a dependency  is the sum of the probabilities of those derivations producing .","{'title': '7 Parsing Algorithm', 'number': '7'}"
-"This latter sum can be calculated efficiently using inside and outside scores: (12) where c is the inside score and c is the outside score for node c (see Clark and Curran (2003)); C is the set of conjunctive nodes in the packed chart for sentence S and deps(c) is the set of dependencies on conjunctive node c. The intuition behind the expected recall score is that a dependency structure scores highly if it has dependencies produced by high scoring derivations.4 The algorithm which finds max is a simple variant on the Viterbi algorithm, efficiently finding a derivation which produces the highest scoring set of dependencies.","{'title': '7 Parsing Algorithm', 'number': '7'}"
-"Gold standard dependency structures were derived from section 00 (for development) and section 23 (for testing) by running the parser over the derivations in CCGbank, some of which the parser could not process.","{'title': '8 Experiments', 'number': '8'}"
-"In order to increase the number of test sentences, and to allow a fair comparison with other CCG parsers, extra rules were encoded in the parser (but we emphasise these were only used to obtain the section 23 test data; they were not used to parse unseen data as part of the testing).","{'title': '8 Experiments', 'number': '8'}"
-"This resulted in 2,365 dependency structures for section 23 (98.5% of the full section), and 1,825 (95.5%) dependency structures for section 00.","{'title': '8 Experiments', 'number': '8'}"
-The first stage in parsing the test data is to apply the supertagger.,"{'title': '8 Experiments', 'number': '8'}"
-"We use the novel strategy developed in Clark and Curran (2004): first assign a small number of categories (approximately 1.4) on average to each word, and increase the number of categories if the parser fails to find an analysis.","{'title': '8 Experiments', 'number': '8'}"
-We were able to parse 98.9% of section 23 using this strategy.,"{'title': '8 Experiments', 'number': '8'}"
-Clark and Curran (2004) shows that this supertagging method results in a highly efficient parser.,"{'title': '8 Experiments', 'number': '8'}"
-"For the normal-form model we returned the dependency structure for the most probable derivation, applying the two types of normal-form constraints described in Section 6.","{'title': '8 Experiments', 'number': '8'}"
-For the dependency model we returned the dependency structure with the highest expected labelled recall score.,"{'title': '8 Experiments', 'number': '8'}"
-"Following Clark et al. (2002), evaluation is by precision and recall over dependencies.","{'title': '8 Experiments', 'number': '8'}"
-"For a labelled dependency to be correct, the first 4 elements of the dependency tuple must match exactly.","{'title': '8 Experiments', 'number': '8'}"
-"For an unlabelled dependency to be correct, the heads of the functor and argument must appear together in some relation in the gold standard (in any order).","{'title': '8 Experiments', 'number': '8'}"
-"The results on section 00, using the feature sets described earlier, are given in Table 1, with similar results overall for the normal-form model and the dependency model.","{'title': '8 Experiments', 'number': '8'}"
-"Since experimentation is easier with the normal-form model than the dependency model, we present additional results for the normalform model.","{'title': '8 Experiments', 'number': '8'}"
-Table 2 gives the results for the normal-form model for various feature sets.,"{'title': '8 Experiments', 'number': '8'}"
-The results show that each additional feature type increases performance.,"{'title': '8 Experiments', 'number': '8'}"
-"Hockenmaier also found the dependencies to be very beneficial — in contrast to recent results from the lexicalised PCFG parsing literature (Gildea, 2001) — but did not gain from the use of distance measures.","{'title': '8 Experiments', 'number': '8'}"
-"One of the advantages of a log-linear model is that it is easy to include additional information, such as distance, as features.","{'title': '8 Experiments', 'number': '8'}"
-"The FINAL result in Table 2 is obtained by using a larger derivation space for training, created using more categories per word from the supertagger, 2.9, and hence using charts containing more derivations.","{'title': '8 Experiments', 'number': '8'}"
-(15 machines were used to estimate this model.),"{'title': '8 Experiments', 'number': '8'}"
-"More investigation is needed to find the optimal chart size for estimation, but the results show a gain in accuracy.","{'title': '8 Experiments', 'number': '8'}"
-Table 3 gives the results of the best performing normal-form model on the test set.,"{'title': '8 Experiments', 'number': '8'}"
-The results of Clark et al. (2002) and Hockenmaier (2003a) are shown for comparison.,"{'title': '8 Experiments', 'number': '8'}"
-"The dependency set used by Hockenmaier contains some minor differences to the set used here, but “evaluating” our test set against Hockenmaier’s gives an F-score of over 97%, showing the test sets to be very similar.","{'title': '8 Experiments', 'number': '8'}"
-"The results show that our parser is performing significantly better than that of Clark et al., demonstrating the benefit of derivation features and the use of a sound statistical model.","{'title': '8 Experiments', 'number': '8'}"
-The results given so far have all used gold standard POS tags from CCGbank.,"{'title': '8 Experiments', 'number': '8'}"
-"Table 3 also gives the results if automatically assigned POS tags are used in the training and testing phases, using the C&C POS tagger (Curran and Clark, 2003).","{'title': '8 Experiments', 'number': '8'}"
-The performance reduction is expected given that the supertagger relies heavily on POS tags as features.,"{'title': '8 Experiments', 'number': '8'}"
-"More investigation is needed to properly compare our parser and Hockenmaier’s, since there are a number of differences in addition to the models used: Hockenmaier effectively reads a lexicalised PCFG off CCGbank, and is able to use all of the available training data; Hockenmaier does not use a supertagger, but does use a beam search.","{'title': '8 Experiments', 'number': '8'}"
-"Parsing the 2,401 sentences in section 23 takes 1.6 minutes using the normal-form model, and 10.5 minutes using the dependency model.","{'title': '8 Experiments', 'number': '8'}"
-The difference is due largely to the normal-form constraints used by the normal-form parser.,"{'title': '8 Experiments', 'number': '8'}"
-"Clark and Curran (2004) shows that the normal-form constraints significantly increase parsing speed and, in combination with adaptive supertagging, result in a highly efficient wide-coverage parser.","{'title': '8 Experiments', 'number': '8'}"
-As a final oracle experiment we parsed the sentences in section 00 using the correct lexical categories from CCGbank.,"{'title': '8 Experiments', 'number': '8'}"
-"Since the parser uses only a subset of the lexical categories in CCGbank, 7% of the sentences could not be parsed; however, the labelled F-score for the parsed sentences was almost 98%.","{'title': '8 Experiments', 'number': '8'}"
-This very high score demonstrates the large amount of information in lexical categories.,"{'title': '8 Experiments', 'number': '8'}"
-"A major contribution of this paper has been the development of a parsing model for CCG which uses all derivations, including non-standard derivations.","{'title': '9 Conclusion', 'number': '9'}"
-"Non-standard derivations are an integral part of the CCG formalism, and it is an interesting question whether efficient estimation and parsing algorithms can be defined for models which use all derivations.","{'title': '9 Conclusion', 'number': '9'}"
-"We have answered this question, and in doing so developed a new parsing algorithm for CCG which maximises expected recall of dependencies.","{'title': '9 Conclusion', 'number': '9'}"
-"We would like to extend the dependency model, by including the local-rule dependencies which are used by the normal-form model, for example.","{'title': '9 Conclusion', 'number': '9'}"
-"However, one of the disadvantages of the dependency model is that the estimation process is already using a large proportion of our existing resources, and extending the feature set will further increase the execution time and memory requirement of the estimation algorithm.","{'title': '9 Conclusion', 'number': '9'}"
-We have also shown that a normal-form model performs as well as the dependency model.,"{'title': '9 Conclusion', 'number': '9'}"
-There are a number of advantages to the normal-form model: it requires less space and time resources for estimation and it produces a faster parser.,"{'title': '9 Conclusion', 'number': '9'}"
-Our normal-form parser significantly outperforms the parser of Clark et al. (2002) and produces results at least as good as the current state-of-the-art for CCG parsing.,"{'title': '9 Conclusion', 'number': '9'}"
-The use of adaptive supertagging and the normal-form constraints result in a very efficient wide-coverage parser.,"{'title': '9 Conclusion', 'number': '9'}"
-Our system demonstrates that accurate and efficient wide-coverage CCG parsing is feasible.,"{'title': '9 Conclusion', 'number': '9'}"
-Future work will investigate extending the feature sets used by the log-linear models with the aim of further increasing parsing accuracy.,"{'title': '9 Conclusion', 'number': '9'}"
-"Finally, the oracle results suggest that further experimentation with the supertagger will significantly improve parsing accuracy, efficiency and robustness.","{'title': '9 Conclusion', 'number': '9'}"
-"We would like to thank Julia Hockenmaier for the use of CCGbank and helpful comments, and Mark Steedman for guidance and advice.","{'title': 'Acknowledgements', 'number': '10'}"
-"Jason Baldridge, Frank Keller, Yuval Krymolowski and Miles Osborne provided useful feedback.","{'title': 'Acknowledgements', 'number': '10'}"
-"This work was supported by EPSRC grant GR/M96889, and a Commonwealth scholarship and a Sydney University Travelling scholarship to the second author.","{'title': 'Acknowledgements', 'number': '10'}"
+"This paper describes and evaluates log-linear parsing models for Combinatory Categorial A parallel implementation of algorithm is described, which runs on a Beowulf cluster allowing the complete Penn Treebank to be used for estimation.",Introduction
+We also develop a new efficient parsing for maximises expected recall of dependencies.,Introduction
+"We compare models use all including nonstandard derivations, with normal-form models.",Introduction
+The performances of the two models are comparable and the results are competitive with ex,Introduction
+"A number of statistical parsing models have recently been developed for Combinatory Categorial Grammar (CCG; Steedman, 2000) and used in parsers applied to the WSJ Penn Treebank (Clark et al., 2002; Hockenmaier and Steedman, 2002; Hockenmaier, 2003b).",Experiment/Discussion
+In Clark and Curran (2003) we argued for the use of log-linear parsing models for CCG.,Experiment/Discussion
+"However, estimating a log-linear model for a widecoverage CCG grammar is very computationally expensive.",Experiment/Discussion
+"Following Miyao and Tsujii (2002), we showed how the estimation can be performed efficiently by applying the inside-outside algorithm to a packed chart.",Experiment/Discussion
+We also showed how the complete WSJ Penn Treebank can be used for training by developing a parallel version of Generalised Iterative Scaling (GIS) to perform the estimation.,Experiment/Discussion
+This paper significantly extends our earlier work in a number of ways.,Experiment/Discussion
+"First, we evaluate a number of log-linear models, obtaining results which are competitive with the state-of-the-art for CCG parsing.",Experiment/Discussion
+"We also compare log-linear models which use all CCG derivations, including non-standard derivations, with normal-form models.",Experiment/Discussion
+"Second, we find that GIS is unsuitable for estimating a model of the size being considered, and develop a parallel version of the L-BFGS algorithm (Nocedal and Wright, 1999).",Experiment/Discussion
+"And finally, we show that the parsing algorithm described in Clark and Curran (2003) is extremely slow in some cases, and suggest an efficient alternative based on Goodman (1996).",Experiment/Discussion
+"The development of parsing and estimation algorithms for models which use all derivations extends existing CCG parsing techniques, and allows us to test whether there is useful information in the additional derivations.",Experiment/Discussion
+"However, we find that the performance of the normal-form model is at least as good as the all-derivations model, in our experiments todate.",Experiment/Discussion
+"The normal-form approach allows the use of additional constraints on rule applications, leading to a smaller model, reducing the computational resources required for estimation, and resulting in an extremely efficient parser.",Experiment/Discussion
+"This paper assumes a basic understanding of CCG; see Steedman (2000) for an introduction, and Clark et al. (2002) and Hockenmaier (2003a) for an introduction to statistical parsing with CCG.",Experiment/Discussion
+"CCG is unusual among grammar formalisms in that, for each derived structure for a sentence, there can be many derivations leading to that structure.",Experiment/Discussion
+"The presence of such ambiguity, sometimes referred to as spurious ambiguity, enables CCG to produce elegant analyses of coordination and extraction phenomena (Steedman, 2000).",Experiment/Discussion
+"However, the introduction of extra derivations increases the complexity of the modelling and parsing problem.",Experiment/Discussion
+"Clark et al. (2002) handle the additional derivations by modelling the derived structure, in their case dependency structures.",Experiment/Discussion
+"They use a conditional model, based on Collins (1996), which, as the authors acknowledge, has a number of theoretical deficiencies; thus the results of Clark et al. provide a useful baseline for the new models presented here.",Experiment/Discussion
+"Hockenmaier (2003a) uses a model which favours only one of the derivations leading to a derived structure, namely the normal-form derivation (Eisner, 1996).",Experiment/Discussion
+In this paper we compare the normal-form approach with a dependency model.,Experiment/Discussion
+"For the dependency model, we define the probability of a dependency structure as follows: where  is a dependency structure, S is a sentence and A() is the set of derivations which lead to .",Experiment/Discussion
+"This extends the approach of Clark et al. (2002) who modelled the dependency structures directly, not using any information from the derivations.",Experiment/Discussion
+"In contrast to the dependency model, the normal-form model simply defines a distribution over normalform derivations.",Experiment/Discussion
+The dependency structures considered in this paper are described in detail in Clark et al. (2002) and Clark and Curran (2003).,Experiment/Discussion
+"Each argument slot in a CCG lexical category represents a dependency relation, and a dependency is defined as a 5-tuple (hf, f, s, ha, l), where hf is the head word of the lexical category, f is the lexical category, s is the argument slot, ha is the head word of the argument, and l indicates whether the dependency is long-range.",Experiment/Discussion
+"For example, the long-range dependency encoding company as the extracted object of bought (as in the company that IBM bought) is represented as the following 5-tuple: (bought, (S[dcl]\NP,)/NP,, 2, company, *) where * is the category (NP\NP)/(S[dcl]/NP) assigned to the relative pronoun.",Experiment/Discussion
+For local dependencies l is assigned a null value.,Experiment/Discussion
+A dependency structure is a multiset of these dependencies.,Experiment/Discussion
+Log-linear models (also known as Maximum Entropy models) are popular in NLP because of the ease with which discriminating features can be included in the model.,Experiment/Discussion
+"Log-linear models have been applied to the parsing problem across a range of grammar formalisms, e.g.",Experiment/Discussion
+Riezler et al. (2002) and Toutanova et al.,Experiment/Discussion
+(2002).,Experiment/Discussion
+One motivation for using a log-linear model is that long-range dependencies which CCG was designed to handle can easily be encoded as features.,Experiment/Discussion
+"A conditional log-linear model of a parse  E SZ, given a sentence S, is defined as follows: where A.f() = i ifi().",Experiment/Discussion
+The function fi is a feature of the parse which can be any real-valued function over the space of parses SZ.,Experiment/Discussion
+Each feature fi has an associated weight i which is a parameter of the model to be estimated.,Experiment/Discussion
+"ZS is a normalising constant which ensures that P(|S) is a probability distribution: where (S) is the set of possible parses for S. For the dependency model a parse, , is a (d, ) pair (as given in (1)).",Experiment/Discussion
+A feature is a count of the number of times some configuration occurs in d or the number of times some dependency occurs in .,Experiment/Discussion
+Section 6 gives examples of features.,Experiment/Discussion
+We follow Riezler et al. (2002) in using a discriminative estimation method by maximising the conditional likelihood of the model given the data.,Experiment/Discussion
+"For the dependency model, the data consists of sentences S 1, ... , Sm, together with gold standard dependency structures, 1, ... , m.",Experiment/Discussion
+"The gold standard structures are multisets of dependencies, as described earlier.",Experiment/Discussion
+Section 6 explains how the gold standard structures are obtained.,Experiment/Discussion
+"The objective function of a model A is the conditional log-likelihood, L(A), minus a Gaussian prior term, G(A), used to reduce overfitting (Chen and Rosenfeld, 1999).",Experiment/Discussion
+"Hence, given the definition of the probability of a dependency structure (1), the objective function is as follows: where n is the number of features.",Experiment/Discussion
+"Rather than have a different smoothing parameter i for each feature, we use a single parameter .",Experiment/Discussion
+"We use a technique from the numerical optimisation literature, the L-BFGS algorithm (Nocedal and Wright, 1999), to optimise the objective function.",Experiment/Discussion
+L-BFGS is an iterative algorithm which requires the gradient of the objective function to be computed at each iteration.,Experiment/Discussion
+The components of the gradient vecThe first two terms in (5) are expectations of feature fi: the first expectation is over all derivations leading to each gold standard dependency structure; the second is over all derivations for each sentence in the training data.,Experiment/Discussion
+"Setting the gradient to zero yields the usual maximum entropy constraints (Berger et al., 1996), except that in this case the empirical values are themselves expectations (over all derivations leading to each gold standard dependency structure).",Experiment/Discussion
+"The estimation process attempts to make the expectations equal, by putting as much mass as possible on the derivations leading to the gold standard structures.1 The Gaussian prior term penalises any model whose weights get too large in absolute value.",Experiment/Discussion
+"Calculation of the feature expectations requires summing over all derivations for a sentence, and summing over all derivations leading to a gold standard dependency structure.",Experiment/Discussion
+"In both cases there can be exponentially many derivations, and so enumerating all derivations is not possible (at least for wide-coverage automatically extracted grammars).",Experiment/Discussion
+Clark and Curran (2003) show how the sum over the complete derivation space can be performed efficiently using a packed chart and a variant of the inside-outside algorithm.,Experiment/Discussion
+Section 5 shows how the same technique can also be applied to all derivations leading to a gold standard dependency structure.,Experiment/Discussion
+The objective function and gradient vector for the normal-form model are as follows: where dj is the the gold standard derivation for sentence Sj and B(Sj) is the set of possible derivations for Sj.,Experiment/Discussion
+Note that the empirical expectation in (7) is simply a count of the number of times the feature appears in the gold-standard derivations.,Experiment/Discussion
+"The packed charts perform a number of roles: they are a compact representation of a very large number of CCG derivations; they allow recovery of the highest scoring parse or dependency structure without enumerating all derivations; and they represent an instance of what Miyao and Tsujii (2002) call a feature forest, which is used to efficiently estimate a log-linear model.",Experiment/Discussion
+"The idea behind a packed chart is simple: equivalent chart entries of the same type, in the same cell, are grouped together, and back pointers to the daughters indicate how an individual entry was created.",Experiment/Discussion
+Equivalent entries form the same structures in any subsequent parsing.,Experiment/Discussion
+"Since the packed charts are used for model estimation and recovery of the highest scoring parse or dependency structure, the features in the model partly determine which entries can be grouped together.",Experiment/Discussion
+"In this paper we use features from the dependency structure, and features defined on the local rule instantiations.2 Hence, any two entries with identical category type, identical head, and identical unfilled dependencies are equivalent.",Experiment/Discussion
+"Note that not all features are local to a rule instantiation; for example, features encoding long-range dependencies may involve words which are a long way apart in the sentence.",Experiment/Discussion
+"For the purposes of estimation and finding the highest scoring parse or dependency structure, only entries which are part of a derivation spanning the whole sentence are relevant.",Experiment/Discussion
+"These entries can be easily found by traversing the chart top-down, starting with the entries which span the sentence.",Experiment/Discussion
+"The entries within spanning derivations form a feature forest (Miyao and Tsujii, 2002).",Experiment/Discussion
+"A feature forest (D is a tuple (C, D, R, y, 6) where: The individual entries in a cell are conjunctive nodes, and the equivalence classes of entries are dis2By rule instantiation we mean the local tree arising from the application of a CCG combinatory rule. junctive nodes.",Experiment/Discussion
+The roots of the CCG derivations represent the root disjunctive nodes.3,Experiment/Discussion
+"The L-BFGS algorithm requires the following values at each iteration: the expected value, and the empirical expected value, of each feature (to calculate the gradient); and the value of the likelihood function.",Experiment/Discussion
+"For the normal-form model, the empirical expected values and the likelihood can easily be obtained, since these only involve the single goldstandard derivation for each sentence.",Experiment/Discussion
+The expected values can be calculated using the method in Clark and Curran (2003).,Experiment/Discussion
+"For the dependency model, the computations of the empirical expected values (5) and the likelihood function (4) are more complex, since these require sums over just those derivations leading to the gold standard dependency structure.",Experiment/Discussion
+We will refer to such derivations as correct derivations.,Experiment/Discussion
+"Figure 1 gives an algorithm for finding nodes in a packed chart which appear in correct derivations. cdeps(c) is the number of correct dependencies on conjunctive node c, and takes the value −1 if there are any incorrect dependencies on c. dmax(c) is the maximum number of correct dependencies produced by any sub-derivation headed by c, and takes the value −1 if there are no sub-derivations producing only correct dependencies. dmax(d) is the same value but for disjunctive node d. Recursive definitions for calculating these values are given in Figure 1; the base case occurs when conjunctive nodes have no disjunctive daughters.",Experiment/Discussion
+"The algorithm identifies all those root nodes heading derivations which produce just the correct dependencies, and traverses the chart top-down marking the nodes in those derivations.",Experiment/Discussion
+"The insight behind the algorithm is that, for two conjunctive nodes in the same equivalence class, if one node heads a sub-derivation producing more correct dependencies than the other node (and each sub-derivation only produces correct dependencies), then the node with less correct dependencies cannot be part of a correct derivation.",Experiment/Discussion
+The conjunctive and disjunctive nodes appearing in correct derivations form a new correct feature forest.,Experiment/Discussion
+"The correct forest, and the complete forest containing all derivations spanning the sentence, can be used to estimate the required likelihood value and feature expectations.",Experiment/Discussion
+"Let E fi be the expected value of fi over the forest (D for model A; then the values in (5) can be obtained by calculating Ej  fi for the complete forest (Dj for each sentence Sj in the training data (the second sum in (5)), and also Ej fi for each forest Tj of correct derivations (the first sum in (5)): where log Z is the normalisation constant for (D.",Experiment/Discussion
+"The gold standard dependency structures are produced by running our CCG parser over the normal-form derivations in CCGbank (Hockenmaier, 2003a).",Experiment/Discussion
+"Not all rule instantiations in CCGbank are instances of combinatory rules, and not all can be produced by the parser, and so gold standard structures were created for 85.5% of the sentences in sections 2-21 (33,777 sentences).",Experiment/Discussion
+The same parser is used to produce the packed charts.,Experiment/Discussion
+"The parser uses a maximum entropy supertagger (Clark and Curran, 2004) to assign lexical categories to the words in a sentence, and applies the CKY chart parsing algorithm described in Steedman (2000).",Experiment/Discussion
+"For parsing the training data, we ensure that the correct category is a member of the set assigned to each word.",Experiment/Discussion
+The average number of categories assigned to each word is determined by a parameter in the supertagger.,Experiment/Discussion
+"For the first set of experiments, we used a setting which assigns 1.7 categories on average per word.",Experiment/Discussion
+"The feature set for the dependency model consists of the following types of features: dependency features (with and without distance measures), rule instantiation features (with and without a lexical head), lexical category features, and root category features.",Experiment/Discussion
+Dependency features are the 5-tuples defined in Section 1.,Experiment/Discussion
+"There are also three additional dependency feature types which have an extra distance field (and only include the head of the lexical category, and not the head of the argument); these count the number of words (0, 1, 2 or more), punctuation marks (0, 1, 2 or more), and verbs (0, 1 or more) between head and dependent.",Experiment/Discussion
+"Lexical category features are word–category pairs at the leaf nodes, and root features are headword–category pairs at the root nodes.",Experiment/Discussion
+Rule instantiation features simply encode the combining categories together with the result category.,Experiment/Discussion
+There is an additional rule feature type which also encodes the lexical head of the resulting category.,Experiment/Discussion
+Additional generalised features for each feature type are formed by replacing words with their POS tags.,Experiment/Discussion
+"The feature set for the normal-form model is the same except that, following Hockenmaier and Steedman (2002), the dependency features are defined in terms of the local rule instantiations, by adding the heads of the combining categories to the rule instantiation features.",Experiment/Discussion
+"Again there are 3 additional distance feature types, as above, which only include the head of the resulting category.",Experiment/Discussion
+"We had hoped that by modelling the predicate-argument dependencies produced by the parser, rather than local rule dependencies, we would improve performance.",Experiment/Discussion
+"However, using the predicate-argument dependencies in the normal-form model instead of, or in addition to, the local rule dependencies, has not led to an improvement in parsing accuracy.",Experiment/Discussion
+"Only features which occurred more than once in the training data were included, except that, for the dependency model, the cutoff for the rule features was 9 and the counting was performed across all derivations, not just the gold-standard derivation.",Experiment/Discussion
+"The normal-form model has 482,007 features and the dependency model has 984,522 features.",Experiment/Discussion
+"We used 45 machines of a 64-node Beowulf cluster to estimate the dependency model, with an average memory usage of approximately 550 MB for each machine.",Experiment/Discussion
+"For the normal-form model we were able to reduce the size of the charts considerably by applying two types of restriction to the parser: first, categories can only combine if they appear together in a rule instantiation in sections 2–21 of CCGbank; and second, we apply the normal-form restrictions described in Eisner (1996).",Experiment/Discussion
+(See Clark and Curran (2004) for a description of the Eisner constraints.),Experiment/Discussion
+"The normal-form model requires only 5 machines for estimation, with an average memory usage of 730 MB for each machine.",Experiment/Discussion
+"Initially we tried the parallel version of GIS described in Clark and Curran (2003) to perform the estimation, running over the Beowulf cluster.",Experiment/Discussion
+"However, we found that GIS converged extremely slowly; this is in line with other recent results in the literature applying GIS to globally optimised models such as conditional random fields, e.g.",Experiment/Discussion
+Sha and Pereira (2003).,Experiment/Discussion
+"As an alternative to GIS, we have implemented a parallel version of our L-BFGS code using the Message Passing Interface (MPI) standard.",Experiment/Discussion
+"L-BFGS over forests can be parallelised, using the method described in Clark and Curran (2003) to calculate the feature expectations.",Experiment/Discussion
+"The L-BFGS algorithm, run to convergence on the cluster, takes 479 iterations and 2 hours for the normal-form model, and 1,550 iterations and roughly 17 hours for the dependency model.",Experiment/Discussion
+"For the normal-form model, the Viterbi algorithm is used to find the most probable derivation.",Experiment/Discussion
+"For the dependency model, the highest scoring dependency structure is required.",Experiment/Discussion
+"Clark and Curran (2003) outlines an algorithm for finding the most probable dependency structure, which keeps track of the highest scoring set of dependencies for each node in the chart.",Experiment/Discussion
+"For a set of equivalent entries in the chart (a disjunctive node), this involves summing over all conjunctive node daughters which head subderivations leading to the same set of high scoring dependencies.",Experiment/Discussion
+In practice large numbers of such conjunctive nodes lead to very long parse times.,Experiment/Discussion
+"As an alternative to finding the most probable dependency structure, we have developed an algorithm which maximises the expected labelled recall over dependencies.",Experiment/Discussion
+Our algorithm is based on Goodman’s (1996) labelled recall algorithm for the phrase-structure PARSEVAL measures.,Experiment/Discussion
+"Let L, be the number of correct dependencies in 7r with respect to a gold standard dependency structure G; then the dependency structure, 7rmax, which maximises the expected recall rate is: LP LR UP UR cat where S is the sentence for gold standard dependency structure G and i ranges over the dependency structures for S. This expression can be expanded further: The final score for a dependency structure  is a sum of the scores for each dependency  in ; and the score for a dependency  is the sum of the probabilities of those derivations producing .",Experiment/Discussion
+"This latter sum can be calculated efficiently using inside and outside scores: (12) where c is the inside score and c is the outside score for node c (see Clark and Curran (2003)); C is the set of conjunctive nodes in the packed chart for sentence S and deps(c) is the set of dependencies on conjunctive node c. The intuition behind the expected recall score is that a dependency structure scores highly if it has dependencies produced by high scoring derivations.4 The algorithm which finds max is a simple variant on the Viterbi algorithm, efficiently finding a derivation which produces the highest scoring set of dependencies.",Experiment/Discussion
+"Gold standard dependency structures were derived from section 00 (for development) and section 23 (for testing) by running the parser over the derivations in CCGbank, some of which the parser could not process.",Experiment/Discussion
+"In order to increase the number of test sentences, and to allow a fair comparison with other CCG parsers, extra rules were encoded in the parser (but we emphasise these were only used to obtain the section 23 test data; they were not used to parse unseen data as part of the testing).",Experiment/Discussion
+"This resulted in 2,365 dependency structures for section 23 (98.5% of the full section), and 1,825 (95.5%) dependency structures for section 00.",Experiment/Discussion
+The first stage in parsing the test data is to apply the supertagger.,Experiment/Discussion
+"We use the novel strategy developed in Clark and Curran (2004): first assign a small number of categories (approximately 1.4) on average to each word, and increase the number of categories if the parser fails to find an analysis.",Experiment/Discussion
+We were able to parse 98.9% of section 23 using this strategy.,Experiment/Discussion
+Clark and Curran (2004) shows that this supertagging method results in a highly efficient parser.,Experiment/Discussion
+"For the normal-form model we returned the dependency structure for the most probable derivation, applying the two types of normal-form constraints described in Section 6.",Experiment/Discussion
+For the dependency model we returned the dependency structure with the highest expected labelled recall score.,Experiment/Discussion
+"Following Clark et al. (2002), evaluation is by precision and recall over dependencies.",Experiment/Discussion
+"For a labelled dependency to be correct, the first 4 elements of the dependency tuple must match exactly.",Experiment/Discussion
+"For an unlabelled dependency to be correct, the heads of the functor and argument must appear together in some relation in the gold standard (in any order).",Experiment/Discussion
+"The results on section 00, using the feature sets described earlier, are given in Table 1, with similar results overall for the normal-form model and the dependency model.",Experiment/Discussion
+"Since experimentation is easier with the normal-form model than the dependency model, we present additional results for the normalform model.",Experiment/Discussion
+Table 2 gives the results for the normal-form model for various feature sets.,Experiment/Discussion
+The results show that each additional feature type increases performance.,Experiment/Discussion
+"Hockenmaier also found the dependencies to be very beneficial — in contrast to recent results from the lexicalised PCFG parsing literature (Gildea, 2001) — but did not gain from the use of distance measures.",Experiment/Discussion
+"One of the advantages of a log-linear model is that it is easy to include additional information, such as distance, as features.",Experiment/Discussion
+"The FINAL result in Table 2 is obtained by using a larger derivation space for training, created using more categories per word from the supertagger, 2.9, and hence using charts containing more derivations.",Experiment/Discussion
+(15 machines were used to estimate this model.),Experiment/Discussion
+"More investigation is needed to find the optimal chart size for estimation, but the results show a gain in accuracy.",Experiment/Discussion
+Table 3 gives the results of the best performing normal-form model on the test set.,Experiment/Discussion
+The results of Clark et al. (2002) and Hockenmaier (2003a) are shown for comparison.,Experiment/Discussion
+"The dependency set used by Hockenmaier contains some minor differences to the set used here, but “evaluating” our test set against Hockenmaier’s gives an F-score of over 97%, showing the test sets to be very similar.",Experiment/Discussion
+"The results show that our parser is performing significantly better than that of Clark et al., demonstrating the benefit of derivation features and the use of a sound statistical model.",Experiment/Discussion
+The results given so far have all used gold standard POS tags from CCGbank.,Experiment/Discussion
+"Table 3 also gives the results if automatically assigned POS tags are used in the training and testing phases, using the C&C POS tagger (Curran and Clark, 2003).",Experiment/Discussion
+The performance reduction is expected given that the supertagger relies heavily on POS tags as features.,Experiment/Discussion
+"More investigation is needed to properly compare our parser and Hockenmaier’s, since there are a number of differences in addition to the models used: Hockenmaier effectively reads a lexicalised PCFG off CCGbank, and is able to use all of the available training data; Hockenmaier does not use a supertagger, but does use a beam search.",Experiment/Discussion
+"Parsing the 2,401 sentences in section 23 takes 1.6 minutes using the normal-form model, and 10.5 minutes using the dependency model.",Experiment/Discussion
+The difference is due largely to the normal-form constraints used by the normal-form parser.,Experiment/Discussion
+"Clark and Curran (2004) shows that the normal-form constraints significantly increase parsing speed and, in combination with adaptive supertagging, result in a highly efficient wide-coverage parser.",Experiment/Discussion
+As a final oracle experiment we parsed the sentences in section 00 using the correct lexical categories from CCGbank.,Experiment/Discussion
+"Since the parser uses only a subset of the lexical categories in CCGbank, 7% of the sentences could not be parsed; however, the labelled F-score for the parsed sentences was almost 98%.",Experiment/Discussion
+This very high score demonstrates the large amount of information in lexical categories.,Experiment/Discussion
+"A major contribution of this paper has been the development of a parsing model for CCG which uses all derivations, including non-standard derivations.",Results/Conclusion
+"Non-standard derivations are an integral part of the CCG formalism, and it is an interesting question whether efficient estimation and parsing algorithms can be defined for models which use all derivations.",Results/Conclusion
+"We have answered this question, and in doing so developed a new parsing algorithm for CCG which maximises expected recall of dependencies.",Results/Conclusion
+"We would like to extend the dependency model, by including the local-rule dependencies which are used by the normal-form model, for example.",Results/Conclusion
+"However, one of the disadvantages of the dependency model is that the estimation process is already using a large proportion of our existing resources, and extending the feature set will further increase the execution time and memory requirement of the estimation algorithm.",Results/Conclusion
+We have also shown that a normal-form model performs as well as the dependency model.,Results/Conclusion
+There are a number of advantages to the normal-form model: it requires less space and time resources for estimation and it produces a faster parser.,Results/Conclusion
+Our normal-form parser significantly outperforms the parser of Clark et al. (2002) and produces results at least as good as the current state-of-the-art for CCG parsing.,Results/Conclusion
+The use of adaptive supertagging and the normal-form constraints result in a very efficient wide-coverage parser.,Results/Conclusion
+Our system demonstrates that accurate and efficient wide-coverage CCG parsing is feasible.,Results/Conclusion
+Future work will investigate extending the feature sets used by the log-linear models with the aim of further increasing parsing accuracy.,Results/Conclusion
+"Finally, the oracle results suggest that further experimentation with the supertagger will significantly improve parsing accuracy, efficiency and robustness.",Results/Conclusion
+"We would like to thank Julia Hockenmaier for the use of CCGbank and helpful comments, and Mark Steedman for guidance and advice.",Results/Conclusion
+"Jason Baldridge, Frank Keller, Yuval Krymolowski and Miles Osborne provided useful feedback.",Results/Conclusion
+"This work was supported by EPSRC grant GR/M96889, and a Commonwealth scholarship and a Sydney University Travelling scholarship to the second author.",Results/Conclusion

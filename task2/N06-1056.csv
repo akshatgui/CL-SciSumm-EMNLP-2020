@@ -1,178 +1,178 @@
 col1,col2
-"We present a novel statistical approach to parsing, for constructing a complete, formal meaning representation of a sentence.",{}
-A semantic parser is learned given a set of sentences annotated with their correct meaning represen- The main innovation of is its use of state-of-the-art statistical machine translation techniques.,{}
-"A word alignment model is used for lexical acquisition, and the parsing model itself can be seen as a syntax-based translation model. show that favorably in terms of both accuracy and coverage compared to existing learning methods requiring similar amount of supervision, and shows better robustness to variations in task complexity and word order.",{}
-"Recent work on natural language understanding has mainly focused on shallow semantic analysis, such as semantic role labeling and word-sense disambiguation.","{'title': '1 Introduction', 'number': '1'}"
-"This paper considers a more ambitious task of semantic parsing, which is the construction of a complete, formal, symbolic, meaning representation (MR) of a sentence.","{'title': '1 Introduction', 'number': '1'}"
-"Semantic parsing has found its way in practical applications such as natural-language (NL) interfaces to databases (Androutsopoulos et al., 1995) and advice taking (Kuhlmann et al., 2004).","{'title': '1 Introduction', 'number': '1'}"
-"Figure 1 shows a sample MR written in a meaning-representation language (MRL) called CLANG, which is used for ((bowner our {4}) (do our {6} (pos (left (half our))))) If our player 4 has the ball, then our player 6 should stay in the left side of our half. encoding coach advice given to simulated soccerplaying agents (Kuhlmann et al., 2004).","{'title': '1 Introduction', 'number': '1'}"
-"Prior research in semantic parsing has mainly focused on relatively simple domains such as ATIS (Air Travel Information Service) (Miller et al., 1996; Papineni et al., 1997; Macherey et al., 2001), in which a typcial MR is only a single semantic frame.","{'title': '1 Introduction', 'number': '1'}"
-"Learning methods have been devised that can generate MRs with a complex, nested structure (cf.","{'title': '1 Introduction', 'number': '1'}"
-Figure 1).,"{'title': '1 Introduction', 'number': '1'}"
-"However, these methods are mostly based on deterministic parsing (Zelle and Mooney, 1996; Kate et al., 2005), which lack the robustness that characterizes recent advances in statistical NLP.","{'title': '1 Introduction', 'number': '1'}"
-"Other learning methods involve the use of fullyannotated augmented parse trees (Ge and Mooney, 2005) or prior knowledge of the NL syntax (Zettlemoyer and Collins, 2005) in training, and hence require extensive human efforts when porting to a new domain or language.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present a novel statistical approach to semantic parsing which can handle MRs with a nested structure, based on previous work on semantic parsing using transformation rules (Kate et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-The algorithm learns a semantic parser given a set of NL sentences annotated with their correct MRs.,"{'title': '1 Introduction', 'number': '1'}"
-"It requires no prior knowledge of the NL syntax, although it assumes that an unambiguous, context-free grammar (CFG) of the target MRL is available.","{'title': '1 Introduction', 'number': '1'}"
-The main innovation of this alshows a sample query in this language.,"{'title': '1 Introduction', 'number': '1'}"
-"Note that both domains involve the use of MRs with a complex, nested structure. gorithm is its integration with state-of-the-art statistical machine translation techniques.","{'title': '1 Introduction', 'number': '1'}"
-"More specifically, a statistical word alignment model (Brown et al., 1993) is used to acquire a bilingual lexicon consisting of NL substrings coupled with their translations in the target MRL.","{'title': '1 Introduction', 'number': '1'}"
-"Complete MRs are then formed by combining these NL substrings and their translations under a parsing framework called the synchronous CFG (Aho and Ullman, 1972), which forms the basis of most existing statistical syntax-based translation models (Yamada and Knight, 2001; Chiang, 2005).","{'title': '1 Introduction', 'number': '1'}"
-"Our algorithm is called WASP, short for Word Alignment-based Semantic Parsing.","{'title': '1 Introduction', 'number': '1'}"
-"In initial evaluation on several real-world data sets, we show that WASP performs favorably in terms of both accuracy and coverage compared to existing learning methods requiring the same amount of supervision, and shows better robustness to variations in task complexity and word order.","{'title': '1 Introduction', 'number': '1'}"
-Section 2 provides a brief overview of the domains being considered.,"{'title': '1 Introduction', 'number': '1'}"
-"In Section 3, we present the semantic parsing model of WASP.","{'title': '1 Introduction', 'number': '1'}"
-Section 4 outlines the algorithm for acquiring a bilingual lexicon through the use of word alignments.,"{'title': '1 Introduction', 'number': '1'}"
-Section 5 describes a probabilistic model for semantic parsing.,"{'title': '1 Introduction', 'number': '1'}"
-"Finally, we report on experiments that show the robustness of WASP in Section 6, followed by the conclusion in Section 7.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we consider two domains.","{'title': '2 Application Domains', 'number': '2'}"
-The first domain is ROBOCUP.,"{'title': '2 Application Domains', 'number': '2'}"
-ROBOCUP (www.robocup.org) is an AI research initiative using robotic soccer as its primary domain.,"{'title': '2 Application Domains', 'number': '2'}"
-"In the ROBOCUP Coach Competition, teams of agents compete on a simulated soccer field and receive coach advice written in a formal language called CLANG (Chen et al., 2003).","{'title': '2 Application Domains', 'number': '2'}"
-Figure 1 shows a sample MR in CLANG.,"{'title': '2 Application Domains', 'number': '2'}"
-"The second domain is GEOQUERY, where a functional, variable-free query language is used for querying a small database on U.S. geography (Zelle and Mooney, 1996; Kate et al., 2005).","{'title': '2 Application Domains', 'number': '2'}"
-Figure 2,"{'title': '2 Application Domains', 'number': '2'}"
-"To describe the semantic parsing model of WASP, it is best to start with an example.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Consider the task of translating the sentence in Figure 1 into its MR in CLANG.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"To achieve this task, we may first analyze the syntactic structure of the sentence using a semantic grammar (Allen, 1995), whose nonterminals are the ones in the CLANG grammar.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-The meaning of the sentence is then obtained by combining the meanings of its sub-parts according to the semantic parse.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Figure 3(a) shows a possible partial semantic parse of the sample sentence based on CLANG non-terminals (UNUM stands for uniform number).,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Figure 3(b) shows the corresponding CLANG parse from which the MR is constructed.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"This process can be formalized as an instance of synchronous parsing (Aho and Ullman, 1972), originally developed as a theory of compilers in which syntax analysis and code generation are combined into a single phase.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Synchronous parsing has seen a surge of interest recently in the machine translation community as a way of formalizing syntax-based translation models (Melamed, 2004; Chiang, 2005).","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"According to this theory, a semantic parser defines a translation, a set of pairs of strings in which each pair is an NL sentence coupled with its MR. To finitely specify a potentially infinite translation, we use a synchronous context-free grammar (SCFG) for generating the pairs in a translation.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Analogous to an ordinary CFG, each SCFG rule consists of a single non-terminal on the left-hand side (LHS).","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"The right-hand side (RHS) of an SCFG rule is a pair of strings, (α, Q), where the non-terminals in 0 are a permutation of the non-terminals in α.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Below are some SCFG rules that can be used for generating the parse trees in Figure 3: Each SCFG rule X → (α, Q) is a combination of a production of the NL semantic grammar, X → α, and a production of the MRL grammar, X → Q.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Each rule corresponds to a transformation rule in Kate et al. (2005).,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Following their terminology, we call the string α a pattern, and the string Q a template.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Non-terminals are indexed to show their association between a pattern and a template.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"All derivations start with a pair of associated start symbols, (51 , 51 ).","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Each step of a derivation involves the rewriting of a pair of associated non-terminals in both of the NL and MRL streams.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Below is a derivation that would generate the sample sentence and its MR simultaneously: (Note that RULE is the start symbol for CLANG) (RULE 1 , RULE 1 ) ⇒ (if CONDITION 1 , DIRECTIVE 2 .","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-", (CONDITION 1 DIRECTIVE 2 )) ⇒ (if TEAM 1 player UNUM 2 has the ball, DIR 3 .","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-", ((bowner TEAM 1 {UNUM 2 }) DIR 3 )) ⇒ (if our player UNUM 1 has the ball, DIR 2 .","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-", ((bowner our {UNUM 1 }) DIR 2 )) ⇒ (if our player 4 has the ball, DIRECTIVE 1 .","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-", ((bowner our {4}) DIRECTIVE 1 )) ⇒ ... ⇒(if our player 4 has the ball, then our player 6 should stay in the left side of our half.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-", ((bowner our {4}) (do our {6} (pos (left (half our)))))) Here the MR string is said to be a translation of the NL string.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Given an input sentence, e, the task of semantic parsing is to find a derivation that yields (e, f), be multiple derivations that yield e (and thus multiple possible translations of e), a mechanism must be devised for discriminating the correct derivation from the incorrect ones.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"The semantic parsing model of WASP thus consists of an SCFG, G, and a probabilistic model, parameterized by A, that takes a possible derivation, d, and returns its likelihood of being correct given an input sentence, e. The output translation, f*, for a sentence, e, is defined as: where m(d) is the MR string that a derivation d yields, and D(G|e) is the set of all possible derivations of G that yield e. In other words, the output MR is the yield of the most probable derivation that yields e in the NL stream.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"The learning task is to induce a set of SCFG rules, which we call a lexicon, and a probabilistic model for derivations.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"A lexicon defines the set of derivations that are possible, so the induction of a probabilistic model first requires a lexicon.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Therefore, the learning task can be separated into two sub-tasks: (1) the induction of a lexicon, followed by (2) the induction of a probabilistic model.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Both sub-tasks require a training set, {(ei, fi)}, where each training example (ei, fi) is an NL sentence, ei, paired with its correct MR, fi.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-Lexical induction also requires an unambiguous CFG of the MRL.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Since there is no lexicon to begin with, it is not possible to include correct derivations in the training data.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-This is unlike most recent work on syntactic parsing based on gold-standard treebanks.,"{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"Therefore, the induction of a probabilistic model for derivations is done in an unsupervised manner.","{'title': '3 The Semantic Parsing Model', 'number': '3'}"
-"In this section, we focus on lexical learning, which is done by finding optimal word alignments between so that f is a translation of e. Since there may NL sentences and their MRs in the training set.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"By defining a mapping of words from one language to another, word alignments define a bilingual lexicon.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Using word alignments to induce a lexicon is not a new idea (Och and Ney, 2003).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Indeed, attempts have been made to directly apply machine translation systems to the problem of semantic parsing (Papineni et al., 1997; Macherey et al., 2001).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"However, these systems make no use of the MRL grammar, thus allocating probability mass to MR translations that are not even syntactically well-formed.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-Here we present a lexical induction algorithm that guarantees syntactic well-formedness of MR translations by using the MRL grammar.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"The basic idea is to train a statistical word alignment model on the training set, and then form a lexicon by extracting transformation rules from the K = 10 most probable word alignments between the training sentences and their MRs.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"While NL words could be directly aligned with MR tokens, this is a bad approach for two reasons.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"First, not all MR tokens carry specific meanings.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"For example, in CLANG, parentheses and braces are delimiters that are semantically vacuous.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Such tokens are not supposed to be aligned with any words, and inclusion of these tokens in the training data is likely to confuse the word alignment model.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Second, MR tokens may exhibit polysemy.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"For instance, the CLANG predicate pt has three meanings based on the types of arguments it is given: it specifies the xy-coordinates (e.g.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"(pt 0 0)), the current position of the ball (i.e.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"(pt ball)), or the current position of a player (e.g.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-(pt our 4)).,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Judging from the pt token alone, the word alignment model would not be able to identify its exact meaning.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"A simple, principled way to avoid these difficulties is to represent an MR using a sequence of productions used to generate it.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Specifically, the sequence corresponds to the top-down, left-most derivation of an MR.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-Figure 4 shows a partial word alignment between the sample sentence and the linearized parse of its MR.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Here the second production, CONDITION —* (bowner TEAM {UNUM}), is the one that rewrites the CONDITION non-terminal in the first production, RULE —* (CONDITION DIRECTIVE), and so on.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Note that the structure of a parse tree is preserved through linearization, and for each MR there is a unique linearized parse, since the MRL grammar is unambiguous.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-Such alignments can be obtained through the use of any off-the-shelf word alignment model.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"In this work, we use the GIZA++ implementation (Och and Ney, 2003) of IBM Model 5 (Brown et al., 1993).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Assuming that each NL word is linked to at most one MRL production, transformation rules are extracted in a bottom-up manner.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"The process starts with productions whose RHS is all terminals, e.g.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-TEAM —* our and UNUM —* 4.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"For each of these productions, X —* Q, a rule X —* (α, Q) is extracted such that α consists of the words to which the production is linked, e.g.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"TEAM —* (our, our), UNUM —* (4, 4).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Then we consider productions whose RHS contains non-terminals, i.e. predicates with arguments.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"In this case, an extracted pattern consists of the words to which the production is linked, as well as non-terminals showing where the arguments are realized.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"For example, for the bowner predicate, the extracted rule would be CONDITION —* (TEAM 1 player UNUM 2 has (1) ball, (bowner TEAM 1 {UNUM 2 })), where (1) denotes a word gap of size 1, due to the unaligned word the that comes between has and ball.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"A word gap, (g), can be seen as a non-terminal that expands to at most g words in the NL stream, which allows for some flexibility in pattern matching.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Rule extraction thus proceeds backward from the end of a linearized MR parse (so that a predicate is processed only after its arguments have all been processed), until rules are extracted for all productions.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-There are two cases where the above algorithm would not extract any rules for a production r. First is when no descendants of r in the MR parse are linked to any words.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Second is when there is a link from a word w, covered by the pattern for r, to a production r′ outside the sub-parse rooted at r. Rule extraction is forbidden in this case because it would destroy the link between w and r′.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"The first case arises when a component of an MR is not realized, e.g. assumed in context.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-The second case arises when a predicate and its arguments are not realized close enough.,"{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Figure 5 shows an example of this, where no rules can be extracted for the penalty-area predicate.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Both cases can be solved by merging nodes in the MR parse tree, combining several productions into one.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"For example, since no rules can be extracted for penalty-area, it is combined with its parent to form REGION → (left (penalty-area TEAM)), for which the pattern TEAM left penalty area is extracted.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"The above algorithm is effective only when words linked to an MR predicate and its arguments stay close to each other, a property that we call phrasal coherence.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Any links that destroy this property would lead to excessive node merging, a major cause of overfitting.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Since building a model that strictly observes phrasal coherence often requires rules that model the reordering of tree nodes, our goal is to bootstrap the learning process by using a simpler, word-based alignment model that produces a generally coherent alignment, and then remove links that would cause excessive node merging before rule extraction takes place.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Given an alignment, a, we count the number of links that would prevent a rule from being extracted for each production in the MR parse.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Then the total sum for all productions is obtained, denoted by v(a).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"A greedy procedure is employed that repeatedly removes a link a E a that would maximize v(a) — v(a\{a}) > 0, until v(a) cannot be further reduced.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"A link w H r is never removed if the translation probability, Pr(r|w), is greater than a certain threshold (0.9).","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"To replenish the removed links, links from the most probable reverse alignment, a� (obtained by treating the source language as target, and vice versa), are added to a, as long as a remains n-to-1, and v(a) is not increased.","{'title': '4 Lexical Acquisition', 'number': '4'}"
-"Once a lexicon is acquired, the next task is to learn a probabilistic model for the semantic parser.","{'title': '5 Parameter Estimation', 'number': '5'}"
-"We propose a maximum-entropy model that defines a conditional probability distribution over derivations (d) given the observed NL string (e): where fi is a feature function, and Zλ(e) is a normalizing factor.","{'title': '5 Parameter Estimation', 'number': '5'}"
-For each rule r in the lexicon there is a feature function that returns the number of times r is used in a derivation.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-Also for each word w there is a feature function that returns the number of times w is generated from word gaps.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-Generation of unseen words is modeled using an extra feature whose value is the total number of words generated from word gaps.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-"The number of features is quite modest (less than 3,000 in our experiments).","{'title': '5 Parameter Estimation', 'number': '5'}"
-A similar feature set is used by Zettlemoyer and Collins (2005).,"{'title': '5 Parameter Estimation', 'number': '5'}"
-Decoding of the model can be done in cubic time with respect to sentence length using the Viterbi algorithm.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-"An Earley chart is used for keeping track of all derivations that are consistent with the input (Stolcke, 1995).","{'title': '5 Parameter Estimation', 'number': '5'}"
-"The maximum conditional likelihood criterion is used for estimating the model parameters, Ai.","{'title': '5 Parameter Estimation', 'number': '5'}"
-"A Gaussian prior (a2 = 1) is used for regularizing the model (Chen and Rosenfeld, 1999).","{'title': '5 Parameter Estimation', 'number': '5'}"
-"Since gold-standard derivations are not available in the training data, correct derivations must be treated as hidden variables.","{'title': '5 Parameter Estimation', 'number': '5'}"
-"Here we use a version of improved iterative scaling (IIS) coupled with EM (Riezler et al., 2000) for finding an optimal set of parameters.1 Unlike the fully-supervised case, the conditional likelihood is not concave with respect to A, so the estimation algorithm is sensitive to initial parameters.","{'title': '5 Parameter Estimation', 'number': '5'}"
-"To assume as little as possible, A is initialized to 0.","{'title': '5 Parameter Estimation', 'number': '5'}"
-The estimation algorithm requires statistics that depend on all possible derivations for a sentence or a sentence-MR pair.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-"While it is not feasible to enumerate all derivations, a variant of the Inside-Outside algorithm can be used for efficiently collecting the required statistics (Miyao and Tsujii, 2002).","{'title': '5 Parameter Estimation', 'number': '5'}"
-"Following Zettlemoyer and Collins (2005), only rules that are used in the best parses for the training set are retained in the final lexicon.","{'title': '5 Parameter Estimation', 'number': '5'}"
-All other rules are discarded.,"{'title': '5 Parameter Estimation', 'number': '5'}"
-"This heuristic, commonly known as Iiterbi approximation, is used to improve accuracy, assuming that rules used in the best parses are the most accurate.","{'title': '5 Parameter Estimation', 'number': '5'}"
-We evaluated WASP in the ROBOCUP and GEOQUERY domains (see Section 2).,"{'title': '6 Experiments', 'number': '6'}"
-"To build a corpus for ROBOCUP, 300 pieces of coach advice were randomly selected from the log files of the 2003 ROBOCUP Coach Competition, which were manually translated into English (Kuhlmann et al., 2004).","{'title': '6 Experiments', 'number': '6'}"
-The average sentence length is 22.52.,"{'title': '6 Experiments', 'number': '6'}"
-"To build a corpus for GEOQUERY, 880 English questions were gathered from various sources, which were manually translated into the functional GEOQUERY language (Tang and Mooney, 2001).","{'title': '6 Experiments', 'number': '6'}"
-"The average sentence length is 7.48, much shorter than ROBOCUP.","{'title': '6 Experiments', 'number': '6'}"
-"250 of the queries were also translated into Spanish, Japanese and Turkish, resulting in a smaller, multilingual data set.","{'title': '6 Experiments', 'number': '6'}"
-"For each domain, there was a minimal set of initial rules representing knowledge needed for translating basic domain entities.","{'title': '6 Experiments', 'number': '6'}"
-These rules were always included in a lexicon.,"{'title': '6 Experiments', 'number': '6'}"
-"For example, in GEOQUERY, the initial rules were: NUM —* (x, x), for all x ER; CITY —* (c, cityid(’c’, )), for all city names c (e.g. new york); and similar rules for other types of names (e.g. rivers).","{'title': '6 Experiments', 'number': '6'}"
-Name translations were provided for the multilingual data set (e.g.,"{'title': '6 Experiments', 'number': '6'}"
-"CITY —* (nyuu yooku, cityid(’new york’, )) for Japanese).","{'title': '6 Experiments', 'number': '6'}"
-Standard 10-fold cross validation was used in our experiments.,"{'title': '6 Experiments', 'number': '6'}"
-A semantic parser was learned from the training set.,"{'title': '6 Experiments', 'number': '6'}"
-Then the learned parser was used to translate the test sentences into MRs.,"{'title': '6 Experiments', 'number': '6'}"
-Translation failed when there were constructs that the parser did not cover.,"{'title': '6 Experiments', 'number': '6'}"
-"We counted the number of sentences that were translated into an MR, and the number of translations that were correct.","{'title': '6 Experiments', 'number': '6'}"
-"For ROBOCUP, a translation was correct if it exactly matched the correct MR. For GEOQUERY, a translation was correct if it retrieved the same answer as the correct query.","{'title': '6 Experiments', 'number': '6'}"
-"Using these counts, we measured the performance of the parser in terms of precision (percentage of translations that were correct) and recall (percentage of test sentences that were correctly translated).","{'title': '6 Experiments', 'number': '6'}"
-"For ROBOCUP, it took 47 minutes to learn a parser using IIS.","{'title': '6 Experiments', 'number': '6'}"
-"For GEOQUERY, it took 83 minutes.","{'title': '6 Experiments', 'number': '6'}"
-"Figure 6 shows the performance of WASP compared to four other algorithms: SILT (Kate et al., 2005), COCKTAIL (Tang and Mooney, 2001), SCISSOR (Ge and Mooney, 2005) and Zettlemoyer and Collins (2005).","{'title': '6 Experiments', 'number': '6'}"
-Experimental results clearly show the advantage of extra supervision in SCISSOR and Zettlemoyer and Collins’s parser (see Section 1).,"{'title': '6 Experiments', 'number': '6'}"
-"However, WASP performs quite favorably compared to SILT and COCKTAIL, which use the same training data.","{'title': '6 Experiments', 'number': '6'}"
-"In particular, COCKTAIL, a deterministic shift-reduce parser based on inductive logic programming, fails to scale up to the ROBOCUP domain where sentences are much longer, and crashes on larger training sets due to memory overflow.","{'title': '6 Experiments', 'number': '6'}"
-"WASP also outperforms SILT in terms of recall, where lexical learning is done by a local bottom-up search, which is much less effective than the wordalignment-based algorithm in WASP.","{'title': '6 Experiments', 'number': '6'}"
-Figure 7 shows the performance of WASP on the multilingual GEOQUERY data set.,"{'title': '6 Experiments', 'number': '6'}"
-"The languages being considered differ in terms of word order: Subject-Verb-Object for English and Spanish, and Subject-Object-Verb for Japanese and Turkish.","{'title': '6 Experiments', 'number': '6'}"
-"WASP’s performance is consistent across these languages despite some slight differences, most probably due to factors other than word order (e.g. lower recall for Turkish due to a much larger vocabulary).","{'title': '6 Experiments', 'number': '6'}"
-"Details can be found in a longer version of this paper (Wong, 2005).","{'title': '6 Experiments', 'number': '6'}"
-"We have presented a novel statistical approach to semantic parsing in which a word-based alignment model is used for lexical learning, and the parsing model itself can be seen as a syntax-based translation model.","{'title': '7 Conclusion', 'number': '7'}"
-"Our method is like many phrasebased translation models, which require a simpler, word-based alignment model for the acquisition of a phrasal lexicon (Och and Ney, 2003).","{'title': '7 Conclusion', 'number': '7'}"
-"It is also similar to the hierarchical phrase-based model of Chiang (2005), in which hierarchical phrase pairs, essentially SCFG rules, are learned through the use of a simpler, phrase-based alignment model.","{'title': '7 Conclusion', 'number': '7'}"
-"Our work shows that ideas from compiler theory (SCFG) and machine translation (word alignment models) can be successfully applied to semantic parsing, a closelyrelated task whose goal is to translate a natural language into a formal language.","{'title': '7 Conclusion', 'number': '7'}"
-Lexical learning requires word alignments that are phrasally coherent.,"{'title': '7 Conclusion', 'number': '7'}"
-We presented a simple greedy algorithm for removing links that destroy phrasal coherence.,"{'title': '7 Conclusion', 'number': '7'}"
-"Although it is shown to be quite effective in the current domains, it is preferable to have a more principled way of promoting phrasal coherence.","{'title': '7 Conclusion', 'number': '7'}"
-"The problem is that, by treating MRL productions as atomic units, current word-based alignment models have no knowledge about the tree structure hidden in a linearized MR parse.","{'title': '7 Conclusion', 'number': '7'}"
-"In the future, we would like to develop a word-based alignment model that is aware of the MRL syntax, so that better lexicons can be learned.","{'title': '7 Conclusion', 'number': '7'}"
-I. D. Melamed.,"{'title': '7 Conclusion', 'number': '7'}"
-2004.,"{'title': '7 Conclusion', 'number': '7'}"
-Statistical machine translation by parsing.,"{'title': '7 Conclusion', 'number': '7'}"
-"In Proc. of ACL-04, pages 653–660, Barcelona, Spain.","{'title': '7 Conclusion', 'number': '7'}"
-This research was supported by Defense Advanced Research Projects Agency under grant HR0011-041-0007.,"{'title': 'Acknowledgments', 'number': '8'}"
+"We present a novel statistical approach to parsing, for constructing a complete, formal meaning representation of a sentence.",Introduction
+A semantic parser is learned given a set of sentences annotated with their correct meaning represen- The main innovation of is its use of state-of-the-art statistical machine translation techniques.,Introduction
+"A word alignment model is used for lexical acquisition, and the parsing model itself can be seen as a syntax-based translation model. show that favorably in terms of both accuracy and coverage compared to existing learning methods requiring similar amount of supervision, and shows better robustness to variations in task complexity and word order.",Introduction
+"Recent work on natural language understanding has mainly focused on shallow semantic analysis, such as semantic role labeling and word-sense disambiguation.",Experiment/Discussion
+"This paper considers a more ambitious task of semantic parsing, which is the construction of a complete, formal, symbolic, meaning representation (MR) of a sentence.",Experiment/Discussion
+"Semantic parsing has found its way in practical applications such as natural-language (NL) interfaces to databases (Androutsopoulos et al., 1995) and advice taking (Kuhlmann et al., 2004).",Experiment/Discussion
+"Figure 1 shows a sample MR written in a meaning-representation language (MRL) called CLANG, which is used for ((bowner our {4}) (do our {6} (pos (left (half our))))) If our player 4 has the ball, then our player 6 should stay in the left side of our half. encoding coach advice given to simulated soccerplaying agents (Kuhlmann et al., 2004).",Experiment/Discussion
+"Prior research in semantic parsing has mainly focused on relatively simple domains such as ATIS (Air Travel Information Service) (Miller et al., 1996; Papineni et al., 1997; Macherey et al., 2001), in which a typcial MR is only a single semantic frame.",Experiment/Discussion
+"Learning methods have been devised that can generate MRs with a complex, nested structure (cf.",Experiment/Discussion
+Figure 1).,Experiment/Discussion
+"However, these methods are mostly based on deterministic parsing (Zelle and Mooney, 1996; Kate et al., 2005), which lack the robustness that characterizes recent advances in statistical NLP.",Experiment/Discussion
+"Other learning methods involve the use of fullyannotated augmented parse trees (Ge and Mooney, 2005) or prior knowledge of the NL syntax (Zettlemoyer and Collins, 2005) in training, and hence require extensive human efforts when porting to a new domain or language.",Experiment/Discussion
+"In this paper, we present a novel statistical approach to semantic parsing which can handle MRs with a nested structure, based on previous work on semantic parsing using transformation rules (Kate et al., 2005).",Experiment/Discussion
+The algorithm learns a semantic parser given a set of NL sentences annotated with their correct MRs.,Experiment/Discussion
+"It requires no prior knowledge of the NL syntax, although it assumes that an unambiguous, context-free grammar (CFG) of the target MRL is available.",Experiment/Discussion
+The main innovation of this alshows a sample query in this language.,Experiment/Discussion
+"Note that both domains involve the use of MRs with a complex, nested structure. gorithm is its integration with state-of-the-art statistical machine translation techniques.",Experiment/Discussion
+"More specifically, a statistical word alignment model (Brown et al., 1993) is used to acquire a bilingual lexicon consisting of NL substrings coupled with their translations in the target MRL.",Experiment/Discussion
+"Complete MRs are then formed by combining these NL substrings and their translations under a parsing framework called the synchronous CFG (Aho and Ullman, 1972), which forms the basis of most existing statistical syntax-based translation models (Yamada and Knight, 2001; Chiang, 2005).",Experiment/Discussion
+"Our algorithm is called WASP, short for Word Alignment-based Semantic Parsing.",Experiment/Discussion
+"In initial evaluation on several real-world data sets, we show that WASP performs favorably in terms of both accuracy and coverage compared to existing learning methods requiring the same amount of supervision, and shows better robustness to variations in task complexity and word order.",Experiment/Discussion
+Section 2 provides a brief overview of the domains being considered.,Experiment/Discussion
+"In Section 3, we present the semantic parsing model of WASP.",Experiment/Discussion
+Section 4 outlines the algorithm for acquiring a bilingual lexicon through the use of word alignments.,Experiment/Discussion
+Section 5 describes a probabilistic model for semantic parsing.,Experiment/Discussion
+"Finally, we report on experiments that show the robustness of WASP in Section 6, followed by the conclusion in Section 7.",Experiment/Discussion
+"In this paper, we consider two domains.",Experiment/Discussion
+The first domain is ROBOCUP.,Experiment/Discussion
+ROBOCUP (www.robocup.org) is an AI research initiative using robotic soccer as its primary domain.,Experiment/Discussion
+"In the ROBOCUP Coach Competition, teams of agents compete on a simulated soccer field and receive coach advice written in a formal language called CLANG (Chen et al., 2003).",Experiment/Discussion
+Figure 1 shows a sample MR in CLANG.,Experiment/Discussion
+"The second domain is GEOQUERY, where a functional, variable-free query language is used for querying a small database on U.S. geography (Zelle and Mooney, 1996; Kate et al., 2005).",Experiment/Discussion
+Figure 2,Experiment/Discussion
+"To describe the semantic parsing model of WASP, it is best to start with an example.",Experiment/Discussion
+Consider the task of translating the sentence in Figure 1 into its MR in CLANG.,Experiment/Discussion
+"To achieve this task, we may first analyze the syntactic structure of the sentence using a semantic grammar (Allen, 1995), whose nonterminals are the ones in the CLANG grammar.",Experiment/Discussion
+The meaning of the sentence is then obtained by combining the meanings of its sub-parts according to the semantic parse.,Experiment/Discussion
+Figure 3(a) shows a possible partial semantic parse of the sample sentence based on CLANG non-terminals (UNUM stands for uniform number).,Experiment/Discussion
+Figure 3(b) shows the corresponding CLANG parse from which the MR is constructed.,Experiment/Discussion
+"This process can be formalized as an instance of synchronous parsing (Aho and Ullman, 1972), originally developed as a theory of compilers in which syntax analysis and code generation are combined into a single phase.",Experiment/Discussion
+"Synchronous parsing has seen a surge of interest recently in the machine translation community as a way of formalizing syntax-based translation models (Melamed, 2004; Chiang, 2005).",Experiment/Discussion
+"According to this theory, a semantic parser defines a translation, a set of pairs of strings in which each pair is an NL sentence coupled with its MR. To finitely specify a potentially infinite translation, we use a synchronous context-free grammar (SCFG) for generating the pairs in a translation.",Experiment/Discussion
+"Analogous to an ordinary CFG, each SCFG rule consists of a single non-terminal on the left-hand side (LHS).",Experiment/Discussion
+"The right-hand side (RHS) of an SCFG rule is a pair of strings, (α, Q), where the non-terminals in 0 are a permutation of the non-terminals in α.",Experiment/Discussion
+"Below are some SCFG rules that can be used for generating the parse trees in Figure 3: Each SCFG rule X → (α, Q) is a combination of a production of the NL semantic grammar, X → α, and a production of the MRL grammar, X → Q.",Experiment/Discussion
+Each rule corresponds to a transformation rule in Kate et al. (2005).,Experiment/Discussion
+"Following their terminology, we call the string α a pattern, and the string Q a template.",Experiment/Discussion
+Non-terminals are indexed to show their association between a pattern and a template.,Experiment/Discussion
+"All derivations start with a pair of associated start symbols, (51 , 51 ).",Experiment/Discussion
+Each step of a derivation involves the rewriting of a pair of associated non-terminals in both of the NL and MRL streams.,Experiment/Discussion
+"Below is a derivation that would generate the sample sentence and its MR simultaneously: (Note that RULE is the start symbol for CLANG) (RULE 1 , RULE 1 ) ⇒ (if CONDITION 1 , DIRECTIVE 2 .",Experiment/Discussion
+", (CONDITION 1 DIRECTIVE 2 )) ⇒ (if TEAM 1 player UNUM 2 has the ball, DIR 3 .",Experiment/Discussion
+", ((bowner TEAM 1 {UNUM 2 }) DIR 3 )) ⇒ (if our player UNUM 1 has the ball, DIR 2 .",Experiment/Discussion
+", ((bowner our {UNUM 1 }) DIR 2 )) ⇒ (if our player 4 has the ball, DIRECTIVE 1 .",Experiment/Discussion
+", ((bowner our {4}) DIRECTIVE 1 )) ⇒ ... ⇒(if our player 4 has the ball, then our player 6 should stay in the left side of our half.",Experiment/Discussion
+", ((bowner our {4}) (do our {6} (pos (left (half our)))))) Here the MR string is said to be a translation of the NL string.",Experiment/Discussion
+"Given an input sentence, e, the task of semantic parsing is to find a derivation that yields (e, f), be multiple derivations that yield e (and thus multiple possible translations of e), a mechanism must be devised for discriminating the correct derivation from the incorrect ones.",Experiment/Discussion
+"The semantic parsing model of WASP thus consists of an SCFG, G, and a probabilistic model, parameterized by A, that takes a possible derivation, d, and returns its likelihood of being correct given an input sentence, e. The output translation, f*, for a sentence, e, is defined as: where m(d) is the MR string that a derivation d yields, and D(G|e) is the set of all possible derivations of G that yield e. In other words, the output MR is the yield of the most probable derivation that yields e in the NL stream.",Experiment/Discussion
+"The learning task is to induce a set of SCFG rules, which we call a lexicon, and a probabilistic model for derivations.",Experiment/Discussion
+"A lexicon defines the set of derivations that are possible, so the induction of a probabilistic model first requires a lexicon.",Experiment/Discussion
+"Therefore, the learning task can be separated into two sub-tasks: (1) the induction of a lexicon, followed by (2) the induction of a probabilistic model.",Experiment/Discussion
+"Both sub-tasks require a training set, {(ei, fi)}, where each training example (ei, fi) is an NL sentence, ei, paired with its correct MR, fi.",Experiment/Discussion
+Lexical induction also requires an unambiguous CFG of the MRL.,Experiment/Discussion
+"Since there is no lexicon to begin with, it is not possible to include correct derivations in the training data.",Experiment/Discussion
+This is unlike most recent work on syntactic parsing based on gold-standard treebanks.,Experiment/Discussion
+"Therefore, the induction of a probabilistic model for derivations is done in an unsupervised manner.",Experiment/Discussion
+"In this section, we focus on lexical learning, which is done by finding optimal word alignments between so that f is a translation of e. Since there may NL sentences and their MRs in the training set.",Experiment/Discussion
+"By defining a mapping of words from one language to another, word alignments define a bilingual lexicon.",Experiment/Discussion
+"Using word alignments to induce a lexicon is not a new idea (Och and Ney, 2003).",Experiment/Discussion
+"Indeed, attempts have been made to directly apply machine translation systems to the problem of semantic parsing (Papineni et al., 1997; Macherey et al., 2001).",Experiment/Discussion
+"However, these systems make no use of the MRL grammar, thus allocating probability mass to MR translations that are not even syntactically well-formed.",Experiment/Discussion
+Here we present a lexical induction algorithm that guarantees syntactic well-formedness of MR translations by using the MRL grammar.,Experiment/Discussion
+"The basic idea is to train a statistical word alignment model on the training set, and then form a lexicon by extracting transformation rules from the K = 10 most probable word alignments between the training sentences and their MRs.",Experiment/Discussion
+"While NL words could be directly aligned with MR tokens, this is a bad approach for two reasons.",Experiment/Discussion
+"First, not all MR tokens carry specific meanings.",Experiment/Discussion
+"For example, in CLANG, parentheses and braces are delimiters that are semantically vacuous.",Experiment/Discussion
+"Such tokens are not supposed to be aligned with any words, and inclusion of these tokens in the training data is likely to confuse the word alignment model.",Experiment/Discussion
+"Second, MR tokens may exhibit polysemy.",Experiment/Discussion
+"For instance, the CLANG predicate pt has three meanings based on the types of arguments it is given: it specifies the xy-coordinates (e.g.",Experiment/Discussion
+"(pt 0 0)), the current position of the ball (i.e.",Experiment/Discussion
+"(pt ball)), or the current position of a player (e.g.",Experiment/Discussion
+(pt our 4)).,Experiment/Discussion
+"Judging from the pt token alone, the word alignment model would not be able to identify its exact meaning.",Experiment/Discussion
+"A simple, principled way to avoid these difficulties is to represent an MR using a sequence of productions used to generate it.",Experiment/Discussion
+"Specifically, the sequence corresponds to the top-down, left-most derivation of an MR.",Experiment/Discussion
+Figure 4 shows a partial word alignment between the sample sentence and the linearized parse of its MR.,Experiment/Discussion
+"Here the second production, CONDITION —* (bowner TEAM {UNUM}), is the one that rewrites the CONDITION non-terminal in the first production, RULE —* (CONDITION DIRECTIVE), and so on.",Experiment/Discussion
+"Note that the structure of a parse tree is preserved through linearization, and for each MR there is a unique linearized parse, since the MRL grammar is unambiguous.",Experiment/Discussion
+Such alignments can be obtained through the use of any off-the-shelf word alignment model.,Experiment/Discussion
+"In this work, we use the GIZA++ implementation (Och and Ney, 2003) of IBM Model 5 (Brown et al., 1993).",Experiment/Discussion
+"Assuming that each NL word is linked to at most one MRL production, transformation rules are extracted in a bottom-up manner.",Experiment/Discussion
+"The process starts with productions whose RHS is all terminals, e.g.",Experiment/Discussion
+TEAM —* our and UNUM —* 4.,Experiment/Discussion
+"For each of these productions, X —* Q, a rule X —* (α, Q) is extracted such that α consists of the words to which the production is linked, e.g.",Experiment/Discussion
+"TEAM —* (our, our), UNUM —* (4, 4).",Experiment/Discussion
+"Then we consider productions whose RHS contains non-terminals, i.e. predicates with arguments.",Experiment/Discussion
+"In this case, an extracted pattern consists of the words to which the production is linked, as well as non-terminals showing where the arguments are realized.",Experiment/Discussion
+"For example, for the bowner predicate, the extracted rule would be CONDITION —* (TEAM 1 player UNUM 2 has (1) ball, (bowner TEAM 1 {UNUM 2 })), where (1) denotes a word gap of size 1, due to the unaligned word the that comes between has and ball.",Experiment/Discussion
+"A word gap, (g), can be seen as a non-terminal that expands to at most g words in the NL stream, which allows for some flexibility in pattern matching.",Experiment/Discussion
+"Rule extraction thus proceeds backward from the end of a linearized MR parse (so that a predicate is processed only after its arguments have all been processed), until rules are extracted for all productions.",Experiment/Discussion
+There are two cases where the above algorithm would not extract any rules for a production r. First is when no descendants of r in the MR parse are linked to any words.,Experiment/Discussion
+"Second is when there is a link from a word w, covered by the pattern for r, to a production r′ outside the sub-parse rooted at r. Rule extraction is forbidden in this case because it would destroy the link between w and r′.",Experiment/Discussion
+"The first case arises when a component of an MR is not realized, e.g. assumed in context.",Experiment/Discussion
+The second case arises when a predicate and its arguments are not realized close enough.,Experiment/Discussion
+"Figure 5 shows an example of this, where no rules can be extracted for the penalty-area predicate.",Experiment/Discussion
+"Both cases can be solved by merging nodes in the MR parse tree, combining several productions into one.",Experiment/Discussion
+"For example, since no rules can be extracted for penalty-area, it is combined with its parent to form REGION → (left (penalty-area TEAM)), for which the pattern TEAM left penalty area is extracted.",Experiment/Discussion
+"The above algorithm is effective only when words linked to an MR predicate and its arguments stay close to each other, a property that we call phrasal coherence.",Experiment/Discussion
+"Any links that destroy this property would lead to excessive node merging, a major cause of overfitting.",Experiment/Discussion
+"Since building a model that strictly observes phrasal coherence often requires rules that model the reordering of tree nodes, our goal is to bootstrap the learning process by using a simpler, word-based alignment model that produces a generally coherent alignment, and then remove links that would cause excessive node merging before rule extraction takes place.",Experiment/Discussion
+"Given an alignment, a, we count the number of links that would prevent a rule from being extracted for each production in the MR parse.",Experiment/Discussion
+"Then the total sum for all productions is obtained, denoted by v(a).",Experiment/Discussion
+"A greedy procedure is employed that repeatedly removes a link a E a that would maximize v(a) — v(a\{a}) > 0, until v(a) cannot be further reduced.",Experiment/Discussion
+"A link w H r is never removed if the translation probability, Pr(r|w), is greater than a certain threshold (0.9).",Experiment/Discussion
+"To replenish the removed links, links from the most probable reverse alignment, a� (obtained by treating the source language as target, and vice versa), are added to a, as long as a remains n-to-1, and v(a) is not increased.",Experiment/Discussion
+"Once a lexicon is acquired, the next task is to learn a probabilistic model for the semantic parser.",Experiment/Discussion
+"We propose a maximum-entropy model that defines a conditional probability distribution over derivations (d) given the observed NL string (e): where fi is a feature function, and Zλ(e) is a normalizing factor.",Experiment/Discussion
+For each rule r in the lexicon there is a feature function that returns the number of times r is used in a derivation.,Experiment/Discussion
+Also for each word w there is a feature function that returns the number of times w is generated from word gaps.,Experiment/Discussion
+Generation of unseen words is modeled using an extra feature whose value is the total number of words generated from word gaps.,Experiment/Discussion
+"The number of features is quite modest (less than 3,000 in our experiments).",Experiment/Discussion
+A similar feature set is used by Zettlemoyer and Collins (2005).,Experiment/Discussion
+Decoding of the model can be done in cubic time with respect to sentence length using the Viterbi algorithm.,Experiment/Discussion
+"An Earley chart is used for keeping track of all derivations that are consistent with the input (Stolcke, 1995).",Experiment/Discussion
+"The maximum conditional likelihood criterion is used for estimating the model parameters, Ai.",Experiment/Discussion
+"A Gaussian prior (a2 = 1) is used for regularizing the model (Chen and Rosenfeld, 1999).",Experiment/Discussion
+"Since gold-standard derivations are not available in the training data, correct derivations must be treated as hidden variables.",Experiment/Discussion
+"Here we use a version of improved iterative scaling (IIS) coupled with EM (Riezler et al., 2000) for finding an optimal set of parameters.1 Unlike the fully-supervised case, the conditional likelihood is not concave with respect to A, so the estimation algorithm is sensitive to initial parameters.",Experiment/Discussion
+"To assume as little as possible, A is initialized to 0.",Experiment/Discussion
+The estimation algorithm requires statistics that depend on all possible derivations for a sentence or a sentence-MR pair.,Experiment/Discussion
+"While it is not feasible to enumerate all derivations, a variant of the Inside-Outside algorithm can be used for efficiently collecting the required statistics (Miyao and Tsujii, 2002).",Experiment/Discussion
+"Following Zettlemoyer and Collins (2005), only rules that are used in the best parses for the training set are retained in the final lexicon.",Experiment/Discussion
+All other rules are discarded.,Experiment/Discussion
+"This heuristic, commonly known as Iiterbi approximation, is used to improve accuracy, assuming that rules used in the best parses are the most accurate.",Experiment/Discussion
+We evaluated WASP in the ROBOCUP and GEOQUERY domains (see Section 2).,Experiment/Discussion
+"To build a corpus for ROBOCUP, 300 pieces of coach advice were randomly selected from the log files of the 2003 ROBOCUP Coach Competition, which were manually translated into English (Kuhlmann et al., 2004).",Experiment/Discussion
+The average sentence length is 22.52.,Experiment/Discussion
+"To build a corpus for GEOQUERY, 880 English questions were gathered from various sources, which were manually translated into the functional GEOQUERY language (Tang and Mooney, 2001).",Experiment/Discussion
+"The average sentence length is 7.48, much shorter than ROBOCUP.",Experiment/Discussion
+"250 of the queries were also translated into Spanish, Japanese and Turkish, resulting in a smaller, multilingual data set.",Experiment/Discussion
+"For each domain, there was a minimal set of initial rules representing knowledge needed for translating basic domain entities.",Experiment/Discussion
+These rules were always included in a lexicon.,Experiment/Discussion
+"For example, in GEOQUERY, the initial rules were: NUM —* (x, x), for all x ER; CITY —* (c, cityid(’c’, )), for all city names c (e.g. new york); and similar rules for other types of names (e.g. rivers).",Experiment/Discussion
+Name translations were provided for the multilingual data set (e.g.,Experiment/Discussion
+"CITY —* (nyuu yooku, cityid(’new york’, )) for Japanese).",Experiment/Discussion
+Standard 10-fold cross validation was used in our experiments.,Experiment/Discussion
+A semantic parser was learned from the training set.,Experiment/Discussion
+Then the learned parser was used to translate the test sentences into MRs.,Experiment/Discussion
+Translation failed when there were constructs that the parser did not cover.,Experiment/Discussion
+"We counted the number of sentences that were translated into an MR, and the number of translations that were correct.",Experiment/Discussion
+"For ROBOCUP, a translation was correct if it exactly matched the correct MR. For GEOQUERY, a translation was correct if it retrieved the same answer as the correct query.",Experiment/Discussion
+"Using these counts, we measured the performance of the parser in terms of precision (percentage of translations that were correct) and recall (percentage of test sentences that were correctly translated).",Experiment/Discussion
+"For ROBOCUP, it took 47 minutes to learn a parser using IIS.",Experiment/Discussion
+"For GEOQUERY, it took 83 minutes.",Experiment/Discussion
+"Figure 6 shows the performance of WASP compared to four other algorithms: SILT (Kate et al., 2005), COCKTAIL (Tang and Mooney, 2001), SCISSOR (Ge and Mooney, 2005) and Zettlemoyer and Collins (2005).",Experiment/Discussion
+Experimental results clearly show the advantage of extra supervision in SCISSOR and Zettlemoyer and Collins’s parser (see Section 1).,Experiment/Discussion
+"However, WASP performs quite favorably compared to SILT and COCKTAIL, which use the same training data.",Experiment/Discussion
+"In particular, COCKTAIL, a deterministic shift-reduce parser based on inductive logic programming, fails to scale up to the ROBOCUP domain where sentences are much longer, and crashes on larger training sets due to memory overflow.",Experiment/Discussion
+"WASP also outperforms SILT in terms of recall, where lexical learning is done by a local bottom-up search, which is much less effective than the wordalignment-based algorithm in WASP.",Experiment/Discussion
+Figure 7 shows the performance of WASP on the multilingual GEOQUERY data set.,Experiment/Discussion
+"The languages being considered differ in terms of word order: Subject-Verb-Object for English and Spanish, and Subject-Object-Verb for Japanese and Turkish.",Experiment/Discussion
+"WASP’s performance is consistent across these languages despite some slight differences, most probably due to factors other than word order (e.g. lower recall for Turkish due to a much larger vocabulary).",Experiment/Discussion
+"Details can be found in a longer version of this paper (Wong, 2005).",Experiment/Discussion
+"We have presented a novel statistical approach to semantic parsing in which a word-based alignment model is used for lexical learning, and the parsing model itself can be seen as a syntax-based translation model.",Results/Conclusion
+"Our method is like many phrasebased translation models, which require a simpler, word-based alignment model for the acquisition of a phrasal lexicon (Och and Ney, 2003).",Results/Conclusion
+"It is also similar to the hierarchical phrase-based model of Chiang (2005), in which hierarchical phrase pairs, essentially SCFG rules, are learned through the use of a simpler, phrase-based alignment model.",Results/Conclusion
+"Our work shows that ideas from compiler theory (SCFG) and machine translation (word alignment models) can be successfully applied to semantic parsing, a closelyrelated task whose goal is to translate a natural language into a formal language.",Results/Conclusion
+Lexical learning requires word alignments that are phrasally coherent.,Results/Conclusion
+We presented a simple greedy algorithm for removing links that destroy phrasal coherence.,Results/Conclusion
+"Although it is shown to be quite effective in the current domains, it is preferable to have a more principled way of promoting phrasal coherence.",Results/Conclusion
+"The problem is that, by treating MRL productions as atomic units, current word-based alignment models have no knowledge about the tree structure hidden in a linearized MR parse.",Results/Conclusion
+"In the future, we would like to develop a word-based alignment model that is aware of the MRL syntax, so that better lexicons can be learned.",Results/Conclusion
+I. D. Melamed.,Results/Conclusion
+2004.,Results/Conclusion
+Statistical machine translation by parsing.,Results/Conclusion
+"In Proc. of ACL-04, pages 653–660, Barcelona, Spain.",Results/Conclusion
+This research was supported by Defense Advanced Research Projects Agency under grant HR0011-041-0007.,Results/Conclusion

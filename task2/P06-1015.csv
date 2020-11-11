@@ -1,159 +1,159 @@
 col1,col2
-"this paper, we present a weakly-supervised, general-purpose, and accurate algorithm for harvesting semantic relations.",{}
-The main contributions are: i) a method for exploiting generic patterns by filtering incorrect instances using the Web; and ii) a principled measure of pattern and instance reliability enabling the filtering algorithm.,{}
-"We present an empirical comof various state of the art systems, on different size and genre corpora, on extracting various general and specific relations.",{}
-Experimental results show that our exploitation of generic patterns substantially increases system recall with small effect on overall precision.,{}
-Recent attention to knowledge-rich problems such as question answering (Pasca and Harabagiu 2001) and textual entailment (Geffet and Dagan 2005) has encouraged natural language processing researchers to develop algorithms for automatically harvesting shallow semantic resources.,"{'title': '1 Introduction', 'number': '1'}"
-"With seemingly endless amounts of textual data at our disposal, we have a tremendous opportunity to automatically grow semantic term banks and ontological resources.","{'title': '1 Introduction', 'number': '1'}"
-"To date, researchers have harvested, with varying success, several resources, including concept lists (Lin and Pantel 2002), topic signatures (Lin and Hovy 2000), facts (Etzioni et al. 2005), and word similarity lists (Hindle 1990).","{'title': '1 Introduction', 'number': '1'}"
-"Many recent efforts have also focused on extracting semantic relations between entities, such as entailments (Szpektor et al. 2004), is-a (Ravichandran and Hovy 2002), part-of (Girju et al.","{'title': '1 Introduction', 'number': '1'}"
-"2006), and other relations.","{'title': '1 Introduction', 'number': '1'}"
-"The following desiderata outline the properties of an ideal relation harvesting algorithm: riety of relations (i.e., not just is-a or part-of).","{'title': '1 Introduction', 'number': '1'}"
-"To our knowledge, no previous harvesting algorithm addresses all these properties concurrently.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we present Espresso, a generalpurpose, broad, and accurate corpus harvesting algorithm requiring minimal supervision.","{'title': '1 Introduction', 'number': '1'}"
-"The main algorithmic contribution is a novel method for exploiting generic patterns, which are broad coverage noisy patterns – i.e., patterns with high recall and low precision.","{'title': '1 Introduction', 'number': '1'}"
-"Insofar, difficulties in using these patterns have been a major impediment for minimally supervised algorithms resulting in either very low precision or recall.","{'title': '1 Introduction', 'number': '1'}"
-We propose a method to automatically detect generic patterns and to separate their correct and incorrect instances.,"{'title': '1 Introduction', 'number': '1'}"
-"The key intuition behind the algorithm is that given a set of reliable (high precision) patterns on a corpus, correct instances of a generic pattern will fire more with reliable patterns on a very large corpus, like the Web, than incorrect ones.","{'title': '1 Introduction', 'number': '1'}"
-"Below is a summary of the main contributions of this paper: Espresso addresses the desiderata as follows: Previous work like (Girju et al. 2006) that has made use of generic patterns through filtering has shown both high precision and high recall, at the expensive cost of much manual semantic annotation.","{'title': '1 Introduction', 'number': '1'}"
-"Minimally supervised algorithms, like (Hearst 1992; Pantel et al. 2004), typically ignore generic patterns since system precision dramatically decreases from the introduced noise and bootstrapping quickly spins out of control.","{'title': '1 Introduction', 'number': '1'}"
-"To date, most research on relation harvesting has focused on is-a and part-of.","{'title': '2 Relevant Work', 'number': '2'}"
-Approaches fall into two categories: pattern- and clustering-based.,"{'title': '2 Relevant Work', 'number': '2'}"
-Most common are pattern-based approaches.,"{'title': '2 Relevant Work', 'number': '2'}"
-Hearst (1992) pioneered using patterns to extract hyponym (is-a) relations.,"{'title': '2 Relevant Work', 'number': '2'}"
-"Manually building three lexico-syntactic patterns, Hearst sketched a bootstrapping algorithm to learn more patterns from instances, which has served as the model for most subsequent pattern-based algorithms.","{'title': '2 Relevant Work', 'number': '2'}"
-"Berland and Charniak (1999) proposed a system for part-of relation extraction, based on the (Hearst 1992) approach.","{'title': '2 Relevant Work', 'number': '2'}"
-Seed instances are used to infer linguistic patterns that are used to extract new instances.,"{'title': '2 Relevant Work', 'number': '2'}"
-"While this study introduces statistical measures to evaluate instance quality, it remains vulnerable to data sparseness and has the limitation of considering only one-word terms.","{'title': '2 Relevant Work', 'number': '2'}"
-"Improving upon (Berland and Charniak 1999), Girju et al. (2006) employ machine learning algorithms and WordNet (Fellbaum 1998) to disambiguate part-of generic patterns like “X’s Y” and “X of Y”.","{'title': '2 Relevant Work', 'number': '2'}"
-This study is the first extensive attempt to make use of generic patterns.,"{'title': '2 Relevant Work', 'number': '2'}"
-"In order to discard incorrect instances, they learn WordNetbased selectional restrictions, like “X(scene#4)’s Y(movie#1)”.","{'title': '2 Relevant Work', 'number': '2'}"
-"While making huge grounds on improving precision/recall, heavy supervision is required through manual semantic annotations.","{'title': '2 Relevant Work', 'number': '2'}"
-Ravichandran and Hovy (2002) focus on scaling relation extraction to the Web.,"{'title': '2 Relevant Work', 'number': '2'}"
-A simple and effective algorithm is proposed to infer surface patterns from a small set of instance seeds by extracting substrings relating seeds in corpus sentences.,"{'title': '2 Relevant Work', 'number': '2'}"
-"The approach gives good results on specific relations such as birthdates, however it has low precision on generic ones like is-a and partof.","{'title': '2 Relevant Work', 'number': '2'}"
-"Pantel et al. (2004) proposed a similar, highly scalable approach, based on an edit-distance technique, to learn lexico-POS patterns, showing both good performance and efficiency.","{'title': '2 Relevant Work', 'number': '2'}"
-"Espresso uses a similar approach to infer patterns, but we make use of generic patterns and apply refining techniques to deal with wide variety of relations.","{'title': '2 Relevant Work', 'number': '2'}"
-"Other pattern-based algorithms include (Riloff and Shepherd 1997), who used a semi-automatic method for discovering similar words using a few seed examples, KnowItAll (Etzioni et al. 2005) that performs large-scale extraction of facts from the Web, Mann (2002) who used part of speech patterns to extract a subset of is-a relations involving proper nouns, and (Downey et al.","{'title': '2 Relevant Work', 'number': '2'}"
-2005) who formalized the problem of relation extraction in a coherent and effective combinatorial model that is shown to outperform previous probabilistic frameworks.,"{'title': '2 Relevant Work', 'number': '2'}"
-Clustering approaches have so far been applied only to is-a extraction.,"{'title': '2 Relevant Work', 'number': '2'}"
-"These methods use clustering algorithms to group words according to their meanings in text, label the clusters using its members’ lexical or syntactic dependencies, and then extract an is-a relation between each cluster member and the cluster label.","{'title': '2 Relevant Work', 'number': '2'}"
-"Caraballo (1999) proposed the first attempt, which used conjunction and apposition features to build noun clusters.","{'title': '2 Relevant Work', 'number': '2'}"
-"Recently, Pantel and Ravichandran (2004) extended this approach by making use of all syntactic dependency features for each noun.","{'title': '2 Relevant Work', 'number': '2'}"
-"The advantage of clustering approaches is that they permit algorithms to identify is-a relations that do not explicitly appear in text, however they generally fail to produce coherent clusters from fewer than 100 million words; hence they are unreliable for small corpora.","{'title': '2 Relevant Work', 'number': '2'}"
-Espresso is based on the framework adopted in (Hearst 1992).,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-It is a minimally supervised bootstrapping algorithm that takes as input a few seed instances of a particular relation and iteratively learns surface patterns to extract more instances.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The key to Espresso lies in its use of generic patters, i.e., those broad coverage noisy patterns that extract both many correct and incorrect relation instances.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"For example, for part-of relations, the pattern “X of Y” extracts many correct relation instances like “wheel of the car” but also many incorrect ones like “house of representatives”.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The key assumption behind Espresso is that in very large corpora, like the Web, correct instances generated by a generic pattern will be instantiated by some reliable patterns, where reliable patterns are patterns that have high precision but often very low recall (e.g., “X consists of Y” for part-of relations).","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In this section, we describe the overall architecture of Espresso, propose a principled measure of reliability, and give an algorithm for exploiting generic patterns.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Espresso iterates between the following three phases: pattern induction, pattern ranking/selection, and instance extraction.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The algorithm begins with seed instances of a particular binary relation (e.g., is-a) and then iterates through the phases until it extracts ti1 patterns or the average pattern score decreases by more than ti2 from the previous iteration.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In our experiments, we set ti1 = 5 and ti2 = 50%.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"For our tokenization, in order to harvest multiword terms as relation instances, we adopt a slightly modified version of the term definition given in (Justeson 1995), as it is one of the most commonly used in the NLP literature: ((Adj|Noun)+|((Adj|Noun)*(NounPrep)?","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-")(Adj|Noun)*)Noun In the pattern induction phase, Espresso infers a set of surface patterns P that connects as many of the seed instances as possible in a given corpus.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-Any pattern learning algorithm would do.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-We chose the state of the art algorithm described in (Ravichandran and Hovy 2002) with the following slight modification.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"For each input instance {x, y}, we first retrieve all sentences containing the two terms x and y.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The sentences are then generalized into a set of new sentences Sx,y by replacing all terminological expressions by a terminological label, TR.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-For example: Term generalization is useful for small corpora to ease data sparseness.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Generalized patterns are naturally less precise, but this is ameliorated by our filtering step described in Section 3.3.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"As in the original algorithm, all substrings linking terms x and y are then extracted from Sx,y, and overall frequencies are computed to form P. In (Ravichandran and Hovy 2002), a frequency threshold on the patterns in P is set to select the final patterns.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"However, low frequency patterns may in fact be very good.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In this paper, instead of frequency, we propose a novel measure of pattern reliability, r,, which is described in detail in Section 3.2.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Espresso ranks all patterns in P according to reliability rt and discards all but the top-k, where k is set to the number of patterns from the previous iteration plus one.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In general, we expect that the set of patterns is formed by those of the previous iteration plus a new one.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Yet, new statistical evidence can lead the algorithm to discard a pattern that was previously discovered.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In this phase, Espresso retrieves from the corpus the set of instances I that match any of the patterns in P. In Section 3.2, we propose a principled measure of instance reliability, rt, for ranking instances.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Next, Espresso filters incorrect instances using the algorithm proposed in Section 3.3 and then selects the highest scoring m instances, according to rt, as input for the subsequent iteration.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-We experimentally set m=200.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In small corpora, the number of extracted instances can be too low to guarantee sufficient statistical evidence for the pattern discovery phase of the next iteration.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In such cases, the system enters an expansion phase, where instances are expanded as follows: Web expansion: New instances of the patterns in P are retrieved from the Web, using the Google search engine.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Specifically, for each instance {x, y}E I, the system creates a set of queries, using each pattern in P instantiated with y.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"For example, given the instance “Italy, country” and the pattern “Y such as X”, the resulting Google query will be “country such as *”.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-New instances are then created from the retrieved Web results (e.g.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"“Canada, country”) and added to I.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-The noise generated from this expansion is attenuated by the filtering algorithm described in Section 3.3.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Syntactic expansion: New instances are created from each instance {x, y}E I by extracting sub-terminological expressions from x corresponding to the syntactic head of terms.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"For example, the relation “new record of a criminal conviction part-of FBI report” expands to: “new record part-of FBI report”, and “record part-of FBI report”.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Intuitively, a reliable pattern is one that is both highly precise and one that extracts many instances.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The recall of a pattern p can be approximated by the fraction of input instances that are extracted by p. Since it is non-trivial to estimate automatically the precision of a pattern, we are wary of keeping patterns that generate many instances (i.e., patterns that generate high recall but potentially disastrous precision).","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Hence, we desire patterns that are highly associated with the input instances.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Pointwise mutual information (Cover and Thomas 1991) is a commonly used metric for measuring this strength of association between two events x and y: We define the reliability of a pattern p, rπ(p), as its average strength of association across each input instance i in I, weighted by the reliability of each instance i: where rι(i) is the reliability of instance i (defined below) and maxpmi is the maximum pointwise mutual information between all patterns and all instances. rπ(p) ranges from [0,1].","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-The reliability of the manually supplied seed instances are rι(i) = 1.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The pointwise mutual information between instance i = {x, y} and pattern p is estimated using the following formula: where |x, p, y |is the frequency of pattern p instantiated with terms x and y and where the asterisk (*) represents a wildcard.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-A well-known problem is that pointwise mutual information is biased towards infrequent events.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"We thus multiply pmi(i, p) with the discounting factor suggested in (Pantel and Ravichandran 2004).","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-Estimating the reliability of an instance is similar to estimating the reliability of a pattern.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Intuitively, a reliable instance is one that is highly associated with as many reliable patterns as possible (i.e., we have more confidence in an instance when multiple reliable patterns instantiate it.)","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Hence, analogous to our pattern reliability measure, we define the reliability of an instance i, rι(i), as: where rπ(p) is the reliability of pattern p (defined earlier) and maxpmi is as before.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Note that rι(i) and rπ(p) are recursively defined, where rι(i) = 1 for the manually supplied seed instances.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Generic patterns are high recall / low precision patterns (e.g, the pattern “X of Y” can ambiguously refer to a part-of, is-a and possession relations).","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-Using them blindly increases system recall while dramatically reducing precision.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-Minimally supervised algorithms have typically ignored them for this reason.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Only heavily supervised approaches, like (Girju et al. 2006) have successfully exploited them.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-Espresso’s recall can be significantly increased by automatically separating correct instances extracted by generic patterns from incorrect ones.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-The challenge is to harness the expressive power of the generic patterns while remaining minimally supervised.,"{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"The intuition behind our method is that in a very large corpus, like the Web, correct instances of a generic pattern will be instantiated by many of Espresso’s reliable patterns accepted in P. Recall that, by definition, Espresso’s reliable patterns extract instances with high precision (yet often low recall).","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In a very large corpus, like the Web, we assume that a correct instance will occur in at least one of Espresso’s reliable pattern even though the patterns’ recall is low.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Intuitively, our confidence in a correct instance increases when, i) the instance is associated with many reliable patterns; and ii) its association with the reliable patterns is high.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"At a given Espresso iteration, where PR represents the set of previously selected reliable patterns, this intuition is captured by the following measure of confidence in an instance i = {x, y}: where T is the sum of the reliability scores rπ(p) for each pattern p ∈ PR, and where pointwise mutual information between instance i and pattern p is estimated with Google as follows: An instance i is rejected if S(i) is smaller than some threshold i.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"Although this filtering may also be applied to reliable patterns, we found this to be detrimental in our experiments since most instances generated by reliable patterns are correct.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In Espresso, we classify a pattern as generic when it generates more than 10 times the instances of previously accepted reliable patterns.","{'title': '3 The Espresso Algorithm', 'number': '3'}"
-"In this section, we present an empirical comparison of Espresso with three state of the art systems on the task of extracting various semantic relations.","{'title': '4 Experimental Results', 'number': '4'}"
-We perform our experiments using the following two datasets: Each corpus is pre-processed using the Alembic Workbench POS-tagger (Day et al. 1997).,"{'title': '4 Experimental Results', 'number': '4'}"
-Below we describe the systems used in our empirical evaluation of Espresso.,"{'title': '4 Experimental Results', 'number': '4'}"
-"For ESP+, we experimentally set i from Section 3.3 to i = 0.4 for TREC and i = 0.3 for CHEM by manually inspecting a small set of instances.","{'title': '4 Experimental Results', 'number': '4'}"
-Espresso is designed to extract various semantic relations exemplified by a given small set of seed instances.,"{'title': '4 Experimental Results', 'number': '4'}"
-We consider the standard is-a and part-of relations as well as the following more specific relations: ess or element/object produces a result1.,"{'title': '4 Experimental Results', 'number': '4'}"
-"For example, ammonia produces nitric oxide.","{'title': '4 Experimental Results', 'number': '4'}"
-We evaluate this relation on the CHEM corpus.,"{'title': '4 Experimental Results', 'number': '4'}"
-"For each semantic relation, we manually extracted a small set of seed examples.","{'title': '4 Experimental Results', 'number': '4'}"
-The seeds were used for both Espresso as well as RH02.,"{'title': '4 Experimental Results', 'number': '4'}"
-Table 1 lists a sample of the seeds as well as sample outputs from Espresso.,"{'title': '4 Experimental Results', 'number': '4'}"
-"We implemented the systems outlined in Section 4.1, except for GI03, and applied them to the TREC and CHEM datasets.","{'title': '4 Experimental Results', 'number': '4'}"
-"For each output set, per relation, we evaluate the precision of the system by extracting a random sample of instances (50 for the TREC corpus and 20 for the CHEM corpus) and evaluating their quality manually using two human judges (a total of 680 instances were annotated per judge).","{'title': '4 Experimental Results', 'number': '4'}"
-"For each instance, judges may assign a score of 1 for correct, 0 for incorrect, and 1/2 for partially correct.","{'title': '4 Experimental Results', 'number': '4'}"
-Example instances that were judged partially correct include “analyst is-a manager” and “pilot is-a teacher”.,"{'title': '4 Experimental Results', 'number': '4'}"
-The kappa statistic (Siegel and Castellan Jr. 1988) on this task was K = 0.692.,"{'title': '4 Experimental Results', 'number': '4'}"
-The precision for a given set of instances is the sum of the judges’ scores divided by the total instances.,"{'title': '4 Experimental Results', 'number': '4'}"
-"Although knowing the total number of correct instances of a particular relation in any nontrivial corpus is impossible, it is possible to compute the recall of a system relative to another system’s recall.","{'title': '4 Experimental Results', 'number': '4'}"
-"Following (Pantel et al. 2004), we define the relative recall of system A given system B, RA|B, as: where RA is the recall of A, CA is the number of correct instances extracted by A, C is the (unknown) total number of correct instances in the corpus, PA is A’s precision in our experiments, and |A |is the total number of instances discovered by A.","{'title': '4 Experimental Results', 'number': '4'}"
-"Tables 2 – 8 report the total number of instances, precision, and relative recall of each system on the TREC-9 and CHEM corpora.","{'title': '4 Experimental Results', 'number': '4'}"
-The relative recall is always given in relation to the ESP- system.,"{'title': '4 Experimental Results', 'number': '4'}"
-"For example, in Table 2, RH02 has a relative recall of 5.31 with ESP-, which means that the RH02 system outputs 5.31 times more correct relations than ESP- (at a cost of much lower precision).","{'title': '4 Experimental Results', 'number': '4'}"
-"Similarly, PR04 has a relative recall of 0.23 with ESP-, which means that PR04 outputs 4.35 fewer correct relations than ESP(also with a smaller precision).","{'title': '4 Experimental Results', 'number': '4'}"
-We did not include the results from GI03 in the tables since the system is only applicable to part-of relations and we did not reproduce it.,"{'title': '4 Experimental Results', 'number': '4'}"
-"However, the authors evaluated their system on a sample of the TREC9 dataset and reported 83% precision and 72% recall (this algorithm is heavily supervised.)","{'title': '4 Experimental Results', 'number': '4'}"
-"In all tables, RH02 extracts many more relations than ESP-, but with a much lower precision, because it uses generic patterns without filtering.","{'title': '4 Experimental Results', 'number': '4'}"
-The high precision of ESP- is due to the effective reliability measures presented in Section 3.2.,"{'title': '4 Experimental Results', 'number': '4'}"
-"Experimental results, for all relations and the two different corpus sizes, show that ESP- greatly outperforms the other methods on precision.","{'title': '4 Experimental Results', 'number': '4'}"
-"However, without the use of generic patterns, the ESP- system shows lower recall in all but the production relation.","{'title': '4 Experimental Results', 'number': '4'}"
-"As hypothesized, exploiting generic patterns using the algorithm from Section 3.3 substantially improves recall without much deterioration in precision.","{'title': '4 Experimental Results', 'number': '4'}"
-ESP+ shows one to two orders of magnitude improvement on recall while losing on average below 10% precision.,"{'title': '4 Experimental Results', 'number': '4'}"
-The succession relation in Table 6 was the only relation where Espresso found no generic pattern.,"{'title': '4 Experimental Results', 'number': '4'}"
-"For other relations, Espresso found from one to five generic patterns.","{'title': '4 Experimental Results', 'number': '4'}"
-Table 4 shows the power of generic patterns where system recall increases by 577 times with only a 10% drop in precision.,"{'title': '4 Experimental Results', 'number': '4'}"
-"In Table 7, we see a case where the combination of filtering with a large increase in retrieved instances resulted in both higher precision and recall.","{'title': '4 Experimental Results', 'number': '4'}"
-"In order to better analyze our use of generic patterns, we performed the following experiment.","{'title': '4 Experimental Results', 'number': '4'}"
-"For each relation, we randomly sampled 100 instances for each generic pattern and built a gold standard for them (by manually tagging each instance as correct or incorrect).","{'title': '4 Experimental Results', 'number': '4'}"
-"We then sorted the 100 instances according to the scoring formula S(i) derived in Section 3.3 and computed the average precision, recall, and F-score of each top-K ranked instances for each pattern5.","{'title': '4 Experimental Results', 'number': '4'}"
-"Due to lack of space, we only present the graphs for four of the 22 generic patterns: “X is a Y” for the is-a relation of Table 2, “X in the Y” for the part-of relation of Table 4, “X in Y” for the part-of relation of Table 5, and “X and Y” for the reaction relation of Table 7.","{'title': '4 Experimental Results', 'number': '4'}"
-Figure 1 illustrates the results.,"{'title': '4 Experimental Results', 'number': '4'}"
-"In each figure, notice that recall climbs at a much faster rate than precision decreases.","{'title': '4 Experimental Results', 'number': '4'}"
-This indicates that the scoring function of Section 3.3 effectively separates correct and incorrect instances.,"{'title': '4 Experimental Results', 'number': '4'}"
-"In Figure 1a), there is a big initial drop in precision that accounts for the poor precision reported in Table 1.","{'title': '4 Experimental Results', 'number': '4'}"
-Recall that the cutoff points on S(i) were set to τ = 0.4 for TREC and τ = 0.3 for CHEM.,"{'title': '4 Experimental Results', 'number': '4'}"
-The figures show that this cutoff is far from the maximum F-score.,"{'title': '4 Experimental Results', 'number': '4'}"
-An interesting avenue of future work would be to automatically determine the proper threshold for each individual generic pattern instead of setting a uniform threshold.,"{'title': '4 Experimental Results', 'number': '4'}"
-5 We can directly compute recall here since we built a gold standard for each set of 100 samples.,"{'title': '4 Experimental Results', 'number': '4'}"
-"We proposed a weakly-supervised, generalpurpose, and accurate algorithm, called Espresso, for harvesting binary semantic relations from raw text.","{'title': '5 Conclusions', 'number': '5'}"
-The main contributions are: i) a method for exploiting generic patterns by filtering incorrect instances using the Web; and ii) a principled measure of pattern and instance reliability enabling the filtering algorithm.,"{'title': '5 Conclusions', 'number': '5'}"
-"We have empirically compared Espresso’s precision and recall with other systems on both a small domain-specific textbook and on a larger corpus of general news, and have extracted several standard and specific semantic relations: isa, part-of, succession, reaction, and production.","{'title': '5 Conclusions', 'number': '5'}"
-Espresso achieves higher and more balanced performance than other state of the art systems.,"{'title': '5 Conclusions', 'number': '5'}"
-"By exploiting generic patterns, system recall substantially increases with little effect on precision.","{'title': '5 Conclusions', 'number': '5'}"
-There are many avenues of future work both in improving system performance and making use of the relations in applications like question answering.,"{'title': '5 Conclusions', 'number': '5'}"
-"For the former, we plan to investigate the use of WordNet to automatically learn selectional constraints on generic patterns, as proposed by (Girju et al. 2006).","{'title': '5 Conclusions', 'number': '5'}"
-We expect here that negative instances will play a key role in determining the selectional restrictions.,"{'title': '5 Conclusions', 'number': '5'}"
-"Espresso is the first system, to our knowledge, to emphasize concurrently performance, minimal supervision, breadth, and generality.","{'title': '5 Conclusions', 'number': '5'}"
-"It remains to be seen whether one could enrich existing ontologies with relations harvested by Espresso, and it is our hope that these relations will benefit NLP applications.","{'title': '5 Conclusions', 'number': '5'}"
+"this paper, we present a weakly-supervised, general-purpose, and accurate algorithm for harvesting semantic relations.",Introduction
+The main contributions are: i) a method for exploiting generic patterns by filtering incorrect instances using the Web; and ii) a principled measure of pattern and instance reliability enabling the filtering algorithm.,Introduction
+"We present an empirical comof various state of the art systems, on different size and genre corpora, on extracting various general and specific relations.",Introduction
+Experimental results show that our exploitation of generic patterns substantially increases system recall with small effect on overall precision.,Introduction
+Recent attention to knowledge-rich problems such as question answering (Pasca and Harabagiu 2001) and textual entailment (Geffet and Dagan 2005) has encouraged natural language processing researchers to develop algorithms for automatically harvesting shallow semantic resources.,Experiment/Discussion
+"With seemingly endless amounts of textual data at our disposal, we have a tremendous opportunity to automatically grow semantic term banks and ontological resources.",Experiment/Discussion
+"To date, researchers have harvested, with varying success, several resources, including concept lists (Lin and Pantel 2002), topic signatures (Lin and Hovy 2000), facts (Etzioni et al. 2005), and word similarity lists (Hindle 1990).",Experiment/Discussion
+"Many recent efforts have also focused on extracting semantic relations between entities, such as entailments (Szpektor et al. 2004), is-a (Ravichandran and Hovy 2002), part-of (Girju et al.",Experiment/Discussion
+"2006), and other relations.",Experiment/Discussion
+"The following desiderata outline the properties of an ideal relation harvesting algorithm: riety of relations (i.e., not just is-a or part-of).",Experiment/Discussion
+"To our knowledge, no previous harvesting algorithm addresses all these properties concurrently.",Experiment/Discussion
+"In this paper, we present Espresso, a generalpurpose, broad, and accurate corpus harvesting algorithm requiring minimal supervision.",Experiment/Discussion
+"The main algorithmic contribution is a novel method for exploiting generic patterns, which are broad coverage noisy patterns – i.e., patterns with high recall and low precision.",Experiment/Discussion
+"Insofar, difficulties in using these patterns have been a major impediment for minimally supervised algorithms resulting in either very low precision or recall.",Experiment/Discussion
+We propose a method to automatically detect generic patterns and to separate their correct and incorrect instances.,Experiment/Discussion
+"The key intuition behind the algorithm is that given a set of reliable (high precision) patterns on a corpus, correct instances of a generic pattern will fire more with reliable patterns on a very large corpus, like the Web, than incorrect ones.",Experiment/Discussion
+"Below is a summary of the main contributions of this paper: Espresso addresses the desiderata as follows: Previous work like (Girju et al. 2006) that has made use of generic patterns through filtering has shown both high precision and high recall, at the expensive cost of much manual semantic annotation.",Experiment/Discussion
+"Minimally supervised algorithms, like (Hearst 1992; Pantel et al. 2004), typically ignore generic patterns since system precision dramatically decreases from the introduced noise and bootstrapping quickly spins out of control.",Experiment/Discussion
+"To date, most research on relation harvesting has focused on is-a and part-of.",Experiment/Discussion
+Approaches fall into two categories: pattern- and clustering-based.,Experiment/Discussion
+Most common are pattern-based approaches.,Experiment/Discussion
+Hearst (1992) pioneered using patterns to extract hyponym (is-a) relations.,Experiment/Discussion
+"Manually building three lexico-syntactic patterns, Hearst sketched a bootstrapping algorithm to learn more patterns from instances, which has served as the model for most subsequent pattern-based algorithms.",Experiment/Discussion
+"Berland and Charniak (1999) proposed a system for part-of relation extraction, based on the (Hearst 1992) approach.",Experiment/Discussion
+Seed instances are used to infer linguistic patterns that are used to extract new instances.,Experiment/Discussion
+"While this study introduces statistical measures to evaluate instance quality, it remains vulnerable to data sparseness and has the limitation of considering only one-word terms.",Experiment/Discussion
+"Improving upon (Berland and Charniak 1999), Girju et al. (2006) employ machine learning algorithms and WordNet (Fellbaum 1998) to disambiguate part-of generic patterns like “X’s Y” and “X of Y”.",Experiment/Discussion
+This study is the first extensive attempt to make use of generic patterns.,Experiment/Discussion
+"In order to discard incorrect instances, they learn WordNetbased selectional restrictions, like “X(scene#4)’s Y(movie#1)”.",Experiment/Discussion
+"While making huge grounds on improving precision/recall, heavy supervision is required through manual semantic annotations.",Experiment/Discussion
+Ravichandran and Hovy (2002) focus on scaling relation extraction to the Web.,Experiment/Discussion
+A simple and effective algorithm is proposed to infer surface patterns from a small set of instance seeds by extracting substrings relating seeds in corpus sentences.,Experiment/Discussion
+"The approach gives good results on specific relations such as birthdates, however it has low precision on generic ones like is-a and partof.",Experiment/Discussion
+"Pantel et al. (2004) proposed a similar, highly scalable approach, based on an edit-distance technique, to learn lexico-POS patterns, showing both good performance and efficiency.",Experiment/Discussion
+"Espresso uses a similar approach to infer patterns, but we make use of generic patterns and apply refining techniques to deal with wide variety of relations.",Experiment/Discussion
+"Other pattern-based algorithms include (Riloff and Shepherd 1997), who used a semi-automatic method for discovering similar words using a few seed examples, KnowItAll (Etzioni et al. 2005) that performs large-scale extraction of facts from the Web, Mann (2002) who used part of speech patterns to extract a subset of is-a relations involving proper nouns, and (Downey et al.",Experiment/Discussion
+2005) who formalized the problem of relation extraction in a coherent and effective combinatorial model that is shown to outperform previous probabilistic frameworks.,Experiment/Discussion
+Clustering approaches have so far been applied only to is-a extraction.,Experiment/Discussion
+"These methods use clustering algorithms to group words according to their meanings in text, label the clusters using its members’ lexical or syntactic dependencies, and then extract an is-a relation between each cluster member and the cluster label.",Experiment/Discussion
+"Caraballo (1999) proposed the first attempt, which used conjunction and apposition features to build noun clusters.",Experiment/Discussion
+"Recently, Pantel and Ravichandran (2004) extended this approach by making use of all syntactic dependency features for each noun.",Experiment/Discussion
+"The advantage of clustering approaches is that they permit algorithms to identify is-a relations that do not explicitly appear in text, however they generally fail to produce coherent clusters from fewer than 100 million words; hence they are unreliable for small corpora.",Experiment/Discussion
+Espresso is based on the framework adopted in (Hearst 1992).,Experiment/Discussion
+It is a minimally supervised bootstrapping algorithm that takes as input a few seed instances of a particular relation and iteratively learns surface patterns to extract more instances.,Experiment/Discussion
+"The key to Espresso lies in its use of generic patters, i.e., those broad coverage noisy patterns that extract both many correct and incorrect relation instances.",Experiment/Discussion
+"For example, for part-of relations, the pattern “X of Y” extracts many correct relation instances like “wheel of the car” but also many incorrect ones like “house of representatives”.",Experiment/Discussion
+"The key assumption behind Espresso is that in very large corpora, like the Web, correct instances generated by a generic pattern will be instantiated by some reliable patterns, where reliable patterns are patterns that have high precision but often very low recall (e.g., “X consists of Y” for part-of relations).",Experiment/Discussion
+"In this section, we describe the overall architecture of Espresso, propose a principled measure of reliability, and give an algorithm for exploiting generic patterns.",Experiment/Discussion
+"Espresso iterates between the following three phases: pattern induction, pattern ranking/selection, and instance extraction.",Experiment/Discussion
+"The algorithm begins with seed instances of a particular binary relation (e.g., is-a) and then iterates through the phases until it extracts ti1 patterns or the average pattern score decreases by more than ti2 from the previous iteration.",Experiment/Discussion
+"In our experiments, we set ti1 = 5 and ti2 = 50%.",Experiment/Discussion
+"For our tokenization, in order to harvest multiword terms as relation instances, we adopt a slightly modified version of the term definition given in (Justeson 1995), as it is one of the most commonly used in the NLP literature: ((Adj|Noun)+|((Adj|Noun)*(NounPrep)?",Experiment/Discussion
+")(Adj|Noun)*)Noun In the pattern induction phase, Espresso infers a set of surface patterns P that connects as many of the seed instances as possible in a given corpus.",Experiment/Discussion
+Any pattern learning algorithm would do.,Experiment/Discussion
+We chose the state of the art algorithm described in (Ravichandran and Hovy 2002) with the following slight modification.,Experiment/Discussion
+"For each input instance {x, y}, we first retrieve all sentences containing the two terms x and y.",Experiment/Discussion
+"The sentences are then generalized into a set of new sentences Sx,y by replacing all terminological expressions by a terminological label, TR.",Experiment/Discussion
+For example: Term generalization is useful for small corpora to ease data sparseness.,Experiment/Discussion
+"Generalized patterns are naturally less precise, but this is ameliorated by our filtering step described in Section 3.3.",Experiment/Discussion
+"As in the original algorithm, all substrings linking terms x and y are then extracted from Sx,y, and overall frequencies are computed to form P. In (Ravichandran and Hovy 2002), a frequency threshold on the patterns in P is set to select the final patterns.",Experiment/Discussion
+"However, low frequency patterns may in fact be very good.",Experiment/Discussion
+"In this paper, instead of frequency, we propose a novel measure of pattern reliability, r,, which is described in detail in Section 3.2.",Experiment/Discussion
+"Espresso ranks all patterns in P according to reliability rt and discards all but the top-k, where k is set to the number of patterns from the previous iteration plus one.",Experiment/Discussion
+"In general, we expect that the set of patterns is formed by those of the previous iteration plus a new one.",Experiment/Discussion
+"Yet, new statistical evidence can lead the algorithm to discard a pattern that was previously discovered.",Experiment/Discussion
+"In this phase, Espresso retrieves from the corpus the set of instances I that match any of the patterns in P. In Section 3.2, we propose a principled measure of instance reliability, rt, for ranking instances.",Experiment/Discussion
+"Next, Espresso filters incorrect instances using the algorithm proposed in Section 3.3 and then selects the highest scoring m instances, according to rt, as input for the subsequent iteration.",Experiment/Discussion
+We experimentally set m=200.,Experiment/Discussion
+"In small corpora, the number of extracted instances can be too low to guarantee sufficient statistical evidence for the pattern discovery phase of the next iteration.",Experiment/Discussion
+"In such cases, the system enters an expansion phase, where instances are expanded as follows: Web expansion: New instances of the patterns in P are retrieved from the Web, using the Google search engine.",Experiment/Discussion
+"Specifically, for each instance {x, y}E I, the system creates a set of queries, using each pattern in P instantiated with y.",Experiment/Discussion
+"For example, given the instance “Italy, country” and the pattern “Y such as X”, the resulting Google query will be “country such as *”.",Experiment/Discussion
+New instances are then created from the retrieved Web results (e.g.,Experiment/Discussion
+"“Canada, country”) and added to I.",Experiment/Discussion
+The noise generated from this expansion is attenuated by the filtering algorithm described in Section 3.3.,Experiment/Discussion
+"Syntactic expansion: New instances are created from each instance {x, y}E I by extracting sub-terminological expressions from x corresponding to the syntactic head of terms.",Experiment/Discussion
+"For example, the relation “new record of a criminal conviction part-of FBI report” expands to: “new record part-of FBI report”, and “record part-of FBI report”.",Experiment/Discussion
+"Intuitively, a reliable pattern is one that is both highly precise and one that extracts many instances.",Experiment/Discussion
+"The recall of a pattern p can be approximated by the fraction of input instances that are extracted by p. Since it is non-trivial to estimate automatically the precision of a pattern, we are wary of keeping patterns that generate many instances (i.e., patterns that generate high recall but potentially disastrous precision).",Experiment/Discussion
+"Hence, we desire patterns that are highly associated with the input instances.",Experiment/Discussion
+"Pointwise mutual information (Cover and Thomas 1991) is a commonly used metric for measuring this strength of association between two events x and y: We define the reliability of a pattern p, rπ(p), as its average strength of association across each input instance i in I, weighted by the reliability of each instance i: where rι(i) is the reliability of instance i (defined below) and maxpmi is the maximum pointwise mutual information between all patterns and all instances. rπ(p) ranges from [0,1].",Experiment/Discussion
+The reliability of the manually supplied seed instances are rι(i) = 1.,Experiment/Discussion
+"The pointwise mutual information between instance i = {x, y} and pattern p is estimated using the following formula: where |x, p, y |is the frequency of pattern p instantiated with terms x and y and where the asterisk (*) represents a wildcard.",Experiment/Discussion
+A well-known problem is that pointwise mutual information is biased towards infrequent events.,Experiment/Discussion
+"We thus multiply pmi(i, p) with the discounting factor suggested in (Pantel and Ravichandran 2004).",Experiment/Discussion
+Estimating the reliability of an instance is similar to estimating the reliability of a pattern.,Experiment/Discussion
+"Intuitively, a reliable instance is one that is highly associated with as many reliable patterns as possible (i.e., we have more confidence in an instance when multiple reliable patterns instantiate it.)",Experiment/Discussion
+"Hence, analogous to our pattern reliability measure, we define the reliability of an instance i, rι(i), as: where rπ(p) is the reliability of pattern p (defined earlier) and maxpmi is as before.",Experiment/Discussion
+"Note that rι(i) and rπ(p) are recursively defined, where rι(i) = 1 for the manually supplied seed instances.",Experiment/Discussion
+"Generic patterns are high recall / low precision patterns (e.g, the pattern “X of Y” can ambiguously refer to a part-of, is-a and possession relations).",Experiment/Discussion
+Using them blindly increases system recall while dramatically reducing precision.,Experiment/Discussion
+Minimally supervised algorithms have typically ignored them for this reason.,Experiment/Discussion
+"Only heavily supervised approaches, like (Girju et al. 2006) have successfully exploited them.",Experiment/Discussion
+Espresso’s recall can be significantly increased by automatically separating correct instances extracted by generic patterns from incorrect ones.,Experiment/Discussion
+The challenge is to harness the expressive power of the generic patterns while remaining minimally supervised.,Experiment/Discussion
+"The intuition behind our method is that in a very large corpus, like the Web, correct instances of a generic pattern will be instantiated by many of Espresso’s reliable patterns accepted in P. Recall that, by definition, Espresso’s reliable patterns extract instances with high precision (yet often low recall).",Experiment/Discussion
+"In a very large corpus, like the Web, we assume that a correct instance will occur in at least one of Espresso’s reliable pattern even though the patterns’ recall is low.",Experiment/Discussion
+"Intuitively, our confidence in a correct instance increases when, i) the instance is associated with many reliable patterns; and ii) its association with the reliable patterns is high.",Experiment/Discussion
+"At a given Espresso iteration, where PR represents the set of previously selected reliable patterns, this intuition is captured by the following measure of confidence in an instance i = {x, y}: where T is the sum of the reliability scores rπ(p) for each pattern p ∈ PR, and where pointwise mutual information between instance i and pattern p is estimated with Google as follows: An instance i is rejected if S(i) is smaller than some threshold i.",Experiment/Discussion
+"Although this filtering may also be applied to reliable patterns, we found this to be detrimental in our experiments since most instances generated by reliable patterns are correct.",Experiment/Discussion
+"In Espresso, we classify a pattern as generic when it generates more than 10 times the instances of previously accepted reliable patterns.",Experiment/Discussion
+"In this section, we present an empirical comparison of Espresso with three state of the art systems on the task of extracting various semantic relations.",Results/Conclusion
+We perform our experiments using the following two datasets: Each corpus is pre-processed using the Alembic Workbench POS-tagger (Day et al. 1997).,Results/Conclusion
+Below we describe the systems used in our empirical evaluation of Espresso.,Results/Conclusion
+"For ESP+, we experimentally set i from Section 3.3 to i = 0.4 for TREC and i = 0.3 for CHEM by manually inspecting a small set of instances.",Results/Conclusion
+Espresso is designed to extract various semantic relations exemplified by a given small set of seed instances.,Results/Conclusion
+We consider the standard is-a and part-of relations as well as the following more specific relations: ess or element/object produces a result1.,Results/Conclusion
+"For example, ammonia produces nitric oxide.",Results/Conclusion
+We evaluate this relation on the CHEM corpus.,Results/Conclusion
+"For each semantic relation, we manually extracted a small set of seed examples.",Results/Conclusion
+The seeds were used for both Espresso as well as RH02.,Results/Conclusion
+Table 1 lists a sample of the seeds as well as sample outputs from Espresso.,Results/Conclusion
+"We implemented the systems outlined in Section 4.1, except for GI03, and applied them to the TREC and CHEM datasets.",Results/Conclusion
+"For each output set, per relation, we evaluate the precision of the system by extracting a random sample of instances (50 for the TREC corpus and 20 for the CHEM corpus) and evaluating their quality manually using two human judges (a total of 680 instances were annotated per judge).",Results/Conclusion
+"For each instance, judges may assign a score of 1 for correct, 0 for incorrect, and 1/2 for partially correct.",Results/Conclusion
+Example instances that were judged partially correct include “analyst is-a manager” and “pilot is-a teacher”.,Results/Conclusion
+The kappa statistic (Siegel and Castellan Jr. 1988) on this task was K = 0.692.,Results/Conclusion
+The precision for a given set of instances is the sum of the judges’ scores divided by the total instances.,Results/Conclusion
+"Although knowing the total number of correct instances of a particular relation in any nontrivial corpus is impossible, it is possible to compute the recall of a system relative to another system’s recall.",Results/Conclusion
+"Following (Pantel et al. 2004), we define the relative recall of system A given system B, RA|B, as: where RA is the recall of A, CA is the number of correct instances extracted by A, C is the (unknown) total number of correct instances in the corpus, PA is A’s precision in our experiments, and |A |is the total number of instances discovered by A.",Results/Conclusion
+"Tables 2 – 8 report the total number of instances, precision, and relative recall of each system on the TREC-9 and CHEM corpora.",Results/Conclusion
+The relative recall is always given in relation to the ESP- system.,Results/Conclusion
+"For example, in Table 2, RH02 has a relative recall of 5.31 with ESP-, which means that the RH02 system outputs 5.31 times more correct relations than ESP- (at a cost of much lower precision).",Results/Conclusion
+"Similarly, PR04 has a relative recall of 0.23 with ESP-, which means that PR04 outputs 4.35 fewer correct relations than ESP(also with a smaller precision).",Results/Conclusion
+We did not include the results from GI03 in the tables since the system is only applicable to part-of relations and we did not reproduce it.,Results/Conclusion
+"However, the authors evaluated their system on a sample of the TREC9 dataset and reported 83% precision and 72% recall (this algorithm is heavily supervised.)",Results/Conclusion
+"In all tables, RH02 extracts many more relations than ESP-, but with a much lower precision, because it uses generic patterns without filtering.",Results/Conclusion
+The high precision of ESP- is due to the effective reliability measures presented in Section 3.2.,Results/Conclusion
+"Experimental results, for all relations and the two different corpus sizes, show that ESP- greatly outperforms the other methods on precision.",Results/Conclusion
+"However, without the use of generic patterns, the ESP- system shows lower recall in all but the production relation.",Results/Conclusion
+"As hypothesized, exploiting generic patterns using the algorithm from Section 3.3 substantially improves recall without much deterioration in precision.",Results/Conclusion
+ESP+ shows one to two orders of magnitude improvement on recall while losing on average below 10% precision.,Results/Conclusion
+The succession relation in Table 6 was the only relation where Espresso found no generic pattern.,Results/Conclusion
+"For other relations, Espresso found from one to five generic patterns.",Results/Conclusion
+Table 4 shows the power of generic patterns where system recall increases by 577 times with only a 10% drop in precision.,Results/Conclusion
+"In Table 7, we see a case where the combination of filtering with a large increase in retrieved instances resulted in both higher precision and recall.",Results/Conclusion
+"In order to better analyze our use of generic patterns, we performed the following experiment.",Results/Conclusion
+"For each relation, we randomly sampled 100 instances for each generic pattern and built a gold standard for them (by manually tagging each instance as correct or incorrect).",Results/Conclusion
+"We then sorted the 100 instances according to the scoring formula S(i) derived in Section 3.3 and computed the average precision, recall, and F-score of each top-K ranked instances for each pattern5.",Results/Conclusion
+"Due to lack of space, we only present the graphs for four of the 22 generic patterns: “X is a Y” for the is-a relation of Table 2, “X in the Y” for the part-of relation of Table 4, “X in Y” for the part-of relation of Table 5, and “X and Y” for the reaction relation of Table 7.",Results/Conclusion
+Figure 1 illustrates the results.,Results/Conclusion
+"In each figure, notice that recall climbs at a much faster rate than precision decreases.",Results/Conclusion
+This indicates that the scoring function of Section 3.3 effectively separates correct and incorrect instances.,Results/Conclusion
+"In Figure 1a), there is a big initial drop in precision that accounts for the poor precision reported in Table 1.",Results/Conclusion
+Recall that the cutoff points on S(i) were set to τ = 0.4 for TREC and τ = 0.3 for CHEM.,Results/Conclusion
+The figures show that this cutoff is far from the maximum F-score.,Results/Conclusion
+An interesting avenue of future work would be to automatically determine the proper threshold for each individual generic pattern instead of setting a uniform threshold.,Results/Conclusion
+5 We can directly compute recall here since we built a gold standard for each set of 100 samples.,Results/Conclusion
+"We proposed a weakly-supervised, generalpurpose, and accurate algorithm, called Espresso, for harvesting binary semantic relations from raw text.",Results/Conclusion
+The main contributions are: i) a method for exploiting generic patterns by filtering incorrect instances using the Web; and ii) a principled measure of pattern and instance reliability enabling the filtering algorithm.,Results/Conclusion
+"We have empirically compared Espresso’s precision and recall with other systems on both a small domain-specific textbook and on a larger corpus of general news, and have extracted several standard and specific semantic relations: isa, part-of, succession, reaction, and production.",Results/Conclusion
+Espresso achieves higher and more balanced performance than other state of the art systems.,Results/Conclusion
+"By exploiting generic patterns, system recall substantially increases with little effect on precision.",Results/Conclusion
+There are many avenues of future work both in improving system performance and making use of the relations in applications like question answering.,Results/Conclusion
+"For the former, we plan to investigate the use of WordNet to automatically learn selectional constraints on generic patterns, as proposed by (Girju et al. 2006).",Results/Conclusion
+We expect here that negative instances will play a key role in determining the selectional restrictions.,Results/Conclusion
+"Espresso is the first system, to our knowledge, to emphasize concurrently performance, minimal supervision, breadth, and generality.",Results/Conclusion
+"It remains to be seen whether one could enrich existing ontologies with relations harvested by Espresso, and it is our hope that these relations will benefit NLP applications.",Results/Conclusion

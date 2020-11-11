@@ -1,148 +1,148 @@
 col1,col2
-We present an unsupervised approach to symmetric word alignment in which two simple asymmetric models are trained jointly to maximize a combination of data likelihood and agreement between the models.,{}
-"Compared to the standard practice of intersecting predictions of independently-trained models, joint training provides a 32% reduction in AER.",{}
-"Moreover, a simple and efficient pair of HMM aligners provides a 29% reduction in AER over symmetrized IBM model 4 predictions.",{}
-"Word alignment is an important component of a complete statistical machine translation pipeline (Koehn et al., 2003).","{'title': '1 Introduction', 'number': '1'}"
-"The classic approaches to unsupervised word alignment are based on IBM models 1–5 (Brown et al., 1994) and the HMM model (Ney and Vogel, 1996) (see Och and Ney (2003) for a systematic comparison).","{'title': '1 Introduction', 'number': '1'}"
-"One can classify these six models into two groups: sequence-based models (models 1, 2, and HMM) and fertility-based models (models 3, 4, and 5).1 Whereas the sequence-based models are tractable and easily implemented, the more accurate fertility-based models are intractable and thus require approximation methods which are difficult to implement.","{'title': '1 Introduction', 'number': '1'}"
-"As a result, many practitioners use the complex GIZA++ software package (Och and Ney, 2003) as a black box, selecting model 4 as a good compromise between alignment quality and efficiency.","{'title': '1 Introduction', 'number': '1'}"
-"Even though the fertility-based models are more accurate, there are several reasons to consider avenues for improvement based on the simpler and faster sequence-based models.","{'title': '1 Introduction', 'number': '1'}"
-"First, even with the highly optimized implementations in GIZA++, models 3 and above are still very slow to train.","{'title': '1 Introduction', 'number': '1'}"
-"Second, we seem to have hit a point of diminishing returns with extensions to the fertility-based models.","{'title': '1 Introduction', 'number': '1'}"
-"For example, gains from the new model 6 of Och and Ney (2003) are modest.","{'title': '1 Introduction', 'number': '1'}"
-"When models are too complex to reimplement, the barrier to improvement is raised even higher.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, the fertility-based models are asymmetric, and symmetrization is commonly employed to improve alignment quality by intersecting alignments induced in each translation direction.","{'title': '1 Introduction', 'number': '1'}"
-It is therefore natural to explore models which are designed from the start with symmetry in mind.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we introduce a new method for word alignment that addresses the three issues above.","{'title': '1 Introduction', 'number': '1'}"
-Our development is motivated by the observation that intersecting the predictions of two directional models outperforms each model alone.,"{'title': '1 Introduction', 'number': '1'}"
-"Viewing intersection as a way of finding predictions that both models agree on, we take the agreement idea one step further.","{'title': '1 Introduction', 'number': '1'}"
-"The central idea of our approach is to not only make the predictions of the models agree at test time, but also encourage agreement during training.","{'title': '1 Introduction', 'number': '1'}"
-We define an intuitive objective function which incorporates both data likelihood and a measure of agreement between models.,"{'title': '1 Introduction', 'number': '1'}"
-Then we derive an EM-like algorithm to maximize this objective function.,"{'title': '1 Introduction', 'number': '1'}"
-"Because the E-step is intractable in our case, we use a heuristic approximation which nonetheless works well in practice.","{'title': '1 Introduction', 'number': '1'}"
-"By jointly training two simple HMM models, we obtain 4.9% AER on the standard English-French Hansards task.","{'title': '1 Introduction', 'number': '1'}"
-"To our knowledge, this is the lowest published unsupervised AER result, and it is competitive with supervised approaches.","{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, our approach is very practical: it is no harder to implement than a standard HMM model, and joint training is no slower than the standard training of two HMM models.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, we show that word alignments from our system can be used in a phrasebased translation system to modestly improve BLEU score.","{'title': '1 Introduction', 'number': '1'}"
-"We briefly review the sequence-based word alignment models (Brown et al., 1994; Och and Ney, 2003) and describe some of the choices in our implementation.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"All three models are generative models of the form p(f  |e) = Ea p(a, f  |e), where e = (e1, ... , eI) is the English sentence, f = (f1, ... , fJ) is the French sentence, and a = (a1, ... , aJ) is the (asymmetric) alignment which specifies the position of an English word aligned to each French word.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-All three models factor in the following way: where j− is the position of the last non-null-aligned French word before position j.2 The translation parameters pt(fj  |eaj) are parameterized by an (unsmoothed) lookup table that stores the appropriate local conditional probability distributions.,"{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"The distortion parameters pd(aj = i0 | aj− = i) depend on the particular model (we write aj = 0 to denote the event that the j-th French word where p0 is the null-word probability and c(·) contains the distortion parameters for each offset argudepending on the length of the English sentence, which we found to be more effective than using a constant p0.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"In model 1, the distortion pd(·  |·) specifies a uniform distribution over English positions.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"In model 2, pd(·  |·) is still independent of aj−, but it can now depend on j and i0 through c(·).","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"In the HMM model, there is a dependence on aj− = i, but only through c(i − i0).","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"We parameterize the distortion c(·) using a multinomial distribution over 11 offset buckets c(<_ −5), c(−4),.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-".. , c(4), c(> 5).3 We use three sets of distortion parameters, one for transitioning into the first state, one for transitioning out of the last state, and one for all other transitions.","{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-This works better than using a single set of parameters or ignoring the transitions at the two ends.,"{'title': '2 Alignment models: IBM 1, 2 and HMM', 'number': '2'}"
-"To motivate our joint training approach, we first consider the standard practice of intersecting alignments.","{'title': '3 Training by agreement', 'number': '3'}"
-"While the English and French sentences play a symmetric role in the word alignment task, sequence-based models are asymmetric: they are generative models of the form p(f  |e) (E—*F), or p(e  |f) (F—*E) by reversing the roles of source and target.","{'title': '3 Training by agreement', 'number': '3'}"
-"In general, intersecting the alignment predictions of two independently-trained directional models reduces AER, e.g., from 11% to 7% for HMM models (Table 2).","{'title': '3 Training by agreement', 'number': '3'}"
-This suggests that two models make different types of errors that can be eliminated upon intersection.,"{'title': '3 Training by agreement', 'number': '3'}"
-Figure 1 (top) shows a common type of error that intersection can partly remedy.,"{'title': '3 Training by agreement', 'number': '3'}"
-In E—*F: 84.2/92.0/13.0 F—*E: 86.9/91.1/11.5 Intersection: 97.0/86.9/7.6 Joint training nous nous nous ne ne ne avons avons avons pas pas pas cru cru cru bon bon bon de de de assister assister assister a` a` a` la la la r´eunion r´eunion r´eunion et et et en en en avons avons avons inform´e inform´e inform´e le le le cojo cojo cojo en en en cons´equence cons´equence cons´equence .,"{'title': '3 Training by agreement', 'number': '3'}"
-.,"{'title': '3 Training by agreement', 'number': '3'}"
-. we we we deemed deemed deemed it it it inadvisable inadvisable inadvisable to to to attend attend attend the the the meeting meeting meeting and and and so so so informed informed informed cojo cojo cojo .,"{'title': '3 Training by agreement', 'number': '3'}"
-.,"{'title': '3 Training by agreement', 'number': '3'}"
-.,"{'title': '3 Training by agreement', 'number': '3'}"
-"E—*F: 89.9/93.6/8.7 F—*E: 92.2/93.5/7.3 Intersection: 96.5/91.4/5.7 this example, COJO is a rare word that becomes a garbage collector (Moore, 2004) for the models in both directions.","{'title': '3 Training by agreement', 'number': '3'}"
-"Intersection eliminates the spurious alignments, but at the expense of recall.","{'title': '3 Training by agreement', 'number': '3'}"
-Intersection after training produces alignments that both models agree on.,"{'title': '3 Training by agreement', 'number': '3'}"
-The joint training procedure we describe below builds on this idea by encouraging the models to agree during training.,"{'title': '3 Training by agreement', 'number': '3'}"
-Consider the output of the jointly trained HMMs in Figure 1 (bottom).,"{'title': '3 Training by agreement', 'number': '3'}"
-The garbage-collecting rare word is no longer a problem.,"{'title': '3 Training by agreement', 'number': '3'}"
-"Not only are the individual E—*F and F—*E jointly-trained models better than their independently-trained counterparts, the jointlytrained intersected model also provides a significant overall gain over the independently-trained intersected model.","{'title': '3 Training by agreement', 'number': '3'}"
-We maintain both high precision and recall.,"{'title': '3 Training by agreement', 'number': '3'}"
-"Before we introduce the objective function for joint training, we will write the two directional models in a symmetric way so that they share the same alignment spaces.","{'title': '3 Training by agreement', 'number': '3'}"
-"We first replace the asymmetric alignments a with a set of indicator variables for each potential alignment edge (i, j): z = {zij ∈ {0, 1} : 1 ≤ i ≤ I,1 ≤ j ≤ J}.","{'title': '3 Training by agreement', 'number': '3'}"
-"Each z can be thought of as an element in the set of generalized alignments, where any subset of word pairs may be aligned (Och and Ney, 2003).","{'title': '3 Training by agreement', 'number': '3'}"
-"Sequence-based models p(a  |e, f) induce a distribution over p(z  |e, f) by letting p(z  |e, f) = 0 for any z that does not correspond to any a (i.e., if z contains many-to-one alignments).","{'title': '3 Training by agreement', 'number': '3'}"
-"We also introduce the more compact notation x = (e, f) to denote an input sentence pair.","{'title': '3 Training by agreement', 'number': '3'}"
-"We put arbitrary distributions p(e) and p(f) to remove the conditioning, noting that this has no effect on the optimization problem in the next section.","{'title': '3 Training by agreement', 'number': '3'}"
-"We can now think of the two directional sequence-based models as each inducing a distribution over the same space of sentence pairs and alignments (x, z): In the next two sections, we describe how to jointly train the two models using an EM-like algorithm.","{'title': '3 Training by agreement', 'number': '3'}"
-We emphasize that this technique is quite general and can be applied in many different situations where we want to couple two tractable models over input x and output z.,"{'title': '3 Training by agreement', 'number': '3'}"
-"To train two models p1(x, z; 01) and p2(x, z; 02) independently, we maximize the data likelihood HX pk (x; 0k) = HX EZ pk (x, z; 0k) of each model separately, k ∈ {1, 2}: Above, the summation over x enumerates the sentence pairs in the training data.","{'title': '3 Training by agreement', 'number': '3'}"
-There are many possible ways to quantify agreement between two models.,"{'title': '3 Training by agreement', 'number': '3'}"
-"We chose a particularly simple and mathematically convenient measure — the probability that the alignments produced by the two models agree on an example x: We add the (log) probability of agreement to the standard log-likelihood objective to couple the two models: We first review the EM algorithm for optimizing a single model, which consists of iterating the following two steps: In the E-step, we compute the posterior distribution of the alignments q(z; x) given the sentence pair x and current parameters 0.","{'title': '3 Training by agreement', 'number': '3'}"
-"In the M-step, we use expected counts with respect to q(z; x) in the maximum likelihood update 0 := 0'.","{'title': '3 Training by agreement', 'number': '3'}"
-"To optimize the objective in Equation 3, we can derive a similar and simple procedure.","{'title': '3 Training by agreement', 'number': '3'}"
-See the appendix for the derivation. where ZX is a normalization constant.,"{'title': '3 Training by agreement', 'number': '3'}"
-"The M-step decouples neatly into two independent optimization problems, which lead to single model updates using the expected counts from q(z; x).","{'title': '3 Training by agreement', 'number': '3'}"
-"To compute ZX in the E-step, we must sum the product of two model posteriors over the set of possible zs with nonzero probability under both models.","{'title': '3 Training by agreement', 'number': '3'}"
-"In general, if both posterior distributions over the latent variables z decompose in the same tractable manner, as in the context-free grammar induction work of Klein and Manning (2004), the summation could be carried out efficiently, for example using dynamic programming.","{'title': '3 Training by agreement', 'number': '3'}"
-"In our case, we would have to sum over the set of alignments where each word in English is aligned to at most one word in French and each word in French is aligned to at most one word in English.","{'title': '3 Training by agreement', 'number': '3'}"
-"Unfortunately, for even very simple models such as IBM 1 or 2, computing the normalization constant over this set of alignments is a #P-complete problem, by a reduction from counting matchings in a bipartite graph (Valiant, 1979).","{'title': '3 Training by agreement', 'number': '3'}"
-"We could perhaps attempt to compute q using a variety of approximate probabilistic inference techniques, for example, sampling or variational methods.","{'title': '3 Training by agreement', 'number': '3'}"
-"With efficiency as our main concern, we opted instead for a simple heuristic procedure by letting q be a product of marginals: where each pk(zij  |x; θk) is the posterior marginal probability of the (i, j) edge being present (or absent) in the alignment according to each model, which can be computed separately and efficiently.","{'title': '3 Training by agreement', 'number': '3'}"
-Now the new E-step only requires simple marginal computations under each of the models.,"{'title': '3 Training by agreement', 'number': '3'}"
-This procedure is very intuitive: edges on which the models disagree are discounted in the Estep because the product of the marginals p1(zij | x; θ1)p2(zij  |x; θ2) is small.,"{'title': '3 Training by agreement', 'number': '3'}"
-"Note that in general, this new procedure is not guaranteed to increase our joint objective.","{'title': '3 Training by agreement', 'number': '3'}"
-"Nonetheless, our experimental results show that it provides an effective method of achieving model agreement and leads to significant accuracy gains over independent training.","{'title': '3 Training by agreement', 'number': '3'}"
-"Once we have trained two models, either jointly or independently, we must decide how to combine those two models to predict alignments for new sentences.","{'title': '3 Training by agreement', 'number': '3'}"
-"First, let us step back to the case of one model.","{'title': '3 Training by agreement', 'number': '3'}"
-"Typically, the Viterbi alignment argmaxz p(z  |x) is used.","{'title': '3 Training by agreement', 'number': '3'}"
-"An alternative is to use posterior decoding, where we keep an edge (i, j) if the marginal edge rectly in extracting phrases for phrase-based translation.","{'title': '3 Training by agreement', 'number': '3'}"
-"Also, when we want to combine two models for prediction, finding the Viterbi alignment argmaxz p1(z  |x)p2(z  |x) is intractable for HMM models (by a reduction from quadratic assignment), and a hard intersection argmaxz' p1(z1 | x) n argmaxz, p2(z2  |x) might be too sparse.","{'title': '3 Training by agreement', 'number': '3'}"
-"On the other hand, we can threshold the product of two edge posteriors quite easily: z = {zij = 1 : p1(zij = 1  |x)p2(zij = 1  |x) > δ}.","{'title': '3 Training by agreement', 'number': '3'}"
-We noticed a 5.8% relative reduction in AER (for our best model) by using posterior decoding with a validation-set optimized threshold δ instead of using hard intersection of Viterbi alignments.,"{'title': '3 Training by agreement', 'number': '3'}"
-"We tested our approach on the English-French Hansards data from the NAACL 2003 Shared Task, which includes a training set of 1.1 million sentences, a validation set of 37 sentences, and a test set of 447 sentences.","{'title': '4 Experiments', 'number': '4'}"
-The validation and test sentences have been hand-aligned (see Och and Ney (2003)) and are marked with both sure and possible alignments.,"{'title': '4 Experiments', 'number': '4'}"
-"Using these alignments, alignment error rate (AER) is calculated as: C1 _ |A n|A ||+ IIsIn P |J x where A is a set of proposed edges, S is the sure gold edges, and P is the possible gold edges.","{'title': '4 Experiments', 'number': '4'}"
-"As a preprocessing step, we lowercased all words.","{'title': '4 Experiments', 'number': '4'}"
-Then we used the validation set and the first 100 sentences of the test set as our development set to tune our models.,"{'title': '4 Experiments', 'number': '4'}"
-"Lastly, we ran our models on the last 347 sentences of the test set to get final AER results.","{'title': '4 Experiments', 'number': '4'}"
-"We trained models 1, 2, and HMM on the Hansards data.","{'title': '4 Experiments', 'number': '4'}"
-"Following past work, we initialized the translation probabilities of model 1 uniformly over word pairs that occur together in some sentence pair.","{'title': '4 Experiments', 'number': '4'}"
-Models 2 and HMM were initialized with uniform distortion probabilities and model 1 translation probabilities.,"{'title': '4 Experiments', 'number': '4'}"
-"Each model was trained for 5 iterations, using the same training regimen as in Och and Ney (2003). and joint training across different size training sets and different models, evaluated on the development set.","{'title': '4 Experiments', 'number': '4'}"
-The last column shows the relative reduction in AER.,"{'title': '4 Experiments', 'number': '4'}"
-Table 1 shows a summary of the performance of independently and jointly trained models under various training conditions.,"{'title': '4 Experiments', 'number': '4'}"
-"Quite remarkably, for all training data sizes and all of the models, we see an appreciable reduction in AER, especially on the HMM models.","{'title': '4 Experiments', 'number': '4'}"
-"We speculate that since the HMM model provides a richer family of distributions over alignments than either models 1 or 2, we can learn to synchronize the predictions of the two models, whereas models 1 and 2 have a much more limited capacity to synchronize.","{'title': '4 Experiments', 'number': '4'}"
-Table 2 shows the HMM models compared to model 4 alignments produced by GIZA++ on the test set.,"{'title': '4 Experiments', 'number': '4'}"
-Our jointly trained model clearly outperforms not only the standard HMM but also the more complex IBM 4 model.,"{'title': '4 Experiments', 'number': '4'}"
-"For these results, the threshold used for posterior decoding was tuned on the development set.","{'title': '4 Experiments', 'number': '4'}"
-"“GIZA HMM” and “HMM, indep” are the same algorithm but differ in implementation details.","{'title': '4 Experiments', 'number': '4'}"
-"The E→F and F→E models benefit a great deal by moving from independent to joint training, and the combined models show a smaller improvement.","{'title': '4 Experiments', 'number': '4'}"
-Our best performing model differs from standard IBM word alignment models in two ways.,"{'title': '4 Experiments', 'number': '4'}"
-"First and most importantly, we use joint training instead of independent training and posterior decoding (with the optimal threshold) instead of Viterbi decoding, evaluated on the development set. independent training, which gives us a huge boost.","{'title': '4 Experiments', 'number': '4'}"
-"The second change, which is more minor and orthogonal, is using posterior decoding instead of Viterbi decoding, which also helps performance for model 2 and HMM, but not model 1.","{'title': '4 Experiments', 'number': '4'}"
-Table 3 quantifies the contribution of each of these two dimensions.,"{'title': '4 Experiments', 'number': '4'}"
-"Posterior decoding In our results, we have tuned our threshold to minimize AER.","{'title': '4 Experiments', 'number': '4'}"
-It turns out that AER is relatively insensitive to the threshold as Figure 2 shows.,"{'title': '4 Experiments', 'number': '4'}"
-There is a large range from 0.2 to 0.5 where posterior decoding outperforms Viterbi decoding.,"{'title': '4 Experiments', 'number': '4'}"
-"Initialization and convergence In addition to improving performance, joint training also enjoys certain robustness properties.","{'title': '4 Experiments', 'number': '4'}"
-Specialized initialization is absolutely crucial for an independently-trained HMM model.,"{'title': '4 Experiments', 'number': '4'}"
-"If we initialize the HMM model with uniform translation parameters, the HMM converges to a completely senseless local optimum with AER above 50%.","{'title': '4 Experiments', 'number': '4'}"
-Initializing the HMM with model 1 parameters alleviates this problem.,"{'title': '4 Experiments', 'number': '4'}"
-"On the other hand, if we jointly train two HMMs starting from a uniform initialization, the HMMs converge to a surprisingly good solution.","{'title': '4 Experiments', 'number': '4'}"
-"On the full training set, training two HMMs jointly from uniform initialization yields 5.7% AER, only slightly higher than 5.2% AER using model 1 initialization.","{'title': '4 Experiments', 'number': '4'}"
-"We suspect that the agreement term of the objective forces the two HMMs to avoid many local optima that each one would have on its own, since these local optima correspond to posteriors over alignments that would be very unlikely to agree.","{'title': '4 Experiments', 'number': '4'}"
-We also observed that jointly trained HMMs converged very quickly—in 5 iterations—and did not exhibit overfitting with increased iterations.,"{'title': '4 Experiments', 'number': '4'}"
-Common errors The major source of remaining errors are recall errors that come from the shortcomings of the HMM model.,"{'title': '4 Experiments', 'number': '4'}"
-The E→F model gives 0 probability to any many-to-one alignments and the F→E model gives 0 probability to any one-to-many alignments.,"{'title': '4 Experiments', 'number': '4'}"
-"By enforcing agreement, the two models are effectively restricted to one-to-one (or zero) alignments.","{'title': '4 Experiments', 'number': '4'}"
-"Posterior decoding is in principle capable of proposing many-to-many alignments, but these alignments occur infrequently since the posteriors are generally sharply peaked around the Viterbi alignment.","{'title': '4 Experiments', 'number': '4'}"
-"In some cases, however, we do get oneto-many alignments in both directions.","{'title': '4 Experiments', 'number': '4'}"
-Another common type of errors are precision errors due to the models overly-aggressively preferring alignments that preserve monotonicity.,"{'title': '4 Experiments', 'number': '4'}"
-"Our HMM model only uses 11 distortion parameters, which means distortions are not sensitive to the lexical context of the sentences.","{'title': '4 Experiments', 'number': '4'}"
-"For example, in one sentence, le is incorrectly aligned to the as a monotonic alignment following another pair of correctly aligned words, and then the monotonicity is broken immediately following le–the.","{'title': '4 Experiments', 'number': '4'}"
-"Here, the model is insensitive to the fact that alignments following articles tend to be monotonic, but alignments preceding articles are less so.","{'title': '4 Experiments', 'number': '4'}"
-Another phenomenon is the insertion of “stepping stone” alignments.,"{'title': '4 Experiments', 'number': '4'}"
-"Suppose two edges (i, j) and (i+4, j+4) have a very high probability of being included in an alignment, but the words between them are not good translations of each other.","{'title': '4 Experiments', 'number': '4'}"
-"If the intervening English words were null-aligned, we would have to pay a big distortion penalty for jumping 4 positions.","{'title': '4 Experiments', 'number': '4'}"
-"On the other hand, if the edge (i+2, j+2) were included, that penalty would be mitigated.","{'title': '4 Experiments', 'number': '4'}"
-The translation cost for forcing that edge is smaller than the distortion cost.,"{'title': '4 Experiments', 'number': '4'}"
-"To see whether our improvement in AER also improves BLEU score, we aligned 100K EnglishFrench sentences from the Europarl corpus and tested on 3000 sentences of length 5–15.","{'title': '4 Experiments', 'number': '4'}"
-"Using GIZA++ model 4 alignments and Pharaoh (Koehn et al., 2003), we achieved a BLEU score of 0.3035.","{'title': '4 Experiments', 'number': '4'}"
-"By using alignments from our jointly trained HMMs instead, we get a BLEU score of 0.3051.","{'title': '4 Experiments', 'number': '4'}"
-"While this improvement is very modest, we are currently investigating alternative ways of interfacing with phrase table construction to make a larger impact on translation quality.","{'title': '4 Experiments', 'number': '4'}"
-"Our approach is similar in spirit to co-training, where two classifiers, complementary by the virtue of having different views of the data, are trained jointly to encourage agreement (Blum and Mitchell, 1998; Collins and Singer, 1999).","{'title': '5 Related Work', 'number': '5'}"
-"One key difference in our work is that we rely exclusively on data likelihood to guide the two models in an unsupervised manner, rather than relying on an initial handful of labeled examples.","{'title': '5 Related Work', 'number': '5'}"
-The idea of exploiting agreement between two latent variable models is not new; there has been substantial previous work on leveraging the strengths of two complementary models.,"{'title': '5 Related Work', 'number': '5'}"
-"Klein and Manning (2004) combine two complementary models for grammar induction, one that models constituency and one that models dependency, in a manner broadly similar to the current work.","{'title': '5 Related Work', 'number': '5'}"
-"Aside from investigating a different domain, one novel aspect of this paper is that we present a formal objective and a training algorithm for combining two generic models.","{'title': '5 Related Work', 'number': '5'}"
-We have described an efficient and fully unsupervised method of producing state-of-the-art word alignments.,"{'title': '6 Conclusion', 'number': '6'}"
-"By training two simple sequence-based models to agree, we achieve substantial error reductions over standard models.","{'title': '6 Conclusion', 'number': '6'}"
-Our jointly trained HMM models reduce AER by 29% over test-time intersected GIZA++ model 4 alignments and also increase our robustness to varying initialization regimens.,"{'title': '6 Conclusion', 'number': '6'}"
-"While AER is only a weak indicator of final translation quality in many current translation systems, we hope that more accurate alignments can eventually lead to improvements in the end-to-end translation process.","{'title': '6 Conclusion', 'number': '6'}"
-Acknowledgments We thank the anonymous reviewers for their comments.,"{'title': '6 Conclusion', 'number': '6'}"
+We present an unsupervised approach to symmetric word alignment in which two simple asymmetric models are trained jointly to maximize a combination of data likelihood and agreement between the models.,Introduction
+"Compared to the standard practice of intersecting predictions of independently-trained models, joint training provides a 32% reduction in AER.",Introduction
+"Moreover, a simple and efficient pair of HMM aligners provides a 29% reduction in AER over symmetrized IBM model 4 predictions.",Introduction
+"Word alignment is an important component of a complete statistical machine translation pipeline (Koehn et al., 2003).",Experiment/Discussion
+"The classic approaches to unsupervised word alignment are based on IBM models 1–5 (Brown et al., 1994) and the HMM model (Ney and Vogel, 1996) (see Och and Ney (2003) for a systematic comparison).",Experiment/Discussion
+"One can classify these six models into two groups: sequence-based models (models 1, 2, and HMM) and fertility-based models (models 3, 4, and 5).1 Whereas the sequence-based models are tractable and easily implemented, the more accurate fertility-based models are intractable and thus require approximation methods which are difficult to implement.",Experiment/Discussion
+"As a result, many practitioners use the complex GIZA++ software package (Och and Ney, 2003) as a black box, selecting model 4 as a good compromise between alignment quality and efficiency.",Experiment/Discussion
+"Even though the fertility-based models are more accurate, there are several reasons to consider avenues for improvement based on the simpler and faster sequence-based models.",Experiment/Discussion
+"First, even with the highly optimized implementations in GIZA++, models 3 and above are still very slow to train.",Experiment/Discussion
+"Second, we seem to have hit a point of diminishing returns with extensions to the fertility-based models.",Experiment/Discussion
+"For example, gains from the new model 6 of Och and Ney (2003) are modest.",Experiment/Discussion
+"When models are too complex to reimplement, the barrier to improvement is raised even higher.",Experiment/Discussion
+"Finally, the fertility-based models are asymmetric, and symmetrization is commonly employed to improve alignment quality by intersecting alignments induced in each translation direction.",Experiment/Discussion
+It is therefore natural to explore models which are designed from the start with symmetry in mind.,Experiment/Discussion
+"In this paper, we introduce a new method for word alignment that addresses the three issues above.",Experiment/Discussion
+Our development is motivated by the observation that intersecting the predictions of two directional models outperforms each model alone.,Experiment/Discussion
+"Viewing intersection as a way of finding predictions that both models agree on, we take the agreement idea one step further.",Experiment/Discussion
+"The central idea of our approach is to not only make the predictions of the models agree at test time, but also encourage agreement during training.",Experiment/Discussion
+We define an intuitive objective function which incorporates both data likelihood and a measure of agreement between models.,Experiment/Discussion
+Then we derive an EM-like algorithm to maximize this objective function.,Experiment/Discussion
+"Because the E-step is intractable in our case, we use a heuristic approximation which nonetheless works well in practice.",Experiment/Discussion
+"By jointly training two simple HMM models, we obtain 4.9% AER on the standard English-French Hansards task.",Experiment/Discussion
+"To our knowledge, this is the lowest published unsupervised AER result, and it is competitive with supervised approaches.",Experiment/Discussion
+"Furthermore, our approach is very practical: it is no harder to implement than a standard HMM model, and joint training is no slower than the standard training of two HMM models.",Experiment/Discussion
+"Finally, we show that word alignments from our system can be used in a phrasebased translation system to modestly improve BLEU score.",Experiment/Discussion
+"We briefly review the sequence-based word alignment models (Brown et al., 1994; Och and Ney, 2003) and describe some of the choices in our implementation.",Experiment/Discussion
+"All three models are generative models of the form p(f  |e) = Ea p(a, f  |e), where e = (e1, ... , eI) is the English sentence, f = (f1, ... , fJ) is the French sentence, and a = (a1, ... , aJ) is the (asymmetric) alignment which specifies the position of an English word aligned to each French word.",Experiment/Discussion
+All three models factor in the following way: where j− is the position of the last non-null-aligned French word before position j.2 The translation parameters pt(fj  |eaj) are parameterized by an (unsmoothed) lookup table that stores the appropriate local conditional probability distributions.,Experiment/Discussion
+"The distortion parameters pd(aj = i0 | aj− = i) depend on the particular model (we write aj = 0 to denote the event that the j-th French word where p0 is the null-word probability and c(·) contains the distortion parameters for each offset argudepending on the length of the English sentence, which we found to be more effective than using a constant p0.",Experiment/Discussion
+"In model 1, the distortion pd(·  |·) specifies a uniform distribution over English positions.",Experiment/Discussion
+"In model 2, pd(·  |·) is still independent of aj−, but it can now depend on j and i0 through c(·).",Experiment/Discussion
+"In the HMM model, there is a dependence on aj− = i, but only through c(i − i0).",Experiment/Discussion
+"We parameterize the distortion c(·) using a multinomial distribution over 11 offset buckets c(<_ −5), c(−4),.",Experiment/Discussion
+".. , c(4), c(> 5).3 We use three sets of distortion parameters, one for transitioning into the first state, one for transitioning out of the last state, and one for all other transitions.",Experiment/Discussion
+This works better than using a single set of parameters or ignoring the transitions at the two ends.,Experiment/Discussion
+"To motivate our joint training approach, we first consider the standard practice of intersecting alignments.",Experiment/Discussion
+"While the English and French sentences play a symmetric role in the word alignment task, sequence-based models are asymmetric: they are generative models of the form p(f  |e) (E—*F), or p(e  |f) (F—*E) by reversing the roles of source and target.",Experiment/Discussion
+"In general, intersecting the alignment predictions of two independently-trained directional models reduces AER, e.g., from 11% to 7% for HMM models (Table 2).",Experiment/Discussion
+This suggests that two models make different types of errors that can be eliminated upon intersection.,Experiment/Discussion
+Figure 1 (top) shows a common type of error that intersection can partly remedy.,Experiment/Discussion
+In E—*F: 84.2/92.0/13.0 F—*E: 86.9/91.1/11.5 Intersection: 97.0/86.9/7.6 Joint training nous nous nous ne ne ne avons avons avons pas pas pas cru cru cru bon bon bon de de de assister assister assister a` a` a` la la la r´eunion r´eunion r´eunion et et et en en en avons avons avons inform´e inform´e inform´e le le le cojo cojo cojo en en en cons´equence cons´equence cons´equence .,Experiment/Discussion
+.,Experiment/Discussion
+. we we we deemed deemed deemed it it it inadvisable inadvisable inadvisable to to to attend attend attend the the the meeting meeting meeting and and and so so so informed informed informed cojo cojo cojo .,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+"E—*F: 89.9/93.6/8.7 F—*E: 92.2/93.5/7.3 Intersection: 96.5/91.4/5.7 this example, COJO is a rare word that becomes a garbage collector (Moore, 2004) for the models in both directions.",Experiment/Discussion
+"Intersection eliminates the spurious alignments, but at the expense of recall.",Experiment/Discussion
+Intersection after training produces alignments that both models agree on.,Experiment/Discussion
+The joint training procedure we describe below builds on this idea by encouraging the models to agree during training.,Experiment/Discussion
+Consider the output of the jointly trained HMMs in Figure 1 (bottom).,Experiment/Discussion
+The garbage-collecting rare word is no longer a problem.,Experiment/Discussion
+"Not only are the individual E—*F and F—*E jointly-trained models better than their independently-trained counterparts, the jointlytrained intersected model also provides a significant overall gain over the independently-trained intersected model.",Experiment/Discussion
+We maintain both high precision and recall.,Experiment/Discussion
+"Before we introduce the objective function for joint training, we will write the two directional models in a symmetric way so that they share the same alignment spaces.",Experiment/Discussion
+"We first replace the asymmetric alignments a with a set of indicator variables for each potential alignment edge (i, j): z = {zij ∈ {0, 1} : 1 ≤ i ≤ I,1 ≤ j ≤ J}.",Experiment/Discussion
+"Each z can be thought of as an element in the set of generalized alignments, where any subset of word pairs may be aligned (Och and Ney, 2003).",Experiment/Discussion
+"Sequence-based models p(a  |e, f) induce a distribution over p(z  |e, f) by letting p(z  |e, f) = 0 for any z that does not correspond to any a (i.e., if z contains many-to-one alignments).",Experiment/Discussion
+"We also introduce the more compact notation x = (e, f) to denote an input sentence pair.",Experiment/Discussion
+"We put arbitrary distributions p(e) and p(f) to remove the conditioning, noting that this has no effect on the optimization problem in the next section.",Experiment/Discussion
+"We can now think of the two directional sequence-based models as each inducing a distribution over the same space of sentence pairs and alignments (x, z): In the next two sections, we describe how to jointly train the two models using an EM-like algorithm.",Experiment/Discussion
+We emphasize that this technique is quite general and can be applied in many different situations where we want to couple two tractable models over input x and output z.,Experiment/Discussion
+"To train two models p1(x, z; 01) and p2(x, z; 02) independently, we maximize the data likelihood HX pk (x; 0k) = HX EZ pk (x, z; 0k) of each model separately, k ∈ {1, 2}: Above, the summation over x enumerates the sentence pairs in the training data.",Experiment/Discussion
+There are many possible ways to quantify agreement between two models.,Experiment/Discussion
+"We chose a particularly simple and mathematically convenient measure — the probability that the alignments produced by the two models agree on an example x: We add the (log) probability of agreement to the standard log-likelihood objective to couple the two models: We first review the EM algorithm for optimizing a single model, which consists of iterating the following two steps: In the E-step, we compute the posterior distribution of the alignments q(z; x) given the sentence pair x and current parameters 0.",Experiment/Discussion
+"In the M-step, we use expected counts with respect to q(z; x) in the maximum likelihood update 0 := 0'.",Experiment/Discussion
+"To optimize the objective in Equation 3, we can derive a similar and simple procedure.",Experiment/Discussion
+See the appendix for the derivation. where ZX is a normalization constant.,Experiment/Discussion
+"The M-step decouples neatly into two independent optimization problems, which lead to single model updates using the expected counts from q(z; x).",Experiment/Discussion
+"To compute ZX in the E-step, we must sum the product of two model posteriors over the set of possible zs with nonzero probability under both models.",Experiment/Discussion
+"In general, if both posterior distributions over the latent variables z decompose in the same tractable manner, as in the context-free grammar induction work of Klein and Manning (2004), the summation could be carried out efficiently, for example using dynamic programming.",Experiment/Discussion
+"In our case, we would have to sum over the set of alignments where each word in English is aligned to at most one word in French and each word in French is aligned to at most one word in English.",Experiment/Discussion
+"Unfortunately, for even very simple models such as IBM 1 or 2, computing the normalization constant over this set of alignments is a #P-complete problem, by a reduction from counting matchings in a bipartite graph (Valiant, 1979).",Experiment/Discussion
+"We could perhaps attempt to compute q using a variety of approximate probabilistic inference techniques, for example, sampling or variational methods.",Experiment/Discussion
+"With efficiency as our main concern, we opted instead for a simple heuristic procedure by letting q be a product of marginals: where each pk(zij  |x; θk) is the posterior marginal probability of the (i, j) edge being present (or absent) in the alignment according to each model, which can be computed separately and efficiently.",Experiment/Discussion
+Now the new E-step only requires simple marginal computations under each of the models.,Experiment/Discussion
+This procedure is very intuitive: edges on which the models disagree are discounted in the Estep because the product of the marginals p1(zij | x; θ1)p2(zij  |x; θ2) is small.,Experiment/Discussion
+"Note that in general, this new procedure is not guaranteed to increase our joint objective.",Experiment/Discussion
+"Nonetheless, our experimental results show that it provides an effective method of achieving model agreement and leads to significant accuracy gains over independent training.",Experiment/Discussion
+"Once we have trained two models, either jointly or independently, we must decide how to combine those two models to predict alignments for new sentences.",Experiment/Discussion
+"First, let us step back to the case of one model.",Experiment/Discussion
+"Typically, the Viterbi alignment argmaxz p(z  |x) is used.",Experiment/Discussion
+"An alternative is to use posterior decoding, where we keep an edge (i, j) if the marginal edge rectly in extracting phrases for phrase-based translation.",Experiment/Discussion
+"Also, when we want to combine two models for prediction, finding the Viterbi alignment argmaxz p1(z  |x)p2(z  |x) is intractable for HMM models (by a reduction from quadratic assignment), and a hard intersection argmaxz' p1(z1 | x) n argmaxz, p2(z2  |x) might be too sparse.",Experiment/Discussion
+"On the other hand, we can threshold the product of two edge posteriors quite easily: z = {zij = 1 : p1(zij = 1  |x)p2(zij = 1  |x) > δ}.",Experiment/Discussion
+We noticed a 5.8% relative reduction in AER (for our best model) by using posterior decoding with a validation-set optimized threshold δ instead of using hard intersection of Viterbi alignments.,Experiment/Discussion
+"We tested our approach on the English-French Hansards data from the NAACL 2003 Shared Task, which includes a training set of 1.1 million sentences, a validation set of 37 sentences, and a test set of 447 sentences.",Experiment/Discussion
+The validation and test sentences have been hand-aligned (see Och and Ney (2003)) and are marked with both sure and possible alignments.,Experiment/Discussion
+"Using these alignments, alignment error rate (AER) is calculated as: C1 _ |A n|A ||+ IIsIn P |J x where A is a set of proposed edges, S is the sure gold edges, and P is the possible gold edges.",Experiment/Discussion
+"As a preprocessing step, we lowercased all words.",Experiment/Discussion
+Then we used the validation set and the first 100 sentences of the test set as our development set to tune our models.,Experiment/Discussion
+"Lastly, we ran our models on the last 347 sentences of the test set to get final AER results.",Experiment/Discussion
+"We trained models 1, 2, and HMM on the Hansards data.",Experiment/Discussion
+"Following past work, we initialized the translation probabilities of model 1 uniformly over word pairs that occur together in some sentence pair.",Experiment/Discussion
+Models 2 and HMM were initialized with uniform distortion probabilities and model 1 translation probabilities.,Experiment/Discussion
+"Each model was trained for 5 iterations, using the same training regimen as in Och and Ney (2003). and joint training across different size training sets and different models, evaluated on the development set.",Experiment/Discussion
+The last column shows the relative reduction in AER.,Experiment/Discussion
+Table 1 shows a summary of the performance of independently and jointly trained models under various training conditions.,Experiment/Discussion
+"Quite remarkably, for all training data sizes and all of the models, we see an appreciable reduction in AER, especially on the HMM models.",Experiment/Discussion
+"We speculate that since the HMM model provides a richer family of distributions over alignments than either models 1 or 2, we can learn to synchronize the predictions of the two models, whereas models 1 and 2 have a much more limited capacity to synchronize.",Experiment/Discussion
+Table 2 shows the HMM models compared to model 4 alignments produced by GIZA++ on the test set.,Experiment/Discussion
+Our jointly trained model clearly outperforms not only the standard HMM but also the more complex IBM 4 model.,Experiment/Discussion
+"For these results, the threshold used for posterior decoding was tuned on the development set.",Experiment/Discussion
+"“GIZA HMM” and “HMM, indep” are the same algorithm but differ in implementation details.",Experiment/Discussion
+"The E→F and F→E models benefit a great deal by moving from independent to joint training, and the combined models show a smaller improvement.",Experiment/Discussion
+Our best performing model differs from standard IBM word alignment models in two ways.,Experiment/Discussion
+"First and most importantly, we use joint training instead of independent training and posterior decoding (with the optimal threshold) instead of Viterbi decoding, evaluated on the development set. independent training, which gives us a huge boost.",Experiment/Discussion
+"The second change, which is more minor and orthogonal, is using posterior decoding instead of Viterbi decoding, which also helps performance for model 2 and HMM, but not model 1.",Experiment/Discussion
+Table 3 quantifies the contribution of each of these two dimensions.,Experiment/Discussion
+"Posterior decoding In our results, we have tuned our threshold to minimize AER.",Experiment/Discussion
+It turns out that AER is relatively insensitive to the threshold as Figure 2 shows.,Experiment/Discussion
+There is a large range from 0.2 to 0.5 where posterior decoding outperforms Viterbi decoding.,Experiment/Discussion
+"Initialization and convergence In addition to improving performance, joint training also enjoys certain robustness properties.",Experiment/Discussion
+Specialized initialization is absolutely crucial for an independently-trained HMM model.,Experiment/Discussion
+"If we initialize the HMM model with uniform translation parameters, the HMM converges to a completely senseless local optimum with AER above 50%.",Experiment/Discussion
+Initializing the HMM with model 1 parameters alleviates this problem.,Experiment/Discussion
+"On the other hand, if we jointly train two HMMs starting from a uniform initialization, the HMMs converge to a surprisingly good solution.",Experiment/Discussion
+"On the full training set, training two HMMs jointly from uniform initialization yields 5.7% AER, only slightly higher than 5.2% AER using model 1 initialization.",Experiment/Discussion
+"We suspect that the agreement term of the objective forces the two HMMs to avoid many local optima that each one would have on its own, since these local optima correspond to posteriors over alignments that would be very unlikely to agree.",Experiment/Discussion
+We also observed that jointly trained HMMs converged very quickly—in 5 iterations—and did not exhibit overfitting with increased iterations.,Experiment/Discussion
+Common errors The major source of remaining errors are recall errors that come from the shortcomings of the HMM model.,Experiment/Discussion
+The E→F model gives 0 probability to any many-to-one alignments and the F→E model gives 0 probability to any one-to-many alignments.,Experiment/Discussion
+"By enforcing agreement, the two models are effectively restricted to one-to-one (or zero) alignments.",Experiment/Discussion
+"Posterior decoding is in principle capable of proposing many-to-many alignments, but these alignments occur infrequently since the posteriors are generally sharply peaked around the Viterbi alignment.",Experiment/Discussion
+"In some cases, however, we do get oneto-many alignments in both directions.",Experiment/Discussion
+Another common type of errors are precision errors due to the models overly-aggressively preferring alignments that preserve monotonicity.,Experiment/Discussion
+"Our HMM model only uses 11 distortion parameters, which means distortions are not sensitive to the lexical context of the sentences.",Experiment/Discussion
+"For example, in one sentence, le is incorrectly aligned to the as a monotonic alignment following another pair of correctly aligned words, and then the monotonicity is broken immediately following le–the.",Experiment/Discussion
+"Here, the model is insensitive to the fact that alignments following articles tend to be monotonic, but alignments preceding articles are less so.",Experiment/Discussion
+Another phenomenon is the insertion of “stepping stone” alignments.,Experiment/Discussion
+"Suppose two edges (i, j) and (i+4, j+4) have a very high probability of being included in an alignment, but the words between them are not good translations of each other.",Experiment/Discussion
+"If the intervening English words were null-aligned, we would have to pay a big distortion penalty for jumping 4 positions.",Experiment/Discussion
+"On the other hand, if the edge (i+2, j+2) were included, that penalty would be mitigated.",Experiment/Discussion
+The translation cost for forcing that edge is smaller than the distortion cost.,Experiment/Discussion
+"To see whether our improvement in AER also improves BLEU score, we aligned 100K EnglishFrench sentences from the Europarl corpus and tested on 3000 sentences of length 5–15.",Experiment/Discussion
+"Using GIZA++ model 4 alignments and Pharaoh (Koehn et al., 2003), we achieved a BLEU score of 0.3035.",Experiment/Discussion
+"By using alignments from our jointly trained HMMs instead, we get a BLEU score of 0.3051.",Experiment/Discussion
+"While this improvement is very modest, we are currently investigating alternative ways of interfacing with phrase table construction to make a larger impact on translation quality.",Experiment/Discussion
+"Our approach is similar in spirit to co-training, where two classifiers, complementary by the virtue of having different views of the data, are trained jointly to encourage agreement (Blum and Mitchell, 1998; Collins and Singer, 1999).",Results/Conclusion
+"One key difference in our work is that we rely exclusively on data likelihood to guide the two models in an unsupervised manner, rather than relying on an initial handful of labeled examples.",Results/Conclusion
+The idea of exploiting agreement between two latent variable models is not new; there has been substantial previous work on leveraging the strengths of two complementary models.,Results/Conclusion
+"Klein and Manning (2004) combine two complementary models for grammar induction, one that models constituency and one that models dependency, in a manner broadly similar to the current work.",Results/Conclusion
+"Aside from investigating a different domain, one novel aspect of this paper is that we present a formal objective and a training algorithm for combining two generic models.",Results/Conclusion
+We have described an efficient and fully unsupervised method of producing state-of-the-art word alignments.,Results/Conclusion
+"By training two simple sequence-based models to agree, we achieve substantial error reductions over standard models.",Results/Conclusion
+Our jointly trained HMM models reduce AER by 29% over test-time intersected GIZA++ model 4 alignments and also increase our robustness to varying initialization regimens.,Results/Conclusion
+"While AER is only a weak indicator of final translation quality in many current translation systems, we hope that more accurate alignments can eventually lead to improvements in the end-to-end translation process.",Results/Conclusion
+Acknowledgments We thank the anonymous reviewers for their comments.,Results/Conclusion

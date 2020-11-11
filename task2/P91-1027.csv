@@ -1,126 +1,126 @@
 col1,col2
-"This paper describes an implemented program that takes a raw, untagged text corpus as its only input (no open-class dictionary) and generates a partial list of verbs occurring in the text and the subcategorization frames (SFs) in which they occur.",{}
-Verbs are detected by a novel technique based on the Case Filter of Rouvret and Vergnaud (1980).,{}
-The completeness of the output list increases monotonically with the total number of occurrences of each verb in the corpus.,{}
-False positive rates are one to three percent of observations.,{}
-Five SFs are currently detected and more are planned.,{}
-"Ultimately, I expect to provide a large SF dictionary to the NLP community and to train dictionaries for specific corpora.",{}
-This paper describes an implemented program that takes an untagged text corpus and generates a partial list of verbs occurring in it and the subcategorization frames (SFs) in which they occur.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"So far, it detects the five SFs shown in Table 1.","{'title': '1 INTRODUCTION', 'number': '1'}"
-SF Good Example Bad Example Description direct object greet them *arrive them direct object tell him he's a *hope him he's a Si clause fool fool direct object want him to *hope him to Si infinitive attend attend clause know I'll attend *want I'll attend infinitive hope to attend *greet to attend The SF acquisition program has been tested on a corpus of 2.6 million words of the Wall Street Journal (kindly provided by the Penn Tree Bank project).,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"On this corpus, it makes 5101 observations about 2258 orthographically distinct verbs.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"False positive rates vary from one to three percent of observations, depending on the SF.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Accurate parsing requires knowing the subcategorization frames of verbs, as shown by (1).","{'title': '1 INTRODUCTION', 'number': '1'}"
-(I) a. I expected [Np the man who smoked Nil to eat ice-cream b. I doubted [NP the man who liked to eat ice-cream NI.],"{'title': '1 INTRODUCTION', 'number': '1'}"
-"Current high-coverage parsers tend to use either custom, hand-generated lists of subcategorization frames (e.g., Hindle, 1983), or published, handgenerated lists like the Oxford Advanced Learner's Dictionary of Contemporary English, Hornby and Covey (1973) (e.g., DeMarcken, 1990).","{'title': '1 INTRODUCTION', 'number': '1'}"
-"In either case, such lists are expensive to build and to maintain in the face of evolving usage.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"In addition, they tend not to include rare usages or specialized vocabularies like financial or military jargon.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Further, they are often incomplete in arbitrary ways.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"For example, Webster's Ninth New Collegiate Dictionary lists the sense of strike meaning &quot;to occur to&quot;, as in &quot;it struck him that... &quot; , but it does not list that same sense of hit.","{'title': '1 INTRODUCTION', 'number': '1'}"
-(My program discovered both.),"{'title': '1 INTRODUCTION', 'number': '1'}"
-"The initial priorities in this research were: Efficient use of the available text was not a high priority, since it was felt that plenty of text was available even for an inefficient learner, assuming sufficient speed to make use of it.","{'title': '1 INTRODUCTION', 'number': '1'}"
-These priorities had a substantial influence on the approach taken.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-They are evaluated in retrospect in Section 4.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-The first step in finding a subcategorization frame is finding a verb.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"Because of widespread and productive noun/verb ambiguity, dictionaries are not much use — they do not reliably exclude the possibility of lexical ambiguity.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Even if they did, a program that could only learn SFs for unambiguous verbs would be of limited value.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Statistical disambiguators make dictionaries more useful, but they have a fairly high error rate, and degrade in the presence of many unfamiliar words.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Further, it is often difficult to understand where the error is coming from or how to correct it.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"So finding verbs poses a serious challenge for the design of an accurate, general-purpose algorithm for detecting SFs.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"In fact, finding main verbs is more difficult than it might seem.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"One problem is distinguishing participles from adjectives and nouns, as shown below.","{'title': '1 INTRODUCTION', 'number': '1'}"
-In each case the main verb is have or be in a context where most parsers (and statistical disambiguators) would mistake it for an auxiliary and mistake the following word for a participial main verb.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-A second challenge to accuracy is determining which verb to associate a given complement with.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"Paradoxically, example (1) shows that in general it isn't possible to do this without already knowing the SF.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"One obvious strategy would be to wait for sentences where there is only one candidate verb; unfortunately, it is very difficult to know for certain how many verbs occur in a sentence.","{'title': '1 INTRODUCTION', 'number': '1'}"
-Finding some of the verbs in a text reliably is hard enough; finding all of them reliably is well beyond the scope of this work.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"Finally, any system applied to real input, no matter how carefully designed, will occasionally make errors in finding the verb and determining its subcategorization frame.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"The more times a given verb appears in the corpus, the more likely it is that one of those occurrences will cause an erroneous judgment.","{'title': '1 INTRODUCTION', 'number': '1'}"
-For that reason any learning system that gets only positive examples and makes a permanent judgment on a single example will always degrade as the number of occurrences increases.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"In fact, making a judgment based on any fixed number of examples with any finite error rate will always lead to degradation with corpussize.","{'title': '1 INTRODUCTION', 'number': '1'}"
-A better approach is to require a fixed percentage of the total occurrences of any given verb to appear with a given SF before concluding that random error is not responsible for these observations.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"Unfortunately, determining the cutoff percentage requires human intervention and sampling error makes classification unstable for verbs with few occurrences in the input.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"The sampling error can be dealt with (Brent, 1991) but predetermined cutoff percentages still require eye-balling the data.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"Thus robust, unsupervised judgments in the face of error pose the third challenge to developing an accurate learning system.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"The architecture of the system, and that of this paper, directly reflects the three challenges described above.","{'title': '1 INTRODUCTION', 'number': '1'}"
-"The system consists of three modules: genuinely associated with a given SF, or whether instead its apparent occurrences in that SF are due to error.","{'title': '1 INTRODUCTION', 'number': '1'}"
-This is done using statistical models of the frequency distributions.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-"The following two sections describe and evaluate the verb detection module and the SF detection module, respectively; the decision module, which is still being refined, will be described in a subsequent paper.","{'title': '1 INTRODUCTION', 'number': '1'}"
-The final two sections provide a brief comparison to related work and draw conclusions.,"{'title': '1 INTRODUCTION', 'number': '1'}"
-The technique I developed for finding verbs is based on the Case Filter of Rouvret and Vergnaud (1980).,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"The Case Filter is a proposed rule of granimar which, as it applies to English, says that every noun-phrase must appear either immediately to the left of a tensed verb, immediately to the right of a preposition, or immediately to the right of a main verb.","{'title': '2 VERB DETECTION', 'number': '2'}"
-Adverbs and adverbial phrases (including days and dates) are ignored for the purposes of case adjacency.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"A noun-phrase that satisfies the Case Filter is said to &quot;get case&quot; or &quot;have case&quot;, while one that violates it is said to &quot;lack case&quot;.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The program judges an open-class word to be a main verb if it is adjacent to a pronoun or proper name that would otherwise lack case.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-Such a pronoun or proper name is either the subject or the direct object of the verb.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-Other noun phrases are not used because it is too difficult to determine their right boundaries accurately.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-The two criteria for evaluating the performance of the main-verb detection technique are efficiency and accuracy.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-Both were measured using a 2.6 million word corpus for which the Penn Treebank project provides hand-verified tags.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Efficiency of verb detection was assessed by running the SF detection module in the normal mode, where verbs were detected using the Case Filter technique, and then running it again with the Penn Tags substituted for the verb detection module.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The results are shown in Table 2.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Note the five SFs, as tested on 2.6 million words of the Wall Street Journal and controlled by the Penn Treebank's hand-verified tagging the substantial variation among the SFs: for the SFs &quot;direct object&quot; and &quot;direct object & clause&quot; efficiency is roughly 40% and 25%, respectively; for &quot;direct object & infinitive&quot; it drops to about 8%; and for the intransitive SFs it is under 5%.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The reason that the transitive SFs fare better is that the direct object gets case from the preceding verb and hence reveals its presence — intransitive verbs are harder to find.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Likewise, clauses fare better than infinitives because their subjects get case from the main verb and hence reveal it, whereas infinitives lack overt subjects.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Another obvious factor is that, for every SF listed above except &quot;direct object&quot; two verbs need to be found — the matrix verb and the complement verb — if either one is not detected then no observation is recorded.","{'title': '2 VERB DETECTION', 'number': '2'}"
-Accuracy was measured by looking at the Penn tag for every word that the system judged to be a verb.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Of approximately 5000 verb tokens found by the Case Filter technique, there were 28 disagreements with the hand-verified tags.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"My program was right in 8 of these cases and wrong in 20, for a 0.24% error-rate beyond the rate using hand-verified tags.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Typical disagreements in which my system was right involved verbs that are ambiguous with much more frequent nouns, like mold in &quot;The Soviet Communist Party has the power to shape corporate development and mold it into a body dependent upon it .&quot; There were several systematic constructions in which the Penn tags were right and my system was wrong, including constructions like &quot;We consumers are...&quot; and pseudo-clefts like &quot;what you then do is you make them think.... (These examples are actual text from the Penn corpus.)","{'title': '2 VERB DETECTION', 'number': '2'}"
-The extraordinary accuracy of verb detection — within a tiny fraction of the rate achieved by trained human taggers — and it's relatively low efficiency are consistent with the priorities laid out in Section 1.2.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-The obvious approach to finding SFs like &quot;V NP to V&quot; and &quot;V to V&quot; is to look for occurrences of just those patterns in the training corpus; but the obvious approach fails to address the attachment problem illustrated by example (1) above.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"The solution is based on the following insights: Rather than take the obvious approach of looking for &quot;V NP to V&quot;, my approach is to wait for clear cases like &quot;V PRONOUN to V&quot;.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The advantages can be seen by contrasting (3) with (1).,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"More generally, the system recognizes linguistic structure using a small finite-state grammar that describes only that fragment of English that is most useful for recognizing SFs.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"The grammar relies exclusively on closed-class lexical items such as pronouns, prepositions, determiners, and auxiliary verbs.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"The grammar for detecting SFs needs to distinguish three types of complements: direct objects, infinitives, and clauses.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The grammars for each of these are presented in Figure 1.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Any open-class word judged to be a verb (see Section 2) and followed immediately by matches for <DO>, <clause>, <infinitive>, <DO> <clause>, or <D0><inf> is assigned the corresponding SF.","{'title': '2 VERB DETECTION', 'number': '2'}"
-Any word ending in &quot;Iy&quot; or belonging to a list of 25 irregular adverbs is ignored for purposes of adjacency.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-The notation &quot;?&quot; follows optional expressions.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-The category previously-noted-uninflected-verb is special in that it is not fixed in advance — open-class nonadverbs are added to it when they occur following an unambiguous modal.',"{'title': '2 VERB DETECTION', 'number': '2'}"
-This is the only case in which the program makes use of earlier decisions — literally bootstrapping.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"Note, however, that ambiguity is possible between mass nouns and uninflected verbs, as in to fish.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Like the verb detection algorithm, the SF detection algorithm is evaluated in terms of efficiency and accuracy.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"The most useful estimate of efficiency is simply the density of observations in the corpus, shown in the first column of Table 3.","{'title': '2 VERB DETECTION', 'number': '2'}"
-The 'If there were room to store an unlimited number of uninflected verbs for later reference then the grammar formalism would not be finite-state.,"{'title': '2 VERB DETECTION', 'number': '2'}"
-"In fact, a fixed amount of storage, sufficient to store all the verbs in the language, is allocated.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"This question is purely academic, however — a hash-table gives constant-time average performance. column of Table 3.2 The most common source of error was purpose adjuncts, as in &quot;John quit to pursue a career in finance,&quot; which comes from omitting the in order from &quot;John quit in order to pursue a career in finance.&quot; These purpose adjuncts were mistaken for infinitival complements.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"The other errors were more sporadic in nature, many coming from unusual extrapositions or other relatively rare phenomena.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Once again, the high accuracy and low efficiency are consistent with the priorities of Section 1.2.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"The throughput rate is currently about ten-thousand words per second on a Sparcstation 2, which is also consistent with the initial priorities.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Furthermore, at ten-thousand words per second the current density of observations is not problematic.","{'title': '2 VERB DETECTION', 'number': '2'}"
-"Interest in extracting lexical and especially collocational information from text has risen dramatically in the last two years, as sufficiently large corpora and sufficiently cheap computation have become available.","{'title': '3 RELATED WORK', 'number': '3'}"
-"Three recent papers in this area are Church and Hanks (1990), Hindle (1990), and Smadja and McKeown (1990).","{'title': '3 RELATED WORK', 'number': '3'}"
-The latter two are concerned exclusively with collocation relations between open-class words and not with grammatical properties.,"{'title': '3 RELATED WORK', 'number': '3'}"
-"Church is also interested primarily in open-class collocations, but he does discuss verbs that tend to be followed by infinitives within his mutual information framework.","{'title': '3 RELATED WORK', 'number': '3'}"
-"Mutual information, as applied by Church, is a measure of the tendency of two items to appear near one-another — their observed frequency in nearby positions is divided by the expectation of that frequency if their positions were random and independent.","{'title': '3 RELATED WORK', 'number': '3'}"
-"To measure the tendency of a verb to be followed within a few words by an infinitive, Church uses his statistical disambiguator 'Error rates computed by hand verification of 200 examples for each SF using the tagged mode.","{'title': '3 RELATED WORK', 'number': '3'}"
-These are estimated independently of the error rates for verb detection.,"{'title': '3 RELATED WORK', 'number': '3'}"
-"(Church, 1988) to distinguish between to as an infinitive marker and to as a preposition.","{'title': '3 RELATED WORK', 'number': '3'}"
-Then he measures the mutual information between occurrences of the verb and occurrences of infinitives following within a certain number of words.,"{'title': '3 RELATED WORK', 'number': '3'}"
-"Unlike our system, Church's approach does not aim to decide whether or not a verb occurs with an infinitival complement — example (1) showed that being followed by an infinitive is not the same as taking an infinitival complement.","{'title': '3 RELATED WORK', 'number': '3'}"
-"It might be interesting to try building a verb categorization scheme based on Church's mutual information measure, but to the best of our knowledge no such work has been reported.","{'title': '3 RELATED WORK', 'number': '3'}"
-"The ultimate goal of this work is to provide the NLP community with a substantially complete, automatically updated dictionary of sub categorization frames.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-The methods described above solve several important problems that had stood in the way of that goal.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-"Moreover, the results obtained with those methods are quite encouraging.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"Nonetheless, two obvious barriers still stand on the path to a fully automated SF dictionary: a decision algorithm that can handle random error, and techniques for detecting many more types of SFs.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-Algorithms are currently being developed to resolve raw SF observations into genuine lexical properties and random error.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-The idea is to automatically generate statistical models of the sources of error.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-"For example, purpose adjuncts like &quot;John quit to pursue a career in finance&quot; are quite rare, accounting for only two percent of the apparent infinitival complements.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"Furthermore, they are distributed across a much larger set of matrix verbs than the true infinitival complements, so any given verb should occur with a purpose adjunct extremely rarely.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"In a histogram sorting verbs by their apparent frequency of occurrence with infinitival complements, those that in fact have appeared with purpose adjuncts and not true subcategorized infinitives will be clustered at the low frequencies.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-The distributions of such clusters can be modeled automatically and the models used for identifying false positives.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-The second requirement for automatically generating a full-scale dictionary is the ability to detect many more types of SFs.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-SFs involving certain prepositional phrases are particularly challenging.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-"For example, while purpose adjuncts (mistaken for infinitival complements) are relatively rare, instrumental adjuncts as in &quot;John hit the naiL with a hammer&quot; are more common.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"The problem, of course, is how to distinguish them from genuine, subcategorized PPs headed by with, as in &quot;John sprayed the lawn with distilled water&quot;.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"The hope is that a frequency analysis like the one planned for purpose adjuncts will work here as well, but how successful it will be, and if successful how large a sample size it will require, remain to be seen.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"The question of sample size leads back to an evaluation of the initial priorities, which favored simplicity, speed, and accuracy, over efficient use of the corpus.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-There are various ways in which the high-priority criteria can be traded off against efficiency.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-"For example, consider (2c): one might expect that the overwhelming majority of occurrences of &quot;is V-ing&quot; are genuine progressives, while a tiny minority are cases copula.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-One might also expect that the occasional copula constructions are not concentrated around any one present participle but rather distributed randomly among a large population.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-If those expectations are true then a frequency-modeling mechanism like the one being developed for adjuncts ought to prevent the mistaken copula from doing any harm.,"{'title': '4 CONCLUSIONS', 'number': '4'}"
-"In that case it might be worthwhile to admit &quot;is V-ing&quot;, where V is known to be a (possibly ambiguous) verb root, as a verb, independent of the Case Filter mechanism.","{'title': '4 CONCLUSIONS', 'number': '4'}"
-"Thanks to Don Hindle, Lila Gleitman, and Jane Grimshaw for useful and encouraging conversations.","{'title': 'ACKNOWLEDGMENTS', 'number': '5'}"
-"Thanks also to Mark Liberman, Mitch Marcus and the Penn Treebank project at the University of Pennsylvania for supplying tagged text.","{'title': 'ACKNOWLEDGMENTS', 'number': '5'}"
-This work was supported in part by National Science Foundation grant DCR-85552543 under a Presidential Young Investigator Award to Professor Robert C. Berwick.,"{'title': 'ACKNOWLEDGMENTS', 'number': '5'}"
+"This paper describes an implemented program that takes a raw, untagged text corpus as its only input (no open-class dictionary) and generates a partial list of verbs occurring in the text and the subcategorization frames (SFs) in which they occur.",Introduction
+Verbs are detected by a novel technique based on the Case Filter of Rouvret and Vergnaud (1980).,Introduction
+The completeness of the output list increases monotonically with the total number of occurrences of each verb in the corpus.,Introduction
+False positive rates are one to three percent of observations.,Introduction
+Five SFs are currently detected and more are planned.,Introduction
+"Ultimately, I expect to provide a large SF dictionary to the NLP community and to train dictionaries for specific corpora.",Introduction
+This paper describes an implemented program that takes an untagged text corpus and generates a partial list of verbs occurring in it and the subcategorization frames (SFs) in which they occur.,Experiment/Discussion
+"So far, it detects the five SFs shown in Table 1.",Experiment/Discussion
+SF Good Example Bad Example Description direct object greet them *arrive them direct object tell him he's a *hope him he's a Si clause fool fool direct object want him to *hope him to Si infinitive attend attend clause know I'll attend *want I'll attend infinitive hope to attend *greet to attend The SF acquisition program has been tested on a corpus of 2.6 million words of the Wall Street Journal (kindly provided by the Penn Tree Bank project).,Experiment/Discussion
+"On this corpus, it makes 5101 observations about 2258 orthographically distinct verbs.",Experiment/Discussion
+"False positive rates vary from one to three percent of observations, depending on the SF.",Experiment/Discussion
+"Accurate parsing requires knowing the subcategorization frames of verbs, as shown by (1).",Experiment/Discussion
+(I) a. I expected [Np the man who smoked Nil to eat ice-cream b. I doubted [NP the man who liked to eat ice-cream NI.],Experiment/Discussion
+"Current high-coverage parsers tend to use either custom, hand-generated lists of subcategorization frames (e.g., Hindle, 1983), or published, handgenerated lists like the Oxford Advanced Learner's Dictionary of Contemporary English, Hornby and Covey (1973) (e.g., DeMarcken, 1990).",Experiment/Discussion
+"In either case, such lists are expensive to build and to maintain in the face of evolving usage.",Experiment/Discussion
+"In addition, they tend not to include rare usages or specialized vocabularies like financial or military jargon.",Experiment/Discussion
+"Further, they are often incomplete in arbitrary ways.",Experiment/Discussion
+"For example, Webster's Ninth New Collegiate Dictionary lists the sense of strike meaning &quot;to occur to&quot;, as in &quot;it struck him that... &quot; , but it does not list that same sense of hit.",Experiment/Discussion
+(My program discovered both.),Experiment/Discussion
+"The initial priorities in this research were: Efficient use of the available text was not a high priority, since it was felt that plenty of text was available even for an inefficient learner, assuming sufficient speed to make use of it.",Experiment/Discussion
+These priorities had a substantial influence on the approach taken.,Experiment/Discussion
+They are evaluated in retrospect in Section 4.,Experiment/Discussion
+The first step in finding a subcategorization frame is finding a verb.,Experiment/Discussion
+"Because of widespread and productive noun/verb ambiguity, dictionaries are not much use — they do not reliably exclude the possibility of lexical ambiguity.",Experiment/Discussion
+"Even if they did, a program that could only learn SFs for unambiguous verbs would be of limited value.",Experiment/Discussion
+"Statistical disambiguators make dictionaries more useful, but they have a fairly high error rate, and degrade in the presence of many unfamiliar words.",Experiment/Discussion
+"Further, it is often difficult to understand where the error is coming from or how to correct it.",Experiment/Discussion
+"So finding verbs poses a serious challenge for the design of an accurate, general-purpose algorithm for detecting SFs.",Experiment/Discussion
+"In fact, finding main verbs is more difficult than it might seem.",Experiment/Discussion
+"One problem is distinguishing participles from adjectives and nouns, as shown below.",Experiment/Discussion
+In each case the main verb is have or be in a context where most parsers (and statistical disambiguators) would mistake it for an auxiliary and mistake the following word for a participial main verb.,Experiment/Discussion
+A second challenge to accuracy is determining which verb to associate a given complement with.,Experiment/Discussion
+"Paradoxically, example (1) shows that in general it isn't possible to do this without already knowing the SF.",Experiment/Discussion
+"One obvious strategy would be to wait for sentences where there is only one candidate verb; unfortunately, it is very difficult to know for certain how many verbs occur in a sentence.",Experiment/Discussion
+Finding some of the verbs in a text reliably is hard enough; finding all of them reliably is well beyond the scope of this work.,Experiment/Discussion
+"Finally, any system applied to real input, no matter how carefully designed, will occasionally make errors in finding the verb and determining its subcategorization frame.",Experiment/Discussion
+"The more times a given verb appears in the corpus, the more likely it is that one of those occurrences will cause an erroneous judgment.",Experiment/Discussion
+For that reason any learning system that gets only positive examples and makes a permanent judgment on a single example will always degrade as the number of occurrences increases.,Experiment/Discussion
+"In fact, making a judgment based on any fixed number of examples with any finite error rate will always lead to degradation with corpussize.",Experiment/Discussion
+A better approach is to require a fixed percentage of the total occurrences of any given verb to appear with a given SF before concluding that random error is not responsible for these observations.,Experiment/Discussion
+"Unfortunately, determining the cutoff percentage requires human intervention and sampling error makes classification unstable for verbs with few occurrences in the input.",Experiment/Discussion
+"The sampling error can be dealt with (Brent, 1991) but predetermined cutoff percentages still require eye-balling the data.",Experiment/Discussion
+"Thus robust, unsupervised judgments in the face of error pose the third challenge to developing an accurate learning system.",Experiment/Discussion
+"The architecture of the system, and that of this paper, directly reflects the three challenges described above.",Experiment/Discussion
+"The system consists of three modules: genuinely associated with a given SF, or whether instead its apparent occurrences in that SF are due to error.",Experiment/Discussion
+This is done using statistical models of the frequency distributions.,Experiment/Discussion
+"The following two sections describe and evaluate the verb detection module and the SF detection module, respectively; the decision module, which is still being refined, will be described in a subsequent paper.",Experiment/Discussion
+The final two sections provide a brief comparison to related work and draw conclusions.,Experiment/Discussion
+The technique I developed for finding verbs is based on the Case Filter of Rouvret and Vergnaud (1980).,Experiment/Discussion
+"The Case Filter is a proposed rule of granimar which, as it applies to English, says that every noun-phrase must appear either immediately to the left of a tensed verb, immediately to the right of a preposition, or immediately to the right of a main verb.",Experiment/Discussion
+Adverbs and adverbial phrases (including days and dates) are ignored for the purposes of case adjacency.,Experiment/Discussion
+"A noun-phrase that satisfies the Case Filter is said to &quot;get case&quot; or &quot;have case&quot;, while one that violates it is said to &quot;lack case&quot;.",Experiment/Discussion
+The program judges an open-class word to be a main verb if it is adjacent to a pronoun or proper name that would otherwise lack case.,Experiment/Discussion
+Such a pronoun or proper name is either the subject or the direct object of the verb.,Experiment/Discussion
+Other noun phrases are not used because it is too difficult to determine their right boundaries accurately.,Experiment/Discussion
+The two criteria for evaluating the performance of the main-verb detection technique are efficiency and accuracy.,Experiment/Discussion
+Both were measured using a 2.6 million word corpus for which the Penn Treebank project provides hand-verified tags.,Experiment/Discussion
+"Efficiency of verb detection was assessed by running the SF detection module in the normal mode, where verbs were detected using the Case Filter technique, and then running it again with the Penn Tags substituted for the verb detection module.",Experiment/Discussion
+The results are shown in Table 2.,Experiment/Discussion
+"Note the five SFs, as tested on 2.6 million words of the Wall Street Journal and controlled by the Penn Treebank's hand-verified tagging the substantial variation among the SFs: for the SFs &quot;direct object&quot; and &quot;direct object & clause&quot; efficiency is roughly 40% and 25%, respectively; for &quot;direct object & infinitive&quot; it drops to about 8%; and for the intransitive SFs it is under 5%.",Experiment/Discussion
+The reason that the transitive SFs fare better is that the direct object gets case from the preceding verb and hence reveals its presence — intransitive verbs are harder to find.,Experiment/Discussion
+"Likewise, clauses fare better than infinitives because their subjects get case from the main verb and hence reveal it, whereas infinitives lack overt subjects.",Experiment/Discussion
+"Another obvious factor is that, for every SF listed above except &quot;direct object&quot; two verbs need to be found — the matrix verb and the complement verb — if either one is not detected then no observation is recorded.",Experiment/Discussion
+Accuracy was measured by looking at the Penn tag for every word that the system judged to be a verb.,Experiment/Discussion
+"Of approximately 5000 verb tokens found by the Case Filter technique, there were 28 disagreements with the hand-verified tags.",Experiment/Discussion
+"My program was right in 8 of these cases and wrong in 20, for a 0.24% error-rate beyond the rate using hand-verified tags.",Experiment/Discussion
+"Typical disagreements in which my system was right involved verbs that are ambiguous with much more frequent nouns, like mold in &quot;The Soviet Communist Party has the power to shape corporate development and mold it into a body dependent upon it .&quot; There were several systematic constructions in which the Penn tags were right and my system was wrong, including constructions like &quot;We consumers are...&quot; and pseudo-clefts like &quot;what you then do is you make them think.... (These examples are actual text from the Penn corpus.)",Experiment/Discussion
+The extraordinary accuracy of verb detection — within a tiny fraction of the rate achieved by trained human taggers — and it's relatively low efficiency are consistent with the priorities laid out in Section 1.2.,Experiment/Discussion
+The obvious approach to finding SFs like &quot;V NP to V&quot; and &quot;V to V&quot; is to look for occurrences of just those patterns in the training corpus; but the obvious approach fails to address the attachment problem illustrated by example (1) above.,Experiment/Discussion
+"The solution is based on the following insights: Rather than take the obvious approach of looking for &quot;V NP to V&quot;, my approach is to wait for clear cases like &quot;V PRONOUN to V&quot;.",Experiment/Discussion
+The advantages can be seen by contrasting (3) with (1).,Experiment/Discussion
+"More generally, the system recognizes linguistic structure using a small finite-state grammar that describes only that fragment of English that is most useful for recognizing SFs.",Experiment/Discussion
+"The grammar relies exclusively on closed-class lexical items such as pronouns, prepositions, determiners, and auxiliary verbs.",Experiment/Discussion
+"The grammar for detecting SFs needs to distinguish three types of complements: direct objects, infinitives, and clauses.",Experiment/Discussion
+The grammars for each of these are presented in Figure 1.,Experiment/Discussion
+"Any open-class word judged to be a verb (see Section 2) and followed immediately by matches for <DO>, <clause>, <infinitive>, <DO> <clause>, or <D0><inf> is assigned the corresponding SF.",Experiment/Discussion
+Any word ending in &quot;Iy&quot; or belonging to a list of 25 irregular adverbs is ignored for purposes of adjacency.,Experiment/Discussion
+The notation &quot;?&quot; follows optional expressions.,Experiment/Discussion
+The category previously-noted-uninflected-verb is special in that it is not fixed in advance — open-class nonadverbs are added to it when they occur following an unambiguous modal.',Experiment/Discussion
+This is the only case in which the program makes use of earlier decisions — literally bootstrapping.,Experiment/Discussion
+"Note, however, that ambiguity is possible between mass nouns and uninflected verbs, as in to fish.",Experiment/Discussion
+"Like the verb detection algorithm, the SF detection algorithm is evaluated in terms of efficiency and accuracy.",Experiment/Discussion
+"The most useful estimate of efficiency is simply the density of observations in the corpus, shown in the first column of Table 3.",Experiment/Discussion
+The 'If there were room to store an unlimited number of uninflected verbs for later reference then the grammar formalism would not be finite-state.,Experiment/Discussion
+"In fact, a fixed amount of storage, sufficient to store all the verbs in the language, is allocated.",Experiment/Discussion
+"This question is purely academic, however — a hash-table gives constant-time average performance. column of Table 3.2 The most common source of error was purpose adjuncts, as in &quot;John quit to pursue a career in finance,&quot; which comes from omitting the in order from &quot;John quit in order to pursue a career in finance.&quot; These purpose adjuncts were mistaken for infinitival complements.",Experiment/Discussion
+"The other errors were more sporadic in nature, many coming from unusual extrapositions or other relatively rare phenomena.",Experiment/Discussion
+"Once again, the high accuracy and low efficiency are consistent with the priorities of Section 1.2.",Experiment/Discussion
+"The throughput rate is currently about ten-thousand words per second on a Sparcstation 2, which is also consistent with the initial priorities.",Experiment/Discussion
+"Furthermore, at ten-thousand words per second the current density of observations is not problematic.",Experiment/Discussion
+"Interest in extracting lexical and especially collocational information from text has risen dramatically in the last two years, as sufficiently large corpora and sufficiently cheap computation have become available.",Experiment/Discussion
+"Three recent papers in this area are Church and Hanks (1990), Hindle (1990), and Smadja and McKeown (1990).",Experiment/Discussion
+The latter two are concerned exclusively with collocation relations between open-class words and not with grammatical properties.,Experiment/Discussion
+"Church is also interested primarily in open-class collocations, but he does discuss verbs that tend to be followed by infinitives within his mutual information framework.",Experiment/Discussion
+"Mutual information, as applied by Church, is a measure of the tendency of two items to appear near one-another — their observed frequency in nearby positions is divided by the expectation of that frequency if their positions were random and independent.",Experiment/Discussion
+"To measure the tendency of a verb to be followed within a few words by an infinitive, Church uses his statistical disambiguator 'Error rates computed by hand verification of 200 examples for each SF using the tagged mode.",Experiment/Discussion
+These are estimated independently of the error rates for verb detection.,Experiment/Discussion
+"(Church, 1988) to distinguish between to as an infinitive marker and to as a preposition.",Experiment/Discussion
+Then he measures the mutual information between occurrences of the verb and occurrences of infinitives following within a certain number of words.,Experiment/Discussion
+"Unlike our system, Church's approach does not aim to decide whether or not a verb occurs with an infinitival complement — example (1) showed that being followed by an infinitive is not the same as taking an infinitival complement.",Experiment/Discussion
+"It might be interesting to try building a verb categorization scheme based on Church's mutual information measure, but to the best of our knowledge no such work has been reported.",Experiment/Discussion
+"The ultimate goal of this work is to provide the NLP community with a substantially complete, automatically updated dictionary of sub categorization frames.",Results/Conclusion
+The methods described above solve several important problems that had stood in the way of that goal.,Results/Conclusion
+"Moreover, the results obtained with those methods are quite encouraging.",Results/Conclusion
+"Nonetheless, two obvious barriers still stand on the path to a fully automated SF dictionary: a decision algorithm that can handle random error, and techniques for detecting many more types of SFs.",Results/Conclusion
+Algorithms are currently being developed to resolve raw SF observations into genuine lexical properties and random error.,Results/Conclusion
+The idea is to automatically generate statistical models of the sources of error.,Results/Conclusion
+"For example, purpose adjuncts like &quot;John quit to pursue a career in finance&quot; are quite rare, accounting for only two percent of the apparent infinitival complements.",Results/Conclusion
+"Furthermore, they are distributed across a much larger set of matrix verbs than the true infinitival complements, so any given verb should occur with a purpose adjunct extremely rarely.",Results/Conclusion
+"In a histogram sorting verbs by their apparent frequency of occurrence with infinitival complements, those that in fact have appeared with purpose adjuncts and not true subcategorized infinitives will be clustered at the low frequencies.",Results/Conclusion
+The distributions of such clusters can be modeled automatically and the models used for identifying false positives.,Results/Conclusion
+The second requirement for automatically generating a full-scale dictionary is the ability to detect many more types of SFs.,Results/Conclusion
+SFs involving certain prepositional phrases are particularly challenging.,Results/Conclusion
+"For example, while purpose adjuncts (mistaken for infinitival complements) are relatively rare, instrumental adjuncts as in &quot;John hit the naiL with a hammer&quot; are more common.",Results/Conclusion
+"The problem, of course, is how to distinguish them from genuine, subcategorized PPs headed by with, as in &quot;John sprayed the lawn with distilled water&quot;.",Results/Conclusion
+"The hope is that a frequency analysis like the one planned for purpose adjuncts will work here as well, but how successful it will be, and if successful how large a sample size it will require, remain to be seen.",Results/Conclusion
+"The question of sample size leads back to an evaluation of the initial priorities, which favored simplicity, speed, and accuracy, over efficient use of the corpus.",Results/Conclusion
+There are various ways in which the high-priority criteria can be traded off against efficiency.,Results/Conclusion
+"For example, consider (2c): one might expect that the overwhelming majority of occurrences of &quot;is V-ing&quot; are genuine progressives, while a tiny minority are cases copula.",Results/Conclusion
+One might also expect that the occasional copula constructions are not concentrated around any one present participle but rather distributed randomly among a large population.,Results/Conclusion
+If those expectations are true then a frequency-modeling mechanism like the one being developed for adjuncts ought to prevent the mistaken copula from doing any harm.,Results/Conclusion
+"In that case it might be worthwhile to admit &quot;is V-ing&quot;, where V is known to be a (possibly ambiguous) verb root, as a verb, independent of the Case Filter mechanism.",Results/Conclusion
+"Thanks to Don Hindle, Lila Gleitman, and Jane Grimshaw for useful and encouraging conversations.",Results/Conclusion
+"Thanks also to Mark Liberman, Mitch Marcus and the Penn Treebank project at the University of Pennsylvania for supplying tagged text.",Results/Conclusion
+This work was supported in part by National Science Foundation grant DCR-85552543 under a Presidential Young Investigator Award to Professor Robert C. Berwick.,Results/Conclusion

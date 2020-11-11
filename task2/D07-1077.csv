@@ -1,132 +1,132 @@
 col1,col2
-Syntactic reordering approaches are an effective method for handling word-order differences between source and target lan guages in statistical machine translation(SMT) systems.,{}
-This paper introduces a reordering approach for translation from Chinese to English.,{}
-We describe a set of syntac tic reordering rules that exploit systematic differences between Chinese and English word order.,{}
-"The resulting system is used as a preprocessor for both training and test sentences, transforming Chinese sentences to be much closer to English in terms of their word order.",{}
-"We evaluated the reordering approach within the MOSES phrase-based SMT system (Koehn et al, 2007).",{}
-The reordering approach improved the BLEU score for the MOSES system from 28.52 to 30.86 on the NIST 2006 evaluation data.,{}
-Wealso conducted a series of experiments to an alyze the accuracy and impact of different types of reordering rules.,{}
-"Syntactic reordering approaches are an effective method for handling systematic differences in word order between source and target languages within the context of statistical machine translation (SMT) systems (Xia and McCord, 2004; Collins et al, 2005).","{'title': 'Introduction', 'number': '1'}"
-"In reordering approaches, sentences in the source language are first parsed, for example using a Treebank-trained parser.","{'title': 'Introduction', 'number': '1'}"
-"A series of transformations is then applied to the resulting parse tree, with the goal of transforming the source language sentence into a word order that is closer to that of the targetlanguage.","{'title': 'Introduction', 'number': '1'}"
-The reordering process is used to prepro cess both the training and test data used within an existing SMT system.,"{'title': 'Introduction', 'number': '1'}"
-"Reordering approaches have given significant improvements in performance fortranslation from French to English (Xia and Mc Cord, 2004) and from German to English (Collins et al, 2005).This paper describes a syntactic reordering approach for translation from Chinese to English.","{'title': 'Introduction', 'number': '1'}"
-Figure 1 gives an example illustrating some of the dif ferences in word order between the two languages.,"{'title': 'Introduction', 'number': '1'}"
-"The example shows a Chinese sentence whose literal translation in English is: this is French delegation at WinterOlympics on achieve DEC best accom plishment and where a natural translation would be this is the best accomplishment that the French delegation achieved at the Winter Olympics As exemplified by this sentence, Chinese differsfrom English in several important respects: for ex ample, relative clauses appear before the noun being modified; prepositional phrases often appear before the head they modify; and so on.","{'title': 'Introduction', 'number': '1'}"
-It can be seen that some significant reordering of the input is requiredto produce a good English translation.,"{'title': 'Introduction', 'number': '1'}"
-"For this ex ample, application of reordering rules leads to a newChinese string whose word-by-word English para phrase is: 737 Before syntactic reordering After syntactic reordering IP NP PN ?(this) VP VC(is) NP CP IP NP NR {I(French) NN ?L?(delegation) VP PP P 3(at) LCP NP NN ?G (Winter) NR $?","{'title': 'Introduction', 'number': '1'}"
-(Olympics) LC ?(on) VP-A VV (achieve) DEC (DEC) ADJP JJ ?(best) NPB NN ?1(accomplishment) IP NP PN ?(this) VP VC(is) NP ADJP JJ ?(best) NPB NN ?1(accomplishment) CP DEC (DEC) IP NP NR {I(French) NN ?L?(delegation) VP VP-A VV (achieve) PP P 3(at) LCP LC ?(on) NP NN ?G (Winter) NR $?,"{'title': 'Introduction', 'number': '1'}"
-"(Olympics) Figure 1: Original (left) and reordered (right) parse trees for the Chinese sentence ???{I?L?3 ?G $????1,?","{'title': 'Introduction', 'number': '1'}"
-which translates into ?This is the best accomplishment that the French delegation achieved at the Winter Olympics?,"{'title': 'Introduction', 'number': '1'}"
-in English.,"{'title': 'Introduction', 'number': '1'}"
-"this is best accomplishment DEC French delegation achieve at on Winter Olympics This reordering is relatively easy to express using syntactic transformations?for example, it is simpleto move the entire relative clause ?French delegation at Winter Olympics on achieve DEC? to a posi tion that is after the noun phrase it modifies, namely ?best accomplishment.?","{'title': 'Introduction', 'number': '1'}"
-Phrase-based systems arequite limited in their ability to perform transformations of this type.,"{'title': 'Introduction', 'number': '1'}"
-"More recently developed hier archical systems (e.g., (Yamada and Knight, 2001; Chiang, 2005; Marcu et al, 2006)) may be betterequipped to deal with reordering of this type; how ever, in this example they would effectively have to first identify the span of the relative clause, and then move it into the correct position, without any explicit representation of the source language syntax.In this paper, we describe a set of syntactic reordering rules that exploit systematic differences between Chinese and English word order.","{'title': 'Introduction', 'number': '1'}"
-"The result ing system is used as a preprocessor for both training and test sentences, transforming Chinese sentences to be much closer to English.","{'title': 'Introduction', 'number': '1'}"
-"We report results forthe method on the NIST 2006 evaluation data, us ing the MOSES phrase-based SMT system (Koehnet al, 2007).","{'title': 'Introduction', 'number': '1'}"
-The reordering rules give an improve ment in accuracy from 28.52 to 30.86 BLEU score.,"{'title': 'Introduction', 'number': '1'}"
-"A concern for methods that make use of Chinese parsers is that these parsers are typically of relativelylow accuracy, particularly given that Chinese re quires a word-segmentation step that is not required in languages such as English.","{'title': 'Introduction', 'number': '1'}"
-Our results show that Chinese parses are useful in SMT in spite of this problem.,"{'title': 'Introduction', 'number': '1'}"
-We report results showing the precisionof the reordering rules?essentially testing how of ten the Chinese sentences are correctly reordered?,"{'title': 'Introduction', 'number': '1'}"
-to give more insight into this issue.,"{'title': 'Introduction', 'number': '1'}"
-We also report experiments which assess the impact of each type of reordering rule on translation accuracy.,"{'title': 'Introduction', 'number': '1'}"
-"A number of researchers (Brown et al, 1992; Bergeret al, 1996; Niessen and Ney, 2004; Xia and McCord, 2004; Collins et al, 2005) have described ap proaches that preprocess the source language input in SMT systems.","{'title': 'Related Work. ', 'number': '2'}"
-"We are not, however, aware of work on this topic for translation from Chinese to English.","{'title': 'Related Work. ', 'number': '2'}"
-Brown et al (1992) describe an analysis component for French which moves phrases around (in addition to other transformations) so the source and target sentences are closer to each other in word order.,"{'title': 'Related Work. ', 'number': '2'}"
-Berger et al (1996) describe an approach for French that reorders phrases of the form NOUN1 deNOUN2.,"{'title': 'Related Work. ', 'number': '2'}"
-"Xia and McCord (2004) describe an approach for French, where reordering rules that operate on context-free rule productions are acquired au 738tomatically.","{'title': 'Related Work. ', 'number': '2'}"
-"Niessen and Ney (2004) describe an ap proach for translation from German to English that combines verbs with associated particles, and alsoreorders questions.","{'title': 'Related Work. ', 'number': '2'}"
-"Collins et al (2005) also describe an approach for German, concentrating on re ordering German clauses, which have quite different word order from clauses in English.","{'title': 'Related Work. ', 'number': '2'}"
-Our approach is most similar to that of Collins et al (2005).,"{'title': 'Related Work. ', 'number': '2'}"
-"Most SMT systems employ some mechanism that allows reordering of the source language during translation (i.e., non-monotonic decoding).","{'title': 'Related Work. ', 'number': '2'}"
-TheMOSES phrase-based system that we use has a rel atively simple reordering model which has a fixed penalty for reordering moves in the decoder.,"{'title': 'Related Work. ', 'number': '2'}"
-"Moresophisticated models include reordering parameters that are sensitive to lexical information (Till mann, 2004; Kumar and Byrne, 2005; Koehn et al., 2005).","{'title': 'Related Work. ', 'number': '2'}"
-The model of Chiang (2005) employsa synchronous context-free grammar to allow hierarchical approaches to reordering.,"{'title': 'Related Work. ', 'number': '2'}"
-"The syntax based models of Yamada and Knight (2001) andMarcu et al (2006) build a full parse tree in the target language, again effectively allowing hierarchi cal reordering based on synchronous grammars.","{'title': 'Related Work. ', 'number': '2'}"
-"Itis worth noting that none of these approaches to re ordering make use of explicit syntactic information in the source language?for example, none of the methods make use of an existing source-language parser (the systems of Yamada and Knight (2001) and Marcu et al (2006) make use of a parser in the target language, i.e., English).","{'title': 'Related Work. ', 'number': '2'}"
-"Finally, note that a number of statistical MT systems make use of source language syntax in transducer-style approaches; see (Lin, 2004; Ding and Palmer, 2005; Quirk et al, 2005; Liu et al,2006; Huang et al, 2006).","{'title': 'Related Work. ', 'number': '2'}"
-"In contrast to the prepro cessing approach, they attempt to incorporate syntax directly into the decoding stage.","{'title': 'Related Work. ', 'number': '2'}"
-"We used the Penn Chinese Treebank guidelines (Xueet al, 2005) in searching for a suitable set of reordering rules.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-We examined all phrase types in the Treebank; potentially phrases of any type could be can didates for reordering rules.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Table 1 provides a list of Treebank phrase tags for easy reference.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-We ruled out several phrase types as not requiring reordering ADJP adjective phrase ADVP adverbial phrase headed by AD (adverb) CLP classifier phrase CP clause headed by C (complementizer) DNP phrase formed by ?XP+DEG?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-DP determiner phrase DVP phrase formed by ?XP+DEV?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-FRAG fragment IP simple clause headed by I (INFL) LCP phrase formed by ?XP+LC?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-LST list marker NP noun phrase PP preposition phrase PRN parenthetical QP quantifier phrase UCP unidentical coordination phrase VP verb phrase Table 1: Penn Chinese Treebank phrase tags.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-rules.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"For example, Chinese ADJPs, ADVPs, DPs,QPs, and PPs all have similar internal word order ing to their English counterparts.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Also similar are a group of special structures such as LST, FRAG, and PRN.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-We identified three categories that we consideredto be the most prominent candidates for reorder ing.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"These phrases include VPs (verb phrases), NPs (noun phrases), and LCPs (localizer phrases, which frequently map to prepositional phrases in English).","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"In the following, we discuss each of the three main categories in more detail.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-3.1 Verb Phrases.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"In Chinese, verb phrase modifiers typically occur in pre-verbal position.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"VP modifiers can be ADVPs, temporal and spatial NPs, QP, PPs, CPs, IPs, DVPs, and LCPs.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"The ADVPs are simple adverbs, which can occur both preverbal and postverbal in an English verb phrase, so we do not attempt to move them.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Similarly, the CP, IP, and DVP modifiers are typically adverbial phrases, which do not have afixed position in English verb phrases.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"In the follow ing, we only consider cases involving PPs, LCPs, temporal and spatial NPs, and QPs.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"PPs and LCPs Figure 2 shows an example verb phrase with a PP modifier, which translates literally 739 VP PP P 3(at) NP-A NPB NN ??(Eastern) NN ??(Division) VP-A VV ?(rank) QP OD 1?(10th) Figure 2: Example VP with PP modifier.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?ranks 10th in the Eastern Division.?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-VP NP NPB NT U(same day) NT ??(morning) VP-A VV uL(issue) NP-A NPB NN (?(statement) Figure 3: Example VP with temporal NP modifier.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?issued a statement that morning.?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-into ?at Eastern Division rank 10th.?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Recognizingthat PPs in English verb phrases almost always occur after the verb, we use a simple VP(PP:VP) re ordering rule which states that a PP in a parent VP needs to be repositioned after the sibling VP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-LCPs are similar to PPs and typically map to prepositional phrases in English.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Thus they are handled similarly to PPs, i.e., LCPs in a parent VP are repositioned after the sibling VP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"NPs Figure 3 gives an example of a verb phrasewith a temporal NP modifier, which literally trans lates into ?same day morning issue statement.?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"InEnglish, temporal phrases such as these almost al ways occur after the head verb.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Conveniently, the Chinese Treebank uses the part of speech (POS) tag NT for temporal nouns.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Thus, we use a rule whichstates that a preverbal NP will be repositioned af ter the sibling VP if there is at least one NT in the NP subtree.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"A similar rule might apply to locative NPS; however, there is no special POS tag in the Treebank marking locations,1 so we do not have a syntax-based reordering rule to handle locative NPs.QPs QP modifiers in verb phrases often corre spond to time-related concepts such as duration and frequency.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Figure 4 shows an example verb phrase with a QP modifier, literally translating into ?many time injured.?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Since temporal phrases almost alwaysoccur after the verb in English verb phrases, we han 1One can argue that NR (proper nouns) in that context are likely to be places.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"However, there also exist many exceptions, and so we decided not to exploit the NR tag.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-VP QP CD ?(many) CLP M g(time) VP-A VV ??(injured) Figure 4: Example VP with QP modifier.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?injured many times.?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-NP-A DNP PP P ?(to) NP-A NPB NR 9n??(Zimbabwe) DEG (DEG) NPB NN ?L(financial) NN ?(aid)Figure 5: An example Chinese NP with a DNP mod ifier headed by a PP.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?the financial aid to Zimbabwe?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in English.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-dle such cases by a simple rule which states that theQP in a parent VP will be repositioned after the sib ling VP.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-3.2 Noun Phrases.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Noun phrases in Chinese can take several types of modifiers: for example, phrases of type QP, DP, ADJP, NP, DNP, and CP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"The placement of QP, DP, and ADJP modifiers is somewhat similar to English in that these phrases typically occur before the noun they modify.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"The case of NP modifiers in NPs is very limited in the Chinese Treebank, since most noun-noun sequences form compounds in a single NP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Hence we only developed reordering rules to handle DNP and clausal (CP) modifiers.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"DNPs DNPs are formed by ?XP+DEG,?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"where XP can be a phrase of the type ADJP, QP, PP, LCP, or NP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"When the XP is an ADJP or a QP, no reordering is needed because the word order is the same as that of English.When the XP is a PP or an LCP, the DNP essentially corresponds to a prepositional phrase in En glish, which almost always appears after the noun being modified.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Figure 5 shows an example where the XP in the DNP is a PP.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"The reordering rule to handle these two cases states that, if a parent NP has a child DNP which in turn has a child PP or LCP, then the DNP is repositioned after the last sibling NP.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Figure 6 shows an example noun phrase for which the XP in the DNP is NP.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"On the surface, the Chinese?NP1 DEG NP2?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-sequence is analogous to the En glish possessive structure of ?NP1?s NP2?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-and does 740 NP-A DNP NP DP DT T(this) CLP M ?(measure word) NPB NN E?(technique) DEG (DEG) NPB NN ??(mastery) Figure 6: An example Chinese NP phrase with a DNP modifier headed by a NP.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?the mastery of this technique?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in English.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"not require reordering, for example, ??(Sue) (?s)*l(friend)?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in Chinese and ?Sue?s friend?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in En glish.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"However, the Chinese possessive structure?NP1 DEG NP2?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-can express more sophisticated re lationships which are inappropriate for the ?NP1?sNP2?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-expression.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"For example, the phrase in Fig ure 6 can only be translated into ?the mastery of this technique,?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-but not ?this technique?s mastery.?We decide to reorder DNPs of the ?NP+DEG?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"for mat, because they often can only map to the ?NP2 of NP1?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-expression in English.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Additionally, the ?NP2 of NP1?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-expression is more general and can replace ?NP1?s NP2?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in many cases.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"One exception is when the NP is a pronoun (PN), e.g., ?(he) (?s) ? i(name),?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-in which case the DNP acts simply like a possessive pronoun.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"Our reordering rule thus states that, if a parent NP has a child DNPwhich in turn hasa child NP that is not a PN, then the DNP is reposi tioned after the last sibling NP.CPs Relative clauses correspond to the CP cate gory in the Treebank.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Figure 7 shows an examplenoun phrase with two nested CP modifiers.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"As illus trated in the figure, relative clauses in Chinese also occur before the noun they modify, which makes the word order of this sentence quite different from that of the English translation.","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-Such distortions in the word reordering will be quite difficult for the word or phrase-based alignment model to capture.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"However, with the application of a reordering ruleto reposition the child CP after its sibling NP un der a parent NP, and the PP VP reordering rule for VP introduced previously, the sentence can be easily transformed into ?French delegation participate 8th handicap people Winter Olympics hold at US Salt Lake City,?","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-a sentence whose word order is much closer to that of English.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-"CP is typically formed by ?IP+DEC?, in which DEC?s only function is to mark the IP as a relative NP CP IP VP VV ?\ (participate) NP CP IP VP PP P 3 (at) NP NR {I(US) NR ??","{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-(Salt Lake City) VP VV ?1 (hold) DEC  (DEC) QP OD 1l (8th) CLP M 3 (measure word) NPB NN ?; (handicap people) NR ? ?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-(Winter Olympics) DEC  (DEC) NPB NR {I (French) NPB NN ?L?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-(delegation)Figure 7: An example with two nested CP modifiers.,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-The phrase translates into ?the French delega tion participating in the 8th Special Winter Olympics held in Salt Lake City US.?,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
-LCP IP NP-A NPB NN ?(accident) VP VV u)(happen) LC ,"{'title': 'Chinese Syntactic Reordering Rules. ', 'number': '3'}"
+Syntactic reordering approaches are an effective method for handling word-order differences between source and target lan guages in statistical machine translation(SMT) systems.,Introduction
+This paper introduces a reordering approach for translation from Chinese to English.,Introduction
+We describe a set of syntac tic reordering rules that exploit systematic differences between Chinese and English word order.,Introduction
+"The resulting system is used as a preprocessor for both training and test sentences, transforming Chinese sentences to be much closer to English in terms of their word order.",Introduction
+"We evaluated the reordering approach within the MOSES phrase-based SMT system (Koehn et al, 2007).",Introduction
+The reordering approach improved the BLEU score for the MOSES system from 28.52 to 30.86 on the NIST 2006 evaluation data.,Introduction
+Wealso conducted a series of experiments to an alyze the accuracy and impact of different types of reordering rules.,Introduction
+"Syntactic reordering approaches are an effective method for handling systematic differences in word order between source and target languages within the context of statistical machine translation (SMT) systems (Xia and McCord, 2004; Collins et al, 2005).",Experiment/Discussion
+"In reordering approaches, sentences in the source language are first parsed, for example using a Treebank-trained parser.",Experiment/Discussion
+"A series of transformations is then applied to the resulting parse tree, with the goal of transforming the source language sentence into a word order that is closer to that of the targetlanguage.",Experiment/Discussion
+The reordering process is used to prepro cess both the training and test data used within an existing SMT system.,Experiment/Discussion
+"Reordering approaches have given significant improvements in performance fortranslation from French to English (Xia and Mc Cord, 2004) and from German to English (Collins et al, 2005).This paper describes a syntactic reordering approach for translation from Chinese to English.",Experiment/Discussion
+Figure 1 gives an example illustrating some of the dif ferences in word order between the two languages.,Experiment/Discussion
+"The example shows a Chinese sentence whose literal translation in English is: this is French delegation at WinterOlympics on achieve DEC best accom plishment and where a natural translation would be this is the best accomplishment that the French delegation achieved at the Winter Olympics As exemplified by this sentence, Chinese differsfrom English in several important respects: for ex ample, relative clauses appear before the noun being modified; prepositional phrases often appear before the head they modify; and so on.",Experiment/Discussion
+It can be seen that some significant reordering of the input is requiredto produce a good English translation.,Experiment/Discussion
+"For this ex ample, application of reordering rules leads to a newChinese string whose word-by-word English para phrase is: 737 Before syntactic reordering After syntactic reordering IP NP PN ?(this) VP VC(is) NP CP IP NP NR {I(French) NN ?L?(delegation) VP PP P 3(at) LCP NP NN ?G (Winter) NR $?",Experiment/Discussion
+(Olympics) LC ?(on) VP-A VV (achieve) DEC (DEC) ADJP JJ ?(best) NPB NN ?1(accomplishment) IP NP PN ?(this) VP VC(is) NP ADJP JJ ?(best) NPB NN ?1(accomplishment) CP DEC (DEC) IP NP NR {I(French) NN ?L?(delegation) VP VP-A VV (achieve) PP P 3(at) LCP LC ?(on) NP NN ?G (Winter) NR $?,Experiment/Discussion
+"(Olympics) Figure 1: Original (left) and reordered (right) parse trees for the Chinese sentence ???{I?L?3 ?G $????1,?",Experiment/Discussion
+which translates into ?This is the best accomplishment that the French delegation achieved at the Winter Olympics?,Experiment/Discussion
+in English.,Experiment/Discussion
+"this is best accomplishment DEC French delegation achieve at on Winter Olympics This reordering is relatively easy to express using syntactic transformations?for example, it is simpleto move the entire relative clause ?French delegation at Winter Olympics on achieve DEC? to a posi tion that is after the noun phrase it modifies, namely ?best accomplishment.?",Experiment/Discussion
+Phrase-based systems arequite limited in their ability to perform transformations of this type.,Experiment/Discussion
+"More recently developed hier archical systems (e.g., (Yamada and Knight, 2001; Chiang, 2005; Marcu et al, 2006)) may be betterequipped to deal with reordering of this type; how ever, in this example they would effectively have to first identify the span of the relative clause, and then move it into the correct position, without any explicit representation of the source language syntax.In this paper, we describe a set of syntactic reordering rules that exploit systematic differences between Chinese and English word order.",Experiment/Discussion
+"The result ing system is used as a preprocessor for both training and test sentences, transforming Chinese sentences to be much closer to English.",Experiment/Discussion
+"We report results forthe method on the NIST 2006 evaluation data, us ing the MOSES phrase-based SMT system (Koehnet al, 2007).",Experiment/Discussion
+The reordering rules give an improve ment in accuracy from 28.52 to 30.86 BLEU score.,Experiment/Discussion
+"A concern for methods that make use of Chinese parsers is that these parsers are typically of relativelylow accuracy, particularly given that Chinese re quires a word-segmentation step that is not required in languages such as English.",Experiment/Discussion
+Our results show that Chinese parses are useful in SMT in spite of this problem.,Experiment/Discussion
+We report results showing the precisionof the reordering rules?essentially testing how of ten the Chinese sentences are correctly reordered?,Experiment/Discussion
+to give more insight into this issue.,Experiment/Discussion
+We also report experiments which assess the impact of each type of reordering rule on translation accuracy.,Experiment/Discussion
+"A number of researchers (Brown et al, 1992; Bergeret al, 1996; Niessen and Ney, 2004; Xia and McCord, 2004; Collins et al, 2005) have described ap proaches that preprocess the source language input in SMT systems.",Results/Conclusion
+"We are not, however, aware of work on this topic for translation from Chinese to English.",Results/Conclusion
+Brown et al (1992) describe an analysis component for French which moves phrases around (in addition to other transformations) so the source and target sentences are closer to each other in word order.,Results/Conclusion
+Berger et al (1996) describe an approach for French that reorders phrases of the form NOUN1 deNOUN2.,Results/Conclusion
+"Xia and McCord (2004) describe an approach for French, where reordering rules that operate on context-free rule productions are acquired au 738tomatically.",Results/Conclusion
+"Niessen and Ney (2004) describe an ap proach for translation from German to English that combines verbs with associated particles, and alsoreorders questions.",Results/Conclusion
+"Collins et al (2005) also describe an approach for German, concentrating on re ordering German clauses, which have quite different word order from clauses in English.",Results/Conclusion
+Our approach is most similar to that of Collins et al (2005).,Results/Conclusion
+"Most SMT systems employ some mechanism that allows reordering of the source language during translation (i.e., non-monotonic decoding).",Results/Conclusion
+TheMOSES phrase-based system that we use has a rel atively simple reordering model which has a fixed penalty for reordering moves in the decoder.,Results/Conclusion
+"Moresophisticated models include reordering parameters that are sensitive to lexical information (Till mann, 2004; Kumar and Byrne, 2005; Koehn et al., 2005).",Results/Conclusion
+The model of Chiang (2005) employsa synchronous context-free grammar to allow hierarchical approaches to reordering.,Results/Conclusion
+"The syntax based models of Yamada and Knight (2001) andMarcu et al (2006) build a full parse tree in the target language, again effectively allowing hierarchi cal reordering based on synchronous grammars.",Results/Conclusion
+"Itis worth noting that none of these approaches to re ordering make use of explicit syntactic information in the source language?for example, none of the methods make use of an existing source-language parser (the systems of Yamada and Knight (2001) and Marcu et al (2006) make use of a parser in the target language, i.e., English).",Results/Conclusion
+"Finally, note that a number of statistical MT systems make use of source language syntax in transducer-style approaches; see (Lin, 2004; Ding and Palmer, 2005; Quirk et al, 2005; Liu et al,2006; Huang et al, 2006).",Results/Conclusion
+"In contrast to the prepro cessing approach, they attempt to incorporate syntax directly into the decoding stage.",Results/Conclusion
+"We used the Penn Chinese Treebank guidelines (Xueet al, 2005) in searching for a suitable set of reordering rules.",Results/Conclusion
+We examined all phrase types in the Treebank; potentially phrases of any type could be can didates for reordering rules.,Results/Conclusion
+Table 1 provides a list of Treebank phrase tags for easy reference.,Results/Conclusion
+We ruled out several phrase types as not requiring reordering ADJP adjective phrase ADVP adverbial phrase headed by AD (adverb) CLP classifier phrase CP clause headed by C (complementizer) DNP phrase formed by ?XP+DEG?,Results/Conclusion
+DP determiner phrase DVP phrase formed by ?XP+DEV?,Results/Conclusion
+FRAG fragment IP simple clause headed by I (INFL) LCP phrase formed by ?XP+LC?,Results/Conclusion
+LST list marker NP noun phrase PP preposition phrase PRN parenthetical QP quantifier phrase UCP unidentical coordination phrase VP verb phrase Table 1: Penn Chinese Treebank phrase tags.,Results/Conclusion
+rules.,Results/Conclusion
+"For example, Chinese ADJPs, ADVPs, DPs,QPs, and PPs all have similar internal word order ing to their English counterparts.",Results/Conclusion
+"Also similar are a group of special structures such as LST, FRAG, and PRN.",Results/Conclusion
+We identified three categories that we consideredto be the most prominent candidates for reorder ing.,Results/Conclusion
+"These phrases include VPs (verb phrases), NPs (noun phrases), and LCPs (localizer phrases, which frequently map to prepositional phrases in English).",Results/Conclusion
+"In the following, we discuss each of the three main categories in more detail.",Results/Conclusion
+3.1 Verb Phrases.,Results/Conclusion
+"In Chinese, verb phrase modifiers typically occur in pre-verbal position.",Results/Conclusion
+"VP modifiers can be ADVPs, temporal and spatial NPs, QP, PPs, CPs, IPs, DVPs, and LCPs.",Results/Conclusion
+"The ADVPs are simple adverbs, which can occur both preverbal and postverbal in an English verb phrase, so we do not attempt to move them.",Results/Conclusion
+"Similarly, the CP, IP, and DVP modifiers are typically adverbial phrases, which do not have afixed position in English verb phrases.",Results/Conclusion
+"In the follow ing, we only consider cases involving PPs, LCPs, temporal and spatial NPs, and QPs.",Results/Conclusion
+"PPs and LCPs Figure 2 shows an example verb phrase with a PP modifier, which translates literally 739 VP PP P 3(at) NP-A NPB NN ??(Eastern) NN ??(Division) VP-A VV ?(rank) QP OD 1?(10th) Figure 2: Example VP with PP modifier.",Results/Conclusion
+The phrase translates into ?ranks 10th in the Eastern Division.?,Results/Conclusion
+VP NP NPB NT U(same day) NT ??(morning) VP-A VV uL(issue) NP-A NPB NN (?(statement) Figure 3: Example VP with temporal NP modifier.,Results/Conclusion
+The phrase translates into ?issued a statement that morning.?,Results/Conclusion
+into ?at Eastern Division rank 10th.?,Results/Conclusion
+"Recognizingthat PPs in English verb phrases almost always occur after the verb, we use a simple VP(PP:VP) re ordering rule which states that a PP in a parent VP needs to be repositioned after the sibling VP.",Results/Conclusion
+LCPs are similar to PPs and typically map to prepositional phrases in English.,Results/Conclusion
+"Thus they are handled similarly to PPs, i.e., LCPs in a parent VP are repositioned after the sibling VP.",Results/Conclusion
+"NPs Figure 3 gives an example of a verb phrasewith a temporal NP modifier, which literally trans lates into ?same day morning issue statement.?",Results/Conclusion
+"InEnglish, temporal phrases such as these almost al ways occur after the head verb.",Results/Conclusion
+"Conveniently, the Chinese Treebank uses the part of speech (POS) tag NT for temporal nouns.",Results/Conclusion
+"Thus, we use a rule whichstates that a preverbal NP will be repositioned af ter the sibling VP if there is at least one NT in the NP subtree.",Results/Conclusion
+"A similar rule might apply to locative NPS; however, there is no special POS tag in the Treebank marking locations,1 so we do not have a syntax-based reordering rule to handle locative NPs.QPs QP modifiers in verb phrases often corre spond to time-related concepts such as duration and frequency.",Results/Conclusion
+"Figure 4 shows an example verb phrase with a QP modifier, literally translating into ?many time injured.?",Results/Conclusion
+"Since temporal phrases almost alwaysoccur after the verb in English verb phrases, we han 1One can argue that NR (proper nouns) in that context are likely to be places.",Results/Conclusion
+"However, there also exist many exceptions, and so we decided not to exploit the NR tag.",Results/Conclusion
+VP QP CD ?(many) CLP M g(time) VP-A VV ??(injured) Figure 4: Example VP with QP modifier.,Results/Conclusion
+The phrase translates into ?injured many times.?,Results/Conclusion
+NP-A DNP PP P ?(to) NP-A NPB NR 9n??(Zimbabwe) DEG (DEG) NPB NN ?L(financial) NN ?(aid)Figure 5: An example Chinese NP with a DNP mod ifier headed by a PP.,Results/Conclusion
+The phrase translates into ?the financial aid to Zimbabwe?,Results/Conclusion
+in English.,Results/Conclusion
+dle such cases by a simple rule which states that theQP in a parent VP will be repositioned after the sib ling VP.,Results/Conclusion
+3.2 Noun Phrases.,Results/Conclusion
+"Noun phrases in Chinese can take several types of modifiers: for example, phrases of type QP, DP, ADJP, NP, DNP, and CP.",Results/Conclusion
+"The placement of QP, DP, and ADJP modifiers is somewhat similar to English in that these phrases typically occur before the noun they modify.",Results/Conclusion
+"The case of NP modifiers in NPs is very limited in the Chinese Treebank, since most noun-noun sequences form compounds in a single NP.",Results/Conclusion
+Hence we only developed reordering rules to handle DNP and clausal (CP) modifiers.,Results/Conclusion
+"DNPs DNPs are formed by ?XP+DEG,?",Results/Conclusion
+"where XP can be a phrase of the type ADJP, QP, PP, LCP, or NP.",Results/Conclusion
+"When the XP is an ADJP or a QP, no reordering is needed because the word order is the same as that of English.When the XP is a PP or an LCP, the DNP essentially corresponds to a prepositional phrase in En glish, which almost always appears after the noun being modified.",Results/Conclusion
+Figure 5 shows an example where the XP in the DNP is a PP.,Results/Conclusion
+"The reordering rule to handle these two cases states that, if a parent NP has a child DNP which in turn has a child PP or LCP, then the DNP is repositioned after the last sibling NP.",Results/Conclusion
+Figure 6 shows an example noun phrase for which the XP in the DNP is NP.,Results/Conclusion
+"On the surface, the Chinese?NP1 DEG NP2?",Results/Conclusion
+sequence is analogous to the En glish possessive structure of ?NP1?s NP2?,Results/Conclusion
+and does 740 NP-A DNP NP DP DT T(this) CLP M ?(measure word) NPB NN E?(technique) DEG (DEG) NPB NN ??(mastery) Figure 6: An example Chinese NP phrase with a DNP modifier headed by a NP.,Results/Conclusion
+The phrase translates into ?the mastery of this technique?,Results/Conclusion
+in English.,Results/Conclusion
+"not require reordering, for example, ??(Sue) (?s)*l(friend)?",Results/Conclusion
+in Chinese and ?Sue?s friend?,Results/Conclusion
+in En glish.,Results/Conclusion
+"However, the Chinese possessive structure?NP1 DEG NP2?",Results/Conclusion
+can express more sophisticated re lationships which are inappropriate for the ?NP1?sNP2?,Results/Conclusion
+expression.,Results/Conclusion
+"For example, the phrase in Fig ure 6 can only be translated into ?the mastery of this technique,?",Results/Conclusion
+but not ?this technique?s mastery.?We decide to reorder DNPs of the ?NP+DEG?,Results/Conclusion
+"for mat, because they often can only map to the ?NP2 of NP1?",Results/Conclusion
+expression in English.,Results/Conclusion
+"Additionally, the ?NP2 of NP1?",Results/Conclusion
+expression is more general and can replace ?NP1?s NP2?,Results/Conclusion
+in many cases.,Results/Conclusion
+"One exception is when the NP is a pronoun (PN), e.g., ?(he) (?s) ? i(name),?",Results/Conclusion
+in which case the DNP acts simply like a possessive pronoun.,Results/Conclusion
+"Our reordering rule thus states that, if a parent NP has a child DNPwhich in turn hasa child NP that is not a PN, then the DNP is reposi tioned after the last sibling NP.CPs Relative clauses correspond to the CP cate gory in the Treebank.",Results/Conclusion
+Figure 7 shows an examplenoun phrase with two nested CP modifiers.,Results/Conclusion
+"As illus trated in the figure, relative clauses in Chinese also occur before the noun they modify, which makes the word order of this sentence quite different from that of the English translation.",Results/Conclusion
+Such distortions in the word reordering will be quite difficult for the word or phrase-based alignment model to capture.,Results/Conclusion
+"However, with the application of a reordering ruleto reposition the child CP after its sibling NP un der a parent NP, and the PP VP reordering rule for VP introduced previously, the sentence can be easily transformed into ?French delegation participate 8th handicap people Winter Olympics hold at US Salt Lake City,?",Results/Conclusion
+a sentence whose word order is much closer to that of English.,Results/Conclusion
+"CP is typically formed by ?IP+DEC?, in which DEC?s only function is to mark the IP as a relative NP CP IP VP VV ?\ (participate) NP CP IP VP PP P 3 (at) NP NR {I(US) NR ??",Results/Conclusion
+(Salt Lake City) VP VV ?1 (hold) DEC  (DEC) QP OD 1l (8th) CLP M 3 (measure word) NPB NN ?; (handicap people) NR ? ?,Results/Conclusion
+(Winter Olympics) DEC  (DEC) NPB NR {I (French) NPB NN ?L?,Results/Conclusion
+(delegation)Figure 7: An example with two nested CP modifiers.,Results/Conclusion
+The phrase translates into ?the French delega tion participating in the 8th Special Winter Olympics held in Salt Lake City US.?,Results/Conclusion
+LCP IP NP-A NPB NN ?(accident) VP VV u)(happen) LC ,Results/Conclusion

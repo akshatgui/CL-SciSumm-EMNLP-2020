@@ -1,208 +1,208 @@
 col1,col2
-"Recognizing analogies, synonyms, anto nyms, and associations appear to be fourdistinct tasks, requiring distinct NLP al gorithms.",{}
-"In the past, the four tasks have been treated independently, using a widevariety of algorithms.",{}
-"These four seman tic classes, however, are a tiny sample of the full range of semantic phenomena, andwe cannot afford to create ad hoc algo rithms for each semantic phenomenon; weneed to seek a unified approach.",{}
-We propose to subsume a broad range of phenom ena under analogies.,{}
-"To limit the scope of this paper, we restrict our attention to the subsumption of synonyms, antonyms, and associations.",{}
-"We introduce a supervised corpus-based machine learning algorithm for classifying analogous word pairs, and we show that it can solve multiple-choice SAT analogy questions, TOEFL synonymquestions, ESL synonym-antonym questions, and similar-associated-both ques tions from cognitive psychology.",{}
-A pair of words (petrify:stone) is analogous to another pair (vaporize:gas) when the semantic re lations between the words in the first pair are highly similar to the relations in the second pair.,"{'title': 'Introduction', 'number': '1'}"
-"Two words (levied and imposed) are synonymousin a context (levied a tax) when they can be interchanged (imposed a tax), they are are antony mous when they have opposite meanings (black c ? 2008, National Research Council of Canada (NRC).Licensed to the Coling 2008 Organizing Committee for pub lication in Coling 2008 and for re-publishing in any form or medium.","{'title': 'Introduction', 'number': '1'}"
-"and white), and they are associated when they tend to co-occur (doctor and hospital).On the surface, it appears that these are four distinct semantic classes, requiring distinct NLP al gorithms, but we propose a uniform approach to all four.","{'title': 'Introduction', 'number': '1'}"
-"We subsume synonyms, antonyms, and associations under analogies.","{'title': 'Introduction', 'number': '1'}"
-"In essence, we say that X and Y are antonyms when the pair X:Y is analogous to the pair black:white, X and Y are synonyms when they are analogous to the pair levied:imposed, and X and Y are associated when they are analogous to the pair doctor:hospital.","{'title': 'Introduction', 'number': '1'}"
-"There is past work on recognizing analogies(Reitman, 1965), synonyms (Landauer and Dumais, 1997), antonyms (Lin et al, 2003), and asso ciations (Lesk, 1969), but each of these four tasks has been examined separately, in isolation from the others.","{'title': 'Introduction', 'number': '1'}"
-"As far as we know, the algorithm proposed here is the first attempt to deal with all four tasks using a uniform approach.","{'title': 'Introduction', 'number': '1'}"
-"We believe that it isimportant to seek NLP algorithms that can han dle a broad range of semantic phenomena, becausedeveloping a specialized algorithm for each phe nomenon is a very inefficient research strategy.It might seem that a lexicon, such as Word Net (Fellbaum, 1998), contains all the information we need to handle these four tasks.","{'title': 'Introduction', 'number': '1'}"
-"However, weprefer to take a corpus-based approach to seman tics.","{'title': 'Introduction', 'number': '1'}"
-"Veale (2004) used WordNet to answer 374 multiple-choice SAT analogy questions, achievingan accuracy of 43%, but the best corpus-based ap proach attains an accuracy of 56% (Turney, 2006).","{'title': 'Introduction', 'number': '1'}"
-"Another reason to prefer a corpus-based approachto a lexicon-based approach is that the former re quires less human labour, and thus it is easier to extend to other languages.In Section 2, we describe our algorithm for rec ognizing analogies.","{'title': 'Introduction', 'number': '1'}"
-"We use a standard supervised 905 machine learning approach, with feature vectorsbased on the frequencies of patterns in a large cor pus.","{'title': 'Introduction', 'number': '1'}"
-"We use a support vector machine (SVM) to learn how to classify the feature vectors (Platt, 1998; Witten and Frank, 1999).","{'title': 'Introduction', 'number': '1'}"
-Section 3 presents four sets of experiments.,"{'title': 'Introduction', 'number': '1'}"
-"We apply our algorithm for recognizing analogies to multiple-choice analogy questions from the SAT college entrance test, multiple-choice synonym questions from the TOEFL (test of English as aforeign language), ESL (English as a second language) practice questions for distinguishing syn onyms and antonyms, and a set of word pairs thatare labeled similar, associated, and both, devel oped for experiments in cognitive psychology.We discuss the results of the experiments in Section 4.","{'title': 'Introduction', 'number': '1'}"
-"The accuracy of the algorithm is competitive with other systems, but the strength of the al gorithm is that it is able to handle all four tasks, with no tuning of the learning parameters to the particular task.","{'title': 'Introduction', 'number': '1'}"
-"It performs well, although it iscompeting against specialized algorithms, devel oped for single tasks.Related work is examined in Section 5 and limitations and future work are considered in Sec tion 6.","{'title': 'Introduction', 'number': '1'}"
-We conclude in Section 7.,"{'title': 'Introduction', 'number': '1'}"
-"An analogy, A:B::C:D, asserts that A is to B as C is to D; for example, traffic:street::water:riverbed asserts that traffic is to street as water is to riverbed; that is, the semantic relations between traffic and street are highly similar to the semantic relations between water and riverbed.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-We may view the task of recognizing word analogies as a problem of classifying word pairs (see Table 1).,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-Word pair Class label carpenter:wood artisan:material mason:stone artisan:material potter:clay artisan:material glassblower:glass artisan:material traffic:street entity:carrier water:riverbed entity:carrier packets:network entity:carrier gossip:grapevine entity:carrierTable 1: Examples of how the task of recogniz ing word analogies may be viewed as a problem of classifying word pairs.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-We approach this as a standard classificationproblem for supervised machine learning.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-The al gorithm takes as input a training set of word pairs with class labels and a testing set of word pairs without labels.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-Each word pair is represented as a vector in a feature space and a supervised learning algorithm is used to classify the feature vectors.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-The elements in the feature vectors are based on the frequencies of automatically defined patterns in a large corpus.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-The output of the algorithm is anassignment of labels to the word pairs in the test ing set.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"For some of the experiments, we selecta unique label for each word pair; for other ex periments, we assign probabilities to each possible label for each word pair.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"For a given word pair, such as mason:stone, the first step is to generate morphological variations,such as masons:stones.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"In the following experi ments, we use morpha (morphological analyzer)and morphg (morphological generator) for mor phological processing (Minnen et al, 2001).1 The second step is to search in a large corpus for all phrases of the following form: ?[0 to 1 words] X [0 to 3 words] Y [0 to 1 words]?","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"In this template, X:Y consists of morphologicalvariations of the given word pair, in either order; for example, mason:stone, stone:mason, masons:stones, and so on.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-A typical phrase for ma son:stone would be ?the mason cut the stone with?.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"We then normalize all of the phrases that are found, by using morpha to remove suffixes.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"The template we use here is similar to Turney (2006), but we have added extra context wordsbefore the X and after the Y . Our morpholog ical processing also differs from Turney (2006).In the following experiments, we search in a cor pus of 5 ? 1010 words (about 280 GB of plain text), consisting of web pages gathered by a web crawler.2 To retrieve phrases from the corpus, weuse Wumpus (Bu?ttcher and Clarke, 2005), an effi cient search engine for passage retrieval from large corpora.3 The next step is to generate patterns from allof the phrases that were found for all of the in put word pairs (from both the training and testingsets).","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"To generate patterns from a phrase, we re place the given word pairs with variables, X and Y , and we replace the remaining words with a wild card symbol (an asterisk) or leave them as they are.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-1http://www.informatics.susx.ac.uk/research/groups/nlp/ carroll/morph.html.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"2The corpus was collected by Charles Clarke, University of Waterloo.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-We can provide copies on request.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-3http://www.wumpus-search.org/.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"906 For example, the phrase ?the mason cut the stone with?","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"yields the patterns ?the X cut * Y with?, ?* X * the Y *?, and so on.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"If a phrase contains n words, then it yields 2(n?2) patterns.Each pattern corresponds to a feature in the feature vectors that we will generate.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"Since a typical input set of word pairs yields millions of pat terns, we need to use feature selection, to reduce the number of patterns to a manageable quantity.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"For each pattern, we count the number of input word pairs that generated the pattern.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"For example, ?* X cut * Y *?","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-is generated by both mason:stone and carpenter:wood.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-We then sort the patterns in descending order of the number of word pairs that generated them.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"If there are N input word pairs (and thus N feature vectors, including both the training and testing sets), then we select the topkN patterns and drop the remainder.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"In the fol lowing experiments, k is set to 20.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-The algorithm is not sensitive to the precise value of k.The reasoning behind the feature selection al gorithm is that shared patterns make more useful features than rare patterns.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"The number of features (kN ) depends on the number of word pairs (N ), because, if we have more feature vectors, then we need more features to distinguish them.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"Turney (2006) also selects patterns based on the numberof pairs that generate them, but the number of se lected patterns is a constant (8000), independent of the number of input word pairs.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"The next step is to generate feature vectors, one vector for each input word pair.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"Each of the N feature vectors has kN elements, one element for each selected pattern.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-The value of an element in a vector is given by the logarithm of the frequency in the corpus of the corresponding pattern for the given word pair.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"For example, suppose the given pair is mason:stone and the pattern is ?* X cut * Y *?.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-We look at the normalized phrases that we collected for mason:stone and we count how many match this pattern.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"If f phrases match thepattern, then the value of this element in the fea ture vector is log(f +1) (we add 1 because log(0)is undefined).","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-Each feature vector is then normal ized to unit length.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"The normalization ensures that features in vectors for high-frequency word pairs (traffic:street) are comparable to features in vectors for low-frequency word pairs (water:riverbed).Now that we have a feature vector for each in put word pair, we can apply a standard supervised learning algorithm.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"In the following experiments, we use a sequential minimal optimization (SMO)support vector machine (SVM) with a radial basis function (RBF) kernel (Platt, 1998), as implemented in Weka (Waikato Environment for Knowl edge Analysis) (Witten and Frank, 1999).4 The algorithm generates probability estimates for each class by fitting logistic regression models to the outputs of the SVM.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"We disable the normalizationoption in Weka, since the vectors are already nor malized to unit length.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"We chose the SMO RBF algorithm because it is fast, robust, and it easily handles large numbers of features.For convenience, we will refer to the above algo rithm as PairClass.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"In the following experiments, PairClass is applied to each of the four problemswith no adjustments or tuning to the specific prob lems.","{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-Some work is required to fit each probleminto the general framework of PairClass (supervised classification of word pairs) but the core al gorithm is the same in each case.,"{'title': 'Classifying Analogous Word Pairs. ', 'number': '2'}"
-"This section presents four sets of experiments, with analogies, synonyms, antonyms, and associations.","{'title': 'Experiments. ', 'number': '3'}"
-"We explain how each task is treated as a problem of classifying analogous word pairs, we give the experimental results, and we discuss past work on each of the four tasks.","{'title': 'Experiments. ', 'number': '3'}"
-3.1 SAT Analogies.,"{'title': 'Experiments. ', 'number': '3'}"
-"In this section, we apply PairClass to the taskof recognizing analogies.","{'title': 'Experiments. ', 'number': '3'}"
-"To evaluate the performance, we use a set of 374 multiple-choice ques tions from the SAT college entrance exam.","{'title': 'Experiments. ', 'number': '3'}"
-Table 2 shows a typical question.,"{'title': 'Experiments. ', 'number': '3'}"
-The target pair is called the stem.,"{'title': 'Experiments. ', 'number': '3'}"
-The task is to select the choice pair that is most analogous to the stem pair.,"{'title': 'Experiments. ', 'number': '3'}"
-Stem: mason:stone Choices: (a) teacher:chalk (b) carpenter:wood (c) soldier:gun (d) photograph:camera (e) book:word Solution: (b) carpenter:wood Table 2: An example of a question from the 374 SAT analogy questions.,"{'title': 'Experiments. ', 'number': '3'}"
-The problem of recognizing word analogies wasfirst attempted with a system called Argus (Reit 4http://www.cs.waikato.ac.nz/ml/weka/.,"{'title': 'Experiments. ', 'number': '3'}"
-"907man, 1965), using a small hand-built semantic network with a spreading activation algorithm.","{'title': 'Experiments. ', 'number': '3'}"
-Turney et al (2003) used a combination of 13 independent modules.,"{'title': 'Experiments. ', 'number': '3'}"
-"Veale (2004) used a spread ing activation algorithm with WordNet (in effect, treating WordNet as a semantic network).","{'title': 'Experiments. ', 'number': '3'}"
-"Turney (2006) used a corpus-based algorithm.We may view Table 2 as a binary classification problem, in which mason:stone and carpen ter:wood are positive examples and the remaining word pairs are negative examples.","{'title': 'Experiments. ', 'number': '3'}"
-The difficulty is that the labels of the choice pairs must be hidden from the learning algorithm.,"{'title': 'Experiments. ', 'number': '3'}"
-"That is, the training set consists of one positive example (the stem pair)and the testing set consists of five unlabeled exam ples (the five choice pairs).","{'title': 'Experiments. ', 'number': '3'}"
-"To make this task more tractable, we randomly choose a stem pair from one of the 373 other SAT analogy questions, andwe assume that this new stem pair is a negative ex ample, as shown in Table 3.","{'title': 'Experiments. ', 'number': '3'}"
-Word pair Train or test Class label mason:stone train positive tutor:pupil train negative teacher:chalk test hidden carpenter:wood test hidden soldier:gun test hidden photograph:camera test hidden book:word test hidden Table 3: How to fit a SAT analogy question into the framework of supervised pair classification.,"{'title': 'Experiments. ', 'number': '3'}"
-"To answer the SAT question, we use PairClass to estimate the probability that each testing example is positive, and we guess the testing example with the highest probability.","{'title': 'Experiments. ', 'number': '3'}"
-"Learning from a trainingset with only one positive example and one nega tive example is difficult, since the learned model can be highly unstable.","{'title': 'Experiments. ', 'number': '3'}"
-"To increase the stability, we repeat the learning process 10 times, using adifferent randomly chosen negative training exam ple each time.","{'title': 'Experiments. ', 'number': '3'}"
-"For each testing word pair, the 10 probability estimates are averaged together.","{'title': 'Experiments. ', 'number': '3'}"
-"This is a form of bagging (Breiman, 1996).","{'title': 'Experiments. ', 'number': '3'}"
-PairClass attains an accuracy of 52.1%.,"{'title': 'Experiments. ', 'number': '3'}"
-"Forcomparison, the ACL Wiki lists 12 previously published results with the 374 SAT analogy ques tions.5 Only 2 of the 12 algorithms have higher accuracy.","{'title': 'Experiments. ', 'number': '3'}"
-"The best previous result is an accuracy of 56.1% (Turney, 2006).","{'title': 'Experiments. ', 'number': '3'}"
-"Random guessing would 5For more information, see SAT Analogy Questions (State of the art) at http://aclweb.org/aclwiki/.","{'title': 'Experiments. ', 'number': '3'}"
-yield an accuracy of 20%.,"{'title': 'Experiments. ', 'number': '3'}"
-"The average senior high school student achieves 57% correct (Turney, 2006).","{'title': 'Experiments. ', 'number': '3'}"
-3.2 TOEFL Synonyms.,"{'title': 'Experiments. ', 'number': '3'}"
-"Now we apply PairClass to the task of recogniz ing synonyms, using a set of 80 multiple-choicesynonym questions from the TOEFL (test of En glish as a foreign language).","{'title': 'Experiments. ', 'number': '3'}"
-A sample question is shown in Table 4.,"{'title': 'Experiments. ', 'number': '3'}"
-The task is to select the choice word that is most similar in meaning to the stem word.,"{'title': 'Experiments. ', 'number': '3'}"
-Stem: levied Choices: (a) imposed (b) believed (c) requested (d) correlated Solution: (a) imposed Table 4: An example of a question from the 80 TOEFL questions.,"{'title': 'Experiments. ', 'number': '3'}"
-Synonymy can be viewed as a high degree of semantic similarity.,"{'title': 'Experiments. ', 'number': '3'}"
-"The most common way tomeasure semantic similarity is to measure the dis tance between words in WordNet (Resnik, 1995; Jiang and Conrath, 1997; Hirst and St-Onge, 1998).","{'title': 'Experiments. ', 'number': '3'}"
-"Corpus-based measures of word similarityare also common (Lesk, 1969; Landauer and Du mais, 1997; Turney, 2001).We may view Table 4 as a binary classifica tion problem, in which the pair levied:imposed is a positive example of the class synonymous and the other possible pairings are negative examples, as shown in Table 5.","{'title': 'Experiments. ', 'number': '3'}"
-Word pair Class label levied:imposed positive levied:believed negative levied:requested negative levied:correlated negative Table 5: How to fit a TOEFL question into the framework of supervised pair classification.,"{'title': 'Experiments. ', 'number': '3'}"
-"The 80 TOEFL questions yield 320 (80 ? 4) word pairs, 80 labeled positive and 240 labelednegative.","{'title': 'Experiments. ', 'number': '3'}"
-We apply PairClass to the word pairs us ing ten-fold cross-validation.,"{'title': 'Experiments. ', 'number': '3'}"
-"In each random fold, 90% of the pairs are used for training and 10% are used for testing.","{'title': 'Experiments. ', 'number': '3'}"
-"For each fold, the model that is learned from the training set is used to assign probabilities to the pairs in the testing set.","{'title': 'Experiments. ', 'number': '3'}"
-"With 908ten separate folds, the ten non-overlapping test ing sets cover the whole dataset.","{'title': 'Experiments. ', 'number': '3'}"
-"Our guess foreach TOEFL question is the choice with the high est probability of being positive, when paired with the corresponding stem.","{'title': 'Experiments. ', 'number': '3'}"
-PairClass attains an accuracy of 76.2%.,"{'title': 'Experiments. ', 'number': '3'}"
-"Forcomparison, the ACL Wiki lists 15 previously published results with the 80 TOEFL synonym questions.6 Of the 15 algorithms, 8 have higher accu racy and 7 have lower.","{'title': 'Experiments. ', 'number': '3'}"
-"The best previous resultis an accuracy of 97.5% (Turney et al, 2003), ob tained using a hybrid of four different algorithms.","{'title': 'Experiments. ', 'number': '3'}"
-Random guessing would yield an accuracy of 25%.,"{'title': 'Experiments. ', 'number': '3'}"
-"The average foreign applicant to a US university achieves 64.5% correct (Landauer and Dumais, 1997).","{'title': 'Experiments. ', 'number': '3'}"
-3.3 Synonyms and Antonyms.,"{'title': 'Experiments. ', 'number': '3'}"
-The task of classifying word pairs as either syn onyms or antonyms readily fits into the framework of supervised classification of word pairs.,"{'title': 'Experiments. ', 'number': '3'}"
-Table 6shows some examples from a set of 136 ESL (En glish as a second language) practice questions that we collected from various ESL websites.,"{'title': 'Experiments. ', 'number': '3'}"
-Word pair Class label galling:irksome synonyms yield:bend synonyms naive:callow synonyms advise:suggest synonyms dissimilarity:resemblance antonyms commend:denounce antonyms expose:camouflage antonyms unveil:veil antonyms Table 6: Examples of synonyms and antonyms from 136 ESL practice questions.,"{'title': 'Experiments. ', 'number': '3'}"
-"Lin et al (2003) distinguish synonyms from antonyms using two patterns, ?from X to Y ? and ?either X or Y ?.","{'title': 'Experiments. ', 'number': '3'}"
-"When X and Y are antonyms, they occasionally appear in a large corpus in oneof these two patterns, but it is very rare for syn onyms to appear in these patterns.","{'title': 'Experiments. ', 'number': '3'}"
-"Our approach is similar to Lin et al (2003), but we do not rely on hand-coded patterns; instead, PairClass patterns are generated automatically.Using ten-fold cross-validation, PairClass at tains an accuracy of 75.0%.","{'title': 'Experiments. ', 'number': '3'}"
-Always guessing the majority class would result in an accuracy of 65.4%.,"{'title': 'Experiments. ', 'number': '3'}"
-"The average human score is unknown and 6For more information, see TOEFL Synonym Questions (State of the art) at http://aclweb.org/aclwiki/.","{'title': 'Experiments. ', 'number': '3'}"
-there are no previous results for comparison.,"{'title': 'Experiments. ', 'number': '3'}"
-"3.4 Similar, Associated, and Both.","{'title': 'Experiments. ', 'number': '3'}"
-"A common criticism of corpus-based measures ofword similarity (as opposed to lexicon-based mea sures) is that they are merely detecting associations(co-occurrences), rather than actual semantic similarity (Lund et al, 1995).","{'title': 'Experiments. ', 'number': '3'}"
-"To address this criti cism, Lund et al (1995) evaluated their algorithm for measuring word similarity with word pairs that were labeled similar, associated, or both.","{'title': 'Experiments. ', 'number': '3'}"
-"Theselabeled pairs were originally created for cogni tive psychology experiments with human subjects(Chiarello et al, 1990).","{'title': 'Experiments. ', 'number': '3'}"
-Table 7 shows some ex amples from this collection of 144 word pairs (48 pairs in each of the three classes).,"{'title': 'Experiments. ', 'number': '3'}"
-"Word pair Class label table:bed similar music:art similar hair:fur similar house:cabin similar cradle:baby associated mug:beer associated camel:hump associated cheese:mouse associated ale:beer both uncle:aunt both pepper:salt both frown:smile both Table 7: Examples of word pairs labeled similar, associated, or both.","{'title': 'Experiments. ', 'number': '3'}"
-Lund et al (1995) did not measure the accuracy of their algorithm on this three-class classification problem.,"{'title': 'Experiments. ', 'number': '3'}"
-"Instead, following standard practice incognitive psychology, they showed that their al gorithm?s similarity scores for the 144 word pairs were correlated with the response times of human subjects in priming tests.","{'title': 'Experiments. ', 'number': '3'}"
-"In a typical priming test, a human subject reads a priming word (cradle) and is then asked to complete a partial word (complete bab as baby).","{'title': 'Experiments. ', 'number': '3'}"
-"The time required to perform thetask is taken to indicate the strength of the cogni tive link between the two words (cradle and baby).Using ten-fold cross-validation, PairClass at tains an accuracy of 77.1% on the 144 word pairs.","{'title': 'Experiments. ', 'number': '3'}"
-"Since the three classes are of equal size, guessing the majority class and random guessing both yield an accuracy of 33.3%.","{'title': 'Experiments. ', 'number': '3'}"
-The average human score is unknown and there are no previous results for comparison.,"{'title': 'Experiments. ', 'number': '3'}"
-909,"{'title': 'Experiments. ', 'number': '3'}"
-The four experiments are summarized in Tables 8 and 9.,"{'title': 'Discussion. ', 'number': '4'}"
-"For the first two experiments, where there are previous results, PairClass is not the best, butit performs competitively.","{'title': 'Discussion. ', 'number': '4'}"
-"For the second two ex periments, PairClass performs significantly abovethe baselines.","{'title': 'Discussion. ', 'number': '4'}"
-"However, the strength of this ap proach is not its performance on any one task, but the range of tasks it can handle.As far as we know, this is the first time a standard supervised learning algorithm has been ap plied to any of these four problems.","{'title': 'Discussion. ', 'number': '4'}"
-The advantageof being able to cast these problems in the frame work of standard supervised learning problems isthat we can now exploit the huge literature on su pervised learning.,"{'title': 'Discussion. ', 'number': '4'}"
-Past work on these problems has required implicitly coding our knowledge ofthe nature of the task into the structure of the algo rithm.,"{'title': 'Discussion. ', 'number': '4'}"
-"For example, the structure of the algorithmfor latent semantic analysis (LSA) implicitly con tains a theory of synonymy (Landauer and Dumais, 1997).","{'title': 'Discussion. ', 'number': '4'}"
-"The problem with this approach is that it can be very difficult to work out how to modify the algorithm if it does not behave the way we want.On the other hand, with a supervised learning algo rithm, we can put our knowledge into the labeling of the feature vectors, instead of putting it directly into the algorithm.","{'title': 'Discussion. ', 'number': '4'}"
-"This makes it easier to guide the system to the desired behaviour.With our approach to the SAT analogy ques tions, we are blurring the line between supervised and unsupervised learning, since the training set for a given SAT question consists of a single realpositive example (and a single ?virtual?","{'title': 'Discussion. ', 'number': '4'}"
-or ?simulated?,"{'title': 'Discussion. ', 'number': '4'}"
-negative example).,"{'title': 'Discussion. ', 'number': '4'}"
-"In effect, a single example (mason:stone) becomes a sui generis; it con stitutes a class of its own.","{'title': 'Discussion. ', 'number': '4'}"
-"It may be possible to apply the machinery of supervised learning toother problems that apparently call for unsupervised learning (for example, clustering or measur ing similarity), by using this sui generis device.","{'title': 'Discussion. ', 'number': '4'}"
-One of the first papers using supervised ma chine learning to classify word pairs was Rosarioand Hearst?s (2001) paper on classifying nounmodifier pairs in the medical domain.,"{'title': 'Related Work. ', 'number': '5'}"
-"For ex ample, the noun-modifier expression brain biopsy was classified as Procedure.","{'title': 'Related Work. ', 'number': '5'}"
-Rosario and Hearst(2001) constructed feature vectors for each nounmodifier pair using MeSH (Medical Subject Headings) and UMLS (Unified Medical Language System) as lexical resources.,"{'title': 'Related Work. ', 'number': '5'}"
-"They then trained a neu ral network to distinguish 13 classes of semantic relations, such as Cause, Location, Measure, andInstrument.","{'title': 'Related Work. ', 'number': '5'}"
-"Nastase and Szpakowicz (2003) explored a similar approach to classifying general domain noun-modifier pairs, using WordNet and Roget?s Thesaurus as lexical resources.","{'title': 'Related Work. ', 'number': '5'}"
-Turney and Littman (2005) used corpus-based features for classifying noun-modifier pairs.,"{'title': 'Related Work. ', 'number': '5'}"
-Their features were based on 128 hand-coded patterns.,"{'title': 'Related Work. ', 'number': '5'}"
-They used a nearest-neighbour learning algorithm to classify general-domain noun-modifier pairsinto 30 different classes of semantic relations.,"{'title': 'Related Work. ', 'number': '5'}"
-"Tur ney (2006) later addressed the same problem using 8000 automatically generated patterns.One of the tasks in SemEval 2007 was the clas sification of semantic relations between nominals (Girju et al, 2007).","{'title': 'Related Work. ', 'number': '5'}"
-The problem is to classifysemantic relations between nouns and noun com pounds in the context of a sentence.,"{'title': 'Related Work. ', 'number': '5'}"
-"The task attracted 14 teams who created 15 systems, all of which used supervised machine learning with features that were lexicon-based, corpus-based, or both.PairClass is most similar to the algorithm of Tur ney (2006), but it differs in the following ways:?","{'title': 'Related Work. ', 'number': '5'}"
-PairClass does not use a lexicon to find syn onyms for the input word pairs.,"{'title': 'Related Work. ', 'number': '5'}"
-One of our goals in this paper is to show that a pure corpus-based algorithm can handle synonymswithout a lexicon.,"{'title': 'Related Work. ', 'number': '5'}"
-This considerably simpli fies the algorithm.,"{'title': 'Related Work. ', 'number': '5'}"
-PairClass uses a support vector machine (SVM) instead of a nearest neighbour (NN) learning algorithm.,"{'title': 'Related Work. ', 'number': '5'}"
-PairClass does not use the singular value decomposition (SVD) to smooth the feature vectors.,"{'title': 'Related Work. ', 'number': '5'}"
-It has been our experience that SVD is not necessary with SVMs.,"{'title': 'Related Work. ', 'number': '5'}"
-"PairClass generates probability estimates,whereas Turney (2006) uses a cosine mea sure of similarity.","{'title': 'Related Work. ', 'number': '5'}"
-"Probability estimates canbe readily used in further downstream pro cessing, but cosines are less useful.?","{'title': 'Related Work. ', 'number': '5'}"
-The automatically generated patterns in PairClass are slightly more general than the pat terns of Turney (2006).,"{'title': 'Related Work. ', 'number': '5'}"
-"The morphological processing in PairClass (Minnen et al, 2001) is more sophisticated than in Turney (2006).","{'title': 'Related Work. ', 'number': '5'}"
-"910 Experiment Number of vectors Number of features Number of classes SAT Analogies 2,244 (374 ? 6) 44,880 (2, 244 ? 20) 374 TOEFL Synonyms 320 (80 ? 4) 6,400 (320 ? 20) 2 Synonyms and Antonyms 136 2,720 (136 ? 20) 2 Similar, Associated, and Both 144 2,880 (144 ? 20) 3 Table 8: Summary of the four tasks.","{'title': 'Related Work. ', 'number': '5'}"
-See Section 3 for explanations.,"{'title': 'Related Work. ', 'number': '5'}"
-"Experiment Accuracy Best previous Human Baseline Rank SAT Analogies 52.1% 56.1% 57.0% 20.0% 2 higher out of 12 TOEFL Synonyms 76.2% 97.5% 64.5% 25.0% 8 higher out of 15 Synonyms and Antonyms 75.0% none unknown 65.4% none Similar, Associated, and Both 77.1% none unknown 33.3% none Table 9: Summary of experimental results.","{'title': 'Related Work. ', 'number': '5'}"
-See Section 3 for explanations.,"{'title': 'Related Work. ', 'number': '5'}"
-"However, we believe that the main contribution of this paper is not PairClass itself, but the extension of supervised word pair classification beyond theclassification of noun-modifier pairs and semantic relations between nominals, to analogies, syn onyms, antonyms, and associations.","{'title': 'Related Work. ', 'number': '5'}"
-"As far as we know, this has not been done before.","{'title': 'Related Work. ', 'number': '5'}"
-The main limitation of PairClass is the need for a large corpus.,"{'title': 'Limitations and Future Work. ', 'number': '6'}"
-"Phrases that contain a pair of wordstend to be more rare than phrases that contain either of the members of the pair, thus a large cor pus is needed to ensure that sufficient numbers of phrases are found for each input word pair.","{'title': 'Limitations and Future Work. ', 'number': '6'}"
-The size of the corpus has a cost in terms of disk spaceand processing time.,"{'title': 'Limitations and Future Work. ', 'number': '6'}"
-"In the future, as hardware im proves, this will become less of an issue, but there may be ways to improve the algorithm, so that a smaller corpus is sufficient.Another area for future work is to apply Pair Class to more tasks.","{'title': 'Limitations and Future Work. ', 'number': '6'}"
-"WordNet includes more thana dozen semantic relations (e.g., synonyms, hy ponyms, hypernyms, meronyms, holonyms, and antonyms).","{'title': 'Limitations and Future Work. ', 'number': '6'}"
-PairClass should be applicable to allof these relations.,"{'title': 'Limitations and Future Work. ', 'number': '6'}"
-"Other potential applications in clude any task that involves semantic relations, such as word sense disambiguation, informationretrieval, information extraction, and metaphor in terpretation.","{'title': 'Limitations and Future Work. ', 'number': '6'}"
-"In this paper, we have described a uniform approach to analogies, synonyms, antonyms, and as sociations, in which all of these phenomena are subsumed by analogies.","{'title': 'Conclusion. ', 'number': '7'}"
-We view the problem ofrecognizing analogies as the classification of se mantic relations between words.,"{'title': 'Conclusion. ', 'number': '7'}"
-"We believe that most of our lexical knowledge is relational, not attributional.","{'title': 'Conclusion. ', 'number': '7'}"
-"That is, meaning is largely about relations among words, rather thanproperties of individual words, considered in isolation.","{'title': 'Conclusion. ', 'number': '7'}"
-"For example, consider the knowledge en coded in WordNet: much of the knowledge in WordNet is embedded in the graph structure that connects words.","{'title': 'Conclusion. ', 'number': '7'}"
-Analogies of the form A:B::C:D are calledproportional analogies.,"{'title': 'Conclusion. ', 'number': '7'}"
-"These types of lowerlevel analogies may be contrasted with higher level analogies, such as the analogy between the solar system and Rutherford?s model of the atom (Falkenhainer et al, 1989), which are sometimes called conceptual analogies.","{'title': 'Conclusion. ', 'number': '7'}"
-We believe that the difference between these two types is largely a matter of complexity.,"{'title': 'Conclusion. ', 'number': '7'}"
-A higher-level analogy is composed of many lower-level analogies.,"{'title': 'Conclusion. ', 'number': '7'}"
-Progresswith algorithms for processing lower-level analo gies will eventually contribute to algorithms for higher-level analogies.The idea of subsuming a broad range of semantic phenomena under analogies has been sug gested by many researchers.,"{'title': 'Conclusion. ', 'number': '7'}"
-"Minsky (1986) wrote, ?How do we ever understand anything?","{'title': 'Conclusion. ', 'number': '7'}"
-"Almost always, I think, by using one or another kind of analogy.?","{'title': 'Conclusion. ', 'number': '7'}"
-"Hofstadter (2007) claimed, ?all meaningcomes from analogies.?","{'title': 'Conclusion. ', 'number': '7'}"
-"In NLP, analogical algo rithms have been applied to machine translation(Lepage and Denoual, 2005), morphology (Lep age, 1998), and semantic relations (Turney and Littman, 2005).","{'title': 'Conclusion. ', 'number': '7'}"
-Analogy provides a frameworkthat has the potential to unify the field of seman tics.,"{'title': 'Conclusion. ', 'number': '7'}"
-This paper is a small step towards that goal.,"{'title': 'Conclusion. ', 'number': '7'}"
-AcknowledgementsThanks to Joel Martin and the anonymous review ers of Coling 2008 for their helpful comments.,"{'title': 'Conclusion. ', 'number': '7'}"
-911,"{'title': 'Conclusion. ', 'number': '7'}"
+"Recognizing analogies, synonyms, anto nyms, and associations appear to be fourdistinct tasks, requiring distinct NLP al gorithms.",Introduction
+"In the past, the four tasks have been treated independently, using a widevariety of algorithms.",Introduction
+"These four seman tic classes, however, are a tiny sample of the full range of semantic phenomena, andwe cannot afford to create ad hoc algo rithms for each semantic phenomenon; weneed to seek a unified approach.",Introduction
+We propose to subsume a broad range of phenom ena under analogies.,Introduction
+"To limit the scope of this paper, we restrict our attention to the subsumption of synonyms, antonyms, and associations.",Introduction
+"We introduce a supervised corpus-based machine learning algorithm for classifying analogous word pairs, and we show that it can solve multiple-choice SAT analogy questions, TOEFL synonymquestions, ESL synonym-antonym questions, and similar-associated-both ques tions from cognitive psychology.",Introduction
+A pair of words (petrify:stone) is analogous to another pair (vaporize:gas) when the semantic re lations between the words in the first pair are highly similar to the relations in the second pair.,Experiment/Discussion
+"Two words (levied and imposed) are synonymousin a context (levied a tax) when they can be interchanged (imposed a tax), they are are antony mous when they have opposite meanings (black c ? 2008, National Research Council of Canada (NRC).Licensed to the Coling 2008 Organizing Committee for pub lication in Coling 2008 and for re-publishing in any form or medium.",Experiment/Discussion
+"and white), and they are associated when they tend to co-occur (doctor and hospital).On the surface, it appears that these are four distinct semantic classes, requiring distinct NLP al gorithms, but we propose a uniform approach to all four.",Experiment/Discussion
+"We subsume synonyms, antonyms, and associations under analogies.",Experiment/Discussion
+"In essence, we say that X and Y are antonyms when the pair X:Y is analogous to the pair black:white, X and Y are synonyms when they are analogous to the pair levied:imposed, and X and Y are associated when they are analogous to the pair doctor:hospital.",Experiment/Discussion
+"There is past work on recognizing analogies(Reitman, 1965), synonyms (Landauer and Dumais, 1997), antonyms (Lin et al, 2003), and asso ciations (Lesk, 1969), but each of these four tasks has been examined separately, in isolation from the others.",Experiment/Discussion
+"As far as we know, the algorithm proposed here is the first attempt to deal with all four tasks using a uniform approach.",Experiment/Discussion
+"We believe that it isimportant to seek NLP algorithms that can han dle a broad range of semantic phenomena, becausedeveloping a specialized algorithm for each phe nomenon is a very inefficient research strategy.It might seem that a lexicon, such as Word Net (Fellbaum, 1998), contains all the information we need to handle these four tasks.",Experiment/Discussion
+"However, weprefer to take a corpus-based approach to seman tics.",Experiment/Discussion
+"Veale (2004) used WordNet to answer 374 multiple-choice SAT analogy questions, achievingan accuracy of 43%, but the best corpus-based ap proach attains an accuracy of 56% (Turney, 2006).",Experiment/Discussion
+"Another reason to prefer a corpus-based approachto a lexicon-based approach is that the former re quires less human labour, and thus it is easier to extend to other languages.In Section 2, we describe our algorithm for rec ognizing analogies.",Experiment/Discussion
+"We use a standard supervised 905 machine learning approach, with feature vectorsbased on the frequencies of patterns in a large cor pus.",Experiment/Discussion
+"We use a support vector machine (SVM) to learn how to classify the feature vectors (Platt, 1998; Witten and Frank, 1999).",Experiment/Discussion
+Section 3 presents four sets of experiments.,Experiment/Discussion
+"We apply our algorithm for recognizing analogies to multiple-choice analogy questions from the SAT college entrance test, multiple-choice synonym questions from the TOEFL (test of English as aforeign language), ESL (English as a second language) practice questions for distinguishing syn onyms and antonyms, and a set of word pairs thatare labeled similar, associated, and both, devel oped for experiments in cognitive psychology.We discuss the results of the experiments in Section 4.",Experiment/Discussion
+"The accuracy of the algorithm is competitive with other systems, but the strength of the al gorithm is that it is able to handle all four tasks, with no tuning of the learning parameters to the particular task.",Experiment/Discussion
+"It performs well, although it iscompeting against specialized algorithms, devel oped for single tasks.Related work is examined in Section 5 and limitations and future work are considered in Sec tion 6.",Experiment/Discussion
+We conclude in Section 7.,Experiment/Discussion
+"An analogy, A:B::C:D, asserts that A is to B as C is to D; for example, traffic:street::water:riverbed asserts that traffic is to street as water is to riverbed; that is, the semantic relations between traffic and street are highly similar to the semantic relations between water and riverbed.",Experiment/Discussion
+We may view the task of recognizing word analogies as a problem of classifying word pairs (see Table 1).,Experiment/Discussion
+Word pair Class label carpenter:wood artisan:material mason:stone artisan:material potter:clay artisan:material glassblower:glass artisan:material traffic:street entity:carrier water:riverbed entity:carrier packets:network entity:carrier gossip:grapevine entity:carrierTable 1: Examples of how the task of recogniz ing word analogies may be viewed as a problem of classifying word pairs.,Experiment/Discussion
+We approach this as a standard classificationproblem for supervised machine learning.,Experiment/Discussion
+The al gorithm takes as input a training set of word pairs with class labels and a testing set of word pairs without labels.,Experiment/Discussion
+Each word pair is represented as a vector in a feature space and a supervised learning algorithm is used to classify the feature vectors.,Experiment/Discussion
+The elements in the feature vectors are based on the frequencies of automatically defined patterns in a large corpus.,Experiment/Discussion
+The output of the algorithm is anassignment of labels to the word pairs in the test ing set.,Experiment/Discussion
+"For some of the experiments, we selecta unique label for each word pair; for other ex periments, we assign probabilities to each possible label for each word pair.",Experiment/Discussion
+"For a given word pair, such as mason:stone, the first step is to generate morphological variations,such as masons:stones.",Experiment/Discussion
+"In the following experi ments, we use morpha (morphological analyzer)and morphg (morphological generator) for mor phological processing (Minnen et al, 2001).1 The second step is to search in a large corpus for all phrases of the following form: ?[0 to 1 words] X [0 to 3 words] Y [0 to 1 words]?",Experiment/Discussion
+"In this template, X:Y consists of morphologicalvariations of the given word pair, in either order; for example, mason:stone, stone:mason, masons:stones, and so on.",Experiment/Discussion
+A typical phrase for ma son:stone would be ?the mason cut the stone with?.,Experiment/Discussion
+"We then normalize all of the phrases that are found, by using morpha to remove suffixes.",Experiment/Discussion
+"The template we use here is similar to Turney (2006), but we have added extra context wordsbefore the X and after the Y . Our morpholog ical processing also differs from Turney (2006).In the following experiments, we search in a cor pus of 5 ? 1010 words (about 280 GB of plain text), consisting of web pages gathered by a web crawler.2 To retrieve phrases from the corpus, weuse Wumpus (Bu?ttcher and Clarke, 2005), an effi cient search engine for passage retrieval from large corpora.3 The next step is to generate patterns from allof the phrases that were found for all of the in put word pairs (from both the training and testingsets).",Experiment/Discussion
+"To generate patterns from a phrase, we re place the given word pairs with variables, X and Y , and we replace the remaining words with a wild card symbol (an asterisk) or leave them as they are.",Experiment/Discussion
+1http://www.informatics.susx.ac.uk/research/groups/nlp/ carroll/morph.html.,Experiment/Discussion
+"2The corpus was collected by Charles Clarke, University of Waterloo.",Experiment/Discussion
+We can provide copies on request.,Experiment/Discussion
+3http://www.wumpus-search.org/.,Experiment/Discussion
+"906 For example, the phrase ?the mason cut the stone with?",Experiment/Discussion
+"yields the patterns ?the X cut * Y with?, ?* X * the Y *?, and so on.",Experiment/Discussion
+"If a phrase contains n words, then it yields 2(n?2) patterns.Each pattern corresponds to a feature in the feature vectors that we will generate.",Experiment/Discussion
+"Since a typical input set of word pairs yields millions of pat terns, we need to use feature selection, to reduce the number of patterns to a manageable quantity.",Experiment/Discussion
+"For each pattern, we count the number of input word pairs that generated the pattern.",Experiment/Discussion
+"For example, ?* X cut * Y *?",Experiment/Discussion
+is generated by both mason:stone and carpenter:wood.,Experiment/Discussion
+We then sort the patterns in descending order of the number of word pairs that generated them.,Experiment/Discussion
+"If there are N input word pairs (and thus N feature vectors, including both the training and testing sets), then we select the topkN patterns and drop the remainder.",Experiment/Discussion
+"In the fol lowing experiments, k is set to 20.",Experiment/Discussion
+The algorithm is not sensitive to the precise value of k.The reasoning behind the feature selection al gorithm is that shared patterns make more useful features than rare patterns.,Experiment/Discussion
+"The number of features (kN ) depends on the number of word pairs (N ), because, if we have more feature vectors, then we need more features to distinguish them.",Experiment/Discussion
+"Turney (2006) also selects patterns based on the numberof pairs that generate them, but the number of se lected patterns is a constant (8000), independent of the number of input word pairs.",Experiment/Discussion
+"The next step is to generate feature vectors, one vector for each input word pair.",Experiment/Discussion
+"Each of the N feature vectors has kN elements, one element for each selected pattern.",Experiment/Discussion
+The value of an element in a vector is given by the logarithm of the frequency in the corpus of the corresponding pattern for the given word pair.,Experiment/Discussion
+"For example, suppose the given pair is mason:stone and the pattern is ?* X cut * Y *?.",Experiment/Discussion
+We look at the normalized phrases that we collected for mason:stone and we count how many match this pattern.,Experiment/Discussion
+"If f phrases match thepattern, then the value of this element in the fea ture vector is log(f +1) (we add 1 because log(0)is undefined).",Experiment/Discussion
+Each feature vector is then normal ized to unit length.,Experiment/Discussion
+"The normalization ensures that features in vectors for high-frequency word pairs (traffic:street) are comparable to features in vectors for low-frequency word pairs (water:riverbed).Now that we have a feature vector for each in put word pair, we can apply a standard supervised learning algorithm.",Experiment/Discussion
+"In the following experiments, we use a sequential minimal optimization (SMO)support vector machine (SVM) with a radial basis function (RBF) kernel (Platt, 1998), as implemented in Weka (Waikato Environment for Knowl edge Analysis) (Witten and Frank, 1999).4 The algorithm generates probability estimates for each class by fitting logistic regression models to the outputs of the SVM.",Experiment/Discussion
+"We disable the normalizationoption in Weka, since the vectors are already nor malized to unit length.",Experiment/Discussion
+"We chose the SMO RBF algorithm because it is fast, robust, and it easily handles large numbers of features.For convenience, we will refer to the above algo rithm as PairClass.",Experiment/Discussion
+"In the following experiments, PairClass is applied to each of the four problemswith no adjustments or tuning to the specific prob lems.",Experiment/Discussion
+Some work is required to fit each probleminto the general framework of PairClass (supervised classification of word pairs) but the core al gorithm is the same in each case.,Experiment/Discussion
+"This section presents four sets of experiments, with analogies, synonyms, antonyms, and associations.",Experiment/Discussion
+"We explain how each task is treated as a problem of classifying analogous word pairs, we give the experimental results, and we discuss past work on each of the four tasks.",Experiment/Discussion
+3.1 SAT Analogies.,Experiment/Discussion
+"In this section, we apply PairClass to the taskof recognizing analogies.",Experiment/Discussion
+"To evaluate the performance, we use a set of 374 multiple-choice ques tions from the SAT college entrance exam.",Experiment/Discussion
+Table 2 shows a typical question.,Experiment/Discussion
+The target pair is called the stem.,Experiment/Discussion
+The task is to select the choice pair that is most analogous to the stem pair.,Experiment/Discussion
+Stem: mason:stone Choices: (a) teacher:chalk (b) carpenter:wood (c) soldier:gun (d) photograph:camera (e) book:word Solution: (b) carpenter:wood Table 2: An example of a question from the 374 SAT analogy questions.,Experiment/Discussion
+The problem of recognizing word analogies wasfirst attempted with a system called Argus (Reit 4http://www.cs.waikato.ac.nz/ml/weka/.,Experiment/Discussion
+"907man, 1965), using a small hand-built semantic network with a spreading activation algorithm.",Experiment/Discussion
+Turney et al (2003) used a combination of 13 independent modules.,Experiment/Discussion
+"Veale (2004) used a spread ing activation algorithm with WordNet (in effect, treating WordNet as a semantic network).",Experiment/Discussion
+"Turney (2006) used a corpus-based algorithm.We may view Table 2 as a binary classification problem, in which mason:stone and carpen ter:wood are positive examples and the remaining word pairs are negative examples.",Experiment/Discussion
+The difficulty is that the labels of the choice pairs must be hidden from the learning algorithm.,Experiment/Discussion
+"That is, the training set consists of one positive example (the stem pair)and the testing set consists of five unlabeled exam ples (the five choice pairs).",Experiment/Discussion
+"To make this task more tractable, we randomly choose a stem pair from one of the 373 other SAT analogy questions, andwe assume that this new stem pair is a negative ex ample, as shown in Table 3.",Experiment/Discussion
+Word pair Train or test Class label mason:stone train positive tutor:pupil train negative teacher:chalk test hidden carpenter:wood test hidden soldier:gun test hidden photograph:camera test hidden book:word test hidden Table 3: How to fit a SAT analogy question into the framework of supervised pair classification.,Experiment/Discussion
+"To answer the SAT question, we use PairClass to estimate the probability that each testing example is positive, and we guess the testing example with the highest probability.",Experiment/Discussion
+"Learning from a trainingset with only one positive example and one nega tive example is difficult, since the learned model can be highly unstable.",Experiment/Discussion
+"To increase the stability, we repeat the learning process 10 times, using adifferent randomly chosen negative training exam ple each time.",Experiment/Discussion
+"For each testing word pair, the 10 probability estimates are averaged together.",Experiment/Discussion
+"This is a form of bagging (Breiman, 1996).",Experiment/Discussion
+PairClass attains an accuracy of 52.1%.,Experiment/Discussion
+"Forcomparison, the ACL Wiki lists 12 previously published results with the 374 SAT analogy ques tions.5 Only 2 of the 12 algorithms have higher accuracy.",Experiment/Discussion
+"The best previous result is an accuracy of 56.1% (Turney, 2006).",Experiment/Discussion
+"Random guessing would 5For more information, see SAT Analogy Questions (State of the art) at http://aclweb.org/aclwiki/.",Experiment/Discussion
+yield an accuracy of 20%.,Experiment/Discussion
+"The average senior high school student achieves 57% correct (Turney, 2006).",Experiment/Discussion
+3.2 TOEFL Synonyms.,Experiment/Discussion
+"Now we apply PairClass to the task of recogniz ing synonyms, using a set of 80 multiple-choicesynonym questions from the TOEFL (test of En glish as a foreign language).",Experiment/Discussion
+A sample question is shown in Table 4.,Experiment/Discussion
+The task is to select the choice word that is most similar in meaning to the stem word.,Experiment/Discussion
+Stem: levied Choices: (a) imposed (b) believed (c) requested (d) correlated Solution: (a) imposed Table 4: An example of a question from the 80 TOEFL questions.,Experiment/Discussion
+Synonymy can be viewed as a high degree of semantic similarity.,Experiment/Discussion
+"The most common way tomeasure semantic similarity is to measure the dis tance between words in WordNet (Resnik, 1995; Jiang and Conrath, 1997; Hirst and St-Onge, 1998).",Experiment/Discussion
+"Corpus-based measures of word similarityare also common (Lesk, 1969; Landauer and Du mais, 1997; Turney, 2001).We may view Table 4 as a binary classifica tion problem, in which the pair levied:imposed is a positive example of the class synonymous and the other possible pairings are negative examples, as shown in Table 5.",Experiment/Discussion
+Word pair Class label levied:imposed positive levied:believed negative levied:requested negative levied:correlated negative Table 5: How to fit a TOEFL question into the framework of supervised pair classification.,Experiment/Discussion
+"The 80 TOEFL questions yield 320 (80 ? 4) word pairs, 80 labeled positive and 240 labelednegative.",Experiment/Discussion
+We apply PairClass to the word pairs us ing ten-fold cross-validation.,Experiment/Discussion
+"In each random fold, 90% of the pairs are used for training and 10% are used for testing.",Experiment/Discussion
+"For each fold, the model that is learned from the training set is used to assign probabilities to the pairs in the testing set.",Experiment/Discussion
+"With 908ten separate folds, the ten non-overlapping test ing sets cover the whole dataset.",Experiment/Discussion
+"Our guess foreach TOEFL question is the choice with the high est probability of being positive, when paired with the corresponding stem.",Experiment/Discussion
+PairClass attains an accuracy of 76.2%.,Experiment/Discussion
+"Forcomparison, the ACL Wiki lists 15 previously published results with the 80 TOEFL synonym questions.6 Of the 15 algorithms, 8 have higher accu racy and 7 have lower.",Experiment/Discussion
+"The best previous resultis an accuracy of 97.5% (Turney et al, 2003), ob tained using a hybrid of four different algorithms.",Experiment/Discussion
+Random guessing would yield an accuracy of 25%.,Experiment/Discussion
+"The average foreign applicant to a US university achieves 64.5% correct (Landauer and Dumais, 1997).",Experiment/Discussion
+3.3 Synonyms and Antonyms.,Experiment/Discussion
+The task of classifying word pairs as either syn onyms or antonyms readily fits into the framework of supervised classification of word pairs.,Experiment/Discussion
+Table 6shows some examples from a set of 136 ESL (En glish as a second language) practice questions that we collected from various ESL websites.,Experiment/Discussion
+Word pair Class label galling:irksome synonyms yield:bend synonyms naive:callow synonyms advise:suggest synonyms dissimilarity:resemblance antonyms commend:denounce antonyms expose:camouflage antonyms unveil:veil antonyms Table 6: Examples of synonyms and antonyms from 136 ESL practice questions.,Experiment/Discussion
+"Lin et al (2003) distinguish synonyms from antonyms using two patterns, ?from X to Y ? and ?either X or Y ?.",Experiment/Discussion
+"When X and Y are antonyms, they occasionally appear in a large corpus in oneof these two patterns, but it is very rare for syn onyms to appear in these patterns.",Experiment/Discussion
+"Our approach is similar to Lin et al (2003), but we do not rely on hand-coded patterns; instead, PairClass patterns are generated automatically.Using ten-fold cross-validation, PairClass at tains an accuracy of 75.0%.",Experiment/Discussion
+Always guessing the majority class would result in an accuracy of 65.4%.,Experiment/Discussion
+"The average human score is unknown and 6For more information, see TOEFL Synonym Questions (State of the art) at http://aclweb.org/aclwiki/.",Experiment/Discussion
+there are no previous results for comparison.,Experiment/Discussion
+"3.4 Similar, Associated, and Both.",Experiment/Discussion
+"A common criticism of corpus-based measures ofword similarity (as opposed to lexicon-based mea sures) is that they are merely detecting associations(co-occurrences), rather than actual semantic similarity (Lund et al, 1995).",Experiment/Discussion
+"To address this criti cism, Lund et al (1995) evaluated their algorithm for measuring word similarity with word pairs that were labeled similar, associated, or both.",Experiment/Discussion
+"Theselabeled pairs were originally created for cogni tive psychology experiments with human subjects(Chiarello et al, 1990).",Experiment/Discussion
+Table 7 shows some ex amples from this collection of 144 word pairs (48 pairs in each of the three classes).,Experiment/Discussion
+"Word pair Class label table:bed similar music:art similar hair:fur similar house:cabin similar cradle:baby associated mug:beer associated camel:hump associated cheese:mouse associated ale:beer both uncle:aunt both pepper:salt both frown:smile both Table 7: Examples of word pairs labeled similar, associated, or both.",Experiment/Discussion
+Lund et al (1995) did not measure the accuracy of their algorithm on this three-class classification problem.,Experiment/Discussion
+"Instead, following standard practice incognitive psychology, they showed that their al gorithm?s similarity scores for the 144 word pairs were correlated with the response times of human subjects in priming tests.",Experiment/Discussion
+"In a typical priming test, a human subject reads a priming word (cradle) and is then asked to complete a partial word (complete bab as baby).",Experiment/Discussion
+"The time required to perform thetask is taken to indicate the strength of the cogni tive link between the two words (cradle and baby).Using ten-fold cross-validation, PairClass at tains an accuracy of 77.1% on the 144 word pairs.",Experiment/Discussion
+"Since the three classes are of equal size, guessing the majority class and random guessing both yield an accuracy of 33.3%.",Experiment/Discussion
+The average human score is unknown and there are no previous results for comparison.,Experiment/Discussion
+909,Experiment/Discussion
+The four experiments are summarized in Tables 8 and 9.,Experiment/Discussion
+"For the first two experiments, where there are previous results, PairClass is not the best, butit performs competitively.",Experiment/Discussion
+"For the second two ex periments, PairClass performs significantly abovethe baselines.",Experiment/Discussion
+"However, the strength of this ap proach is not its performance on any one task, but the range of tasks it can handle.As far as we know, this is the first time a standard supervised learning algorithm has been ap plied to any of these four problems.",Experiment/Discussion
+The advantageof being able to cast these problems in the frame work of standard supervised learning problems isthat we can now exploit the huge literature on su pervised learning.,Experiment/Discussion
+Past work on these problems has required implicitly coding our knowledge ofthe nature of the task into the structure of the algo rithm.,Experiment/Discussion
+"For example, the structure of the algorithmfor latent semantic analysis (LSA) implicitly con tains a theory of synonymy (Landauer and Dumais, 1997).",Experiment/Discussion
+"The problem with this approach is that it can be very difficult to work out how to modify the algorithm if it does not behave the way we want.On the other hand, with a supervised learning algo rithm, we can put our knowledge into the labeling of the feature vectors, instead of putting it directly into the algorithm.",Experiment/Discussion
+"This makes it easier to guide the system to the desired behaviour.With our approach to the SAT analogy ques tions, we are blurring the line between supervised and unsupervised learning, since the training set for a given SAT question consists of a single realpositive example (and a single ?virtual?",Experiment/Discussion
+or ?simulated?,Experiment/Discussion
+negative example).,Experiment/Discussion
+"In effect, a single example (mason:stone) becomes a sui generis; it con stitutes a class of its own.",Experiment/Discussion
+"It may be possible to apply the machinery of supervised learning toother problems that apparently call for unsupervised learning (for example, clustering or measur ing similarity), by using this sui generis device.",Experiment/Discussion
+One of the first papers using supervised ma chine learning to classify word pairs was Rosarioand Hearst?s (2001) paper on classifying nounmodifier pairs in the medical domain.,Experiment/Discussion
+"For ex ample, the noun-modifier expression brain biopsy was classified as Procedure.",Experiment/Discussion
+Rosario and Hearst(2001) constructed feature vectors for each nounmodifier pair using MeSH (Medical Subject Headings) and UMLS (Unified Medical Language System) as lexical resources.,Experiment/Discussion
+"They then trained a neu ral network to distinguish 13 classes of semantic relations, such as Cause, Location, Measure, andInstrument.",Experiment/Discussion
+"Nastase and Szpakowicz (2003) explored a similar approach to classifying general domain noun-modifier pairs, using WordNet and Roget?s Thesaurus as lexical resources.",Experiment/Discussion
+Turney and Littman (2005) used corpus-based features for classifying noun-modifier pairs.,Experiment/Discussion
+Their features were based on 128 hand-coded patterns.,Experiment/Discussion
+They used a nearest-neighbour learning algorithm to classify general-domain noun-modifier pairsinto 30 different classes of semantic relations.,Experiment/Discussion
+"Tur ney (2006) later addressed the same problem using 8000 automatically generated patterns.One of the tasks in SemEval 2007 was the clas sification of semantic relations between nominals (Girju et al, 2007).",Experiment/Discussion
+The problem is to classifysemantic relations between nouns and noun com pounds in the context of a sentence.,Experiment/Discussion
+"The task attracted 14 teams who created 15 systems, all of which used supervised machine learning with features that were lexicon-based, corpus-based, or both.PairClass is most similar to the algorithm of Tur ney (2006), but it differs in the following ways:?",Experiment/Discussion
+PairClass does not use a lexicon to find syn onyms for the input word pairs.,Experiment/Discussion
+One of our goals in this paper is to show that a pure corpus-based algorithm can handle synonymswithout a lexicon.,Experiment/Discussion
+This considerably simpli fies the algorithm.,Experiment/Discussion
+PairClass uses a support vector machine (SVM) instead of a nearest neighbour (NN) learning algorithm.,Experiment/Discussion
+PairClass does not use the singular value decomposition (SVD) to smooth the feature vectors.,Experiment/Discussion
+It has been our experience that SVD is not necessary with SVMs.,Experiment/Discussion
+"PairClass generates probability estimates,whereas Turney (2006) uses a cosine mea sure of similarity.",Experiment/Discussion
+"Probability estimates canbe readily used in further downstream pro cessing, but cosines are less useful.?",Experiment/Discussion
+The automatically generated patterns in PairClass are slightly more general than the pat terns of Turney (2006).,Experiment/Discussion
+"The morphological processing in PairClass (Minnen et al, 2001) is more sophisticated than in Turney (2006).",Experiment/Discussion
+"910 Experiment Number of vectors Number of features Number of classes SAT Analogies 2,244 (374 ? 6) 44,880 (2, 244 ? 20) 374 TOEFL Synonyms 320 (80 ? 4) 6,400 (320 ? 20) 2 Synonyms and Antonyms 136 2,720 (136 ? 20) 2 Similar, Associated, and Both 144 2,880 (144 ? 20) 3 Table 8: Summary of the four tasks.",Experiment/Discussion
+See Section 3 for explanations.,Experiment/Discussion
+"Experiment Accuracy Best previous Human Baseline Rank SAT Analogies 52.1% 56.1% 57.0% 20.0% 2 higher out of 12 TOEFL Synonyms 76.2% 97.5% 64.5% 25.0% 8 higher out of 15 Synonyms and Antonyms 75.0% none unknown 65.4% none Similar, Associated, and Both 77.1% none unknown 33.3% none Table 9: Summary of experimental results.",Experiment/Discussion
+See Section 3 for explanations.,Experiment/Discussion
+"However, we believe that the main contribution of this paper is not PairClass itself, but the extension of supervised word pair classification beyond theclassification of noun-modifier pairs and semantic relations between nominals, to analogies, syn onyms, antonyms, and associations.",Experiment/Discussion
+"As far as we know, this has not been done before.",Experiment/Discussion
+The main limitation of PairClass is the need for a large corpus.,Results/Conclusion
+"Phrases that contain a pair of wordstend to be more rare than phrases that contain either of the members of the pair, thus a large cor pus is needed to ensure that sufficient numbers of phrases are found for each input word pair.",Results/Conclusion
+The size of the corpus has a cost in terms of disk spaceand processing time.,Results/Conclusion
+"In the future, as hardware im proves, this will become less of an issue, but there may be ways to improve the algorithm, so that a smaller corpus is sufficient.Another area for future work is to apply Pair Class to more tasks.",Results/Conclusion
+"WordNet includes more thana dozen semantic relations (e.g., synonyms, hy ponyms, hypernyms, meronyms, holonyms, and antonyms).",Results/Conclusion
+PairClass should be applicable to allof these relations.,Results/Conclusion
+"Other potential applications in clude any task that involves semantic relations, such as word sense disambiguation, informationretrieval, information extraction, and metaphor in terpretation.",Results/Conclusion
+"In this paper, we have described a uniform approach to analogies, synonyms, antonyms, and as sociations, in which all of these phenomena are subsumed by analogies.",Results/Conclusion
+We view the problem ofrecognizing analogies as the classification of se mantic relations between words.,Results/Conclusion
+"We believe that most of our lexical knowledge is relational, not attributional.",Results/Conclusion
+"That is, meaning is largely about relations among words, rather thanproperties of individual words, considered in isolation.",Results/Conclusion
+"For example, consider the knowledge en coded in WordNet: much of the knowledge in WordNet is embedded in the graph structure that connects words.",Results/Conclusion
+Analogies of the form A:B::C:D are calledproportional analogies.,Results/Conclusion
+"These types of lowerlevel analogies may be contrasted with higher level analogies, such as the analogy between the solar system and Rutherford?s model of the atom (Falkenhainer et al, 1989), which are sometimes called conceptual analogies.",Results/Conclusion
+We believe that the difference between these two types is largely a matter of complexity.,Results/Conclusion
+A higher-level analogy is composed of many lower-level analogies.,Results/Conclusion
+Progresswith algorithms for processing lower-level analo gies will eventually contribute to algorithms for higher-level analogies.The idea of subsuming a broad range of semantic phenomena under analogies has been sug gested by many researchers.,Results/Conclusion
+"Minsky (1986) wrote, ?How do we ever understand anything?",Results/Conclusion
+"Almost always, I think, by using one or another kind of analogy.?",Results/Conclusion
+"Hofstadter (2007) claimed, ?all meaningcomes from analogies.?",Results/Conclusion
+"In NLP, analogical algo rithms have been applied to machine translation(Lepage and Denoual, 2005), morphology (Lep age, 1998), and semantic relations (Turney and Littman, 2005).",Results/Conclusion
+Analogy provides a frameworkthat has the potential to unify the field of seman tics.,Results/Conclusion
+This paper is a small step towards that goal.,Results/Conclusion
+AcknowledgementsThanks to Joel Martin and the anonymous review ers of Coling 2008 for their helpful comments.,Results/Conclusion
+911,Results/Conclusion

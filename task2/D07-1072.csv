@@ -1,287 +1,287 @@
 col1,col2
-We present a nonparametric Bayesian model of tree structures based on the hierarchical Dirichlet process (HDP).,{}
-Our HDP-PCFG model allows the complexity of the grammar to grow as more training data is available.,{}
-"In addition to presenting a fully Bayesianmodel for the PCFG, we also develop an ef ficient variational inference procedure.",{}
-"Onsynthetic data, we recover the correct grammar without having to specify its complexity in advance.",{}
-We also show that our tech niques can be applied to full-scale parsingapplications by demonstrating its effective ness in learning state-split grammars.,{}
-"Probabilistic context-free grammars (PCFGs) havebeen a core modeling technique for many aspects of linguistic structure, particularly syntac tic phrase structure in treebank parsing (Charniak, 1996; Collins, 1999).","{'title': 'Introduction', 'number': '1'}"
-An important question when learning PCFGs is how many grammar symbols to allocate to the learning algorithm based on the amount of available data.,"{'title': 'Introduction', 'number': '1'}"
-The question of ?how many clusters (symbols)??,"{'title': 'Introduction', 'number': '1'}"
-"has been tackled in the Bayesian nonparametricsliterature via Dirichlet process (DP) mixture mod els (Antoniak, 1974).","{'title': 'Introduction', 'number': '1'}"
-"DP mixture models have since been extended to hierarchical Dirichlet processes (HDPs) and HDP-HMMs (Teh et al, 2006; Beal et al., 2002) and applied to many different types of clustering/induction problems in NLP (Johnson et al., 2006; Goldwater et al, 2006).In this paper, we present the hierarchical Dirich let process PCFG (HDP-PCFG).","{'title': 'Introduction', 'number': '1'}"
-a nonparametric Bayesian model of syntactic tree structures based on Dirichlet processes.,"{'title': 'Introduction', 'number': '1'}"
-"Specifically, an HDP-PCFG is defined to have an infinite number of symbols; the Dirichlet process (DP) prior penalizes the use of more symbols than are supported by the training data.","{'title': 'Introduction', 'number': '1'}"
-Note that ?nonparametric?,"{'title': 'Introduction', 'number': '1'}"
-"does not mean ?noparameters?; rather, it means that the effective num ber of parameters can grow adaptively as the amount of data increases, which is a desirable property of a learning algorithm.As models increase in complexity, so does the un certainty over parameter estimates.","{'title': 'Introduction', 'number': '1'}"
-"In this regime, point estimates are unreliable since they do not take into account the fact that there are different amountsof uncertainty in the various components of the pa rameters.","{'title': 'Introduction', 'number': '1'}"
-The HDP-PCFG is a Bayesian model which naturally handles this uncertainty.,"{'title': 'Introduction', 'number': '1'}"
-"We present an efficient variational inference algorithm for theHDP-PCFG based on a structured mean-field ap proximation of the true posterior over parameters.The algorithm is similar in form to EM and thus inherits its simplicity, modularity, and efficiency.","{'title': 'Introduction', 'number': '1'}"
-"Un like EM, however, the algorithm is able to take theuncertainty of parameters into account and thus in corporate the DP prior.Finally, we develop an extension of the HDP PCFG for grammar refinement (HDP-PCFG-GR).Since treebanks generally consist of coarselylabeled context-free tree structures, the maximum likelihood treebank grammar is typically a poormodel as it makes overly strong independence as sumptions.","{'title': 'Introduction', 'number': '1'}"
-"As a result, many generative approaches to parsing construct refinements of the treebankgrammar which are more suitable for the model ing task.","{'title': 'Introduction', 'number': '1'}"
-"Lexical methods split each pre-terminal symbol into many subsymbols, one for each word,and then focus on smoothing sparse lexical statis 688 tics (Collins, 1999; Charniak, 2000).","{'title': 'Introduction', 'number': '1'}"
-"Unlexicalized methods refine the grammar in a more conservative fashion, splitting each non-terminal or pre-terminal symbol into a much smaller number of subsymbols (Klein and Manning, 2003; Matsuzaki et al, 2005; Petrov et al, 2006).","{'title': 'Introduction', 'number': '1'}"
-We apply our HDP-PCFG-GRmodel to automatically learn the number of subsym bols for each symbol.,"{'title': 'Introduction', 'number': '1'}"
-"At the heart of the HDP-PCFG is the Dirichlet pro cess (DP) mixture model (Antoniak, 1974), which isthe nonparametric Bayesian counterpart to the clas sical finite mixture model.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In order to build up an understanding of the HDP-PCFG, we first review the Bayesian treatment of the finite mixture model (Section 2.1).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We then consider the DP mixture model (Section 2.2) and use it as a building block for developing nonparametric structured versions of the HMM (Section 2.3) and PCFG (Section 2.4).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Our presentation highlights the similarities between these models so that each step along this progression reflects only the key differences.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.1 Bayesian finite mixture model.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We begin by describing the Bayesian finite mixture model to establish basic notation that will carry over the more complex models we consider later.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Bayesian finite mixture model ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Dirichlet(?, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", ?) [draw component probabilities] For each component z ? {1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-",K}: ??z ? G0 [draw component parameters] For each data point i ? {1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", n}: ?zi ? Multinomial(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"[choose component] ?xi ? F (?;?zi) [generate data point]The model has K components whose prior dis tribution is specified by ? = (?1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", ?K).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The Dirichlet hyperparameter ? controls how uniformthis distribution is: as ? increases, it becomes in creasingly likely that the components have equal probability.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"For each mixture component z ? {1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-",K}, the parameters of the component ?z aredrawn from some prior G0.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Given the model param eters (?,?), the data points are generated i.i.d. by first choosing a component and then generating from a data model F parameterized by that component.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In document clustering, for example, each datapoint xi is a document represented by its term frequency vector.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Each component (cluster) z has multinomial parameters ?z which specifies adistribution F (?;?z) over words.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"It is custom ary to use a conjugate Dirichlet prior G0 =Dirichlet(??, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"over the multinomial parameters, which can be interpreted as adding ???1 pseu docounts for each word.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.2 DP mixture model.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We now consider the extension of the Bayesian finite mixture model to a nonparametric Bayesian mixture model based on the Dirichlet process.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We focus on the stick-breaking representation (Sethuraman,1994) of the Dirichlet process instead of the stochastic process definition (Ferguson, 1973) or the Chinese restaurant process (Pitman, 2002).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The stick breaking representation captures the DP prior most explicitly and allows us to extend the finite mixture model with minimal changes.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Later, it will enable us to readily define structured models in a form similar to their classical versions.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Furthermore, an efficient variational inference algorithm can be developed in this representation (Section 2.6).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The key difference between the Bayesian finite mixture model and the DP mixture model is that the latter has a countably infinite number of mixture components while the former has a predefined K. Note that if we have an infinite number of mixture components, it no longer makes sense to consider a symmetric prior over the component probabilities; the prior over component probabilities must decay in some way.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The stick-breaking distribution achieves this as follows.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We write ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"to mean that ? = (?1, ?2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-) is distributed according to the stick-breaking distribution.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Here, the concentrationparameter ? controls the number of effective com ponents.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-To draw ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"GEM(?), we first generatea countably infinite collection of stick-breaking pro portions u1, u2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", where each uz ? Beta(1, ?).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The stick-breaking weights ? are then defined in terms of the stick proportions: ?z = uz ? z?<z (1 ? uz?).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-(1) The procedure for generating ? can be viewed asiteratively breaking off remaining portions of a unit 689 0 1?1 ?2 ?3 ...,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Figure 1: A sample ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(1).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-length stick (Figure 1).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The component probabilities {?z} will decay exponentially in expectation, but there is always some probability of getting a smallercomponent before a larger one.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The parameter ? de termines the decay of these probabilities: a larger ? implies a slower decay and thus more components.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Given the component probabilities, the rest of the DP mixture model is identical to the finite mixture model: DP mixture model ? ?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"[draw component probabilities] For each component z ? {1, 2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"}: ??z ? G0 [draw component parameters] For each data point i ? {1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", n}: ?zi ? Multinomial(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-[choose component] ?xi ? F (?;?zi) [generate data point xn] 2.3 HDP-HMM.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The next stop on the way to the HDP-PCFG is the HDP hidden Markov model (HDP-HMM) (Beal et al., 2002; Teh et al, 2006).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"An HMM consists of a set of hidden states, where each state can be thought of as a mixture component.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The parameters of the mixture component are the emission and transition parameters.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The main aspect that distinguishes itfrom a flat finite mixture model is that the transition parameters themselves must specify a distribu tion over next states.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Hence, we have not just onetop-level mixture model over states, but also a col lection of mixture models, one for each state.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In developing a nonparametric version of the HMM in which the number of states is infinite, we need to ensure that the transition mixture models of each state share a common inventory of possiblenext states.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We can achieve this by tying these mix ture models together using the hierarchical Dirichlet process (HDP) (Teh et al, 2006).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The stick-breaking representation of an HDP is defined as follows: first,the top-level stick-breaking weights ? are drawn ac cording to the stick-breaking prior as before.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Then, a new set of stick-breaking weights ??","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-are generated according based on ?: ??,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"DP(??,?), (2) where the distribution of DP can be characterized in terms of the following finite partition property: for all partitions of the positive integers into sets A1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", Am, (??(A1), . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-",??(Am)) (3) ? Dirichlet ( ???(A1), . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", ???(Am) ) , where ?(A) = ? k?A ?k. 1 The resulting ??","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-is an-.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-other distribution over the positive integers whosesimilarity to ? is controlled by a concentration pa rameter ??.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-HDP-HMM ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"[draw top-level state weights] For each state z ? {1, 2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-}: ??Ez ? Dirichlet(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-[draw emission parameters] ??Tz ? DP(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"?, ?) [draw transition parameters] For each time step i ? {1, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-", n}: ?xi ? F (?;?Ezi) [emit current observation] ?zi+1 ? Multinomial(?Tzi) [choose next state]Each state z is associated with emission param eters ?Ez . In addition, each z is also associatedwith transition parameters ?Tz , which specify a distribution over next states.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-These transition parame ters are drawn from a DP centered on the top-level stick-breaking weights ? according to Equations (2) and (3).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Assume that z1 is always fixed to a special START state, so we do not need to generate it.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.4 HDP-PCFG.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We now present the HDP-PCFG, which is the focus of this paper.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"For simplicity, we consider Chomsky normal form (CNF) grammars, which has two typesof rules: emissions and binary productions.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We con sider each grammar symbol as a mixture component whose parameters are the rule probabilities for that symbol.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In general, we do not know the appropriate number of grammar symbols, so our strategy is to let the number of grammar symbols be infinite and place a DP prior over grammar symbols.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-1Note that this property is a specific instance of the general stochastic process definition of Dirichlet processes.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-690 HDP-PCFG ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"[draw top-level symbol weights] For each grammar symbol z ? {1, 2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-}: ??Tz ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-T ) [draw rule type parameters] ??Ez ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-E) [draw emission parameters] ??Bz ? DP(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"B ,??T ) [draw binary production parameters] For each node i in the parse tree: ?ti ? Multinomial(?Tzi) [choose rule type] ?If ti = EMISSION: ??xi ? Multinomial(?Ezi) [emit terminal symbol] ?If ti = BINARY-PRODUCTION: ??(zL(i), zR(i)) ? Multinomial(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-B zi) [generate children symbols] ? ?Bz ?Tz ?Ez z ? z1 z2 x2 z3 x3 T Parameters Trees Figure 2: The definition and graphical model of the HDP-PCFG.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Since parse trees have unknown structure, there is no convenient way of representing them in the visual language of traditional graphical models.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Instead, we show a simple fixed example tree.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Node 1 has two children, 2 and 3, each of which has one observed terminal child.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We use L(i) and R(i) to denote the left and right children of node i. In the HMM, the transition parameters of a statespecify a distribution over single next states; similarly, the binary production parameters of a gram mar symbol must specify a distribution over pairs of grammar symbols for its children.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We adapt theHDP machinery to tie these binary production distri butions together.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The key difference is that now wemust tie distributions over pairs of grammar sym bols together via distributions over single grammar symbols.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Another difference is that in the HMM, at each time step, both a transition and a emission are made, whereas in the PCFG either a binary production or an emission is chosen.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Therefore, each grammar symbol must also have a distribution over the type of rule to apply.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In a CNF PCFG, there are only two types of rules, but this can be easily generalized to include unary productions, which we use for our parsing experiments.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"To summarize, the parameters of each grammar symbol z consists of (1) a distribution over a finitenumber of rule types ?Tz , (2) an emission distribution ?Ez over terminal symbols, and (3) a binary production distribution ?Bz over pairs of children gram mar symbols.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Figure 2 describes the model in detail.Figure 3 shows the generation of the binary pro duction distributions ?Bz . We draw ? B z from a DP centered on ??T , which is the product distribution over pairs of symbols.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The result is a doubly-infinitematrix where most of the probability mass is con state right child state left child state right child state left child state ? ?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-??T ?Bz ? DP(??,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-T )Figure 3: The generation of binary production prob abilities given the top-level symbol probabilities ?.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"First, ? is drawn from the stick-breaking prior, as in any DP-based model (a).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Next, the outer-product ??T is formed, resulting in a doubly-infinite matrix matrix (b).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We use this as the base distribution for generating the binary production distribution from a DP centered on ??T (c).centrated in the upper left, just like the top-level dis tribution ??T . Note that we have replaced the general 691 G0 and F (?Ezi) pair with Dirichlet(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"E) and Multinomial(?Ezi) to specialize to natural language, but there is no difficulty in working with parse trees with arbitrary non-multinomial observations or more sophisticated word models.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In many natural language applications, there is a hard distinction between pre-terminal symbols(those that only emit a word) and non-terminal sym bols (those that only rewrite as two non-terminal or pre-terminal symbols).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"This can be accomplished by letting ?T = (0, 0), which forces a draw ?Tz to assign probability 1 to one rule type.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"An alternative definition of an HDP-PCFG would be as follows: for each symbol z, draw a distributionover left child symbols lz ? DP(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-and an inde pendent distribution over right child symbols rz ?DP(?).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Then define the binary production distribu tion as their cross-product ?Bz = lzr T z . This alsoyields a distribution over symbol pairs and hence de fines a different type of nonparametric PCFG.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-This model is simpler and does not require any additional machinery beyond the HDP-HMM.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"However, the modeling assumptions imposed by this alternative are unappealing as they assume the left child and right child are independent given the parent, which is certainly not the case in natural language.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.5 HDP-PCFG for grammar refinement.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-An important motivation for the HDP-PCFG is thatof refining an existing treebank grammar to alle viate unrealistic independence assumptions and to improve parsing accuracy.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In this scenario, the set of symbols is known, but we do not know howmany subsymbols to allocate per symbol.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We in troduce the HDP-PCFG for grammar refinement (HDP-PCFG-GR), an extension of the HDP-PCFG, for this task.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The essential difference is that now we have a collection of HDP-PCFG models for each symbol s ? S, each one operating at the subsymbol level.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"While these HDP-PCFGs are independent in the prior, they are coupled through their interactions inthe parse trees.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"For completeness, we have also in cluded unary productions, which are essentially the PCFG counterpart of transitions in HMMs.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Finally,since each node i in the parse tree involves a symbol subsymbol pair (si, zi), each subsymbol needs to specify a distribution over both child symbols and subsymbols.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The former can be handled through a finite Dirichlet distribution since all symbols are known and observed, but the latter must be handledwith the Dirichlet process machinery, since the num ber of subsymbols is unknown.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-HDP-PCFG for grammar refinement (HDP-PCFG-GR) For each symbol s ? S: ??s ? GEM(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"[draw subsymbol weights] ?For each subsymbol z ? {1, 2, . . .","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-}: ???Tsz ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-T ) [draw rule type parameters] ???Esz ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-E(s)) [draw emission parameters] ???usz ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-u) [unary symbol productions] ???bsz ? Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-b) [binary symbol productions] ??For each child symbol s?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-S: ????Uszs?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-DP(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"U ,?s?) [unary subsymbol prod.]","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"??For each pair of children symbols (s?, s??)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-S ? S: ????Bszs?s??,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-DP(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"B ,?s??","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-T s??),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-[binary subsymbol] For each node i in the parse tree: ?ti ? Multinomial(?Tsizi) [choose rule type] ?If ti = EMISSION: ??xi ? Multinomial(?Esizi) [emit terminal symbol] ?If ti = UNARY-PRODUCTION: ??sL(i) ? Multinomial(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-u sizi) [generate child symbol] ??zL(i) ? Multinomial(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"U sizisL(i)) [child subsymbol] ?If ti = BINARY-PRODUCTION: ??(sL(i), sR(i)) ? Mult(?sizi) [children symbols] ??(zL(i), zR(i)) ? Mult(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-B sizisL(i)sR(i)) [subsymbols] 2.6 Variational inference.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We present an inference algorithm for the HDP PCFG model described in Section 2.4, which can also be adapted to the HDP-PCFG-GR model with a bit more bookkeeping.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Most previous inference algorithms for DP-based models involve sampling(Escobar and West, 1995; Teh et al, 2006).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"How ever, we chose to use variational inference (Bleiand Jordan, 2005), which provides a fast determin istic alternative to sampling, hence avoiding issues of diagnosing convergence and aggregating samples.Furthermore, our variational inference algorithm establishes a strong link with past work on PCFG refinement and induction, which has traditionally em ployed the EM algorithm.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In EM, the E-step involves a dynamic program that exploits the Markov structure of the parse tree, and the M-step involves computing ratios based onexpected counts extracted from the E-step.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Our vari ational algorithm resembles the EM algorithm in form, but the ratios in the M-step are replaced withweights that reflect the uncertainty in parameter es 692 ??Bz ?Tz ?Ez z ? z1 z2 z3 T Parameters Trees Figure 4: We approximate the true posterior p overparameters ? and latent parse trees z using a structured mean-field distribution q, in which the distri bution over parameters are completely factorized but the distribution over parse trees is unconstrained.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-timates.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Because of this procedural similarity, our method is able to exploit the desirable properties of EM such as simplicity, modularity, and efficiency.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.7 Structured mean-field approximation.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We denote parameters of the HDP-PCFG as ? =(?,?), where ? denotes the top-level symbol prob abilities and ? denotes the rule probabilities.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The hidden variables of the model are the training parse trees z. We denote the observed sentences as x. The goal of Bayesian inference is to compute the posterior distribution p(?, z | x).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The central idea behind variational inference is to approximate this intractable posterior with a tractable approximation.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In particular, we want to find the best distribution q?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-as defined by q?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"def = argmin q?Q KL(q(?, z)||p(?, z | x)), (4) where Q is a tractable subset of distributions.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We use a structured mean-field approximation, meaning that we only consider distributions that factorize as follows (Figure 4): Q def = { q(z)q(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-K? z=1 q(?Tz )q(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-E z )q(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-B z ) } .,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"(5) We further restrict q(?Tz ), q(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"E z ), q(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"B z ) to be Dirichlet distributions, but allow q(z) to be any multinomial distribution.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We constrain q(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"to be a degenerate distribution truncated at K; i.e., ?z = 0 for z > K. While the posterior grammar does havean infinite number of symbols, the exponential decay of the DP prior ensures that most of the probability mass is contained in the first few symbols (Ishwaran and James, 2001).2 While our variational ap proximation q is truncated, the actual PCFG model is not.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"AsK increases, our approximation improves.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-2.8 Coordinate-wise ascent.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The optimization problem defined by Equation (4)is intractable and nonconvex, but we can use a simple coordinate-ascent algorithm that iteratively op timizes each factor of q in turn while holding the others fixed.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The algorithm turns out to be similar in form to EM for an ordinary PCFG: optimizing q(z) is the analogue of the E-step, and optimizing q(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"is the analogue of the M-step; however, optimizing q(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-has no analogue in EM.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We summarize each of these updates below (see (Liang et al, 2007) for complete derivations).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Parse trees q(z): The distribution over parse treesq(z) can be summarized by the expected suffi cient statistics (rule counts), which we denote as C(z ? zl zr) for binary productions and C(z ? x) for emissions.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We can compute these expected counts using dynamic programming as in the E-step of EM.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"While the classical E-step uses the current ruleprobabilities ?, our mean-field approximation in volves an entire distribution q(?).","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Fortunately, wecan still handle this case by replacing each rule probability with a weight that summarizes the uncer tainty over the rule probability as represented by q. We define this weight in the sequel.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-It is a common perception that Bayesian inference is slow because one needs to compute integrals.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Our mean-field inference algorithm is a counterexample:because we can represent uncertainty over rule prob abilities with single numbers, much of the existing PCFG machinery based on EM can be modularly imported into the Bayesian framework.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Rule probabilities q(?): For an ordinary PCFG, the M-step simply involves taking ratios of expected2In particular, the variational distance between the stickbreaking distribution and the truncated version decreases expo nentially as the truncation level K increases.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"693 counts: ?Bz (zl, zr) = C(z ? zl zr) C(z ? ??)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"(6) For the variational HDP-PCFG, the optimal q(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-is given by the standard posterior update for Dirichlet distributions:3 q(?Bz ) = Dirichlet(?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-B z ;?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"B??T + ~C(z)), (7)where ~C(z) is the matrix of counts of rules with lefthand side z. These distributions can then be summa rized with multinomial weights which are the onlynecessary quantities for updating q(z) in the next it eration: WBz (zl, zr) def = expEq[log?Bz (zl, zr)] (8) = e?(C(z?zl zr)+?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"B?zl?zr ) e?(C(z???)+?B) , (9) where ?(?)","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-is the digamma function.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The emission parameters can be defined similarly.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Inspection of Equations (6) and (9) reveals that the only difference between the maximum likelihood and the mean-fieldupdate is that the latter applies the exp(?(?)) func tion to the counts (Figure 5).,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"When the truncation K is large, ?B?zl?zr is near 0 for most right-hand sides (zl, zr), so exp(?(?)) hasthe effect of downweighting counts.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Since this sub traction affects large counts more than small counts,there is a rich-get-richer effect: rules that have al ready have large counts will be preferred.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Specifically, consider a set of rules with the same left-hand side.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"The weights for all these rules only differ in the numerator (Equation (9)), so applying exp(?(?)) creates a local preference for right-hand sides with larger counts.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Also note that the rule weights are not normalized; they always sum to at most one and are equal to one exactly when q(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-isdegenerate.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-This lack of normalization gives an extra degree of freedom not present in maximum like lihood estimation: it creates a global preference for left-hand sides that have larger total counts.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Top-level symbol probabilities q(?): Recall that we restrict q(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"= ???(?), so optimizing ? is equivalent to finding a single best ??.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-Unlike q(?),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"3Because we have truncated the top-level symbol weights, the DP prior on ?Bz reduces to a finite Dirichlet distribution.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"0 0.5 1 1.5 2 0 0.5 1 1.5 2 x exp(?(x )) x Figure 5: The exp(?(?)) function, which is used in computing the multinomial weights for mean-fieldinference.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-It has the effect of reducing a larger frac tion of small counts than large counts.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"and q(z), there is no closed form expression forthe optimal ??, and the objective function (Equa tion (4)) is not convex in ??.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"Nonetheless, we canapply a standard gradient projection method (Bert sekas, 1999) to improve ??","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-to a local maxima.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-The part of the objective function in Equation (4) that depends on ??,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-is as follows: L(??),"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-= logGEM(??;?)+ (10) K?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-z=1 Eq[logDirichlet(?Bz ;?,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-B????T )]See Liang et al (2007) for the derivation of the gradient.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"In practice, this optimization has very little ef fect on performance.","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-"We suspect that this is because the objective function is dominated by p(x | z) andp(z | ?), while the contribution of p(?","{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-| ?) is mi nor.,"{'title': 'Models based on Dirichlet processes. ', 'number': '2'}"
-We now present an empirical evaluation of the HDPPCFG(-GR) model and variational inference tech niques.,"{'title': 'Experiments. ', 'number': '3'}"
-We first give an illustrative example of theability of the HDP-PCFG to recover a known gram mar and then present the results of experiments on large-scale treebank parsing.,"{'title': 'Experiments. ', 'number': '3'}"
-3.1 Recovering a synthetic grammar.,"{'title': 'Experiments. ', 'number': '3'}"
-"In this section, we show that the HDP-PCFG-GR can recover a simple grammar while a standard 694 S ? X1X1 | X2X2 | X3X3 | X4X4 X1 ? a1 | b1 | c1 | d1 X2 ? a2 | b2 | c2 | d2 X3 ? a3 | b3 | c3 | d3 X4 ? a4 | b4 | c4 | d4 S Xi Xi {ai, bi, ci, di} {ai, bi, ci, di} (a) (b) Figure 6: (a) A synthetic grammar with a uniform distribution over rules.","{'title': 'Experiments. ', 'number': '3'}"
-(b) The grammar generates trees of the form shown on the right.PCFG fails to do so because it has no built-in con trol over grammar complexity.,"{'title': 'Experiments. ', 'number': '3'}"
-"From the grammar in Figure 6, we generated 2000 trees.","{'title': 'Experiments. ', 'number': '3'}"
-"The two terminalsymbols always have the same subscript, but we col lapsed Xi to X in the training data.","{'title': 'Experiments. ', 'number': '3'}"
-"We trained the HDP-PCFG-GR, with truncation K = 20, for bothS and X for 100 iterations.","{'title': 'Experiments. ', 'number': '3'}"
-We set al hyperparame ters to 1.,"{'title': 'Experiments. ', 'number': '3'}"
-"Figure 7 shows that the HDP-PCFG-GR recoversthe original grammar, which contains only 4 sub symbols, leaving the other 16 subsymbols unused.","{'title': 'Experiments. ', 'number': '3'}"
-"The standard PCFG allocates all the subsymbols to fit the exact co-occurrence statistics of left and right terminals.Recall that a rule weight, as defined in Equation (9), is analogous to a rule probability for stan dard PCFGs.","{'title': 'Experiments. ', 'number': '3'}"
-We say a rule is effective if its weight is at least 10?6 and its left hand-side has posterior is also at least 10?6.,"{'title': 'Experiments. ', 'number': '3'}"
-"In general, rules with weightsmaller than 10?6 can be safely pruned without af fect parsing accuracy.","{'title': 'Experiments. ', 'number': '3'}"
-"The standard PCFG uses all 20 subsymbols of both S and X to explain the data, resulting in 8320 effective rules; in contrast, the HDP-PCFG uses only 4 subsymbols for X and 1 forS, resulting in only 68 effective rules.","{'title': 'Experiments. ', 'number': '3'}"
-"If the thresh old is relaxed from 10?6 to 10?3, then only 20 rules are effective, which corresponds exactly to the true grammar.","{'title': 'Experiments. ', 'number': '3'}"
-3.2 Parsing the Penn Treebank.,"{'title': 'Experiments. ', 'number': '3'}"
-"In this section, we show that our variational HDP PCFG can scale up to real-world data sets.","{'title': 'Experiments. ', 'number': '3'}"
-We ranexperiments on the Wall Street Journal (WSJ) por tion of the Penn Treebank.,"{'title': 'Experiments. ', 'number': '3'}"
-"We trained on sections 2?21, used section 24 for tuning hyperparameters, and tested on section 22.","{'title': 'Experiments. ', 'number': '3'}"
-"We binarize the trees in the treebank as follows:for each non-terminal node with symbol X , we in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 0.25 subsymbol pos ter ior 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 0.25 subsymbol pos ter ior standard PCFG HDP-PCFG Figure 7: The posteriors over the subsymbols of thestandard PCFG is roughly uniform, whereas the pos teriors of the HDP-PCFG is concentrated on four subsymbols, which is the true number of symbols in the grammar.","{'title': 'Experiments. ', 'number': '3'}"
-troduce a right-branching cascade of new nodes with symbol X . The end result is that each node has at most two children.,"{'title': 'Experiments. ', 'number': '3'}"
-"To cope with unknown words, we replace any word appearing fewer than 5 timesin the training set with one of 50 unknown word to kens derived from 10 word-form features.","{'title': 'Experiments. ', 'number': '3'}"
-"Our goal is to learn a refined grammar, where eachsymbol in the training set is split into K subsym bols.","{'title': 'Experiments. ', 'number': '3'}"
-"We compare an ordinary PCFG estimated with maximum likelihood (Matsuzaki et al, 2005) andthe HDP-PCFG estimated using the variational in ference algorithm described in Section 2.6.To parse new sentences with a grammar, we com pute the posterior distribution over rules at each spanand extract the tree with the maximum expected cor rect number of rules (Petrov and Klein, 2007).","{'title': 'Experiments. ', 'number': '3'}"
-"3.2.1 HyperparametersThere are six hyperparameters in the HDP-PCFG GR model, which we set in the following manner:?","{'title': 'Experiments. ', 'number': '3'}"
-"= 1, ?T = 1 (uniform distribution over unar ies versus binaries), ?E = 1 (uniform distribution over terminal words), ?u(s) = ?b(s) = 1N(s) , whereN(s) is the number of different unary (binary) righthand sides of rules with left-hand side s in the treebank grammar.","{'title': 'Experiments. ', 'number': '3'}"
-"The two most important hyperpa rameters are ?U and ?B , which govern the sparsity of the right-hand side for unary and binary rules.","{'title': 'Experiments. ', 'number': '3'}"
-We set ?U = ?B although more performance could probably be gained by tuning these individually.,"{'title': 'Experiments. ', 'number': '3'}"
-"It turns out that there is not a single ?B that works for all truncation levels, as shown in Table 1.","{'title': 'Experiments. ', 'number': '3'}"
-"If the top-level distribution ? is uniform, the value of ?B corresponding to a uniform prior over pairs ofchildren subsymbols is K2.","{'title': 'Experiments. ', 'number': '3'}"
-"Interestingly, the opti mal ?B appears to be superlinear but subquadratic 695 truncation K 2 4 8 12 16 20 best ?B 16 12 20 28 48 80 uniform ?B 4 16 64 144 256 400 Table 1: For each truncation level, we report the ?B that yielded the highest F1 score on the development set.","{'title': 'Experiments. ', 'number': '3'}"
-K PCFG PCFG (smoothed) HDP-PCFG F1 Size F1 Size F1 Size 1 60.47 2558 60.36 2597 60.5 2557 2 69.53 3788 69.38 4614 71.08 4264 8 74.32 4262 79.26 120598 79.15 50629 12 70.99 7297 78.8 160403 78.94 86386 16 66.99 19616 79.2 261444 78.24 131377 20 64.44 27593 79.27 369699 77.81 202767 Table 2: Shows development F1 and grammar sizes (the number of effective rules) as we increase the truncation K. in K. We used these values of ?B in the following experiments.,"{'title': 'Experiments. ', 'number': '3'}"
-3.2.2 Results The regime in which Bayesian inference is most important is when training data is scarce relative tothe complexity of the model.,"{'title': 'Experiments. ', 'number': '3'}"
-We train on just sec tion 2 of the Penn Treebank.,"{'title': 'Experiments. ', 'number': '3'}"
-Table 2 shows how the HDP-PCFG-GR can produce compact grammars that guard against overfitting.,"{'title': 'Experiments. ', 'number': '3'}"
-"Without smoothing,ordinary PCFGs trained using EM improve as K in creases but start to overfit around K = 4.","{'title': 'Experiments. ', 'number': '3'}"
-Simple add-1.01 smoothing prevents overfitting but at thecost of a sharp increase in grammar sizes.,"{'title': 'Experiments. ', 'number': '3'}"
-The HDP PCFG obtains comparable performance with a much smaller number of rules.We also trained on sections 2?21 to demon strate that our methods can scale up and achievebroadly comparable results to existing state-of-the art parsers.,"{'title': 'Experiments. ', 'number': '3'}"
-"When using a truncation level of K = 16, the standard PCFG with smoothing obtains an F1 score of 88.36 using 706157 effective rules whilethe HDP-PCFG-GR obtains an F1 score of 87.08 us ing 428375 effective rules.","{'title': 'Experiments. ', 'number': '3'}"
-We expect to see greaterbenefits from the HDP-PCFG with a larger trunca tion level.,"{'title': 'Experiments. ', 'number': '3'}"
-The question of how to select the appropriate gram mar complexity has been studied in earlier work.It is well known that more complex models nec essarily have higher likelihood and thus a penaltymust be imposed for more complex grammars.,"{'title': 'Related work. ', 'number': '4'}"
-"Examples of such penalized likelihood procedures in clude Stolcke and Omohundro (1994), which used an asymptotic Bayesian model selection criterion and Petrov et al (2006), which used a split-merge algorithm which procedurally determines when to switch between grammars of various complexities.","{'title': 'Related work. ', 'number': '4'}"
-"These techniques are model selection techniquesthat use heuristics to choose among competing sta tistical models; in contrast, the HDP-PCFG relies on the Bayesian formalism to provide implicit control over model complexity within the framework of a single probabilistic model.Johnson et al (2006) also explored nonparametric grammars, but they do not give an inference algorithm for recursive grammars, e.g., grammars in cluding rules of the form A ? BC and B ? DA.","{'title': 'Related work. ', 'number': '4'}"
-Recursion is a crucial aspect of PCFGs and our inference algorithm does handle it.,"{'title': 'Related work. ', 'number': '4'}"
-Finkel et al(2007) independently developed another nonpara metric model of grammars.,"{'title': 'Related work. ', 'number': '4'}"
-"Though their model is also based on hierarchical Dirichlet processes and issimilar to ours, they present a different inference al gorithm which is based on sampling.","{'title': 'Related work. ', 'number': '4'}"
-Kurihara and Sato (2004) and Kurihara and Sato (2006) applied variational inference to PCFGs.,"{'title': 'Related work. ', 'number': '4'}"
-"Their algorithm issimilar to ours, but they did not consider nonpara metric models.","{'title': 'Related work. ', 'number': '4'}"
-"We have presented the HDP-PCFG, a nonparametric Bayesian model for PCFGs, along with an efficient variational inference algorithm.","{'title': 'Conclusion. ', 'number': '5'}"
-"While our primarycontribution is the elucidation of the model and algorithm, we have also explored some important empirical properties of the HDP-PCFG and also demon strated the potential of variational HDP-PCFGs on a full-scale parsing task.","{'title': 'Conclusion. ', 'number': '5'}"
-696,"{'title': 'Conclusion. ', 'number': '5'}"
+We present a nonparametric Bayesian model of tree structures based on the hierarchical Dirichlet process (HDP).,Introduction
+Our HDP-PCFG model allows the complexity of the grammar to grow as more training data is available.,Introduction
+"In addition to presenting a fully Bayesianmodel for the PCFG, we also develop an ef ficient variational inference procedure.",Introduction
+"Onsynthetic data, we recover the correct grammar without having to specify its complexity in advance.",Introduction
+We also show that our tech niques can be applied to full-scale parsingapplications by demonstrating its effective ness in learning state-split grammars.,Introduction
+"Probabilistic context-free grammars (PCFGs) havebeen a core modeling technique for many aspects of linguistic structure, particularly syntac tic phrase structure in treebank parsing (Charniak, 1996; Collins, 1999).",Experiment/Discussion
+An important question when learning PCFGs is how many grammar symbols to allocate to the learning algorithm based on the amount of available data.,Experiment/Discussion
+The question of ?how many clusters (symbols)??,Experiment/Discussion
+"has been tackled in the Bayesian nonparametricsliterature via Dirichlet process (DP) mixture mod els (Antoniak, 1974).",Experiment/Discussion
+"DP mixture models have since been extended to hierarchical Dirichlet processes (HDPs) and HDP-HMMs (Teh et al, 2006; Beal et al., 2002) and applied to many different types of clustering/induction problems in NLP (Johnson et al., 2006; Goldwater et al, 2006).In this paper, we present the hierarchical Dirich let process PCFG (HDP-PCFG).",Experiment/Discussion
+a nonparametric Bayesian model of syntactic tree structures based on Dirichlet processes.,Experiment/Discussion
+"Specifically, an HDP-PCFG is defined to have an infinite number of symbols; the Dirichlet process (DP) prior penalizes the use of more symbols than are supported by the training data.",Experiment/Discussion
+Note that ?nonparametric?,Experiment/Discussion
+"does not mean ?noparameters?; rather, it means that the effective num ber of parameters can grow adaptively as the amount of data increases, which is a desirable property of a learning algorithm.As models increase in complexity, so does the un certainty over parameter estimates.",Experiment/Discussion
+"In this regime, point estimates are unreliable since they do not take into account the fact that there are different amountsof uncertainty in the various components of the pa rameters.",Experiment/Discussion
+The HDP-PCFG is a Bayesian model which naturally handles this uncertainty.,Experiment/Discussion
+"We present an efficient variational inference algorithm for theHDP-PCFG based on a structured mean-field ap proximation of the true posterior over parameters.The algorithm is similar in form to EM and thus inherits its simplicity, modularity, and efficiency.",Experiment/Discussion
+"Un like EM, however, the algorithm is able to take theuncertainty of parameters into account and thus in corporate the DP prior.Finally, we develop an extension of the HDP PCFG for grammar refinement (HDP-PCFG-GR).Since treebanks generally consist of coarselylabeled context-free tree structures, the maximum likelihood treebank grammar is typically a poormodel as it makes overly strong independence as sumptions.",Experiment/Discussion
+"As a result, many generative approaches to parsing construct refinements of the treebankgrammar which are more suitable for the model ing task.",Experiment/Discussion
+"Lexical methods split each pre-terminal symbol into many subsymbols, one for each word,and then focus on smoothing sparse lexical statis 688 tics (Collins, 1999; Charniak, 2000).",Experiment/Discussion
+"Unlexicalized methods refine the grammar in a more conservative fashion, splitting each non-terminal or pre-terminal symbol into a much smaller number of subsymbols (Klein and Manning, 2003; Matsuzaki et al, 2005; Petrov et al, 2006).",Experiment/Discussion
+We apply our HDP-PCFG-GRmodel to automatically learn the number of subsym bols for each symbol.,Experiment/Discussion
+"At the heart of the HDP-PCFG is the Dirichlet pro cess (DP) mixture model (Antoniak, 1974), which isthe nonparametric Bayesian counterpart to the clas sical finite mixture model.",Experiment/Discussion
+"In order to build up an understanding of the HDP-PCFG, we first review the Bayesian treatment of the finite mixture model (Section 2.1).",Experiment/Discussion
+We then consider the DP mixture model (Section 2.2) and use it as a building block for developing nonparametric structured versions of the HMM (Section 2.3) and PCFG (Section 2.4).,Experiment/Discussion
+Our presentation highlights the similarities between these models so that each step along this progression reflects only the key differences.,Experiment/Discussion
+2.1 Bayesian finite mixture model.,Experiment/Discussion
+We begin by describing the Bayesian finite mixture model to establish basic notation that will carry over the more complex models we consider later.,Experiment/Discussion
+Bayesian finite mixture model ? ?,Experiment/Discussion
+"Dirichlet(?, . . .",Experiment/Discussion
+", ?) [draw component probabilities] For each component z ? {1, . . .",Experiment/Discussion
+",K}: ??z ? G0 [draw component parameters] For each data point i ? {1, . . .",Experiment/Discussion
+", n}: ?zi ? Multinomial(?)",Experiment/Discussion
+"[choose component] ?xi ? F (?;?zi) [generate data point]The model has K components whose prior dis tribution is specified by ? = (?1, . . .",Experiment/Discussion
+", ?K).",Experiment/Discussion
+"The Dirichlet hyperparameter ? controls how uniformthis distribution is: as ? increases, it becomes in creasingly likely that the components have equal probability.",Experiment/Discussion
+"For each mixture component z ? {1, . . .",Experiment/Discussion
+",K}, the parameters of the component ?z aredrawn from some prior G0.",Experiment/Discussion
+"Given the model param eters (?,?), the data points are generated i.i.d. by first choosing a component and then generating from a data model F parameterized by that component.",Experiment/Discussion
+"In document clustering, for example, each datapoint xi is a document represented by its term frequency vector.",Experiment/Discussion
+Each component (cluster) z has multinomial parameters ?z which specifies adistribution F (?;?z) over words.,Experiment/Discussion
+"It is custom ary to use a conjugate Dirichlet prior G0 =Dirichlet(??, . . .",Experiment/Discussion
+"over the multinomial parameters, which can be interpreted as adding ???1 pseu docounts for each word.",Experiment/Discussion
+2.2 DP mixture model.,Experiment/Discussion
+We now consider the extension of the Bayesian finite mixture model to a nonparametric Bayesian mixture model based on the Dirichlet process.,Experiment/Discussion
+"We focus on the stick-breaking representation (Sethuraman,1994) of the Dirichlet process instead of the stochastic process definition (Ferguson, 1973) or the Chinese restaurant process (Pitman, 2002).",Experiment/Discussion
+The stick breaking representation captures the DP prior most explicitly and allows us to extend the finite mixture model with minimal changes.,Experiment/Discussion
+"Later, it will enable us to readily define structured models in a form similar to their classical versions.",Experiment/Discussion
+"Furthermore, an efficient variational inference algorithm can be developed in this representation (Section 2.6).",Experiment/Discussion
+"The key difference between the Bayesian finite mixture model and the DP mixture model is that the latter has a countably infinite number of mixture components while the former has a predefined K. Note that if we have an infinite number of mixture components, it no longer makes sense to consider a symmetric prior over the component probabilities; the prior over component probabilities must decay in some way.",Experiment/Discussion
+The stick-breaking distribution achieves this as follows.,Experiment/Discussion
+We write ? ?,Experiment/Discussion
+GEM(?),Experiment/Discussion
+"to mean that ? = (?1, ?2, . . .",Experiment/Discussion
+) is distributed according to the stick-breaking distribution.,Experiment/Discussion
+"Here, the concentrationparameter ? controls the number of effective com ponents.",Experiment/Discussion
+To draw ? ?,Experiment/Discussion
+"GEM(?), we first generatea countably infinite collection of stick-breaking pro portions u1, u2, . . .",Experiment/Discussion
+", where each uz ? Beta(1, ?).",Experiment/Discussion
+The stick-breaking weights ? are then defined in terms of the stick proportions: ?z = uz ? z?<z (1 ? uz?).,Experiment/Discussion
+(1) The procedure for generating ? can be viewed asiteratively breaking off remaining portions of a unit 689 0 1?1 ?2 ?3 ...,Experiment/Discussion
+Figure 1: A sample ? ?,Experiment/Discussion
+GEM(1).,Experiment/Discussion
+length stick (Figure 1).,Experiment/Discussion
+"The component probabilities {?z} will decay exponentially in expectation, but there is always some probability of getting a smallercomponent before a larger one.",Experiment/Discussion
+The parameter ? de termines the decay of these probabilities: a larger ? implies a slower decay and thus more components.,Experiment/Discussion
+"Given the component probabilities, the rest of the DP mixture model is identical to the finite mixture model: DP mixture model ? ?",Experiment/Discussion
+GEM(?),Experiment/Discussion
+"[draw component probabilities] For each component z ? {1, 2, . . .",Experiment/Discussion
+"}: ??z ? G0 [draw component parameters] For each data point i ? {1, . . .",Experiment/Discussion
+", n}: ?zi ? Multinomial(?)",Experiment/Discussion
+[choose component] ?xi ? F (?;?zi) [generate data point xn] 2.3 HDP-HMM.,Experiment/Discussion
+"The next stop on the way to the HDP-PCFG is the HDP hidden Markov model (HDP-HMM) (Beal et al., 2002; Teh et al, 2006).",Experiment/Discussion
+"An HMM consists of a set of hidden states, where each state can be thought of as a mixture component.",Experiment/Discussion
+The parameters of the mixture component are the emission and transition parameters.,Experiment/Discussion
+The main aspect that distinguishes itfrom a flat finite mixture model is that the transition parameters themselves must specify a distribu tion over next states.,Experiment/Discussion
+"Hence, we have not just onetop-level mixture model over states, but also a col lection of mixture models, one for each state.",Experiment/Discussion
+"In developing a nonparametric version of the HMM in which the number of states is infinite, we need to ensure that the transition mixture models of each state share a common inventory of possiblenext states.",Experiment/Discussion
+"We can achieve this by tying these mix ture models together using the hierarchical Dirichlet process (HDP) (Teh et al, 2006).",Experiment/Discussion
+"The stick-breaking representation of an HDP is defined as follows: first,the top-level stick-breaking weights ? are drawn ac cording to the stick-breaking prior as before.",Experiment/Discussion
+"Then, a new set of stick-breaking weights ??",Experiment/Discussion
+are generated according based on ?: ??,Experiment/Discussion
+"DP(??,?), (2) where the distribution of DP can be characterized in terms of the following finite partition property: for all partitions of the positive integers into sets A1, . . .",Experiment/Discussion
+", Am, (??(A1), . . .",Experiment/Discussion
+",??(Am)) (3) ? Dirichlet ( ???(A1), . . .",Experiment/Discussion
+", ???(Am) ) , where ?(A) = ? k?A ?k. 1 The resulting ??",Experiment/Discussion
+is an-.,Experiment/Discussion
+other distribution over the positive integers whosesimilarity to ? is controlled by a concentration pa rameter ??.,Experiment/Discussion
+HDP-HMM ? ?,Experiment/Discussion
+GEM(?),Experiment/Discussion
+"[draw top-level state weights] For each state z ? {1, 2, . . .",Experiment/Discussion
+}: ??Ez ? Dirichlet(?),Experiment/Discussion
+[draw emission parameters] ??Tz ? DP(?,Experiment/Discussion
+"?, ?) [draw transition parameters] For each time step i ? {1, . . .",Experiment/Discussion
+", n}: ?xi ? F (?;?Ezi) [emit current observation] ?zi+1 ? Multinomial(?Tzi) [choose next state]Each state z is associated with emission param eters ?Ez . In addition, each z is also associatedwith transition parameters ?Tz , which specify a distribution over next states.",Experiment/Discussion
+These transition parame ters are drawn from a DP centered on the top-level stick-breaking weights ? according to Equations (2) and (3).,Experiment/Discussion
+"Assume that z1 is always fixed to a special START state, so we do not need to generate it.",Experiment/Discussion
+2.4 HDP-PCFG.,Experiment/Discussion
+"We now present the HDP-PCFG, which is the focus of this paper.",Experiment/Discussion
+"For simplicity, we consider Chomsky normal form (CNF) grammars, which has two typesof rules: emissions and binary productions.",Experiment/Discussion
+We con sider each grammar symbol as a mixture component whose parameters are the rule probabilities for that symbol.,Experiment/Discussion
+"In general, we do not know the appropriate number of grammar symbols, so our strategy is to let the number of grammar symbols be infinite and place a DP prior over grammar symbols.",Experiment/Discussion
+1Note that this property is a specific instance of the general stochastic process definition of Dirichlet processes.,Experiment/Discussion
+690 HDP-PCFG ? ?,Experiment/Discussion
+GEM(?),Experiment/Discussion
+"[draw top-level symbol weights] For each grammar symbol z ? {1, 2, . . .",Experiment/Discussion
+}: ??Tz ? Dirichlet(?,Experiment/Discussion
+T ) [draw rule type parameters] ??Ez ? Dirichlet(?,Experiment/Discussion
+E) [draw emission parameters] ??Bz ? DP(?,Experiment/Discussion
+"B ,??T ) [draw binary production parameters] For each node i in the parse tree: ?ti ? Multinomial(?Tzi) [choose rule type] ?If ti = EMISSION: ??xi ? Multinomial(?Ezi) [emit terminal symbol] ?If ti = BINARY-PRODUCTION: ??(zL(i), zR(i)) ? Multinomial(?",Experiment/Discussion
+B zi) [generate children symbols] ? ?Bz ?Tz ?Ez z ? z1 z2 x2 z3 x3 T Parameters Trees Figure 2: The definition and graphical model of the HDP-PCFG.,Experiment/Discussion
+"Since parse trees have unknown structure, there is no convenient way of representing them in the visual language of traditional graphical models.",Experiment/Discussion
+"Instead, we show a simple fixed example tree.",Experiment/Discussion
+"Node 1 has two children, 2 and 3, each of which has one observed terminal child.",Experiment/Discussion
+"We use L(i) and R(i) to denote the left and right children of node i. In the HMM, the transition parameters of a statespecify a distribution over single next states; similarly, the binary production parameters of a gram mar symbol must specify a distribution over pairs of grammar symbols for its children.",Experiment/Discussion
+We adapt theHDP machinery to tie these binary production distri butions together.,Experiment/Discussion
+The key difference is that now wemust tie distributions over pairs of grammar sym bols together via distributions over single grammar symbols.,Experiment/Discussion
+"Another difference is that in the HMM, at each time step, both a transition and a emission are made, whereas in the PCFG either a binary production or an emission is chosen.",Experiment/Discussion
+"Therefore, each grammar symbol must also have a distribution over the type of rule to apply.",Experiment/Discussion
+"In a CNF PCFG, there are only two types of rules, but this can be easily generalized to include unary productions, which we use for our parsing experiments.",Experiment/Discussion
+"To summarize, the parameters of each grammar symbol z consists of (1) a distribution over a finitenumber of rule types ?Tz , (2) an emission distribution ?Ez over terminal symbols, and (3) a binary production distribution ?Bz over pairs of children gram mar symbols.",Experiment/Discussion
+"Figure 2 describes the model in detail.Figure 3 shows the generation of the binary pro duction distributions ?Bz . We draw ? B z from a DP centered on ??T , which is the product distribution over pairs of symbols.",Experiment/Discussion
+The result is a doubly-infinitematrix where most of the probability mass is con state right child state left child state right child state left child state ? ?,Experiment/Discussion
+GEM(?),Experiment/Discussion
+??T ?Bz ? DP(??,Experiment/Discussion
+T )Figure 3: The generation of binary production prob abilities given the top-level symbol probabilities ?.,Experiment/Discussion
+"First, ? is drawn from the stick-breaking prior, as in any DP-based model (a).",Experiment/Discussion
+"Next, the outer-product ??T is formed, resulting in a doubly-infinite matrix matrix (b).",Experiment/Discussion
+"We use this as the base distribution for generating the binary production distribution from a DP centered on ??T (c).centrated in the upper left, just like the top-level dis tribution ??T . Note that we have replaced the general 691 G0 and F (?Ezi) pair with Dirichlet(?",Experiment/Discussion
+"E) and Multinomial(?Ezi) to specialize to natural language, but there is no difficulty in working with parse trees with arbitrary non-multinomial observations or more sophisticated word models.",Experiment/Discussion
+"In many natural language applications, there is a hard distinction between pre-terminal symbols(those that only emit a word) and non-terminal sym bols (those that only rewrite as two non-terminal or pre-terminal symbols).",Experiment/Discussion
+"This can be accomplished by letting ?T = (0, 0), which forces a draw ?Tz to assign probability 1 to one rule type.",Experiment/Discussion
+"An alternative definition of an HDP-PCFG would be as follows: for each symbol z, draw a distributionover left child symbols lz ? DP(?)",Experiment/Discussion
+and an inde pendent distribution over right child symbols rz ?DP(?).,Experiment/Discussion
+Then define the binary production distribu tion as their cross-product ?Bz = lzr T z . This alsoyields a distribution over symbol pairs and hence de fines a different type of nonparametric PCFG.,Experiment/Discussion
+This model is simpler and does not require any additional machinery beyond the HDP-HMM.,Experiment/Discussion
+"However, the modeling assumptions imposed by this alternative are unappealing as they assume the left child and right child are independent given the parent, which is certainly not the case in natural language.",Experiment/Discussion
+2.5 HDP-PCFG for grammar refinement.,Experiment/Discussion
+An important motivation for the HDP-PCFG is thatof refining an existing treebank grammar to alle viate unrealistic independence assumptions and to improve parsing accuracy.,Experiment/Discussion
+"In this scenario, the set of symbols is known, but we do not know howmany subsymbols to allocate per symbol.",Experiment/Discussion
+"We in troduce the HDP-PCFG for grammar refinement (HDP-PCFG-GR), an extension of the HDP-PCFG, for this task.",Experiment/Discussion
+"The essential difference is that now we have a collection of HDP-PCFG models for each symbol s ? S, each one operating at the subsymbol level.",Experiment/Discussion
+"While these HDP-PCFGs are independent in the prior, they are coupled through their interactions inthe parse trees.",Experiment/Discussion
+"For completeness, we have also in cluded unary productions, which are essentially the PCFG counterpart of transitions in HMMs.",Experiment/Discussion
+"Finally,since each node i in the parse tree involves a symbol subsymbol pair (si, zi), each subsymbol needs to specify a distribution over both child symbols and subsymbols.",Experiment/Discussion
+"The former can be handled through a finite Dirichlet distribution since all symbols are known and observed, but the latter must be handledwith the Dirichlet process machinery, since the num ber of subsymbols is unknown.",Experiment/Discussion
+HDP-PCFG for grammar refinement (HDP-PCFG-GR) For each symbol s ? S: ??s ? GEM(?),Experiment/Discussion
+"[draw subsymbol weights] ?For each subsymbol z ? {1, 2, . . .",Experiment/Discussion
+}: ???Tsz ? Dirichlet(?,Experiment/Discussion
+T ) [draw rule type parameters] ???Esz ? Dirichlet(?,Experiment/Discussion
+E(s)) [draw emission parameters] ???usz ? Dirichlet(?,Experiment/Discussion
+u) [unary symbol productions] ???bsz ? Dirichlet(?,Experiment/Discussion
+b) [binary symbol productions] ??For each child symbol s?,Experiment/Discussion
+S: ????Uszs?,Experiment/Discussion
+DP(?,Experiment/Discussion
+"U ,?s?) [unary subsymbol prod.]",Experiment/Discussion
+"??For each pair of children symbols (s?, s??)",Experiment/Discussion
+S ? S: ????Bszs?s??,Experiment/Discussion
+DP(?,Experiment/Discussion
+"B ,?s??",Experiment/Discussion
+T s??),Experiment/Discussion
+[binary subsymbol] For each node i in the parse tree: ?ti ? Multinomial(?Tsizi) [choose rule type] ?If ti = EMISSION: ??xi ? Multinomial(?Esizi) [emit terminal symbol] ?If ti = UNARY-PRODUCTION: ??sL(i) ? Multinomial(?,Experiment/Discussion
+u sizi) [generate child symbol] ??zL(i) ? Multinomial(?,Experiment/Discussion
+"U sizisL(i)) [child subsymbol] ?If ti = BINARY-PRODUCTION: ??(sL(i), sR(i)) ? Mult(?sizi) [children symbols] ??(zL(i), zR(i)) ? Mult(?",Experiment/Discussion
+B sizisL(i)sR(i)) [subsymbols] 2.6 Variational inference.,Experiment/Discussion
+"We present an inference algorithm for the HDP PCFG model described in Section 2.4, which can also be adapted to the HDP-PCFG-GR model with a bit more bookkeeping.",Experiment/Discussion
+"Most previous inference algorithms for DP-based models involve sampling(Escobar and West, 1995; Teh et al, 2006).",Experiment/Discussion
+"How ever, we chose to use variational inference (Bleiand Jordan, 2005), which provides a fast determin istic alternative to sampling, hence avoiding issues of diagnosing convergence and aggregating samples.Furthermore, our variational inference algorithm establishes a strong link with past work on PCFG refinement and induction, which has traditionally em ployed the EM algorithm.",Experiment/Discussion
+"In EM, the E-step involves a dynamic program that exploits the Markov structure of the parse tree, and the M-step involves computing ratios based onexpected counts extracted from the E-step.",Experiment/Discussion
+"Our vari ational algorithm resembles the EM algorithm in form, but the ratios in the M-step are replaced withweights that reflect the uncertainty in parameter es 692 ??Bz ?Tz ?Ez z ? z1 z2 z3 T Parameters Trees Figure 4: We approximate the true posterior p overparameters ? and latent parse trees z using a structured mean-field distribution q, in which the distri bution over parameters are completely factorized but the distribution over parse trees is unconstrained.",Experiment/Discussion
+timates.,Experiment/Discussion
+"Because of this procedural similarity, our method is able to exploit the desirable properties of EM such as simplicity, modularity, and efficiency.",Experiment/Discussion
+2.7 Structured mean-field approximation.,Experiment/Discussion
+"We denote parameters of the HDP-PCFG as ? =(?,?), where ? denotes the top-level symbol prob abilities and ? denotes the rule probabilities.",Experiment/Discussion
+"The hidden variables of the model are the training parse trees z. We denote the observed sentences as x. The goal of Bayesian inference is to compute the posterior distribution p(?, z | x).",Experiment/Discussion
+The central idea behind variational inference is to approximate this intractable posterior with a tractable approximation.,Experiment/Discussion
+"In particular, we want to find the best distribution q?",Experiment/Discussion
+as defined by q?,Experiment/Discussion
+"def = argmin q?Q KL(q(?, z)||p(?, z | x)), (4) where Q is a tractable subset of distributions.",Experiment/Discussion
+"We use a structured mean-field approximation, meaning that we only consider distributions that factorize as follows (Figure 4): Q def = { q(z)q(?)",Experiment/Discussion
+K? z=1 q(?Tz )q(?,Experiment/Discussion
+E z )q(?,Experiment/Discussion
+B z ) } .,Experiment/Discussion
+"(5) We further restrict q(?Tz ), q(?",Experiment/Discussion
+"E z ), q(?",Experiment/Discussion
+"B z ) to be Dirichlet distributions, but allow q(z) to be any multinomial distribution.",Experiment/Discussion
+We constrain q(?),Experiment/Discussion
+"to be a degenerate distribution truncated at K; i.e., ?z = 0 for z > K. While the posterior grammar does havean infinite number of symbols, the exponential decay of the DP prior ensures that most of the probability mass is contained in the first few symbols (Ishwaran and James, 2001).2 While our variational ap proximation q is truncated, the actual PCFG model is not.",Experiment/Discussion
+"AsK increases, our approximation improves.",Experiment/Discussion
+2.8 Coordinate-wise ascent.,Experiment/Discussion
+"The optimization problem defined by Equation (4)is intractable and nonconvex, but we can use a simple coordinate-ascent algorithm that iteratively op timizes each factor of q in turn while holding the others fixed.",Experiment/Discussion
+"The algorithm turns out to be similar in form to EM for an ordinary PCFG: optimizing q(z) is the analogue of the E-step, and optimizing q(?)",Experiment/Discussion
+"is the analogue of the M-step; however, optimizing q(?)",Experiment/Discussion
+has no analogue in EM.,Experiment/Discussion
+"We summarize each of these updates below (see (Liang et al, 2007) for complete derivations).",Experiment/Discussion
+"Parse trees q(z): The distribution over parse treesq(z) can be summarized by the expected suffi cient statistics (rule counts), which we denote as C(z ? zl zr) for binary productions and C(z ? x) for emissions.",Experiment/Discussion
+We can compute these expected counts using dynamic programming as in the E-step of EM.,Experiment/Discussion
+"While the classical E-step uses the current ruleprobabilities ?, our mean-field approximation in volves an entire distribution q(?).",Experiment/Discussion
+"Fortunately, wecan still handle this case by replacing each rule probability with a weight that summarizes the uncer tainty over the rule probability as represented by q. We define this weight in the sequel.",Experiment/Discussion
+It is a common perception that Bayesian inference is slow because one needs to compute integrals.,Experiment/Discussion
+"Our mean-field inference algorithm is a counterexample:because we can represent uncertainty over rule prob abilities with single numbers, much of the existing PCFG machinery based on EM can be modularly imported into the Bayesian framework.",Experiment/Discussion
+"Rule probabilities q(?): For an ordinary PCFG, the M-step simply involves taking ratios of expected2In particular, the variational distance between the stickbreaking distribution and the truncated version decreases expo nentially as the truncation level K increases.",Experiment/Discussion
+"693 counts: ?Bz (zl, zr) = C(z ? zl zr) C(z ? ??)",Experiment/Discussion
+"(6) For the variational HDP-PCFG, the optimal q(?)",Experiment/Discussion
+is given by the standard posterior update for Dirichlet distributions:3 q(?Bz ) = Dirichlet(?,Experiment/Discussion
+B z ;?,Experiment/Discussion
+"B??T + ~C(z)), (7)where ~C(z) is the matrix of counts of rules with lefthand side z. These distributions can then be summa rized with multinomial weights which are the onlynecessary quantities for updating q(z) in the next it eration: WBz (zl, zr) def = expEq[log?Bz (zl, zr)] (8) = e?(C(z?zl zr)+?",Experiment/Discussion
+"B?zl?zr ) e?(C(z???)+?B) , (9) where ?(?)",Experiment/Discussion
+is the digamma function.,Experiment/Discussion
+The emission parameters can be defined similarly.,Experiment/Discussion
+Inspection of Equations (6) and (9) reveals that the only difference between the maximum likelihood and the mean-fieldupdate is that the latter applies the exp(?(?)) func tion to the counts (Figure 5).,Experiment/Discussion
+"When the truncation K is large, ?B?zl?zr is near 0 for most right-hand sides (zl, zr), so exp(?(?)) hasthe effect of downweighting counts.",Experiment/Discussion
+"Since this sub traction affects large counts more than small counts,there is a rich-get-richer effect: rules that have al ready have large counts will be preferred.",Experiment/Discussion
+"Specifically, consider a set of rules with the same left-hand side.",Experiment/Discussion
+"The weights for all these rules only differ in the numerator (Equation (9)), so applying exp(?(?)) creates a local preference for right-hand sides with larger counts.",Experiment/Discussion
+Also note that the rule weights are not normalized; they always sum to at most one and are equal to one exactly when q(?),Experiment/Discussion
+isdegenerate.,Experiment/Discussion
+This lack of normalization gives an extra degree of freedom not present in maximum like lihood estimation: it creates a global preference for left-hand sides that have larger total counts.,Experiment/Discussion
+Top-level symbol probabilities q(?): Recall that we restrict q(?),Experiment/Discussion
+"= ???(?), so optimizing ? is equivalent to finding a single best ??.",Experiment/Discussion
+Unlike q(?),Experiment/Discussion
+"3Because we have truncated the top-level symbol weights, the DP prior on ?Bz reduces to a finite Dirichlet distribution.",Experiment/Discussion
+"0 0.5 1 1.5 2 0 0.5 1 1.5 2 x exp(?(x )) x Figure 5: The exp(?(?)) function, which is used in computing the multinomial weights for mean-fieldinference.",Experiment/Discussion
+It has the effect of reducing a larger frac tion of small counts than large counts.,Experiment/Discussion
+"and q(z), there is no closed form expression forthe optimal ??, and the objective function (Equa tion (4)) is not convex in ??.",Experiment/Discussion
+"Nonetheless, we canapply a standard gradient projection method (Bert sekas, 1999) to improve ??",Experiment/Discussion
+to a local maxima.,Experiment/Discussion
+The part of the objective function in Equation (4) that depends on ??,Experiment/Discussion
+is as follows: L(??),Experiment/Discussion
+= logGEM(??;?)+ (10) K?,Experiment/Discussion
+z=1 Eq[logDirichlet(?Bz ;?,Experiment/Discussion
+B????T )]See Liang et al (2007) for the derivation of the gradient.,Experiment/Discussion
+"In practice, this optimization has very little ef fect on performance.",Experiment/Discussion
+"We suspect that this is because the objective function is dominated by p(x | z) andp(z | ?), while the contribution of p(?",Experiment/Discussion
+| ?) is mi nor.,Experiment/Discussion
+We now present an empirical evaluation of the HDPPCFG(-GR) model and variational inference tech niques.,Experiment/Discussion
+We first give an illustrative example of theability of the HDP-PCFG to recover a known gram mar and then present the results of experiments on large-scale treebank parsing.,Experiment/Discussion
+3.1 Recovering a synthetic grammar.,Experiment/Discussion
+"In this section, we show that the HDP-PCFG-GR can recover a simple grammar while a standard 694 S ? X1X1 | X2X2 | X3X3 | X4X4 X1 ? a1 | b1 | c1 | d1 X2 ? a2 | b2 | c2 | d2 X3 ? a3 | b3 | c3 | d3 X4 ? a4 | b4 | c4 | d4 S Xi Xi {ai, bi, ci, di} {ai, bi, ci, di} (a) (b) Figure 6: (a) A synthetic grammar with a uniform distribution over rules.",Experiment/Discussion
+(b) The grammar generates trees of the form shown on the right.PCFG fails to do so because it has no built-in con trol over grammar complexity.,Experiment/Discussion
+"From the grammar in Figure 6, we generated 2000 trees.",Experiment/Discussion
+"The two terminalsymbols always have the same subscript, but we col lapsed Xi to X in the training data.",Experiment/Discussion
+"We trained the HDP-PCFG-GR, with truncation K = 20, for bothS and X for 100 iterations.",Experiment/Discussion
+We set al hyperparame ters to 1.,Experiment/Discussion
+"Figure 7 shows that the HDP-PCFG-GR recoversthe original grammar, which contains only 4 sub symbols, leaving the other 16 subsymbols unused.",Experiment/Discussion
+"The standard PCFG allocates all the subsymbols to fit the exact co-occurrence statistics of left and right terminals.Recall that a rule weight, as defined in Equation (9), is analogous to a rule probability for stan dard PCFGs.",Experiment/Discussion
+We say a rule is effective if its weight is at least 10?6 and its left hand-side has posterior is also at least 10?6.,Experiment/Discussion
+"In general, rules with weightsmaller than 10?6 can be safely pruned without af fect parsing accuracy.",Experiment/Discussion
+"The standard PCFG uses all 20 subsymbols of both S and X to explain the data, resulting in 8320 effective rules; in contrast, the HDP-PCFG uses only 4 subsymbols for X and 1 forS, resulting in only 68 effective rules.",Experiment/Discussion
+"If the thresh old is relaxed from 10?6 to 10?3, then only 20 rules are effective, which corresponds exactly to the true grammar.",Experiment/Discussion
+3.2 Parsing the Penn Treebank.,Experiment/Discussion
+"In this section, we show that our variational HDP PCFG can scale up to real-world data sets.",Experiment/Discussion
+We ranexperiments on the Wall Street Journal (WSJ) por tion of the Penn Treebank.,Experiment/Discussion
+"We trained on sections 2?21, used section 24 for tuning hyperparameters, and tested on section 22.",Experiment/Discussion
+"We binarize the trees in the treebank as follows:for each non-terminal node with symbol X , we in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 0.25 subsymbol pos ter ior 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 0.25 subsymbol pos ter ior standard PCFG HDP-PCFG Figure 7: The posteriors over the subsymbols of thestandard PCFG is roughly uniform, whereas the pos teriors of the HDP-PCFG is concentrated on four subsymbols, which is the true number of symbols in the grammar.",Experiment/Discussion
+troduce a right-branching cascade of new nodes with symbol X . The end result is that each node has at most two children.,Experiment/Discussion
+"To cope with unknown words, we replace any word appearing fewer than 5 timesin the training set with one of 50 unknown word to kens derived from 10 word-form features.",Experiment/Discussion
+"Our goal is to learn a refined grammar, where eachsymbol in the training set is split into K subsym bols.",Experiment/Discussion
+"We compare an ordinary PCFG estimated with maximum likelihood (Matsuzaki et al, 2005) andthe HDP-PCFG estimated using the variational in ference algorithm described in Section 2.6.To parse new sentences with a grammar, we com pute the posterior distribution over rules at each spanand extract the tree with the maximum expected cor rect number of rules (Petrov and Klein, 2007).",Experiment/Discussion
+"3.2.1 HyperparametersThere are six hyperparameters in the HDP-PCFG GR model, which we set in the following manner:?",Experiment/Discussion
+"= 1, ?T = 1 (uniform distribution over unar ies versus binaries), ?E = 1 (uniform distribution over terminal words), ?u(s) = ?b(s) = 1N(s) , whereN(s) is the number of different unary (binary) righthand sides of rules with left-hand side s in the treebank grammar.",Experiment/Discussion
+"The two most important hyperpa rameters are ?U and ?B , which govern the sparsity of the right-hand side for unary and binary rules.",Experiment/Discussion
+We set ?U = ?B although more performance could probably be gained by tuning these individually.,Experiment/Discussion
+"It turns out that there is not a single ?B that works for all truncation levels, as shown in Table 1.",Experiment/Discussion
+"If the top-level distribution ? is uniform, the value of ?B corresponding to a uniform prior over pairs ofchildren subsymbols is K2.",Experiment/Discussion
+"Interestingly, the opti mal ?B appears to be superlinear but subquadratic 695 truncation K 2 4 8 12 16 20 best ?B 16 12 20 28 48 80 uniform ?B 4 16 64 144 256 400 Table 1: For each truncation level, we report the ?B that yielded the highest F1 score on the development set.",Experiment/Discussion
+K PCFG PCFG (smoothed) HDP-PCFG F1 Size F1 Size F1 Size 1 60.47 2558 60.36 2597 60.5 2557 2 69.53 3788 69.38 4614 71.08 4264 8 74.32 4262 79.26 120598 79.15 50629 12 70.99 7297 78.8 160403 78.94 86386 16 66.99 19616 79.2 261444 78.24 131377 20 64.44 27593 79.27 369699 77.81 202767 Table 2: Shows development F1 and grammar sizes (the number of effective rules) as we increase the truncation K. in K. We used these values of ?B in the following experiments.,Experiment/Discussion
+3.2.2 Results The regime in which Bayesian inference is most important is when training data is scarce relative tothe complexity of the model.,Experiment/Discussion
+We train on just sec tion 2 of the Penn Treebank.,Experiment/Discussion
+Table 2 shows how the HDP-PCFG-GR can produce compact grammars that guard against overfitting.,Experiment/Discussion
+"Without smoothing,ordinary PCFGs trained using EM improve as K in creases but start to overfit around K = 4.",Experiment/Discussion
+Simple add-1.01 smoothing prevents overfitting but at thecost of a sharp increase in grammar sizes.,Experiment/Discussion
+The HDP PCFG obtains comparable performance with a much smaller number of rules.We also trained on sections 2?21 to demon strate that our methods can scale up and achievebroadly comparable results to existing state-of-the art parsers.,Experiment/Discussion
+"When using a truncation level of K = 16, the standard PCFG with smoothing obtains an F1 score of 88.36 using 706157 effective rules whilethe HDP-PCFG-GR obtains an F1 score of 87.08 us ing 428375 effective rules.",Experiment/Discussion
+We expect to see greaterbenefits from the HDP-PCFG with a larger trunca tion level.,Experiment/Discussion
+The question of how to select the appropriate gram mar complexity has been studied in earlier work.It is well known that more complex models nec essarily have higher likelihood and thus a penaltymust be imposed for more complex grammars.,Results/Conclusion
+"Examples of such penalized likelihood procedures in clude Stolcke and Omohundro (1994), which used an asymptotic Bayesian model selection criterion and Petrov et al (2006), which used a split-merge algorithm which procedurally determines when to switch between grammars of various complexities.",Results/Conclusion
+"These techniques are model selection techniquesthat use heuristics to choose among competing sta tistical models; in contrast, the HDP-PCFG relies on the Bayesian formalism to provide implicit control over model complexity within the framework of a single probabilistic model.Johnson et al (2006) also explored nonparametric grammars, but they do not give an inference algorithm for recursive grammars, e.g., grammars in cluding rules of the form A ? BC and B ? DA.",Results/Conclusion
+Recursion is a crucial aspect of PCFGs and our inference algorithm does handle it.,Results/Conclusion
+Finkel et al(2007) independently developed another nonpara metric model of grammars.,Results/Conclusion
+"Though their model is also based on hierarchical Dirichlet processes and issimilar to ours, they present a different inference al gorithm which is based on sampling.",Results/Conclusion
+Kurihara and Sato (2004) and Kurihara and Sato (2006) applied variational inference to PCFGs.,Results/Conclusion
+"Their algorithm issimilar to ours, but they did not consider nonpara metric models.",Results/Conclusion
+"We have presented the HDP-PCFG, a nonparametric Bayesian model for PCFGs, along with an efficient variational inference algorithm.",Results/Conclusion
+"While our primarycontribution is the elucidation of the model and algorithm, we have also explored some important empirical properties of the HDP-PCFG and also demon strated the potential of variational HDP-PCFGs on a full-scale parsing task.",Results/Conclusion
+696,Results/Conclusion

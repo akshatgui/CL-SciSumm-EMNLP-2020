@@ -1,165 +1,165 @@
 col1,col2
-Semantic inference is a key component for advanced natural language understanding.,{}
-"However, existing collections of automatically acquired inference rules have shown disappointing results when used in applications such as textual entailment and question answering.",{}
-"This papresents a collection of methods for automatically learning admissible argument values to which an inference rule be applied, which we call and methods for filtering out incorrect inferences.",{}
-We present empirical evidence of its effectiveness.,{}
-Semantic inference is a key component for advanced natural language understanding.,"{'title': '1 Introduction', 'number': '1'}"
-"Several important applications are already relying heavily on inference, including question answering (Moldovan et al. 2003; Harabagiu and Hickl 2006), information extraction (Romano et al.","{'title': '1 Introduction', 'number': '1'}"
-"2006), and textual entailment (Szpektor et al. 2004).","{'title': '1 Introduction', 'number': '1'}"
-"In response, several researchers have created resources for enabling semantic inference.","{'title': '1 Introduction', 'number': '1'}"
-Among manual resources used for this task are WordNet (Fellbaum 1998) and Cyc (Lenat 1995).,"{'title': '1 Introduction', 'number': '1'}"
-"Although important and useful, these resources primarily contain prescriptive inference rules such as “X divorces Y ⇒ X married Y”.","{'title': '1 Introduction', 'number': '1'}"
-"In practical NLP applications, however, plausible inference rules such as “X married Y” ⇒ “X dated Y” are very useful.","{'title': '1 Introduction', 'number': '1'}"
-"This, along with the difficulty and labor-intensiveness of generating exhaustive lists of rules, has led researchers to focus on automatic methods for building inference resources such as inference rule collections (Lin and Pantel 2001; Szpektor et al. 2004) and paraphrase collections (Barzilay and McKeown 2001).","{'title': '1 Introduction', 'number': '1'}"
-"Using these resources in applications has been hindered by the large amount of incorrect inferences they generate, either because of altogether incorrect rules or because of blind application of plausible rules without considering the context of the relations or the senses of the words.","{'title': '1 Introduction', 'number': '1'}"
-"For example, consider the following sentence: Terry Nichols was charged by federal prosecutors for murder and conspiracy in the Oklahoma City bombing. and an inference rule such as: Using this rule, we can infer that “federal prosecutors announced the arrest of Terry Nichols”.","{'title': '1 Introduction', 'number': '1'}"
-"However, given the sentence: Fraud was suspected when accounts were charged by CCM telemarketers without obtaining consumer authorization. the plausible inference rule (1) would incorrectly infer that “CCM telemarketers announced the arrest of accounts”.","{'title': '1 Introduction', 'number': '1'}"
-This example depicts a major obstacle to the effective use of automatically learned inference rules.,"{'title': '1 Introduction', 'number': '1'}"
-"What is missing is knowledge about the admissible argument values for which an inference rule holds, which we call Inferential Selectional Preferences.","{'title': '1 Introduction', 'number': '1'}"
-"For example, inference rule (1) should only be applied if X is a Person and Y is a Law Enforcement Agent or a Law Enforcement Agency.","{'title': '1 Introduction', 'number': '1'}"
-"This knowledge does not guarantee that the inference rule will hold, but, as we show in this paper, goes a long way toward filtering out erroneous applications of rules.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we propose ISP, a collection of methods for learning inferential selectional preferences and filtering out incorrect inferences.","{'title': '1 Introduction', 'number': '1'}"
-"The presented algorithms apply to any collection of inference rules between binary semantic relations, such as example (1).","{'title': '1 Introduction', 'number': '1'}"
-ISP derives inferential selectional preferences by aggregating statistics of inference rule instantiations over a large corpus of text.,"{'title': '1 Introduction', 'number': '1'}"
-"Within ISP, we explore different probabilistic models of selectional preference to accept or reject specific inferences.","{'title': '1 Introduction', 'number': '1'}"
-We present empirical evidence to support the following main contribution: Claim: Inferential selectional preferences can be automatically learned and used for effectively filtering out incorrect inferences.,"{'title': '1 Introduction', 'number': '1'}"
-"Selectional preference (SP) as a foundation for computational semantics is one of the earliest topics in AI and NLP, and has its roots in (Katz and Fodor 1963).","{'title': '2 Previous Work', 'number': '2'}"
-"Overviews of NLP research on this theme are (Wilks and Fass 1992), which includes the influential theory of Preference Semantics by Wilks, and more recently (Light and Greiff 2002).","{'title': '2 Previous Work', 'number': '2'}"
-"Rather than venture into learning inferential SPs, much previous work has focused on learning SPs for simpler structures.","{'title': '2 Previous Work', 'number': '2'}"
-"Resnik (1996), the seminal paper on this topic, introduced a statistical model for learning SPs for predicates using an unsupervised method.","{'title': '2 Previous Work', 'number': '2'}"
-"Learning SPs often relies on an underlying set of semantic classes, as in both Resnik’s and our approach.","{'title': '2 Previous Work', 'number': '2'}"
-Semantic classes can be specified manually or derived automatically.,"{'title': '2 Previous Work', 'number': '2'}"
-"Manual collections of semantic classes include the hierarchies of WordNet (Fellbaum 1998), Levin verb classes (Levin 1993), and FrameNet (Baker et al. 1998).","{'title': '2 Previous Work', 'number': '2'}"
-"Automatic derivation of semantic classes can take a variety of approaches, but often uses corpus methods and the Distributional Hypothesis (Harris 1964) to automatically cluster similar entities into classes, e.g.","{'title': '2 Previous Work', 'number': '2'}"
-CBC (Pantel and Lin 2002).,"{'title': '2 Previous Work', 'number': '2'}"
-"In this paper, we experiment with two sets of semantic classes, one from WordNet and one from CBC.","{'title': '2 Previous Work', 'number': '2'}"
-"Another thread related to our work includes extracting from text corpora paraphrases (Barzilay and McKeown 2001) and inference rules, e.g.","{'title': '2 Previous Work', 'number': '2'}"
-TEASE1 (Szpektor et al. 2004) and DIRT (Lin and Pantel 2001).,"{'title': '2 Previous Work', 'number': '2'}"
-"While these systems differ in their approaches, neither provides for the extracted inference rules to hold or fail based on SPs.","{'title': '2 Previous Work', 'number': '2'}"
-Zanzotto et al. (2006) recently explored a different interplay between SPs and inferences.,"{'title': '2 Previous Work', 'number': '2'}"
-"Rather than examine the role of SPs in inferences, they use SPs of a particular type to derive inferences.","{'title': '2 Previous Work', 'number': '2'}"
-"For instance the preference of win for the subject player, a nominalization of play, is used to derive that “win => play”.","{'title': '2 Previous Work', 'number': '2'}"
-"Our work can be viewed as complementary to the work on extracting semantic inferences and paraphrases, since we seek to refine when a given inference applies, filtering out incorrect inferences.","{'title': '2 Previous Work', 'number': '2'}"
-The aim of this paper is to learn inferential selectional preferences for filtering inference rules.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-Let pi => pj be an inference rule where p is a binary semantic relation between two entities x and y.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Let (x, p, y) be an instance of relation p. Formal task definition: Given an inference rule pi => pj and the instance (x, pi, y), our task is to determine if (x, pj, y) is valid.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-Consider the example in Section 1 where we have the inference rule “X is charged by Y” => “Y announced the arrest of X”.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Our task is to automatically determine that “federal prosecutors announced the arrest of Terry Nichols” (i.e., (Terry Nichols, pj, federal prosecutors)) is valid but that “CCM telemarketers announced the arrest of accounts” is invalid.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Because the semantic relations p are binary, the selectional preferences on their two arguments may be either considered jointly or independently.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"For example, the relation p = “X is charged by Y” could have joint SPs: This distinction between joint and independent selectional preferences constitutes the difference between the two models we present in this section.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-The remainder of this section describes the ISP approach.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"In Section 3.1, we describe methods for automatically determining the semantic contexts of each single relation’s selectional preferences.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-Section 3.2 uses these for developing our inferential selectional preference models.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Finally, we propose inference filtering algorithms in Section 3.3. cx Resnik (1996) defined the selectional preferences of a predicate as the semantic classes of the words that appear as its arguments.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Similarly, we define the relational selectional preferences of a binary semantic relation pi as the semantic classes C(x) of the words that can be instantiated for x and as the semantic classes C(y) of the words that can be instantiated for y.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"The semantic classes C(x) and C(y) can be obtained from a conceptual taxonomy as proposed in (Resnik 1996), such as WordNet, or from the classes extracted from a word clustering algorithm such as CBC (Pantel and Lin 2002).","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"For example, given the relation “X is charged by Y”, its relational selection preferences from WordNet could be {social group, organism, state...} for X and {authority, state, section...} for Y.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Below we propose joint and independent models, based on a corpus analysis, for automatically determining relational selectional preferences.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Model 1: Joint Relational Model (JRM) Our joint model uses a corpus analysis to learn SPs for binary semantic relations by considering their arguments jointly, as in example (2).","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Given a large corpus of English text, we first find the occurrences of each semantic relation p. For each instance 〈x, p, y〉, we retrieve the sets C(x) and C(y) of the semantic classes that x and y belong to and accumulate the frequencies of the triples 〈c(x), p, c(y)〉, where c(x) ∈ C(x) and c(y) ∈ C(y)2.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Each triple 〈c(x), p, c(y)〉 is a candidate selectional preference for p. Candidates can be incorrect when: a) they were generated from the incorrect sense of a polysemous word; or b) p does not hold for the other words in the semantic class.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Intuitively, we have more confidence in a particular candidate if its semantic classes are closely associated given the relation p. Pointwise mutual information (Cover and Thomas 1991) is a commonly used metric for measuring this association strength between two events e1 and e2: 2 In this paper, the semantic classes C(x) and C(y) are extracted from WordNet and CBC (described in Section 4.2).","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"We define our ranking function as the strength of association between two semantic classes, cx and cy3, given the relation p: Let |cx, p, cy |denote the frequency of observing the instance 〈c(x), p, c(y)〉.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"We estimate the probabilities of Equation 3.2 using maximum likelihood estimates over our corpus: Similarly to (Resnik 1996), we estimate the above frequencies using: these classes co-occurring even though they would form a valid relational selectional preference.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"To alleviate this problem, we propose a second model that is less strict by considering the arguments of the binary semantic relations independently, as in example (3).","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Similarly to JRM, we extract each instance p, of each semantic relation p and retrieve the set of semantic classes C(x) and C(y) that x and y belong to, accumulating the frequencies of the triples p, and p, where tic class given the relation p, according to Equations 3.3. where p, denotes the frequency of observing cy d c(y) in our equations.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"The intersection of the two sets of SPs forms the candidate inferential SPs for the inference pi => pj: (Law Enforcement Agent, *) (*, Person) We use the same minimum, maximum, and average ranking strategies as in JIM.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Whereas in Section 3.1 we learned selectional preferences for the arguments of a relation p, in this section we learn selectional preferences for the arguments of an inference rule pi => pj.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Model 1: Joint Inferential Model (JIM) Given an inference rule pi => pj, our joint model defines the set of inferential SPs as the intersection of the relational SPs for pi and pj, as defined in the Joint Relational Model (JRM).","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"For example, suppose relation pi = “X is charged by Y” gives the following SP scores under the JRM: and that pj = “Y announced the arrest of X” gives the following SP scores under the JRM: The intersection of the two sets of SPs forms the candidate inferential SPs for the inference pi => pj: We rank the candidate inferential SPs according to three ways to combine their relational SP scores, using the minimum, maximum, and average of the SPs.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"For example, for (Law Enforcement Agent, Person), the respective scores would be 1.45, 2.01, and 1.73.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"These different ranking strategies produced nearly identical results in our experiments, as discussed in Section 5.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-Model 2: Independent Inferential Model (IIM) Our independent model is the same as the joint model above except that it computes candidate inferential SPs using the Independent Relational Model (IRM) instead of the JRM.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Consider the same example relations pi and pj from the joint model and suppose that the IRM gives the following relational SP scores for pi: and the following relational SP scores for pj: Given an inference rule pi => pj and the instance (x, pi, y), the system’s task is to determine whether (x, pj, y) is valid.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-Let C(w) be the set of semantic classes c(w) to which word w belongs.,"{'title': '3 Selectional Preference Models', 'number': '3'}"
-"Below we present three filtering algorithms which range from the least to the most permissive: Since both JIM and IIM use a ranking score in their inferential SPs, each filtering algorithm can be tuned to be more or less strict by setting an acceptance threshold on the ranking scores or by selecting only the top i percent highest ranking SPs.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-"In our experiments, reported in Section 5, we tested each model using various values of i.","{'title': '3 Selectional Preference Models', 'number': '3'}"
-This section describes the methodology for testing our claim that inferential selectional preferences can be learned to filter incorrect inferences.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-"Given a collection of inference rules of the form pi => pj, our task is to determine whether a particular instance (x, pj, y) holds given that (x, pi, y) holds4.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"In the next sections, we describe our collection of inference rules, the semantic classes used for forming selectional preferences, and evaluation criteria for measuring the filtering quality.","{'title': '4 Experimental Methodology', 'number': '4'}"
-Our models for learning inferential selectional preferences can be applied to any collection of inference rules between binary semantic relations.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-"In this paper, we focus on the inference rules contained in the DIRT resource (Lin and Pantel 2001).","{'title': '4 Experimental Methodology', 'number': '4'}"
-"DIRT consists of over 12 million rules which were extracted from a 1GB newspaper corpus (San Jose Mercury, Wall Street Journal and AP Newswire from the TREC-9 collection).","{'title': '4 Experimental Methodology', 'number': '4'}"
-"For example, here are DIRT’s top 3 inference rules for “X solves Y”: “Y is solved by X”, “X resolves Y”, “X finds a solution to Y” The choice of semantic classes is of great importance for selectional preference.","{'title': '4 Experimental Methodology', 'number': '4'}"
-One important aspect is the granularity of the classes.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-Too general a class will provide no discriminatory power while too fine-grained a class will offer little generalization and apply in only extremely few cases.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-The absence of an attested high-quality set of semantic classes for this task makes discovering preferences difficult.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-"Since many of the criteria for developing such a set are not even known, we decided to experiment with two very different sets of semantic classes, in the hope that in addition to learning semantic preferences, we might also uncover some clues for the eventual decisions about what makes good semantic classes in general.","{'title': '4 Experimental Methodology', 'number': '4'}"
-Our first set of semantic classes was directly extracted from the output of the CBC clustering algorithm (Pantel and Lin 2002).,"{'title': '4 Experimental Methodology', 'number': '4'}"
-We applied CBC to the TREC-9 and TREC-2002 (Aquaint) newswire collections consisting of over 600 million words.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-CBC generated 1628 noun concepts and these were used as our semantic classes for SPs.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-"Secondly, we extracted semantic classes from WordNet 2.1 (Fellbaum 1998).","{'title': '4 Experimental Methodology', 'number': '4'}"
-"In the absence of any externally motivated distinguishing features (for example, the Basic Level categories from Prototype Theory, developed by Eleanor Rosch (1978)), we used the simple but effective method of manually truncating the noun synset hierarchy5 and considering all synsets below each cut point as part of the semantic class at that node.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"To select the cut points, we inspected several different hierarchy levels and found the synsets at a depth of 4 5 Only nouns are considered since DIRT semantic relations connect only nouns. to form the most natural semantic classes.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"Since the noun hierarchy in WordNet has an average depth of 12, our truncation created a set of concepts considerably coarser-grained than WordNet itself.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"The cut produced 1287 semantic classes, a number similar to the classes in CBC.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"To properly test WordNet as a source of semantic classes for our selectional preferences, we would need to experiment with different extraction algorithms.","{'title': '4 Experimental Methodology', 'number': '4'}"
-The goal of the filtering task is to minimize false positives (incorrectly accepted inferences) and false negatives (incorrectly rejected inferences).,"{'title': '4 Experimental Methodology', 'number': '4'}"
-A standard methodology for evaluating such tasks is to compare system filtering results with a gold standard using a confusion matrix.,"{'title': '4 Experimental Methodology', 'number': '4'}"
-"A confusion matrix captures the filtering performance on both correct and incorrect inferences: where A represents the number of correct instances correctly identified by the system, D represents the number of incorrect instances correctly identified by the system, B represents the number of false positives and C represents the number of false negatives.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"To compare systems, three key measures are used to summarize confusion matrices: probability of a filter being correct.","{'title': '4 Experimental Methodology', 'number': '4'}"
-"In this section, we provide empirical evidence to support the main claim of this paper.","{'title': '5 Experimental Results', 'number': '5'}"
-"Given a collection of DIRT inference rules of the form pi => pj, our experiments, using the methodology of Section 4, evaluate the capability of our ISP models for determining if (x, pj, y) holds given that (x, pi, y) holds.","{'title': '5 Experimental Results', 'number': '5'}"
-"For each filtering algorithm in Section 3.3, ISP.JIM, ISP.IIM.∧, and ISP.IIM.v, we trained their probabilistic models using corpus statistics extracted from the 1999 AP newswire collection (part of the TREC-2002 Aquaint collection) consisting of approximately 31 million words.","{'title': '5 Experimental Results', 'number': '5'}"
-We used the Minipar parser (Lin 1993) to match DIRT patterns in the text.,"{'title': '5 Experimental Results', 'number': '5'}"
-This permits exact matches since DIRT inference rules are built from Minipar parse trees.,"{'title': '5 Experimental Results', 'number': '5'}"
-"For each system, we experimented with the different ways of combining relational SP scores: minimum, maximum, and average (see Section 3.2).","{'title': '5 Experimental Results', 'number': '5'}"
-"Also, we experimented with various values for the i parameter described in Section 3.3.","{'title': '5 Experimental Results', 'number': '5'}"
-"In order to compute the confusion matrices described in Section 4.3, we must first construct a representative set of inferences and manually annotate them as correct or incorrect.","{'title': '5 Experimental Results', 'number': '5'}"
-We randomly selected 100 inference rules of the form pi => pj from DIRT.,"{'title': '5 Experimental Results', 'number': '5'}"
-"For each pattern pi, we then extracted its instances from the Aquaint 1999 AP newswire collection (approximately 22 million words), and randomly selected 10 distinct instances, resulting in a total of 1000 instances.","{'title': '5 Experimental Results', 'number': '5'}"
-"For each instance of pi, applying DIRT’s inference rule would assert the instance (x, pj, y).","{'title': '5 Experimental Results', 'number': '5'}"
-Our evaluation tests how well our models can filter these so that only correct inferences are made.,"{'title': '5 Experimental Results', 'number': '5'}"
-"To form the gold standard, two human judges were asked to tag each instance (x, pj, y) as correct or incorrect.","{'title': '5 Experimental Results', 'number': '5'}"
-"For example, given a randomly selected inference rule “X is charged by Y => Y announced the arrest of X” and the instance “Terry Nichols was charged by federal prosecutors”, the judges must determine if the instance (federal prosecutors, Y announced the arrest of X, Terry Nichols) is correct.","{'title': '5 Experimental Results', 'number': '5'}"
-The judges were asked to consider the following two criteria for their decision: Judges found that annotation decisions can range from trivial to difficult.,"{'title': '5 Experimental Results', 'number': '5'}"
-The differences often were in the instances for which one of the judges fails to see the right context under which the inference could hold.,"{'title': '5 Experimental Results', 'number': '5'}"
-"To minimize disagreements, the judges went through an extensive round of training.","{'title': '5 Experimental Results', 'number': '5'}"
-"To that end, the 1000 instances (x, pj, y) were split into DEV and TEST sets, 500 in each.","{'title': '5 Experimental Results', 'number': '5'}"
-The two judges trained themselves by annotating DEV together.,"{'title': '5 Experimental Results', 'number': '5'}"
-The TEST set was then annotated separately to verify the inter-annotator agreement and to verify whether the task is well-defined.,"{'title': '5 Experimental Results', 'number': '5'}"
-The kappa statistic (Siegel and Castellan Jr. 1988) was x = 0.72.,"{'title': '5 Experimental Results', 'number': '5'}"
-"For the 70 disagreements between the judges, a third judge acted as an adjudicator.","{'title': '5 Experimental Results', 'number': '5'}"
-We compare our ISP algorithms to the following baselines: One alternative to our approach is admit instances on the Web using literal search queries.,"{'title': '5 Experimental Results', 'number': '5'}"
-We investigated this technique but discarded it due to subtle yet critical issues with pattern canonicalization that resulted in rejecting nearly all inferences.,"{'title': '5 Experimental Results', 'number': '5'}"
-"However, we are investigating other ways of using Web corpora for this task.","{'title': '5 Experimental Results', 'number': '5'}"
-"For each ISP algorithm and parameter combination, we constructed a confusion matrix on the development set and computed the system sensitivity, specificity and accuracy as described in Section 4.3.","{'title': '5 Experimental Results', 'number': '5'}"
-This resulted in 180 experiments on the development set.,"{'title': '5 Experimental Results', 'number': '5'}"
-"For each ISP algorithm and semantic class source, we selected the best parameter combinations according to the following criteria: textual entailment researchers have commented that inference rule collections like DIRT are difficult to use due to low precision.","{'title': '5 Experimental Results', 'number': '5'}"
-Many have asked for filtered versions that remove incorrect inferences even at the cost of removing correct inferences.,"{'title': '5 Experimental Results', 'number': '5'}"
-"In response, we show results for the system achieving the best sensitivity while maintaining at least 90% specificity on the DEV set.","{'title': '5 Experimental Results', 'number': '5'}"
-We evaluated the selected systems on the TEST set.,"{'title': '5 Experimental Results', 'number': '5'}"
-Table 1 summarizes the quality of the systems selected according to the Accuracy criterion.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The best performing system, ISP.IIM.v, performed statistically significantly better than all three baselines.","{'title': '5 Experimental Results', 'number': '5'}"
-"The best system according to the 90%Specificity criteria was ISP.JIM, which coincidentally has the highest accuracy for that model as shown in Table 16.","{'title': '5 Experimental Results', 'number': '5'}"
-This result is very promising for researchers that require highly accurate inference rules since they can use ISP.JIM and expect to recall 17% of the correct inferences by only accepting false positives 12% of the time.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Figures 1a) and 1b) present the full confusion matrices for the most accurate and highly specific systems, with both systems selected on the DEV set.","{'title': '5 Experimental Results', 'number': '5'}"
-"The most accurate system was ISP.IIM.v, which is the most permissive of the algorithms.","{'title': '5 Experimental Results', 'number': '5'}"
-This suggests that a larger corpus for learning SPs may be needed to support stronger performance on the more restrictive methods.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The system in Figure 1b), selected for maximizing sensitivity while maintaining high specificity, was 70% correct in predicting correct inferences.","{'title': '5 Experimental Results', 'number': '5'}"
-Figure 2 illustrates the ROC curve for all our systems and parameter combinations on the TEST set.,"{'title': '5 Experimental Results', 'number': '5'}"
-ROC curves plot the true positive rate against the false positive rate.,"{'title': '5 Experimental Results', 'number': '5'}"
-The near-diagonal line plots the three baseline systems.,"{'title': '5 Experimental Results', 'number': '5'}"
-Several trends can be observed from this figure.,"{'title': '5 Experimental Results', 'number': '5'}"
-"First, systems using the semantic classes from WordNet tend to perform less well than systems using CBC classes.","{'title': '5 Experimental Results', 'number': '5'}"
-"As discussed in Section 4.2, we used a very simplistic extraction of semantic classes from WordNet.","{'title': '5 Experimental Results', 'number': '5'}"
-The results in Figure 2 serve as a lower bound on what could be achieved with a better extraction from WordNet.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Upon inspection of instances that WordNet got incorrect but CBC got correct, it seemed that CBC had a much higher lexical coverage than WordNet.","{'title': '5 Experimental Results', 'number': '5'}"
-"For example, several of the instances contained proper names as either the X or Y argument (WordNet has poor proper name coverage).","{'title': '5 Experimental Results', 'number': '5'}"
-"When an argument is not covered by any class, the inference is rejected.","{'title': '5 Experimental Results', 'number': '5'}"
-Figure 2 also illustrates how our three different ISP algorithms behave.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The strictest filters, ISP.JIM and ISP.IIM.n, have the poorest overall performance but, as expected, have a generally very low rate of false positives.","{'title': '5 Experimental Results', 'number': '5'}"
-"ISP.IIM.v, which is a much more permissive filter because it does not require both arguments of a relation to match, has generally many more false positives but has an overall better performance.","{'title': '5 Experimental Results', 'number': '5'}"
-"We did not include in Figure 2 an analysis of the minimum, maximum, and average ranking strategies presented in Section 3.2 since they generally produced nearly identical results.","{'title': '5 Experimental Results', 'number': '5'}"
-"For the most accurate system, ISP.IIM.v, we explored the impact of the cutoff threshold i on the sensitivity, specificity, and accuracy, as shown in Figure 3.","{'title': '5 Experimental Results', 'number': '5'}"
-"Rather than step the values by 10% as we did on the DEV set, here we stepped the threshold value by 2% on the TEST set.","{'title': '5 Experimental Results', 'number': '5'}"
-The more permissive values of i increase sensitivity at the expense of specificity.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Interestingly, the overall accuracy remained fairly constant across the entire range of i, staying within 0.05 of the maximum of 0.62 achieved at i=30%.","{'title': '5 Experimental Results', 'number': '5'}"
-"Finally, we manually inspected several incorrect inferences that were missed by our filters.","{'title': '5 Experimental Results', 'number': '5'}"
-"A common source of errors was due to the many incorrect “antonymy” inference rules generated by DIRT, such as “X is rejected in Y”=>“X is accepted in Y”.","{'title': '5 Experimental Results', 'number': '5'}"
-This recognized problem in DIRT occurs because of the distributional hypothesis assumption used to form the inference rules.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Our ISP algorithms suffer from a similar quandary since, typically, antonymous relations take the same sets of arguments for X (and Y).","{'title': '5 Experimental Results', 'number': '5'}"
-"For these cases, ISP algorithms learn many selectional preferences that accept the same types of entities as those that made DIRT learn the inference rule in the first place, hence ISP will not filter out many incorrect inferences.","{'title': '5 Experimental Results', 'number': '5'}"
-"We presented algorithms for learning what we call inferential selectional preferences, and presented evidence that learning selectional preferences can be useful in filtering out incorrect inferences.","{'title': '6 Conclusion', 'number': '6'}"
-Future work in this direction includes further exploration of the appropriate inventory of semantic classes used as SP’s.,"{'title': '6 Conclusion', 'number': '6'}"
-"This work constitutes a step towards better understanding of the interaction of selectional preferences and inferences, bridging these two aspects of semantics.","{'title': '6 Conclusion', 'number': '6'}"
+Semantic inference is a key component for advanced natural language understanding.,Introduction
+"However, existing collections of automatically acquired inference rules have shown disappointing results when used in applications such as textual entailment and question answering.",Introduction
+"This papresents a collection of methods for automatically learning admissible argument values to which an inference rule be applied, which we call and methods for filtering out incorrect inferences.",Introduction
+We present empirical evidence of its effectiveness.,Introduction
+Semantic inference is a key component for advanced natural language understanding.,Experiment/Discussion
+"Several important applications are already relying heavily on inference, including question answering (Moldovan et al. 2003; Harabagiu and Hickl 2006), information extraction (Romano et al.",Experiment/Discussion
+"2006), and textual entailment (Szpektor et al. 2004).",Experiment/Discussion
+"In response, several researchers have created resources for enabling semantic inference.",Experiment/Discussion
+Among manual resources used for this task are WordNet (Fellbaum 1998) and Cyc (Lenat 1995).,Experiment/Discussion
+"Although important and useful, these resources primarily contain prescriptive inference rules such as “X divorces Y ⇒ X married Y”.",Experiment/Discussion
+"In practical NLP applications, however, plausible inference rules such as “X married Y” ⇒ “X dated Y” are very useful.",Experiment/Discussion
+"This, along with the difficulty and labor-intensiveness of generating exhaustive lists of rules, has led researchers to focus on automatic methods for building inference resources such as inference rule collections (Lin and Pantel 2001; Szpektor et al. 2004) and paraphrase collections (Barzilay and McKeown 2001).",Experiment/Discussion
+"Using these resources in applications has been hindered by the large amount of incorrect inferences they generate, either because of altogether incorrect rules or because of blind application of plausible rules without considering the context of the relations or the senses of the words.",Experiment/Discussion
+"For example, consider the following sentence: Terry Nichols was charged by federal prosecutors for murder and conspiracy in the Oklahoma City bombing. and an inference rule such as: Using this rule, we can infer that “federal prosecutors announced the arrest of Terry Nichols”.",Experiment/Discussion
+"However, given the sentence: Fraud was suspected when accounts were charged by CCM telemarketers without obtaining consumer authorization. the plausible inference rule (1) would incorrectly infer that “CCM telemarketers announced the arrest of accounts”.",Experiment/Discussion
+This example depicts a major obstacle to the effective use of automatically learned inference rules.,Experiment/Discussion
+"What is missing is knowledge about the admissible argument values for which an inference rule holds, which we call Inferential Selectional Preferences.",Experiment/Discussion
+"For example, inference rule (1) should only be applied if X is a Person and Y is a Law Enforcement Agent or a Law Enforcement Agency.",Experiment/Discussion
+"This knowledge does not guarantee that the inference rule will hold, but, as we show in this paper, goes a long way toward filtering out erroneous applications of rules.",Experiment/Discussion
+"In this paper, we propose ISP, a collection of methods for learning inferential selectional preferences and filtering out incorrect inferences.",Experiment/Discussion
+"The presented algorithms apply to any collection of inference rules between binary semantic relations, such as example (1).",Experiment/Discussion
+ISP derives inferential selectional preferences by aggregating statistics of inference rule instantiations over a large corpus of text.,Experiment/Discussion
+"Within ISP, we explore different probabilistic models of selectional preference to accept or reject specific inferences.",Experiment/Discussion
+We present empirical evidence to support the following main contribution: Claim: Inferential selectional preferences can be automatically learned and used for effectively filtering out incorrect inferences.,Experiment/Discussion
+"Selectional preference (SP) as a foundation for computational semantics is one of the earliest topics in AI and NLP, and has its roots in (Katz and Fodor 1963).",Experiment/Discussion
+"Overviews of NLP research on this theme are (Wilks and Fass 1992), which includes the influential theory of Preference Semantics by Wilks, and more recently (Light and Greiff 2002).",Experiment/Discussion
+"Rather than venture into learning inferential SPs, much previous work has focused on learning SPs for simpler structures.",Experiment/Discussion
+"Resnik (1996), the seminal paper on this topic, introduced a statistical model for learning SPs for predicates using an unsupervised method.",Experiment/Discussion
+"Learning SPs often relies on an underlying set of semantic classes, as in both Resnik’s and our approach.",Experiment/Discussion
+Semantic classes can be specified manually or derived automatically.,Experiment/Discussion
+"Manual collections of semantic classes include the hierarchies of WordNet (Fellbaum 1998), Levin verb classes (Levin 1993), and FrameNet (Baker et al. 1998).",Experiment/Discussion
+"Automatic derivation of semantic classes can take a variety of approaches, but often uses corpus methods and the Distributional Hypothesis (Harris 1964) to automatically cluster similar entities into classes, e.g.",Experiment/Discussion
+CBC (Pantel and Lin 2002).,Experiment/Discussion
+"In this paper, we experiment with two sets of semantic classes, one from WordNet and one from CBC.",Experiment/Discussion
+"Another thread related to our work includes extracting from text corpora paraphrases (Barzilay and McKeown 2001) and inference rules, e.g.",Experiment/Discussion
+TEASE1 (Szpektor et al. 2004) and DIRT (Lin and Pantel 2001).,Experiment/Discussion
+"While these systems differ in their approaches, neither provides for the extracted inference rules to hold or fail based on SPs.",Experiment/Discussion
+Zanzotto et al. (2006) recently explored a different interplay between SPs and inferences.,Experiment/Discussion
+"Rather than examine the role of SPs in inferences, they use SPs of a particular type to derive inferences.",Experiment/Discussion
+"For instance the preference of win for the subject player, a nominalization of play, is used to derive that “win => play”.",Experiment/Discussion
+"Our work can be viewed as complementary to the work on extracting semantic inferences and paraphrases, since we seek to refine when a given inference applies, filtering out incorrect inferences.",Experiment/Discussion
+The aim of this paper is to learn inferential selectional preferences for filtering inference rules.,Experiment/Discussion
+Let pi => pj be an inference rule where p is a binary semantic relation between two entities x and y.,Experiment/Discussion
+"Let (x, p, y) be an instance of relation p. Formal task definition: Given an inference rule pi => pj and the instance (x, pi, y), our task is to determine if (x, pj, y) is valid.",Experiment/Discussion
+Consider the example in Section 1 where we have the inference rule “X is charged by Y” => “Y announced the arrest of X”.,Experiment/Discussion
+"Our task is to automatically determine that “federal prosecutors announced the arrest of Terry Nichols” (i.e., (Terry Nichols, pj, federal prosecutors)) is valid but that “CCM telemarketers announced the arrest of accounts” is invalid.",Experiment/Discussion
+"Because the semantic relations p are binary, the selectional preferences on their two arguments may be either considered jointly or independently.",Experiment/Discussion
+"For example, the relation p = “X is charged by Y” could have joint SPs: This distinction between joint and independent selectional preferences constitutes the difference between the two models we present in this section.",Experiment/Discussion
+The remainder of this section describes the ISP approach.,Experiment/Discussion
+"In Section 3.1, we describe methods for automatically determining the semantic contexts of each single relation’s selectional preferences.",Experiment/Discussion
+Section 3.2 uses these for developing our inferential selectional preference models.,Experiment/Discussion
+"Finally, we propose inference filtering algorithms in Section 3.3. cx Resnik (1996) defined the selectional preferences of a predicate as the semantic classes of the words that appear as its arguments.",Experiment/Discussion
+"Similarly, we define the relational selectional preferences of a binary semantic relation pi as the semantic classes C(x) of the words that can be instantiated for x and as the semantic classes C(y) of the words that can be instantiated for y.",Experiment/Discussion
+"The semantic classes C(x) and C(y) can be obtained from a conceptual taxonomy as proposed in (Resnik 1996), such as WordNet, or from the classes extracted from a word clustering algorithm such as CBC (Pantel and Lin 2002).",Experiment/Discussion
+"For example, given the relation “X is charged by Y”, its relational selection preferences from WordNet could be {social group, organism, state...} for X and {authority, state, section...} for Y.",Experiment/Discussion
+"Below we propose joint and independent models, based on a corpus analysis, for automatically determining relational selectional preferences.",Experiment/Discussion
+"Model 1: Joint Relational Model (JRM) Our joint model uses a corpus analysis to learn SPs for binary semantic relations by considering their arguments jointly, as in example (2).",Experiment/Discussion
+"Given a large corpus of English text, we first find the occurrences of each semantic relation p. For each instance 〈x, p, y〉, we retrieve the sets C(x) and C(y) of the semantic classes that x and y belong to and accumulate the frequencies of the triples 〈c(x), p, c(y)〉, where c(x) ∈ C(x) and c(y) ∈ C(y)2.",Experiment/Discussion
+"Each triple 〈c(x), p, c(y)〉 is a candidate selectional preference for p. Candidates can be incorrect when: a) they were generated from the incorrect sense of a polysemous word; or b) p does not hold for the other words in the semantic class.",Experiment/Discussion
+"Intuitively, we have more confidence in a particular candidate if its semantic classes are closely associated given the relation p. Pointwise mutual information (Cover and Thomas 1991) is a commonly used metric for measuring this association strength between two events e1 and e2: 2 In this paper, the semantic classes C(x) and C(y) are extracted from WordNet and CBC (described in Section 4.2).",Experiment/Discussion
+"We define our ranking function as the strength of association between two semantic classes, cx and cy3, given the relation p: Let |cx, p, cy |denote the frequency of observing the instance 〈c(x), p, c(y)〉.",Experiment/Discussion
+"We estimate the probabilities of Equation 3.2 using maximum likelihood estimates over our corpus: Similarly to (Resnik 1996), we estimate the above frequencies using: these classes co-occurring even though they would form a valid relational selectional preference.",Experiment/Discussion
+"To alleviate this problem, we propose a second model that is less strict by considering the arguments of the binary semantic relations independently, as in example (3).",Experiment/Discussion
+"Similarly to JRM, we extract each instance p, of each semantic relation p and retrieve the set of semantic classes C(x) and C(y) that x and y belong to, accumulating the frequencies of the triples p, and p, where tic class given the relation p, according to Equations 3.3. where p, denotes the frequency of observing cy d c(y) in our equations.",Experiment/Discussion
+"The intersection of the two sets of SPs forms the candidate inferential SPs for the inference pi => pj: (Law Enforcement Agent, *) (*, Person) We use the same minimum, maximum, and average ranking strategies as in JIM.",Experiment/Discussion
+"Whereas in Section 3.1 we learned selectional preferences for the arguments of a relation p, in this section we learn selectional preferences for the arguments of an inference rule pi => pj.",Experiment/Discussion
+"Model 1: Joint Inferential Model (JIM) Given an inference rule pi => pj, our joint model defines the set of inferential SPs as the intersection of the relational SPs for pi and pj, as defined in the Joint Relational Model (JRM).",Experiment/Discussion
+"For example, suppose relation pi = “X is charged by Y” gives the following SP scores under the JRM: and that pj = “Y announced the arrest of X” gives the following SP scores under the JRM: The intersection of the two sets of SPs forms the candidate inferential SPs for the inference pi => pj: We rank the candidate inferential SPs according to three ways to combine their relational SP scores, using the minimum, maximum, and average of the SPs.",Experiment/Discussion
+"For example, for (Law Enforcement Agent, Person), the respective scores would be 1.45, 2.01, and 1.73.",Experiment/Discussion
+"These different ranking strategies produced nearly identical results in our experiments, as discussed in Section 5.",Experiment/Discussion
+Model 2: Independent Inferential Model (IIM) Our independent model is the same as the joint model above except that it computes candidate inferential SPs using the Independent Relational Model (IRM) instead of the JRM.,Experiment/Discussion
+"Consider the same example relations pi and pj from the joint model and suppose that the IRM gives the following relational SP scores for pi: and the following relational SP scores for pj: Given an inference rule pi => pj and the instance (x, pi, y), the system’s task is to determine whether (x, pj, y) is valid.",Experiment/Discussion
+Let C(w) be the set of semantic classes c(w) to which word w belongs.,Experiment/Discussion
+"Below we present three filtering algorithms which range from the least to the most permissive: Since both JIM and IIM use a ranking score in their inferential SPs, each filtering algorithm can be tuned to be more or less strict by setting an acceptance threshold on the ranking scores or by selecting only the top i percent highest ranking SPs.",Experiment/Discussion
+"In our experiments, reported in Section 5, we tested each model using various values of i.",Experiment/Discussion
+This section describes the methodology for testing our claim that inferential selectional preferences can be learned to filter incorrect inferences.,Experiment/Discussion
+"Given a collection of inference rules of the form pi => pj, our task is to determine whether a particular instance (x, pj, y) holds given that (x, pi, y) holds4.",Experiment/Discussion
+"In the next sections, we describe our collection of inference rules, the semantic classes used for forming selectional preferences, and evaluation criteria for measuring the filtering quality.",Experiment/Discussion
+Our models for learning inferential selectional preferences can be applied to any collection of inference rules between binary semantic relations.,Experiment/Discussion
+"In this paper, we focus on the inference rules contained in the DIRT resource (Lin and Pantel 2001).",Experiment/Discussion
+"DIRT consists of over 12 million rules which were extracted from a 1GB newspaper corpus (San Jose Mercury, Wall Street Journal and AP Newswire from the TREC-9 collection).",Experiment/Discussion
+"For example, here are DIRT’s top 3 inference rules for “X solves Y”: “Y is solved by X”, “X resolves Y”, “X finds a solution to Y” The choice of semantic classes is of great importance for selectional preference.",Experiment/Discussion
+One important aspect is the granularity of the classes.,Experiment/Discussion
+Too general a class will provide no discriminatory power while too fine-grained a class will offer little generalization and apply in only extremely few cases.,Experiment/Discussion
+The absence of an attested high-quality set of semantic classes for this task makes discovering preferences difficult.,Experiment/Discussion
+"Since many of the criteria for developing such a set are not even known, we decided to experiment with two very different sets of semantic classes, in the hope that in addition to learning semantic preferences, we might also uncover some clues for the eventual decisions about what makes good semantic classes in general.",Experiment/Discussion
+Our first set of semantic classes was directly extracted from the output of the CBC clustering algorithm (Pantel and Lin 2002).,Experiment/Discussion
+We applied CBC to the TREC-9 and TREC-2002 (Aquaint) newswire collections consisting of over 600 million words.,Experiment/Discussion
+CBC generated 1628 noun concepts and these were used as our semantic classes for SPs.,Experiment/Discussion
+"Secondly, we extracted semantic classes from WordNet 2.1 (Fellbaum 1998).",Experiment/Discussion
+"In the absence of any externally motivated distinguishing features (for example, the Basic Level categories from Prototype Theory, developed by Eleanor Rosch (1978)), we used the simple but effective method of manually truncating the noun synset hierarchy5 and considering all synsets below each cut point as part of the semantic class at that node.",Experiment/Discussion
+"To select the cut points, we inspected several different hierarchy levels and found the synsets at a depth of 4 5 Only nouns are considered since DIRT semantic relations connect only nouns. to form the most natural semantic classes.",Experiment/Discussion
+"Since the noun hierarchy in WordNet has an average depth of 12, our truncation created a set of concepts considerably coarser-grained than WordNet itself.",Experiment/Discussion
+"The cut produced 1287 semantic classes, a number similar to the classes in CBC.",Experiment/Discussion
+"To properly test WordNet as a source of semantic classes for our selectional preferences, we would need to experiment with different extraction algorithms.",Experiment/Discussion
+The goal of the filtering task is to minimize false positives (incorrectly accepted inferences) and false negatives (incorrectly rejected inferences).,Experiment/Discussion
+A standard methodology for evaluating such tasks is to compare system filtering results with a gold standard using a confusion matrix.,Experiment/Discussion
+"A confusion matrix captures the filtering performance on both correct and incorrect inferences: where A represents the number of correct instances correctly identified by the system, D represents the number of incorrect instances correctly identified by the system, B represents the number of false positives and C represents the number of false negatives.",Experiment/Discussion
+"To compare systems, three key measures are used to summarize confusion matrices: probability of a filter being correct.",Experiment/Discussion
+"In this section, we provide empirical evidence to support the main claim of this paper.",Results/Conclusion
+"Given a collection of DIRT inference rules of the form pi => pj, our experiments, using the methodology of Section 4, evaluate the capability of our ISP models for determining if (x, pj, y) holds given that (x, pi, y) holds.",Results/Conclusion
+"For each filtering algorithm in Section 3.3, ISP.JIM, ISP.IIM.∧, and ISP.IIM.v, we trained their probabilistic models using corpus statistics extracted from the 1999 AP newswire collection (part of the TREC-2002 Aquaint collection) consisting of approximately 31 million words.",Results/Conclusion
+We used the Minipar parser (Lin 1993) to match DIRT patterns in the text.,Results/Conclusion
+This permits exact matches since DIRT inference rules are built from Minipar parse trees.,Results/Conclusion
+"For each system, we experimented with the different ways of combining relational SP scores: minimum, maximum, and average (see Section 3.2).",Results/Conclusion
+"Also, we experimented with various values for the i parameter described in Section 3.3.",Results/Conclusion
+"In order to compute the confusion matrices described in Section 4.3, we must first construct a representative set of inferences and manually annotate them as correct or incorrect.",Results/Conclusion
+We randomly selected 100 inference rules of the form pi => pj from DIRT.,Results/Conclusion
+"For each pattern pi, we then extracted its instances from the Aquaint 1999 AP newswire collection (approximately 22 million words), and randomly selected 10 distinct instances, resulting in a total of 1000 instances.",Results/Conclusion
+"For each instance of pi, applying DIRT’s inference rule would assert the instance (x, pj, y).",Results/Conclusion
+Our evaluation tests how well our models can filter these so that only correct inferences are made.,Results/Conclusion
+"To form the gold standard, two human judges were asked to tag each instance (x, pj, y) as correct or incorrect.",Results/Conclusion
+"For example, given a randomly selected inference rule “X is charged by Y => Y announced the arrest of X” and the instance “Terry Nichols was charged by federal prosecutors”, the judges must determine if the instance (federal prosecutors, Y announced the arrest of X, Terry Nichols) is correct.",Results/Conclusion
+The judges were asked to consider the following two criteria for their decision: Judges found that annotation decisions can range from trivial to difficult.,Results/Conclusion
+The differences often were in the instances for which one of the judges fails to see the right context under which the inference could hold.,Results/Conclusion
+"To minimize disagreements, the judges went through an extensive round of training.",Results/Conclusion
+"To that end, the 1000 instances (x, pj, y) were split into DEV and TEST sets, 500 in each.",Results/Conclusion
+The two judges trained themselves by annotating DEV together.,Results/Conclusion
+The TEST set was then annotated separately to verify the inter-annotator agreement and to verify whether the task is well-defined.,Results/Conclusion
+The kappa statistic (Siegel and Castellan Jr. 1988) was x = 0.72.,Results/Conclusion
+"For the 70 disagreements between the judges, a third judge acted as an adjudicator.",Results/Conclusion
+We compare our ISP algorithms to the following baselines: One alternative to our approach is admit instances on the Web using literal search queries.,Results/Conclusion
+We investigated this technique but discarded it due to subtle yet critical issues with pattern canonicalization that resulted in rejecting nearly all inferences.,Results/Conclusion
+"However, we are investigating other ways of using Web corpora for this task.",Results/Conclusion
+"For each ISP algorithm and parameter combination, we constructed a confusion matrix on the development set and computed the system sensitivity, specificity and accuracy as described in Section 4.3.",Results/Conclusion
+This resulted in 180 experiments on the development set.,Results/Conclusion
+"For each ISP algorithm and semantic class source, we selected the best parameter combinations according to the following criteria: textual entailment researchers have commented that inference rule collections like DIRT are difficult to use due to low precision.",Results/Conclusion
+Many have asked for filtered versions that remove incorrect inferences even at the cost of removing correct inferences.,Results/Conclusion
+"In response, we show results for the system achieving the best sensitivity while maintaining at least 90% specificity on the DEV set.",Results/Conclusion
+We evaluated the selected systems on the TEST set.,Results/Conclusion
+Table 1 summarizes the quality of the systems selected according to the Accuracy criterion.,Results/Conclusion
+"The best performing system, ISP.IIM.v, performed statistically significantly better than all three baselines.",Results/Conclusion
+"The best system according to the 90%Specificity criteria was ISP.JIM, which coincidentally has the highest accuracy for that model as shown in Table 16.",Results/Conclusion
+This result is very promising for researchers that require highly accurate inference rules since they can use ISP.JIM and expect to recall 17% of the correct inferences by only accepting false positives 12% of the time.,Results/Conclusion
+"Figures 1a) and 1b) present the full confusion matrices for the most accurate and highly specific systems, with both systems selected on the DEV set.",Results/Conclusion
+"The most accurate system was ISP.IIM.v, which is the most permissive of the algorithms.",Results/Conclusion
+This suggests that a larger corpus for learning SPs may be needed to support stronger performance on the more restrictive methods.,Results/Conclusion
+"The system in Figure 1b), selected for maximizing sensitivity while maintaining high specificity, was 70% correct in predicting correct inferences.",Results/Conclusion
+Figure 2 illustrates the ROC curve for all our systems and parameter combinations on the TEST set.,Results/Conclusion
+ROC curves plot the true positive rate against the false positive rate.,Results/Conclusion
+The near-diagonal line plots the three baseline systems.,Results/Conclusion
+Several trends can be observed from this figure.,Results/Conclusion
+"First, systems using the semantic classes from WordNet tend to perform less well than systems using CBC classes.",Results/Conclusion
+"As discussed in Section 4.2, we used a very simplistic extraction of semantic classes from WordNet.",Results/Conclusion
+The results in Figure 2 serve as a lower bound on what could be achieved with a better extraction from WordNet.,Results/Conclusion
+"Upon inspection of instances that WordNet got incorrect but CBC got correct, it seemed that CBC had a much higher lexical coverage than WordNet.",Results/Conclusion
+"For example, several of the instances contained proper names as either the X or Y argument (WordNet has poor proper name coverage).",Results/Conclusion
+"When an argument is not covered by any class, the inference is rejected.",Results/Conclusion
+Figure 2 also illustrates how our three different ISP algorithms behave.,Results/Conclusion
+"The strictest filters, ISP.JIM and ISP.IIM.n, have the poorest overall performance but, as expected, have a generally very low rate of false positives.",Results/Conclusion
+"ISP.IIM.v, which is a much more permissive filter because it does not require both arguments of a relation to match, has generally many more false positives but has an overall better performance.",Results/Conclusion
+"We did not include in Figure 2 an analysis of the minimum, maximum, and average ranking strategies presented in Section 3.2 since they generally produced nearly identical results.",Results/Conclusion
+"For the most accurate system, ISP.IIM.v, we explored the impact of the cutoff threshold i on the sensitivity, specificity, and accuracy, as shown in Figure 3.",Results/Conclusion
+"Rather than step the values by 10% as we did on the DEV set, here we stepped the threshold value by 2% on the TEST set.",Results/Conclusion
+The more permissive values of i increase sensitivity at the expense of specificity.,Results/Conclusion
+"Interestingly, the overall accuracy remained fairly constant across the entire range of i, staying within 0.05 of the maximum of 0.62 achieved at i=30%.",Results/Conclusion
+"Finally, we manually inspected several incorrect inferences that were missed by our filters.",Results/Conclusion
+"A common source of errors was due to the many incorrect “antonymy” inference rules generated by DIRT, such as “X is rejected in Y”=>“X is accepted in Y”.",Results/Conclusion
+This recognized problem in DIRT occurs because of the distributional hypothesis assumption used to form the inference rules.,Results/Conclusion
+"Our ISP algorithms suffer from a similar quandary since, typically, antonymous relations take the same sets of arguments for X (and Y).",Results/Conclusion
+"For these cases, ISP algorithms learn many selectional preferences that accept the same types of entities as those that made DIRT learn the inference rule in the first place, hence ISP will not filter out many incorrect inferences.",Results/Conclusion
+"We presented algorithms for learning what we call inferential selectional preferences, and presented evidence that learning selectional preferences can be useful in filtering out incorrect inferences.",Results/Conclusion
+Future work in this direction includes further exploration of the appropriate inventory of semantic classes used as SP’s.,Results/Conclusion
+"This work constitutes a step towards better understanding of the interaction of selectional preferences and inferences, bridging these two aspects of semantics.",Results/Conclusion

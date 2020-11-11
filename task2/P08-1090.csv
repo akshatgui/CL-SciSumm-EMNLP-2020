@@ -1,230 +1,230 @@
 col1,col2
-used in the 1970-80s as knowledge backbones that enabled inference and other NLP tasks requiring deep semantic knowledge.,{}
-We propose unsupervised of similar schemata called chains raw newswire text.,{}
-A narrative event chain is a partially ordered set of events related by a common protagonist.,{}
-We describe a three step process to learning narrative event chains.,{}
-The first uses unsupervised distributional methods to learn narrative relations between events sharing coreferring arguments.,{}
-The second applies a temporal classifier to partially order the connected events.,{}
-"Finally, the third prunes and clusters self-contained chains from the space of events. introduce two evaluations: the evaluate event relatedness, and an orcoherence to evaluate narrative order. show a over baseline narrative prediction and temporal coherence. tate learning, and thus this paper addresses the three of chain induction: event ordering of events selection (pruning the event space into discrete sets).",{}
-Learning these prototypical schematic sequences of events is important for rich understanding of text.,{}
-"Scripts were central to natural language understanding research in the 1970s and 1980s for proposed tasks such as summarization, coreference resolution and question answering.",{}
-"For example, Schank and Abelson (1977) proposed that understanding text about restaurants required knowledge about the Restaurant Script, including the participants (Customer, Waiter, Cook, Tables, etc.",{}
-"), the events constituting the script (entering, sitting down, asking for menus, etc.",{}
-"), and the various preconditions, ordering, and results of each of the constituent actions.",{}
-Consider these two distinct narrative chains.,{}
-This paper induces a new representation of structured knowledge called narrative event chains (or narrative chains).,"{'title': '1 Introduction', 'number': '1'}"
-Narrative chains are partially ordered sets of events centered around a common protagonist.,"{'title': '1 Introduction', 'number': '1'}"
-"They are related to structured sequences of participants and events that have been called scripts (Schank and Abelson, 1977) or Fillmorean frames.","{'title': '1 Introduction', 'number': '1'}"
-These participants and events can be filled in and instantiated in a particular text situation to draw inferences.,"{'title': '1 Introduction', 'number': '1'}"
-"Chains focus on a single actor to faciliIt would be useful for question answering or textual entailment to know that ‘X denied ’ is also a likely event in the left chain, while ‘ replaces W’ temporally follows the right.","{'title': '1 Introduction', 'number': '1'}"
-Narrative chains (such as Firing of Employee or Executive Resigns) offer the structure and power to directly infer these new subevents by providing critical background knowledge.,"{'title': '1 Introduction', 'number': '1'}"
-"In part due to its complexity, automatic induction has not been addressed since the early nonstatistical work of Mooney and DeJong (1985).","{'title': '1 Introduction', 'number': '1'}"
-The first step to narrative induction uses an entitybased model for learning narrative relations by following a protagonist.,"{'title': '1 Introduction', 'number': '1'}"
-"As a narrative progresses through a series of events, each event is characterized by the grammatical role played by the protagonist, and by the protagonist’s shared connection to surrounding events.","{'title': '1 Introduction', 'number': '1'}"
-Our algorithm is an unsupervised distributional learning approach that uses coreferring arguments as evidence of a narrative relation.,"{'title': '1 Introduction', 'number': '1'}"
-"We show, using a new evaluation task called narrative cloze, that our protagonist-based method leads to better induction than a verb-only approach.","{'title': '1 Introduction', 'number': '1'}"
-The next step is to order events in the same narrative chain.,"{'title': '1 Introduction', 'number': '1'}"
-We apply work in the area of temporal classification to create partial orders of our learned events.,"{'title': '1 Introduction', 'number': '1'}"
-"We show, using a coherence-based evaluation of temporal ordering, that our partial orders lead to better coherence judgements of real narrative instances extracted from documents.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, the space of narrative events and temporal orders is clustered and pruned to create discrete sets of narrative chains.","{'title': '1 Introduction', 'number': '1'}"
-"While previous work hasn’t focused specifically on learning narratives1, our work draws from two lines of research in summarization and anaphora resolution.","{'title': '2 Previous Work', 'number': '2'}"
-"In summarization, topic signatures are a set of terms indicative of a topic (Lin and Hovy, 2000).","{'title': '2 Previous Work', 'number': '2'}"
-They are extracted from hand-sorted (by topic) sets of documents using log-likelihood ratios.,"{'title': '2 Previous Work', 'number': '2'}"
-"These terms can capture some narrative relations, but the model requires topic-sorted training data.","{'title': '2 Previous Work', 'number': '2'}"
-Bean and Riloff (2004) proposed the use of caseframe networks as a kind of contextual role knoweldge for anaphora resolution.,"{'title': '2 Previous Work', 'number': '2'}"
-A caseframe is a verb/event and a semantic role (e.g.,"{'title': '2 Previous Work', 'number': '2'}"
-<patient> kidnapped).,"{'title': '2 Previous Work', 'number': '2'}"
-Caseframe networks are relations between caseframes that may represent synonymy (<patient> kidnapped and <patient> abducted) or related events (<patient> kidnapped and <patient> released).,"{'title': '2 Previous Work', 'number': '2'}"
-Bean and Riloff learn these networks from two topic-specific texts and apply them to the problem of anaphora resolution.,"{'title': '2 Previous Work', 'number': '2'}"
-"Our work can be seen as an attempt to generalize the intuition of caseframes (finding an entire set of events 1We analyzed FrameNet (Baker et al., 1998) for insight, but found that very few of the frames are event sequences of the type characterizing narratives and scripts. rather than just pairs of related frames) and apply it to a different task (finding a coherent structured narrative in non-topic-specific text).","{'title': '2 Previous Work', 'number': '2'}"
-"More recently, Brody (2007) proposed an approach similar to caseframes that discovers highlevel relatedness between verbs by grouping verbs that share the same lexical items in subject/object positions.","{'title': '2 Previous Work', 'number': '2'}"
-He calls these shared arguments anchors.,"{'title': '2 Previous Work', 'number': '2'}"
-"Brody learns pairwise relations between clusters of related verbs, similar to the results with caseframes.","{'title': '2 Previous Work', 'number': '2'}"
-A human evaluation of these pairs shows an improvement over baseline.,"{'title': '2 Previous Work', 'number': '2'}"
-This and previous caseframe work lend credence to learning relations from verbs with common arguments.,"{'title': '2 Previous Work', 'number': '2'}"
-"We also draw from lexical chains (Morris and Hirst, 1991), indicators of text coherence from word overlap/similarity.","{'title': '2 Previous Work', 'number': '2'}"
-We use a related notion of protagonist overlap to motivate narrative chain learning.,"{'title': '2 Previous Work', 'number': '2'}"
-Work on semantic similarity learning such as Chklovski and Pantel (2004) also automatically learns relations between verbs.,"{'title': '2 Previous Work', 'number': '2'}"
-"We use similar distributional scoring metrics, but differ with our use of a protagonist as the indicator of relatedness.","{'title': '2 Previous Work', 'number': '2'}"
-"We also use typed dependencies and the entire space of events for similarity judgements, rather than only pairwise lexical decisions.","{'title': '2 Previous Work', 'number': '2'}"
-"Finally, Fujiki et al. (2003) investigated script acquisition by extracting the 41 most frequent pairs of events from the first paragraph of newswire articles, using the assumption that the paragraph’s textual order follows temporal order.","{'title': '2 Previous Work', 'number': '2'}"
-"Our model, by contrast, learns entire event chains, uses more sophisticated probabilistic measures, and uses temporal ordering models instead of relying on document order.","{'title': '2 Previous Work', 'number': '2'}"
-"Our model is inspired by Centering (Grosz et al., 1995) and other entity-based models of coherence (Barzilay and Lapata, 2005) in which an entity is in focus through a sequence of sentences.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-We propose to use this same intuition to induce narrative chains.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"We assume that although a narrative has several participants, there is a central actor who characterizes a narrative chain: the protagonist.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-Narrative chains are thus structured by the protagonist’s grammatical roles in the events.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"In addition, narrative events are ordered by some theory of time.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-This paper describes a partial ordering with the before (no overlap) relation.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Our task, therefore, is to learn events that constitute narrative chains.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Formally, a narrative chain is a partially ordered set of narrative events that share a common actor.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"A narrative event is a tuple of an event (most simply a verb) and its participants, represented as typed dependencies.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Since we are focusing on a single actor in this study, a narrative event is thus a tuple of the event and the typed dependency of the protagonist: (event, dependency).","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"A narrative chain is a set of narrative events {e1, e2, ..., en}, where n is the size of the chain, and a relation B(ei, ej) that is true if narrative event ei occurs strictly before ej in time.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-The notion of a protagonist motivates our approach to narrative learning.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-We make the following assumption of narrative coherence: verbs sharing coreferring arguments are semantically connected by virtue of narrative discourse structure.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"A single document may contain more than one narrative (or topic), but the narrative assumption states that a series of argument-sharing verbs is more likely to participate in a narrative chain than those not sharing.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"In addition, the narrative approach captures grammatical constraints on narrative coherence.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Simple distributional learning might discover that the verb push is related to the verb fall, but narrative learning can capture additional facts about the participants, specifically, that the object or patient of the push is the subject or agent of the fall.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Each focused protagonist chain offers one perspective on a narrative, similar to the multiple perspectives on a commercial transaction event offered by buy and sell.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"A narrative chain, by definition, includes a partial ordering of events.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-Early work on scripts included ordering constraints with more complex preconditions and side effects on the sequence of events.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-This paper presents work toward a partial ordering and leaves logical constraints as future work.,"{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"We focus on the before relation, but the model does not preclude advanced theories of temporal order.","{'title': '3 The Narrative Chain Model', 'number': '3'}"
-"Our first model learns basic information about a narrative chain: the protagonist and the constituent subevents, although not their ordering.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-For this we need a metric for the relation between an event and a narrative chain.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-Pairwise relations between events are first extracted unsupervised.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-A distributional score based on how often two events share grammatical arguments (using pointwise mutual information) is used to create this pairwise relation.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Finally, a global narrative score is built such that all events in the chain provide feedback on the event in question (whether for inclusion or for decisions of inference).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Given a list of observed verb/dependency counts, we approximate the pointwise mutual information (PMI) by: where e(w, d) is the verb/dependency pair w and d (e.g. e(push,subject)).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"The numerator is defined by: where C(e(x, d), e(y, f)) is the number of times the two events e(x, d) and e(y, f) had a coreferring entity filling the values of the dependencies d and f. We also adopt the ‘discount score’ to penalize low occuring words (Pantel and Ravichandran, 2004).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Given the debate over appropriate metrics for distributional learning, we also experimented with the t-test.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-Our experiments found that PMI outperforms the t-test on this task by itself and when interpolated together using various mixture weights.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Once pairwise relation scores are calculated, a global narrative score can then be built such that all events provide feedback on the event in question.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"For instance, given all narrative events in a document, we can find the next most likely event to occur by maximizing: where n is the number of events in our chain and ei is the ith event. m is the number of events f in our training corpus.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"A ranked list of guesses can be built from this summation and we hypothesize that the more events in our chain, the more informed our ranked output.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-An example of a chain with 3 events and the top 6 ranked guesses is given in figure 1.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"The cloze task (Taylor, 1953) is used to evaluate a system (or human) for language proficiency by removing a random word from a sentence and having the system attempt to fill in the blank (e.g.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-I forgot to the waitress for the good service).,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Depending on the type of word removed, the test can evaluate syntactic knowledge as well as semantic.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Deyes (1984) proposed an extended task, discourse cloze, to evaluate discourse knowledge (removing phrases that are recoverable from knowledge of discourse relations like contrast and consequence).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We present a new cloze task that requires narrative knowledge to solve, the narrative cloze.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-The narrative cloze is a sequence of narrative events in a document from which one event has been removed.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-The task is to predict the missing verb and typed dependency.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Take this example text about American football with McCann as the protagonist: These clauses are represented in the narrative model as five events: (threw subject), (pulled object), (told object), (start subject), (completed subject).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-These verb/dependency events make up a narrative cloze model.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-We could remove (threw subject) and use the remaining four events to rank this missing event.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-Removing a single such pair to be filled in automatically allows us to evaluate a system’s knowledge of narrative relations and coherence.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We do not claim this cloze task to be solvable even by humans, but rather assert it as a comparative measure to evaluate narrative knowledge.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We use years 1994-2004 (1,007,227 documents) of the Gigaword Corpus (Graff, 2002) for training2.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We parse the text into typed dependency graphs with the Stanford Parser (de Marneffe et al., 2006)3, recording all verbs with subject, object, or prepositional typed dependencies.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-We use the OpenNLP4 coreference engine to resolve the entity mentions.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"For each document, the verb pairs that share coreferring entities are recorded with their dependency types.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-Particles are included with the verb.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-We used 10 news stories from the 1994 section of the corpus for development.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"The stories were hand chosen to represent a range of topics such as business, sports, politics, and obituaries.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-We used 69 news stories from the 2001 (year selected randomly) section of the corpus for testing (also removed from training).,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-The test set documents were randomly chosen and not preselected for a range of topics.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"From each document, the entity involved in the most events was selected as the protagonist.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"For this evaluation, we only look at verbs.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"All verb clauses involving the protagonist are manually extracted and translated into the narrative events (verb,dependency).","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Exceptions that are not included are verbs in headlines, quotations (typically not part of a narrative), “be” properties (e.g. john is happy), modifying verbs (e.g. hurried to leave, only leave is used), and multiple instances of one event.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"The original test set included 100 documents, but those without a narrative chain at least five events in length were removed, leaving 69 documents.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"Most of the removed documents were not stories, but genres such as interviews and cooking recipes.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-An example of an extracted chain is shown in figure 2.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We evalute with Narrative Cloze using leave-oneout cross validation, removing one event and using the rest to generate a ranked list of guesses.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-The test dataset produces 740 cloze tests (69 narratives with 740 events).,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"After generating our ranked guesses, the position of the correct event is averaged over all 740 tests for the final score.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-We penalize unseen events by setting their ranked position to the length of the guess list (ranging from 2k to 15k).,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-Figure 1 is an example of a ranked guess list for a short chain of three events.,"{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"If the original document contained (fired obj), this cloze test would score 3.","{'title': '4 Learning Narrative Relations', 'number': '4'}"
-"We want to measure the utility of the protagonist and the narrative coherence assumption, so our baseline learns relatedness strictly based upon verb co-occurence.","{'title': '4.2.1 Baseline', 'number': '5'}"
-The PMI is then defined as between all occurrences of two verbs in the same document.,"{'title': '4.2.1 Baseline', 'number': '5'}"
-"This baseline evaluation is verb only, as dependencies require a protagonist to fill them.","{'title': '4.2.1 Baseline', 'number': '5'}"
-"After initial evaluations, the baseline was performing very poorly due to the huge amount of data involved in counting all possible verb pairs (using a protagonist vastly reduces the number).","{'title': '4.2.1 Baseline', 'number': '5'}"
-We experimented with various count cutoffs to remove rare occurring pairs of verbs.,"{'title': '4.2.1 Baseline', 'number': '5'}"
-The final results use a baseline where all pairs occurring less than 10 times in the training data are removed.,"{'title': '4.2.1 Baseline', 'number': '5'}"
-"Since the verb-only baseline does not use typed dependencies, our narrative model cannot directly compare to this abstracted approach.","{'title': '4.2.1 Baseline', 'number': '5'}"
-"We thus modified the narrative model to ignore typed dependencies, but still count events with shared arguments.","{'title': '4.2.1 Baseline', 'number': '5'}"
-"Thus, we calculate the PMI across verbs that share arguments.","{'title': '4.2.1 Baseline', 'number': '5'}"
-This approach is called Protagonist.,"{'title': '4.2.1 Baseline', 'number': '5'}"
-The full narrative model that includes the grammatical dependencies is called Typed Deps.,"{'title': '4.2.1 Baseline', 'number': '5'}"
-Experiments with varying sizes of training data are presented in figure 3.,"{'title': '4.2.2 Results', 'number': '6'}"
-Each ranked list of candidate verbs for the missing event in Baseline/Protagonist contained approximately 9 thousand candidates.,"{'title': '4.2.2 Results', 'number': '6'}"
-"Of the 740 cloze tests, 714 of the removed events were present in their respective list of guesses.","{'title': '4.2.2 Results', 'number': '6'}"
-This is encouraging as only 3.5% of the events are unseen (or do not meet cutoff thresholds).,"{'title': '4.2.2 Results', 'number': '6'}"
-"When all training data is used (1994-2004), the average ranked position is 1826 for Baseline and 1160 for Protagonist (1 being most confident).","{'title': '4.2.2 Results', 'number': '6'}"
-"The Baseline performs better at first (years 1994-5), but as more data is seen, the Baseline worsens while the Protagonist improves.","{'title': '4.2.2 Results', 'number': '6'}"
-This verb-only narrative model shows a 36.5% improvement over the baseline trained on all years.,"{'title': '4.2.2 Results', 'number': '6'}"
-"Results from the full Typed Deps model, not comparable to the baseline, parallel the Protagonist results, improving as more data is seen (average ranked position of 1908 with all the training data).","{'title': '4.2.2 Results', 'number': '6'}"
-"We also ran the experiment without OpenNLP coreference, and instead used exact and substring matching for coreference resolution.","{'title': '4.2.2 Results', 'number': '6'}"
-This showed a 5.7% decrease in the verb-only results.,"{'title': '4.2.2 Results', 'number': '6'}"
-These results show that a protagonist greatly assists in narrative judgements.,"{'title': '4.2.2 Results', 'number': '6'}"
-"The model proposed in the previous section is designed to learn the major subevents in a narrative chain, but not how these events are ordered.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-In this section we extend the model to learn a partial temporal ordering of the events.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"There are a number of algorithms for determining the temporal relationship between two events (Mani et al., 2006; Lapata and Lascarides, 2006; Chambers et al., 2007), many of them trained on the TimeBank Corpus (Pustejovsky et al., 2003) which codes events and their temporal relationships.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"The currently highest performing of these on raw data is the model of temporal labeling described in our previous work (Chambers et al., 2007).","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Other approaches have depended on hand tagged features.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Chambers et al. (2007) shows 59.4% accuracy on the classification task for six possible relations between pairs of events: before, immediately-before, included-by, simultaneous, begins and ends.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-We focus on the before relation because the others are less relevant to our immediate task.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We combine immediately-before with before, and merge the other four relations into an other category.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"At the binary task of determining if one event is before or other, we achieve 72.1% accuracy on Timebank.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The above approach is a two-stage machine learning architecture.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"In the first stage, the model uses supervised machine learning to label temporal attributes of events, including tense, grammatical aspect, and aspectual class.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"This first stage classifier relies on features such as neighboring part of speech tags, neighboring auxiliaries and modals, and WordNet synsets.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-We use SVMs (Chambers et al. (2007) uses Naive Bayes) and see minor performance boosts on Timebank.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"These imperfect classifications, combined with other linguistic features, are then used in a second stage to classify the temporal relationship between two events.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Other features include event-event syntactic properties such as the syntactic dominance relations between the two events, as well as new bigram features of tense, aspect and class (e.g.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"“present past” if the first event is in the present, and the second past), and whether the events occur in the same or different sentences.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We use the entire Timebank Corpus as supervised training data, condensing the before and immediately-before relations into one before relation.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The remaining relations are merged into other.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The vast majority of potential event pairs in Timebank are unlabeled.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"These are often none relations (events that have no explicit relation) or as is often the case, overlap relations where the two events have no Timebank-defined ordering but overlap in time.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Even worse, many events do have an ordering, but they were not tagged by the human annotators.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"This could be due to the overwhelming task of temporal annotation, or simply because some event orderings are deemed more important than others in understanding the document.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We consider all untagged relations as other, and experiment with including none, half, and all of them in training.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Taking a cue from Mani et al. (2006), we also increased Timebank’s size by applying transitivity rules to the hand labeled data.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The following is an example of the applied transitive rule: if run BEFORE fall and fall BEFORE injured then run BEFORE injured This increases the number of relations from 37519 to 45619.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Perhaps more importantly for our task, of all the added relations, the before relation is added the most.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-We experimented with original vs. expanded Timebank and found the expanded performed slightly worse.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"The decline may be due to poor transitivity additions, as several Timebank documents contain inconsistent labelings.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-All reported results are from training without transitivity.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We classify the Gigaword Corpus in two stages, once for the temporal features on each event (tense, grammatical aspect, aspectual class), and once between all pairs of events that share arguments.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-This allows us to classify the before/other relations between all potential narrative events.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"The first stage is trained on Timebank, and the second is trained using the approach described above, varying the size of the none training relations.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Each pair of events in a gigaword document that share a coreferring argument is treated as a separate ordering classification task.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-We count the resulting number of labeled before relations between each verb/dependency pair.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Processing the entire corpus produces a database of event pair counts where confidence of two generic events A and B can be measured by comparing how many before labels have been seen versus their inverted order B and A5.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We want to evaluate temporal order at the narrative level, across all events within a chain.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We envision narrative chains being used for tasks of coherence, among other things, and so it is desired to evaluate temporal decisions within a coherence framework.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Along these lines, our test set uses actual narrative chains from documents, hand labeled for a partial ordering.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-We evaluate coherence of these true chains against a random ordering.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"The task is thus deciding which of the two chains is most coherent, the original or the random (baseline 50%)?","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"We generated up to 300 random orderings for each test document, averaging the accuracy across all.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Our evaluation data is the same 69 documents used in the test set for learning narrative relations.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The chain from each document is hand identified and labeled for a partial ordering using only the before relation.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Ordering was done by the authors and all attempts were made to include every before relation that exists in the document, or that could be deduced through transitivity rules.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Figure 4 shows an example and its full reversal, although the evaluation uses random orderings.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Each edge is a distinct before relation and is used in the judgement score.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"The coherence score for a partially ordered narrative chain is the sum of all the relations that our classified corpus agrees with, weighted by how certain we are.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"If the gigaword classifications disagree, a weighted negative score is given.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Confidence is based on a logarithm scale of the difference between the counts of before and after classifications.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-"Formally, the score is calculated as the following: where E is the set of all event pairs, B(i, j) is how many times we classified events i and j as before in Gigaword, and D(i, j) _ |B(i, j) − B(j,i)|.","{'title': '5 Ordering Narrative Events', 'number': '7'}"
-The relation i0j indicates that i is temporally before j.,"{'title': '5 Ordering Narrative Events', 'number': '7'}"
-Out approach gives higher scores to orders that coincide with the pairwise orderings classified in our gigaword training data.,"{'title': '5.4 Results', 'number': '8'}"
-The results are shown in figure 5.,"{'title': '5.4 Results', 'number': '8'}"
-"Of the 69 chains, 6 did not have any ordered events and were removed from the evaluation.","{'title': '5.4 Results', 'number': '8'}"
-We generated (up to) 300 random orderings for each of the remaining 63.,"{'title': '5.4 Results', 'number': '8'}"
-"We report 75.2% accuracy, but 22 of the 63 had 5 or fewer pairs of ordered events.","{'title': '5.4 Results', 'number': '8'}"
-"Figure 5 therefore shows results from chains with more than 5 pairs, and also 10 or more.","{'title': '5.4 Results', 'number': '8'}"
-"As we would hope, the accuracy improves the larger the ordered narrative chain.","{'title': '5.4 Results', 'number': '8'}"
-"We achieve 89.0% accuracy on the 24 documents whose chains most progress through time, rather than chains that are difficult to order with just the before relation.","{'title': '5.4 Results', 'number': '8'}"
-Training without none relations resulted in high recall for before decisions.,"{'title': '5.4 Results', 'number': '8'}"
-"Perhaps due to data sparsity, this produces our best results as reported above.","{'title': '5.4 Results', 'number': '8'}"
-"Up till this point, we have learned narrative relations across all possible events, including their temporal order.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"However, the discrete lists of events for which Schank scripts are most famous have not yet been constructed.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-We intentionally did not set out to reproduce explicit self-contained scripts in the sense that the ‘restaurant script’ is complete and cannot include other events.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-The name narrative was chosen to imply a likely order of events that is common in spoken and written retelling of world events.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-Discrete sets have the drawback of shutting out unseen and unlikely events from consideration.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"It is advantageous to consider a space of possible narrative events and the ordering within, not a closed list.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"However, it is worthwhile to construct discrete narrative chains, if only to see whether the combination of event learning and ordering produce scriptlike structures.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"This is easily achievable by using the PMI scores from section 4 in an agglomerative clustering algorithm, and then applying the ordering relations from section 5 to produce a directed graph.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-Figures 6 and 7 show two learned chains after clustering and ordering.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-Each arrow indicates a before relation.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-Duplicate arrows implied by rules of transitivity are removed.,"{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"Figure 6 is remarkably accurate, and figure 7 addresses one of the chains from our introduction, the employment narrative.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"The core employment events are accurate, but clustering included life events (born, died, graduated) from obituaries of which some temporal information is incorrect.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-"The Timebank corpus does not include obituaries, thus we suffer from sparsity in training data.","{'title': '6 Discrete Narrative Event Chains', 'number': '9'}"
-We have shown that it is possible to learn narrative event chains unsupervised from raw text.,"{'title': '7 Discussion', 'number': '10'}"
-"Not only do our narrative relations show improvements over a baseline, but narrative chains offer hope for many other areas of NLP.","{'title': '7 Discussion', 'number': '10'}"
-"Inference, coherence in summarization and generation, slot filling for question answering, and frame induction are all potential areas.","{'title': '7 Discussion', 'number': '10'}"
-"We learned a new measure of similarity, the narrative relation, using the protagonist as a hook to extract a list of related events from each document.","{'title': '7 Discussion', 'number': '10'}"
-The 37% improvement over a verb-only baseline shows that we may not need presorted topics of documents to learn inferences.,"{'title': '7 Discussion', 'number': '10'}"
-"In addition, we applied state of the art temporal classification to show that sets of events can be partially ordered.","{'title': '7 Discussion', 'number': '10'}"
-Judgements of coherence can then be made over chains within documents.,"{'title': '7 Discussion', 'number': '10'}"
-Further work in temporal classification may increase accuracy even further.,"{'title': '7 Discussion', 'number': '10'}"
-"Finally, we showed how the event space of narrative relations can be clustered to create discrete sets.","{'title': '7 Discussion', 'number': '10'}"
-"While it is unclear if these are better than an unconstrained distribution of events, they do offer insight into the quality of narratives.","{'title': '7 Discussion', 'number': '10'}"
-An important area not discussed in this paper is the possibility of using narrative chains for semantic role learning.,"{'title': '7 Discussion', 'number': '10'}"
-"A narrative chain can be viewed as defining the semantic roles of an event, constraining it against roles of the other events in the chain.","{'title': '7 Discussion', 'number': '10'}"
-An argument’s class can then be defined as the set of narrative arguments in which it appears.,"{'title': '7 Discussion', 'number': '10'}"
-"We believe our model provides an important first step toward learning the rich causal, temporal and inferential structure of scripts and frames.","{'title': '7 Discussion', 'number': '10'}"
+used in the 1970-80s as knowledge backbones that enabled inference and other NLP tasks requiring deep semantic knowledge.,Introduction
+We propose unsupervised of similar schemata called chains raw newswire text.,Introduction
+A narrative event chain is a partially ordered set of events related by a common protagonist.,Introduction
+We describe a three step process to learning narrative event chains.,Introduction
+The first uses unsupervised distributional methods to learn narrative relations between events sharing coreferring arguments.,Introduction
+The second applies a temporal classifier to partially order the connected events.,Introduction
+"Finally, the third prunes and clusters self-contained chains from the space of events. introduce two evaluations: the evaluate event relatedness, and an orcoherence to evaluate narrative order. show a over baseline narrative prediction and temporal coherence. tate learning, and thus this paper addresses the three of chain induction: event ordering of events selection (pruning the event space into discrete sets).",Introduction
+Learning these prototypical schematic sequences of events is important for rich understanding of text.,Introduction
+"Scripts were central to natural language understanding research in the 1970s and 1980s for proposed tasks such as summarization, coreference resolution and question answering.",Introduction
+"For example, Schank and Abelson (1977) proposed that understanding text about restaurants required knowledge about the Restaurant Script, including the participants (Customer, Waiter, Cook, Tables, etc.",Introduction
+"), the events constituting the script (entering, sitting down, asking for menus, etc.",Introduction
+"), and the various preconditions, ordering, and results of each of the constituent actions.",Introduction
+Consider these two distinct narrative chains.,Introduction
+This paper induces a new representation of structured knowledge called narrative event chains (or narrative chains).,Experiment/Discussion
+Narrative chains are partially ordered sets of events centered around a common protagonist.,Experiment/Discussion
+"They are related to structured sequences of participants and events that have been called scripts (Schank and Abelson, 1977) or Fillmorean frames.",Experiment/Discussion
+These participants and events can be filled in and instantiated in a particular text situation to draw inferences.,Experiment/Discussion
+"Chains focus on a single actor to faciliIt would be useful for question answering or textual entailment to know that ‘X denied ’ is also a likely event in the left chain, while ‘ replaces W’ temporally follows the right.",Experiment/Discussion
+Narrative chains (such as Firing of Employee or Executive Resigns) offer the structure and power to directly infer these new subevents by providing critical background knowledge.,Experiment/Discussion
+"In part due to its complexity, automatic induction has not been addressed since the early nonstatistical work of Mooney and DeJong (1985).",Experiment/Discussion
+The first step to narrative induction uses an entitybased model for learning narrative relations by following a protagonist.,Experiment/Discussion
+"As a narrative progresses through a series of events, each event is characterized by the grammatical role played by the protagonist, and by the protagonist’s shared connection to surrounding events.",Experiment/Discussion
+Our algorithm is an unsupervised distributional learning approach that uses coreferring arguments as evidence of a narrative relation.,Experiment/Discussion
+"We show, using a new evaluation task called narrative cloze, that our protagonist-based method leads to better induction than a verb-only approach.",Experiment/Discussion
+The next step is to order events in the same narrative chain.,Experiment/Discussion
+We apply work in the area of temporal classification to create partial orders of our learned events.,Experiment/Discussion
+"We show, using a coherence-based evaluation of temporal ordering, that our partial orders lead to better coherence judgements of real narrative instances extracted from documents.",Experiment/Discussion
+"Finally, the space of narrative events and temporal orders is clustered and pruned to create discrete sets of narrative chains.",Experiment/Discussion
+"While previous work hasn’t focused specifically on learning narratives1, our work draws from two lines of research in summarization and anaphora resolution.",Experiment/Discussion
+"In summarization, topic signatures are a set of terms indicative of a topic (Lin and Hovy, 2000).",Experiment/Discussion
+They are extracted from hand-sorted (by topic) sets of documents using log-likelihood ratios.,Experiment/Discussion
+"These terms can capture some narrative relations, but the model requires topic-sorted training data.",Experiment/Discussion
+Bean and Riloff (2004) proposed the use of caseframe networks as a kind of contextual role knoweldge for anaphora resolution.,Experiment/Discussion
+A caseframe is a verb/event and a semantic role (e.g.,Experiment/Discussion
+<patient> kidnapped).,Experiment/Discussion
+Caseframe networks are relations between caseframes that may represent synonymy (<patient> kidnapped and <patient> abducted) or related events (<patient> kidnapped and <patient> released).,Experiment/Discussion
+Bean and Riloff learn these networks from two topic-specific texts and apply them to the problem of anaphora resolution.,Experiment/Discussion
+"Our work can be seen as an attempt to generalize the intuition of caseframes (finding an entire set of events 1We analyzed FrameNet (Baker et al., 1998) for insight, but found that very few of the frames are event sequences of the type characterizing narratives and scripts. rather than just pairs of related frames) and apply it to a different task (finding a coherent structured narrative in non-topic-specific text).",Experiment/Discussion
+"More recently, Brody (2007) proposed an approach similar to caseframes that discovers highlevel relatedness between verbs by grouping verbs that share the same lexical items in subject/object positions.",Experiment/Discussion
+He calls these shared arguments anchors.,Experiment/Discussion
+"Brody learns pairwise relations between clusters of related verbs, similar to the results with caseframes.",Experiment/Discussion
+A human evaluation of these pairs shows an improvement over baseline.,Experiment/Discussion
+This and previous caseframe work lend credence to learning relations from verbs with common arguments.,Experiment/Discussion
+"We also draw from lexical chains (Morris and Hirst, 1991), indicators of text coherence from word overlap/similarity.",Experiment/Discussion
+We use a related notion of protagonist overlap to motivate narrative chain learning.,Experiment/Discussion
+Work on semantic similarity learning such as Chklovski and Pantel (2004) also automatically learns relations between verbs.,Experiment/Discussion
+"We use similar distributional scoring metrics, but differ with our use of a protagonist as the indicator of relatedness.",Experiment/Discussion
+"We also use typed dependencies and the entire space of events for similarity judgements, rather than only pairwise lexical decisions.",Experiment/Discussion
+"Finally, Fujiki et al. (2003) investigated script acquisition by extracting the 41 most frequent pairs of events from the first paragraph of newswire articles, using the assumption that the paragraph’s textual order follows temporal order.",Experiment/Discussion
+"Our model, by contrast, learns entire event chains, uses more sophisticated probabilistic measures, and uses temporal ordering models instead of relying on document order.",Experiment/Discussion
+"Our model is inspired by Centering (Grosz et al., 1995) and other entity-based models of coherence (Barzilay and Lapata, 2005) in which an entity is in focus through a sequence of sentences.",Experiment/Discussion
+We propose to use this same intuition to induce narrative chains.,Experiment/Discussion
+"We assume that although a narrative has several participants, there is a central actor who characterizes a narrative chain: the protagonist.",Experiment/Discussion
+Narrative chains are thus structured by the protagonist’s grammatical roles in the events.,Experiment/Discussion
+"In addition, narrative events are ordered by some theory of time.",Experiment/Discussion
+This paper describes a partial ordering with the before (no overlap) relation.,Experiment/Discussion
+"Our task, therefore, is to learn events that constitute narrative chains.",Experiment/Discussion
+"Formally, a narrative chain is a partially ordered set of narrative events that share a common actor.",Experiment/Discussion
+"A narrative event is a tuple of an event (most simply a verb) and its participants, represented as typed dependencies.",Experiment/Discussion
+"Since we are focusing on a single actor in this study, a narrative event is thus a tuple of the event and the typed dependency of the protagonist: (event, dependency).",Experiment/Discussion
+"A narrative chain is a set of narrative events {e1, e2, ..., en}, where n is the size of the chain, and a relation B(ei, ej) that is true if narrative event ei occurs strictly before ej in time.",Experiment/Discussion
+The notion of a protagonist motivates our approach to narrative learning.,Experiment/Discussion
+We make the following assumption of narrative coherence: verbs sharing coreferring arguments are semantically connected by virtue of narrative discourse structure.,Experiment/Discussion
+"A single document may contain more than one narrative (or topic), but the narrative assumption states that a series of argument-sharing verbs is more likely to participate in a narrative chain than those not sharing.",Experiment/Discussion
+"In addition, the narrative approach captures grammatical constraints on narrative coherence.",Experiment/Discussion
+"Simple distributional learning might discover that the verb push is related to the verb fall, but narrative learning can capture additional facts about the participants, specifically, that the object or patient of the push is the subject or agent of the fall.",Experiment/Discussion
+"Each focused protagonist chain offers one perspective on a narrative, similar to the multiple perspectives on a commercial transaction event offered by buy and sell.",Experiment/Discussion
+"A narrative chain, by definition, includes a partial ordering of events.",Experiment/Discussion
+Early work on scripts included ordering constraints with more complex preconditions and side effects on the sequence of events.,Experiment/Discussion
+This paper presents work toward a partial ordering and leaves logical constraints as future work.,Experiment/Discussion
+"We focus on the before relation, but the model does not preclude advanced theories of temporal order.",Experiment/Discussion
+"Our first model learns basic information about a narrative chain: the protagonist and the constituent subevents, although not their ordering.",Experiment/Discussion
+For this we need a metric for the relation between an event and a narrative chain.,Experiment/Discussion
+Pairwise relations between events are first extracted unsupervised.,Experiment/Discussion
+A distributional score based on how often two events share grammatical arguments (using pointwise mutual information) is used to create this pairwise relation.,Experiment/Discussion
+"Finally, a global narrative score is built such that all events in the chain provide feedback on the event in question (whether for inclusion or for decisions of inference).",Experiment/Discussion
+"Given a list of observed verb/dependency counts, we approximate the pointwise mutual information (PMI) by: where e(w, d) is the verb/dependency pair w and d (e.g. e(push,subject)).",Experiment/Discussion
+"The numerator is defined by: where C(e(x, d), e(y, f)) is the number of times the two events e(x, d) and e(y, f) had a coreferring entity filling the values of the dependencies d and f. We also adopt the ‘discount score’ to penalize low occuring words (Pantel and Ravichandran, 2004).",Experiment/Discussion
+"Given the debate over appropriate metrics for distributional learning, we also experimented with the t-test.",Experiment/Discussion
+Our experiments found that PMI outperforms the t-test on this task by itself and when interpolated together using various mixture weights.,Experiment/Discussion
+"Once pairwise relation scores are calculated, a global narrative score can then be built such that all events provide feedback on the event in question.",Experiment/Discussion
+"For instance, given all narrative events in a document, we can find the next most likely event to occur by maximizing: where n is the number of events in our chain and ei is the ith event. m is the number of events f in our training corpus.",Experiment/Discussion
+"A ranked list of guesses can be built from this summation and we hypothesize that the more events in our chain, the more informed our ranked output.",Experiment/Discussion
+An example of a chain with 3 events and the top 6 ranked guesses is given in figure 1.,Experiment/Discussion
+"The cloze task (Taylor, 1953) is used to evaluate a system (or human) for language proficiency by removing a random word from a sentence and having the system attempt to fill in the blank (e.g.",Experiment/Discussion
+I forgot to the waitress for the good service).,Experiment/Discussion
+"Depending on the type of word removed, the test can evaluate syntactic knowledge as well as semantic.",Experiment/Discussion
+"Deyes (1984) proposed an extended task, discourse cloze, to evaluate discourse knowledge (removing phrases that are recoverable from knowledge of discourse relations like contrast and consequence).",Experiment/Discussion
+"We present a new cloze task that requires narrative knowledge to solve, the narrative cloze.",Experiment/Discussion
+The narrative cloze is a sequence of narrative events in a document from which one event has been removed.,Experiment/Discussion
+The task is to predict the missing verb and typed dependency.,Experiment/Discussion
+"Take this example text about American football with McCann as the protagonist: These clauses are represented in the narrative model as five events: (threw subject), (pulled object), (told object), (start subject), (completed subject).",Experiment/Discussion
+These verb/dependency events make up a narrative cloze model.,Experiment/Discussion
+We could remove (threw subject) and use the remaining four events to rank this missing event.,Experiment/Discussion
+Removing a single such pair to be filled in automatically allows us to evaluate a system’s knowledge of narrative relations and coherence.,Experiment/Discussion
+"We do not claim this cloze task to be solvable even by humans, but rather assert it as a comparative measure to evaluate narrative knowledge.",Experiment/Discussion
+"We use years 1994-2004 (1,007,227 documents) of the Gigaword Corpus (Graff, 2002) for training2.",Experiment/Discussion
+"We parse the text into typed dependency graphs with the Stanford Parser (de Marneffe et al., 2006)3, recording all verbs with subject, object, or prepositional typed dependencies.",Experiment/Discussion
+We use the OpenNLP4 coreference engine to resolve the entity mentions.,Experiment/Discussion
+"For each document, the verb pairs that share coreferring entities are recorded with their dependency types.",Experiment/Discussion
+Particles are included with the verb.,Experiment/Discussion
+We used 10 news stories from the 1994 section of the corpus for development.,Experiment/Discussion
+"The stories were hand chosen to represent a range of topics such as business, sports, politics, and obituaries.",Experiment/Discussion
+We used 69 news stories from the 2001 (year selected randomly) section of the corpus for testing (also removed from training).,Experiment/Discussion
+The test set documents were randomly chosen and not preselected for a range of topics.,Experiment/Discussion
+"From each document, the entity involved in the most events was selected as the protagonist.",Experiment/Discussion
+"For this evaluation, we only look at verbs.",Experiment/Discussion
+"All verb clauses involving the protagonist are manually extracted and translated into the narrative events (verb,dependency).",Experiment/Discussion
+"Exceptions that are not included are verbs in headlines, quotations (typically not part of a narrative), “be” properties (e.g. john is happy), modifying verbs (e.g. hurried to leave, only leave is used), and multiple instances of one event.",Experiment/Discussion
+"The original test set included 100 documents, but those without a narrative chain at least five events in length were removed, leaving 69 documents.",Experiment/Discussion
+"Most of the removed documents were not stories, but genres such as interviews and cooking recipes.",Experiment/Discussion
+An example of an extracted chain is shown in figure 2.,Experiment/Discussion
+"We evalute with Narrative Cloze using leave-oneout cross validation, removing one event and using the rest to generate a ranked list of guesses.",Experiment/Discussion
+The test dataset produces 740 cloze tests (69 narratives with 740 events).,Experiment/Discussion
+"After generating our ranked guesses, the position of the correct event is averaged over all 740 tests for the final score.",Experiment/Discussion
+We penalize unseen events by setting their ranked position to the length of the guess list (ranging from 2k to 15k).,Experiment/Discussion
+Figure 1 is an example of a ranked guess list for a short chain of three events.,Experiment/Discussion
+"If the original document contained (fired obj), this cloze test would score 3.",Experiment/Discussion
+"We want to measure the utility of the protagonist and the narrative coherence assumption, so our baseline learns relatedness strictly based upon verb co-occurence.",Experiment/Discussion
+The PMI is then defined as between all occurrences of two verbs in the same document.,Experiment/Discussion
+"This baseline evaluation is verb only, as dependencies require a protagonist to fill them.",Experiment/Discussion
+"After initial evaluations, the baseline was performing very poorly due to the huge amount of data involved in counting all possible verb pairs (using a protagonist vastly reduces the number).",Experiment/Discussion
+We experimented with various count cutoffs to remove rare occurring pairs of verbs.,Experiment/Discussion
+The final results use a baseline where all pairs occurring less than 10 times in the training data are removed.,Experiment/Discussion
+"Since the verb-only baseline does not use typed dependencies, our narrative model cannot directly compare to this abstracted approach.",Experiment/Discussion
+"We thus modified the narrative model to ignore typed dependencies, but still count events with shared arguments.",Experiment/Discussion
+"Thus, we calculate the PMI across verbs that share arguments.",Experiment/Discussion
+This approach is called Protagonist.,Experiment/Discussion
+The full narrative model that includes the grammatical dependencies is called Typed Deps.,Experiment/Discussion
+Experiments with varying sizes of training data are presented in figure 3.,Experiment/Discussion
+Each ranked list of candidate verbs for the missing event in Baseline/Protagonist contained approximately 9 thousand candidates.,Experiment/Discussion
+"Of the 740 cloze tests, 714 of the removed events were present in their respective list of guesses.",Experiment/Discussion
+This is encouraging as only 3.5% of the events are unseen (or do not meet cutoff thresholds).,Experiment/Discussion
+"When all training data is used (1994-2004), the average ranked position is 1826 for Baseline and 1160 for Protagonist (1 being most confident).",Experiment/Discussion
+"The Baseline performs better at first (years 1994-5), but as more data is seen, the Baseline worsens while the Protagonist improves.",Experiment/Discussion
+This verb-only narrative model shows a 36.5% improvement over the baseline trained on all years.,Experiment/Discussion
+"Results from the full Typed Deps model, not comparable to the baseline, parallel the Protagonist results, improving as more data is seen (average ranked position of 1908 with all the training data).",Experiment/Discussion
+"We also ran the experiment without OpenNLP coreference, and instead used exact and substring matching for coreference resolution.",Experiment/Discussion
+This showed a 5.7% decrease in the verb-only results.,Experiment/Discussion
+These results show that a protagonist greatly assists in narrative judgements.,Experiment/Discussion
+"The model proposed in the previous section is designed to learn the major subevents in a narrative chain, but not how these events are ordered.",Experiment/Discussion
+In this section we extend the model to learn a partial temporal ordering of the events.,Experiment/Discussion
+"There are a number of algorithms for determining the temporal relationship between two events (Mani et al., 2006; Lapata and Lascarides, 2006; Chambers et al., 2007), many of them trained on the TimeBank Corpus (Pustejovsky et al., 2003) which codes events and their temporal relationships.",Experiment/Discussion
+"The currently highest performing of these on raw data is the model of temporal labeling described in our previous work (Chambers et al., 2007).",Experiment/Discussion
+Other approaches have depended on hand tagged features.,Experiment/Discussion
+"Chambers et al. (2007) shows 59.4% accuracy on the classification task for six possible relations between pairs of events: before, immediately-before, included-by, simultaneous, begins and ends.",Experiment/Discussion
+We focus on the before relation because the others are less relevant to our immediate task.,Experiment/Discussion
+"We combine immediately-before with before, and merge the other four relations into an other category.",Experiment/Discussion
+"At the binary task of determining if one event is before or other, we achieve 72.1% accuracy on Timebank.",Experiment/Discussion
+The above approach is a two-stage machine learning architecture.,Experiment/Discussion
+"In the first stage, the model uses supervised machine learning to label temporal attributes of events, including tense, grammatical aspect, and aspectual class.",Experiment/Discussion
+"This first stage classifier relies on features such as neighboring part of speech tags, neighboring auxiliaries and modals, and WordNet synsets.",Experiment/Discussion
+We use SVMs (Chambers et al. (2007) uses Naive Bayes) and see minor performance boosts on Timebank.,Experiment/Discussion
+"These imperfect classifications, combined with other linguistic features, are then used in a second stage to classify the temporal relationship between two events.",Experiment/Discussion
+"Other features include event-event syntactic properties such as the syntactic dominance relations between the two events, as well as new bigram features of tense, aspect and class (e.g.",Experiment/Discussion
+"“present past” if the first event is in the present, and the second past), and whether the events occur in the same or different sentences.",Experiment/Discussion
+"We use the entire Timebank Corpus as supervised training data, condensing the before and immediately-before relations into one before relation.",Experiment/Discussion
+The remaining relations are merged into other.,Experiment/Discussion
+The vast majority of potential event pairs in Timebank are unlabeled.,Experiment/Discussion
+"These are often none relations (events that have no explicit relation) or as is often the case, overlap relations where the two events have no Timebank-defined ordering but overlap in time.",Experiment/Discussion
+"Even worse, many events do have an ordering, but they were not tagged by the human annotators.",Experiment/Discussion
+"This could be due to the overwhelming task of temporal annotation, or simply because some event orderings are deemed more important than others in understanding the document.",Experiment/Discussion
+"We consider all untagged relations as other, and experiment with including none, half, and all of them in training.",Experiment/Discussion
+"Taking a cue from Mani et al. (2006), we also increased Timebank’s size by applying transitivity rules to the hand labeled data.",Experiment/Discussion
+The following is an example of the applied transitive rule: if run BEFORE fall and fall BEFORE injured then run BEFORE injured This increases the number of relations from 37519 to 45619.,Experiment/Discussion
+"Perhaps more importantly for our task, of all the added relations, the before relation is added the most.",Experiment/Discussion
+We experimented with original vs. expanded Timebank and found the expanded performed slightly worse.,Experiment/Discussion
+"The decline may be due to poor transitivity additions, as several Timebank documents contain inconsistent labelings.",Experiment/Discussion
+All reported results are from training without transitivity.,Experiment/Discussion
+"We classify the Gigaword Corpus in two stages, once for the temporal features on each event (tense, grammatical aspect, aspectual class), and once between all pairs of events that share arguments.",Experiment/Discussion
+This allows us to classify the before/other relations between all potential narrative events.,Experiment/Discussion
+"The first stage is trained on Timebank, and the second is trained using the approach described above, varying the size of the none training relations.",Experiment/Discussion
+Each pair of events in a gigaword document that share a coreferring argument is treated as a separate ordering classification task.,Experiment/Discussion
+We count the resulting number of labeled before relations between each verb/dependency pair.,Experiment/Discussion
+Processing the entire corpus produces a database of event pair counts where confidence of two generic events A and B can be measured by comparing how many before labels have been seen versus their inverted order B and A5.,Experiment/Discussion
+"We want to evaluate temporal order at the narrative level, across all events within a chain.",Experiment/Discussion
+"We envision narrative chains being used for tasks of coherence, among other things, and so it is desired to evaluate temporal decisions within a coherence framework.",Experiment/Discussion
+"Along these lines, our test set uses actual narrative chains from documents, hand labeled for a partial ordering.",Experiment/Discussion
+We evaluate coherence of these true chains against a random ordering.,Experiment/Discussion
+"The task is thus deciding which of the two chains is most coherent, the original or the random (baseline 50%)?",Experiment/Discussion
+"We generated up to 300 random orderings for each test document, averaging the accuracy across all.",Experiment/Discussion
+Our evaluation data is the same 69 documents used in the test set for learning narrative relations.,Experiment/Discussion
+The chain from each document is hand identified and labeled for a partial ordering using only the before relation.,Experiment/Discussion
+"Ordering was done by the authors and all attempts were made to include every before relation that exists in the document, or that could be deduced through transitivity rules.",Experiment/Discussion
+"Figure 4 shows an example and its full reversal, although the evaluation uses random orderings.",Experiment/Discussion
+Each edge is a distinct before relation and is used in the judgement score.,Experiment/Discussion
+"The coherence score for a partially ordered narrative chain is the sum of all the relations that our classified corpus agrees with, weighted by how certain we are.",Experiment/Discussion
+"If the gigaword classifications disagree, a weighted negative score is given.",Experiment/Discussion
+Confidence is based on a logarithm scale of the difference between the counts of before and after classifications.,Experiment/Discussion
+"Formally, the score is calculated as the following: where E is the set of all event pairs, B(i, j) is how many times we classified events i and j as before in Gigaword, and D(i, j) _ |B(i, j) − B(j,i)|.",Experiment/Discussion
+The relation i0j indicates that i is temporally before j.,Experiment/Discussion
+Out approach gives higher scores to orders that coincide with the pairwise orderings classified in our gigaword training data.,Experiment/Discussion
+The results are shown in figure 5.,Experiment/Discussion
+"Of the 69 chains, 6 did not have any ordered events and were removed from the evaluation.",Experiment/Discussion
+We generated (up to) 300 random orderings for each of the remaining 63.,Experiment/Discussion
+"We report 75.2% accuracy, but 22 of the 63 had 5 or fewer pairs of ordered events.",Experiment/Discussion
+"Figure 5 therefore shows results from chains with more than 5 pairs, and also 10 or more.",Experiment/Discussion
+"As we would hope, the accuracy improves the larger the ordered narrative chain.",Experiment/Discussion
+"We achieve 89.0% accuracy on the 24 documents whose chains most progress through time, rather than chains that are difficult to order with just the before relation.",Experiment/Discussion
+Training without none relations resulted in high recall for before decisions.,Experiment/Discussion
+"Perhaps due to data sparsity, this produces our best results as reported above.",Experiment/Discussion
+"Up till this point, we have learned narrative relations across all possible events, including their temporal order.",Results/Conclusion
+"However, the discrete lists of events for which Schank scripts are most famous have not yet been constructed.",Results/Conclusion
+We intentionally did not set out to reproduce explicit self-contained scripts in the sense that the ‘restaurant script’ is complete and cannot include other events.,Results/Conclusion
+The name narrative was chosen to imply a likely order of events that is common in spoken and written retelling of world events.,Results/Conclusion
+Discrete sets have the drawback of shutting out unseen and unlikely events from consideration.,Results/Conclusion
+"It is advantageous to consider a space of possible narrative events and the ordering within, not a closed list.",Results/Conclusion
+"However, it is worthwhile to construct discrete narrative chains, if only to see whether the combination of event learning and ordering produce scriptlike structures.",Results/Conclusion
+"This is easily achievable by using the PMI scores from section 4 in an agglomerative clustering algorithm, and then applying the ordering relations from section 5 to produce a directed graph.",Results/Conclusion
+Figures 6 and 7 show two learned chains after clustering and ordering.,Results/Conclusion
+Each arrow indicates a before relation.,Results/Conclusion
+Duplicate arrows implied by rules of transitivity are removed.,Results/Conclusion
+"Figure 6 is remarkably accurate, and figure 7 addresses one of the chains from our introduction, the employment narrative.",Results/Conclusion
+"The core employment events are accurate, but clustering included life events (born, died, graduated) from obituaries of which some temporal information is incorrect.",Results/Conclusion
+"The Timebank corpus does not include obituaries, thus we suffer from sparsity in training data.",Results/Conclusion
+We have shown that it is possible to learn narrative event chains unsupervised from raw text.,Results/Conclusion
+"Not only do our narrative relations show improvements over a baseline, but narrative chains offer hope for many other areas of NLP.",Results/Conclusion
+"Inference, coherence in summarization and generation, slot filling for question answering, and frame induction are all potential areas.",Results/Conclusion
+"We learned a new measure of similarity, the narrative relation, using the protagonist as a hook to extract a list of related events from each document.",Results/Conclusion
+The 37% improvement over a verb-only baseline shows that we may not need presorted topics of documents to learn inferences.,Results/Conclusion
+"In addition, we applied state of the art temporal classification to show that sets of events can be partially ordered.",Results/Conclusion
+Judgements of coherence can then be made over chains within documents.,Results/Conclusion
+Further work in temporal classification may increase accuracy even further.,Results/Conclusion
+"Finally, we showed how the event space of narrative relations can be clustered to create discrete sets.",Results/Conclusion
+"While it is unclear if these are better than an unconstrained distribution of events, they do offer insight into the quality of narratives.",Results/Conclusion
+An important area not discussed in this paper is the possibility of using narrative chains for semantic role learning.,Results/Conclusion
+"A narrative chain can be viewed as defining the semantic roles of an event, constraining it against roles of the other events in the chain.",Results/Conclusion
+An argument’s class can then be defined as the set of narrative arguments in which it appears.,Results/Conclusion
+"We believe our model provides an important first step toward learning the rich causal, temporal and inferential structure of scripts and frames.",Results/Conclusion

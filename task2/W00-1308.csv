@@ -1,153 +1,153 @@
 col1,col2
-"This paper presents results for a maximumentropy-based part of speech tagger, which achieves superior performance principally by enriching the information sources used for tagging.",{}
-"In particular, we get improved results by incorporating these features: (i) more extensive treatment of capitalization for unknown words; (ii) features for the disambiguation of the tense forms of verbs; (iii) features for disambiguating particles from prepositions and adverbs.",{}
-"The best resulting accuracy for the tagger on the Penn Treebank is 96.86% overall, and 86.91% on previously unseen words.",{}
-"There are now numerous systems for automatic assignment of parts of speech (&quot;tagging&quot;), employing many different machine learning methods.","{'title': ""Introduction'"", 'number': '1'}"
-"Among recent top performing methods are Hidden Markov Models (Brants 2000), maximum entropy approaches (Ratnaparkhi 1996), and transformation-based learning (Brill 1994).","{'title': ""Introduction'"", 'number': '1'}"
-"An overview of these and other approaches can be found in Manning and Schiitze (1999, ch.","{'title': ""Introduction'"", 'number': '1'}"
-10).,"{'title': ""Introduction'"", 'number': '1'}"
-"However, all these methods use largely the same information sources for tagging, and often almost the same features as well, and as a consequence they also offer very similar levels of performance.","{'title': ""Introduction'"", 'number': '1'}"
-"This stands in contrast to the (manually-built) EngCG tagger, which achieves better performance by using lexical and contextual information sources and generalizations beyond those available to such statistical taggers, as Samuelsson and Voutilainen (1997) demonstrate. '","{'title': ""Introduction'"", 'number': '1'}"
-"We thank Dan Klein and Michael Saunders for useful discussions, and the anonymous reviewers for many helpful comments.","{'title': ""Introduction'"", 'number': '1'}"
-This paper explores the notion that automatically built tagger performance can be further improved by expanding the knowledge sources available to the tagger.,"{'title': ""Introduction'"", 'number': '1'}"
-"We pay special attention to unknown words, because the markedly lower accuracy on unknown word tagging means that this is an area where significant performance gains seem possible.","{'title': ""Introduction'"", 'number': '1'}"
-We adopt a maximum entropy approach because it allows the inclusion of diverse sources of information without causing fragmentation and without necessarily assuming independence between the predictors.,"{'title': ""Introduction'"", 'number': '1'}"
-"A maximum entropy approach has been applied to partof-speech tagging before (Ratnaparkhi 1996), but the approach's ability to incorporate nonlocal and non-HMM-tagger-type evidence has not been fully explored.","{'title': ""Introduction'"", 'number': '1'}"
-This paper describes the models that we developed and the experiments we performed to evaluate them.,"{'title': ""Introduction'"", 'number': '1'}"
-We started with a maximum entropy based tagger that uses features very similar to the ones proposed in Ratnaparkhi (1996).,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The tagger learns a loglinear conditional probability model from tagged text, using a maximum entropy method.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The model assigns a probability for every tag t in the set T of possible tags given a word and its context h, which is usually defined as the sequence of several words and tags preceding the word.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"This model can be used for estimating the probability of a tag sequence ti...t„ given a sentence w1.. .w: ,=.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"As usual, tagging is the process of assigning the maximum likelihood tag sequence to a string of words.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The idea of maximum entropy modeling is to choose the probability distribution p that has the highest entropy out of those distributions that satisfy a certain set of constraints.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The constraints restrict the model to behave in accordance with a set of statistics collected from the training data.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The statistics are expressed as the expected values of appropriate functions defined on the contexts h and tags t. In particular, the constraints demand that the expectations of the features for the model match the empirical expectations of the features over the training data.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"For example, if we want to constrain the model to tag make as a verb or noun with the same frequency as the empirical model induced by the training data, we define the features: fl(h,t) = 1 iff w = make and t = NN f2(h,t) = 1 iff w, = make and t = VB Some commonly used statistics for part of speech tagging are: how often a certain word was tagged in a certain way; how often two tags appeared in sequence or how often three tags appeared in sequence.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-These look a lot like the statistics a Markov Model would use.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"However, in the maximum entropy framework it is possible to easily define and incorporate much more complex statistics, not restricted to n-gram sequences.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The constraints in our model are that the expectations of these features according to the joint distribution p are equal to the expectations of the features in the empirical (training data) distribution E p(h,,) (h,t) = Ei5(h,t) (h, t) Having defined a set of constraints that our model should accord with, we proceed to find the model satisfying the constraints that maximizes the conditional entropy of p. The intuition is that such a model assumes nothing apart from that it should satisfy the given constraints.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Following Berger et al. (1996), we approximate p(h,t) , the joint distribution of contexts and tags, by the product of r, (h), the empirical distribution of histories h, and the conditional distribution p(t I h): p(h,t) p(h) p(t I h) .","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Then for the example above, our constraints would be the following, for j e {1,2}: This approximation is used to enable efficient computation.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The expectation for a feature f is: where H is the space of possible contexts h when predicting a part of speech tag t. Since the contexts contain sequences of words and tags and other information, the space H is huge.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"But using this approximation, we can instead sum just over the smaller space of observed contexts X in the training sample, because the empirical prior i5(h) is zero for unseen contexts h: The model that is a solution to this constrained optimization task is an exponential (or equivalently, loglinear) model with the parametric form: where the denominator is a normalizing term (sometimes referred to as the partition function).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The parameters Xi correspond to weights for the features fj.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-We will not discuss in detail the characteristics of the model or the parameter estimation procedure used — Improved Iterative Scaling.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"For a more extensive discussion of maximum entropy methods, see Berger et al. (1996) and Jelinek (1997).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"However, we note that our parameter estimation algorithm directly uses equation (1).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Ratnaparkhi (1996: 134) suggests use of an approximation summing over the training data, which does not sum over possible tags: However, we believe this passage is in error: such an estimate is ineffective in the iterative scaling algorithm.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Further, we note that expectations of the form (1) appear in Ratnaparkhi (1998: 12).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"In our baseline model, the context available when predicting the part of speech tag of a word wi in a sentence of words {w1... wn} with tags {t1... t„) is { wi.,11.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The features that define the constraints on the model are obtained by instantiation of feature templates as in Ratnaparkhi (1996).,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Special feature templates exist for rare words in the training data, to increase the model's prediction capacity for unknown words.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The actual feature templates for this model are shown in the next table.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-They are a subset of the features used in Ratnaparkhi (1996).,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-No.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Feature Type Template General feature templates can be instantiated by arbitrary contexts, whereas rare feature templates are instantiated only by histories where the current word wi is rare.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Rare words are defined to be words that appear less than a certain number of times in the training data (here, the value 7 was used).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"In order to be able to throw out features that would give misleading statistics due to sparseness or noise in the data, we use two different cutoff values for general and rare feature templates (in this implementation, 5 and 45 respectively).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-As seen in Table 1 the features are conjunctions of a boolean function on the history h and a boolean function on the tag t. Features whose first conjuncts are true for more than the corresponding threshold number of histories in the training data are included in the model.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The feature templates in Ratnaparkhi (1996) that were left out were the ones that look at the previous word, the word two positions before the current, and the word two positions after the current.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"These features are of the same form as template 4 in Table 1, but they look at words in different positions.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Our motivation for leaving these features out was the results from some experiments on successively adding feature templates.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Adding template 4 to a model that incorporated the general feature templates 1 to 3 only and the rare feature templates 5-8 significantly increased the accuracy on the development set — from 96.0% to 96.52%.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The addition of a feature template that looked at the preceding word and the current tag to the resulting model slightly reduced the accuracy.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The model was trained and tested on the part-ofspeech tagged WSJ section of the Penn Treebank.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The data was divided into contiguous parts: sections 0-20 were used for training, sections 21-22 as a development test set, and sections 23-24 as a final test set.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The data set sizes are shown below together with numbers of unknown words.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The testing procedure uses a beam search to find the tag sequence with maximal probability given a sentence.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-In our experiments we used a beam of size 5.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Increasing the beam size did not result in improved accuracy.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The preceding tags for the word at the beginning of the sentence are regarded as having the pseudo-tag NA.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"In this way, the information that a word is the first word in a sentence is available to the tagger.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-We do not have a special end-of-sentence symbol.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-We used a tag dictionary for known words in testing.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-This was built from tags found in the training data but augmented so as to capture a few basic systematic tag ambiguities that are found in English.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Namely, for regular verbs the -ed form can be either a VBD or a VBN and similarly the stem form can be either a VBP or VB.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Hence for words that had occurred with only one of these tags in the training data the other was also included as. possible for assignment.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The results on the test set for the Baseline model are shown in Table 3.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-This table also shows the results reported in Ratnaparkhi (1996: 142) for convenience.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The accuracy figure for our model is higher overall but lower for unknown words.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"This may stem from the differences between the two models' feature templates, thresholds, and approximations of the expected values for the features, as discussed in the beginning of the section, or may just reflect differences in the choice of training and test sets (which are not precisely specified in Ratnaparkhi (1996)).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The differences are not great enough to justify any definite statement about the different use of feature templates or other particularities of the model estimation.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-One conclusion that we can draw is that at present the additional word features used in Ratnaparkhi (1996) — looking at words more than one position away from the current — do not appear to be helping the overall performance of the models.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"A large number of words, including many of the most common words, can have more than one syntactic category.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-This introduces a lot of ambiguities that the tagger has to resolve.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Some of the ambiguities are easier for taggers to resolve and others are harder.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Some of the most significant confusions that the Baseline model made on the test set can be seen in Table 5.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"The row labels in Table 5 signify the correct tags, and the column labels signify the assigned tags.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"For example, the number 244 in the (NN, JJ) position is the number of words that were NNs but were incorrectly assigned the JJ category.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"These particular confusions, shown in the table, account for a large percentage of the total error (2652/3651 = 72.64%).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Table 6 shows part of the Baseline model's confusion matrix for just unknown words.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Table 4 shows the Baseline model's overall assignment accuracies for different parts of speech.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"For example, the accuracy on nouns is greater than the accuracy on adjectives.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The accuracy on NNPS (plural proper nouns) is a surprisingly low 41.1%.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-Tagger errors are of various types.,"{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Some are the result of inconsistency in labeling in the training data (Ratnaparkhi 1996), which usually reflects a lack of linguistic clarity or determination of the correct part of speech in context.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"For instance, the status of various noun premodifiers (whether chief or maximum is NN or JJ, or whether a word in -ing is acting as a JJ or VBG) is of this type.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Some, such as errors between NN/NNP/NNPS/NNS largely reflect difficulties with unknown words.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"But other cases, such as VBNNBD and VBNBP/NN, represent systematic tag ambiguity patterns in English, for which the right answer is invariably clear in context, and for which there are in general good structural contextual clues that one should be able to use to disambiguate.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Finally, in another class of cases, of which the most prominent is probably the RP/IN/RB ambiguity of words like up, out, and on, the linguistic distinctions, while having a sound empirical basis (e.g., see Baker (1995: 198-201), are quite subtle, and often require semantic intuitions.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"There are not good syntactic cues for the correct tag (and furthermore, human taggers not infrequently make errors).","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"Within this classification, the greatest hopes for tagging improvement appear to come from minimizing errors in the second and third classes of this classification.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-"In the following sections we discuss how we include additional knowledge sources to help in the assignment of tags to forms of verbs, capitalized unknown words, particle words, and in the overall accuracy of part of speech assignments.","{'title': '1 The Baseline Maximum Entropy Model', 'number': '2'}"
-The accuracy of the baseline model is markedly lower for unknown words than for previously seen ones.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"This is also the case for all other taggers, and reflects the importance of lexical information to taggers: in the best accuracy figures published for corpus-based taggers, known word accuracy is around 97%, whereas unknown word accuracy is around 85%.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"In following experiments, we examined ways of using additional features to improve the accuracy of tagging unknown words.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"As previously discussed in Mikheev (1999), it is possible to improve the accuracy on capitalized words that might be proper nouns or the first word in a sentence, etc.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"For example, the error on the proper noun category (NNP) accounts for a significantly larger percent of the total error for unknown words than for known words.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"In the Baseline model, of the unknown word error 41.3% is due to words being NNP and assigned to some other category, or being of other category and assigned NNP.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-The percentage of the same type of error for known words is 16.2%.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"The incorporation of the following two feature schemas greatly improved NNP accuracy: Conversely, empirically it was found that the prefix features for rare words were having a net negative effect on accuracy.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-We do not at present have a good explanation for this phenomenon.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-The addition of the features (1) and (2) and the removal of the prefix features considerably improved the accuracy on unknown words and the overall accuracy.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-The results on the test set after adding these features are shown below: 96.76% 86.76% Unknown word error is reduced by 15% as compared to the Baseline model.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-It is important to note that (2) is composed of information already 'known' to the tagger in some sense.,"{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"This feature can be viewed as the conjunction of two features, one of which is already in the baseline model, and the other of which is the negation of a feature existing in the baseline model — since for words at the beginning of a sentence, the preceding tag is the pseudo-tag NA, and there is a feature looking at the preceding tag.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-"Even though our maximum entropy model does not require independence among the predictors, it provides for free only a simple combination of feature weights, and additional 'interaction terms' are needed to model non-additive interactions (in log-space terms) between features.","{'title': '2 Improving the Unknown Words Model', 'number': '3'}"
-Two of the most significant sources of classifier errors are the VBN/VBD ambiguity and the VBP/VB ambiguity.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"As seen in Table 5, VBNNBD confusions account for 6.9% of the total word error.","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-The VBP/VB confusions are a smaller 3.7% of the errors.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-In many cases it is easy for people (and for taggers) to determine the correct form.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"For example, if there is a to infinitive or a modal directly preceding the VB/VBP ambiguous word, the form is certainly non-finite.","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"But often the modal can be several positions away from the current position — still obvious to a human, but out of sight for the baseline model.","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"To help resolve a VB/VBP ambiguity in such cases, we can add a feature that looks at the preceding several words (we have chosen 8 as a threshold), but not across another verb, and activates if there is a to there, a modal verb, or a form of do, let, make, or help (verbs that frequently take a bare infinitive complement).","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"Rather than having a separate feature look at each preceding position, we define one feature that looks at the chosen number of positions to the left.","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-This both increases the scope of the available history for the tagger and provides a better statistic because it avoids fragmentation.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-We added a similar feature for resolving VBDNBN confusions.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-It activates if there is a have or be auxiliary form in the preceding several positions (again the value 8 is used in the implementation).,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"The form of these two feature templates was motivated by the structural rules of English and not induced from the training data, but it should be possible to look for &quot;predictors&quot; for certain parts of speech in the preceding words in the sentence by, for example, computing association strengths.","{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-The addition of the two feature schemas helped reduce the VBNBP and VBD/VBN confusions.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-Below is the performance on the test set of the resulting model when features for disambiguating verb forms are added to the model of Section 2.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-The number of VBNBP confusions was reduced by 23.1% as compared to the baseline.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-The number of VBD/VBN confusions was reduced by 12.3%.,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-96.83% 86.87%,"{'title': '3 Features for Disambiguating Verb Forms', 'number': '4'}"
-"As discussed in section 1.3 above, the task of determining RB/RP/IN tags for words like down, out, up is difficult and in particular examples, there are often no good local syntactic indicators.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"For instance, in (2), we find the exact same sequence of parts of speech, but (2a) is a particle use of on, while (2b) is a prepositional use.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"Consequently, the accuracy on the rarer RP (particles) category is as low as 41.5% for the Baseline model (cf.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-Table 4).,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-(2) a. Kim took on the monster. b. Kim sat on the monster.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"We tried to improve the tagger's capability to resolve these ambiguities through adding information on verbs' preferences to take specific words as particles, or adverbs, or prepositions.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"There are verbs that take particles more than others, and particular words like out are much more likely to be used as a particle in the context of some verb than other words ambiguous between these tags.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"We added two different feature templates to capture this information, consisting as usual of a predicate on the history h, and a condition on the tag t. The first predicate is true if the current word is often used as a particle, and if there is a verb at most 3 positions to the left, which is &quot;known&quot; to have a good chance of taking the current word as a particle.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-The verb-particle pairs that are known by the system to be very common were collected through analysis of the training data in a preprocessing stage.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-The second feature template has the form: The last verb is v and the current word is w and w has been tagged as a particle and the current tag is t. The last verb is the pseudo-symbol NA if there is no verb in the previous three positions.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-These features were some help in reducing the RB/IN/RP confusions.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-The accuracy on the RP category rose to 44.3%.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"Although the overall confusions in this class were reduced, some of the errors were increased, for example, the number of INs classified as RBs rose slightly.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"There seems to be still considerable room to improve these results, though the attainable accuracy is limited by the accuracy with which these distinctions are marked in the Penn Treebank (on a quick informal study, this accuracy seems to be around 85%).","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-The next table shows the final performance on the test set.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"For ease of comparison, the accuracies of all models on the test and development sets are shown in Table 7.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-We note that accuracy is lower on the development set.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-This presumably corresponds with Charniak's (2000: 136) observation that Section 23 of the Penn Treebank is easier than some others.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-Table 8 shows the different number of feature templates of each kind that have been instantiated for the different models as well as the total number of features each model has.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"It can be seen that the features which help disambiguate verb forms, which look at capitalization and the first of the feature templates for particles are a very small number as compared to the features of the other kinds.","{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-The improvement in classification accuracy therefore comes at the price of adding very few parameters to the maximum entropy model and does not result in increased model complexity.,"{'title': '4 Features for Particle Disambiguation', 'number': '5'}"
-"Even when the accuracy figures for corpus-based part-of-speech taggers start to look extremely similar, it is still possible to move performance levels up.","{'title': 'Conclusion', 'number': '6'}"
-The work presented in this paper explored just a few information sources in addition to the ones usually used for tagging.,"{'title': 'Conclusion', 'number': '6'}"
-"While progress is slow, because each new feature applies only to a limited range of cases, nevertheless the improvement in accuracy as compared to previous results is noticeable, particularly for the individual decisions on which we focused.","{'title': 'Conclusion', 'number': '6'}"
-The potential of maximum entropy methods has not previously been fully exploited for the task of assignment of parts of speech.,"{'title': 'Conclusion', 'number': '6'}"
-"We incorporated into a maximum entropy-based tagger more linguistically sophisticated features, which are non-local and do not look just at particular positions in the text.","{'title': 'Conclusion', 'number': '6'}"
-We also added features that model the interactions of previously employed predictors.,"{'title': 'Conclusion', 'number': '6'}"
-All of these changes led to modest increases in tagging accuracy.,"{'title': 'Conclusion', 'number': '6'}"
-This paper has thus presented some initial experiments in improving tagger accuracy through using additional information sources.,"{'title': 'Conclusion', 'number': '6'}"
-In the future we hope to explore automatically discovering information sources that can be profitably incorporated into maximum entropy part-of-speech prediction.,"{'title': 'Conclusion', 'number': '6'}"
+"This paper presents results for a maximumentropy-based part of speech tagger, which achieves superior performance principally by enriching the information sources used for tagging.",Introduction
+"In particular, we get improved results by incorporating these features: (i) more extensive treatment of capitalization for unknown words; (ii) features for the disambiguation of the tense forms of verbs; (iii) features for disambiguating particles from prepositions and adverbs.",Introduction
+"The best resulting accuracy for the tagger on the Penn Treebank is 96.86% overall, and 86.91% on previously unseen words.",Introduction
+"There are now numerous systems for automatic assignment of parts of speech (&quot;tagging&quot;), employing many different machine learning methods.",Experiment/Discussion
+"Among recent top performing methods are Hidden Markov Models (Brants 2000), maximum entropy approaches (Ratnaparkhi 1996), and transformation-based learning (Brill 1994).",Experiment/Discussion
+"An overview of these and other approaches can be found in Manning and Schiitze (1999, ch.",Experiment/Discussion
+10).,Experiment/Discussion
+"However, all these methods use largely the same information sources for tagging, and often almost the same features as well, and as a consequence they also offer very similar levels of performance.",Experiment/Discussion
+"This stands in contrast to the (manually-built) EngCG tagger, which achieves better performance by using lexical and contextual information sources and generalizations beyond those available to such statistical taggers, as Samuelsson and Voutilainen (1997) demonstrate. '",Experiment/Discussion
+"We thank Dan Klein and Michael Saunders for useful discussions, and the anonymous reviewers for many helpful comments.",Experiment/Discussion
+This paper explores the notion that automatically built tagger performance can be further improved by expanding the knowledge sources available to the tagger.,Experiment/Discussion
+"We pay special attention to unknown words, because the markedly lower accuracy on unknown word tagging means that this is an area where significant performance gains seem possible.",Experiment/Discussion
+We adopt a maximum entropy approach because it allows the inclusion of diverse sources of information without causing fragmentation and without necessarily assuming independence between the predictors.,Experiment/Discussion
+"A maximum entropy approach has been applied to partof-speech tagging before (Ratnaparkhi 1996), but the approach's ability to incorporate nonlocal and non-HMM-tagger-type evidence has not been fully explored.",Experiment/Discussion
+This paper describes the models that we developed and the experiments we performed to evaluate them.,Experiment/Discussion
+We started with a maximum entropy based tagger that uses features very similar to the ones proposed in Ratnaparkhi (1996).,Experiment/Discussion
+"The tagger learns a loglinear conditional probability model from tagged text, using a maximum entropy method.",Experiment/Discussion
+"The model assigns a probability for every tag t in the set T of possible tags given a word and its context h, which is usually defined as the sequence of several words and tags preceding the word.",Experiment/Discussion
+"This model can be used for estimating the probability of a tag sequence ti...t„ given a sentence w1.. .w: ,=.",Experiment/Discussion
+"As usual, tagging is the process of assigning the maximum likelihood tag sequence to a string of words.",Experiment/Discussion
+The idea of maximum entropy modeling is to choose the probability distribution p that has the highest entropy out of those distributions that satisfy a certain set of constraints.,Experiment/Discussion
+The constraints restrict the model to behave in accordance with a set of statistics collected from the training data.,Experiment/Discussion
+"The statistics are expressed as the expected values of appropriate functions defined on the contexts h and tags t. In particular, the constraints demand that the expectations of the features for the model match the empirical expectations of the features over the training data.",Experiment/Discussion
+"For example, if we want to constrain the model to tag make as a verb or noun with the same frequency as the empirical model induced by the training data, we define the features: fl(h,t) = 1 iff w = make and t = NN f2(h,t) = 1 iff w, = make and t = VB Some commonly used statistics for part of speech tagging are: how often a certain word was tagged in a certain way; how often two tags appeared in sequence or how often three tags appeared in sequence.",Experiment/Discussion
+These look a lot like the statistics a Markov Model would use.,Experiment/Discussion
+"However, in the maximum entropy framework it is possible to easily define and incorporate much more complex statistics, not restricted to n-gram sequences.",Experiment/Discussion
+"The constraints in our model are that the expectations of these features according to the joint distribution p are equal to the expectations of the features in the empirical (training data) distribution E p(h,,) (h,t) = Ei5(h,t) (h, t) Having defined a set of constraints that our model should accord with, we proceed to find the model satisfying the constraints that maximizes the conditional entropy of p. The intuition is that such a model assumes nothing apart from that it should satisfy the given constraints.",Experiment/Discussion
+"Following Berger et al. (1996), we approximate p(h,t) , the joint distribution of contexts and tags, by the product of r, (h), the empirical distribution of histories h, and the conditional distribution p(t I h): p(h,t) p(h) p(t I h) .",Experiment/Discussion
+"Then for the example above, our constraints would be the following, for j e {1,2}: This approximation is used to enable efficient computation.",Experiment/Discussion
+"The expectation for a feature f is: where H is the space of possible contexts h when predicting a part of speech tag t. Since the contexts contain sequences of words and tags and other information, the space H is huge.",Experiment/Discussion
+"But using this approximation, we can instead sum just over the smaller space of observed contexts X in the training sample, because the empirical prior i5(h) is zero for unseen contexts h: The model that is a solution to this constrained optimization task is an exponential (or equivalently, loglinear) model with the parametric form: where the denominator is a normalizing term (sometimes referred to as the partition function).",Experiment/Discussion
+The parameters Xi correspond to weights for the features fj.,Experiment/Discussion
+We will not discuss in detail the characteristics of the model or the parameter estimation procedure used — Improved Iterative Scaling.,Experiment/Discussion
+"For a more extensive discussion of maximum entropy methods, see Berger et al. (1996) and Jelinek (1997).",Experiment/Discussion
+"However, we note that our parameter estimation algorithm directly uses equation (1).",Experiment/Discussion
+"Ratnaparkhi (1996: 134) suggests use of an approximation summing over the training data, which does not sum over possible tags: However, we believe this passage is in error: such an estimate is ineffective in the iterative scaling algorithm.",Experiment/Discussion
+"Further, we note that expectations of the form (1) appear in Ratnaparkhi (1998: 12).",Experiment/Discussion
+"In our baseline model, the context available when predicting the part of speech tag of a word wi in a sentence of words {w1... wn} with tags {t1... t„) is { wi.,11.",Experiment/Discussion
+The features that define the constraints on the model are obtained by instantiation of feature templates as in Ratnaparkhi (1996).,Experiment/Discussion
+"Special feature templates exist for rare words in the training data, to increase the model's prediction capacity for unknown words.",Experiment/Discussion
+The actual feature templates for this model are shown in the next table.,Experiment/Discussion
+They are a subset of the features used in Ratnaparkhi (1996).,Experiment/Discussion
+No.,Experiment/Discussion
+"Feature Type Template General feature templates can be instantiated by arbitrary contexts, whereas rare feature templates are instantiated only by histories where the current word wi is rare.",Experiment/Discussion
+"Rare words are defined to be words that appear less than a certain number of times in the training data (here, the value 7 was used).",Experiment/Discussion
+"In order to be able to throw out features that would give misleading statistics due to sparseness or noise in the data, we use two different cutoff values for general and rare feature templates (in this implementation, 5 and 45 respectively).",Experiment/Discussion
+As seen in Table 1 the features are conjunctions of a boolean function on the history h and a boolean function on the tag t. Features whose first conjuncts are true for more than the corresponding threshold number of histories in the training data are included in the model.,Experiment/Discussion
+"The feature templates in Ratnaparkhi (1996) that were left out were the ones that look at the previous word, the word two positions before the current, and the word two positions after the current.",Experiment/Discussion
+"These features are of the same form as template 4 in Table 1, but they look at words in different positions.",Experiment/Discussion
+Our motivation for leaving these features out was the results from some experiments on successively adding feature templates.,Experiment/Discussion
+Adding template 4 to a model that incorporated the general feature templates 1 to 3 only and the rare feature templates 5-8 significantly increased the accuracy on the development set — from 96.0% to 96.52%.,Experiment/Discussion
+The addition of a feature template that looked at the preceding word and the current tag to the resulting model slightly reduced the accuracy.,Experiment/Discussion
+The model was trained and tested on the part-ofspeech tagged WSJ section of the Penn Treebank.,Experiment/Discussion
+"The data was divided into contiguous parts: sections 0-20 were used for training, sections 21-22 as a development test set, and sections 23-24 as a final test set.",Experiment/Discussion
+The data set sizes are shown below together with numbers of unknown words.,Experiment/Discussion
+The testing procedure uses a beam search to find the tag sequence with maximal probability given a sentence.,Experiment/Discussion
+In our experiments we used a beam of size 5.,Experiment/Discussion
+Increasing the beam size did not result in improved accuracy.,Experiment/Discussion
+The preceding tags for the word at the beginning of the sentence are regarded as having the pseudo-tag NA.,Experiment/Discussion
+"In this way, the information that a word is the first word in a sentence is available to the tagger.",Experiment/Discussion
+We do not have a special end-of-sentence symbol.,Experiment/Discussion
+We used a tag dictionary for known words in testing.,Experiment/Discussion
+This was built from tags found in the training data but augmented so as to capture a few basic systematic tag ambiguities that are found in English.,Experiment/Discussion
+"Namely, for regular verbs the -ed form can be either a VBD or a VBN and similarly the stem form can be either a VBP or VB.",Experiment/Discussion
+Hence for words that had occurred with only one of these tags in the training data the other was also included as. possible for assignment.,Experiment/Discussion
+The results on the test set for the Baseline model are shown in Table 3.,Experiment/Discussion
+This table also shows the results reported in Ratnaparkhi (1996: 142) for convenience.,Experiment/Discussion
+The accuracy figure for our model is higher overall but lower for unknown words.,Experiment/Discussion
+"This may stem from the differences between the two models' feature templates, thresholds, and approximations of the expected values for the features, as discussed in the beginning of the section, or may just reflect differences in the choice of training and test sets (which are not precisely specified in Ratnaparkhi (1996)).",Experiment/Discussion
+The differences are not great enough to justify any definite statement about the different use of feature templates or other particularities of the model estimation.,Experiment/Discussion
+One conclusion that we can draw is that at present the additional word features used in Ratnaparkhi (1996) — looking at words more than one position away from the current — do not appear to be helping the overall performance of the models.,Experiment/Discussion
+"A large number of words, including many of the most common words, can have more than one syntactic category.",Experiment/Discussion
+This introduces a lot of ambiguities that the tagger has to resolve.,Experiment/Discussion
+Some of the ambiguities are easier for taggers to resolve and others are harder.,Experiment/Discussion
+Some of the most significant confusions that the Baseline model made on the test set can be seen in Table 5.,Experiment/Discussion
+"The row labels in Table 5 signify the correct tags, and the column labels signify the assigned tags.",Experiment/Discussion
+"For example, the number 244 in the (NN, JJ) position is the number of words that were NNs but were incorrectly assigned the JJ category.",Experiment/Discussion
+"These particular confusions, shown in the table, account for a large percentage of the total error (2652/3651 = 72.64%).",Experiment/Discussion
+Table 6 shows part of the Baseline model's confusion matrix for just unknown words.,Experiment/Discussion
+Table 4 shows the Baseline model's overall assignment accuracies for different parts of speech.,Experiment/Discussion
+"For example, the accuracy on nouns is greater than the accuracy on adjectives.",Experiment/Discussion
+The accuracy on NNPS (plural proper nouns) is a surprisingly low 41.1%.,Experiment/Discussion
+Tagger errors are of various types.,Experiment/Discussion
+"Some are the result of inconsistency in labeling in the training data (Ratnaparkhi 1996), which usually reflects a lack of linguistic clarity or determination of the correct part of speech in context.",Experiment/Discussion
+"For instance, the status of various noun premodifiers (whether chief or maximum is NN or JJ, or whether a word in -ing is acting as a JJ or VBG) is of this type.",Experiment/Discussion
+"Some, such as errors between NN/NNP/NNPS/NNS largely reflect difficulties with unknown words.",Experiment/Discussion
+"But other cases, such as VBNNBD and VBNBP/NN, represent systematic tag ambiguity patterns in English, for which the right answer is invariably clear in context, and for which there are in general good structural contextual clues that one should be able to use to disambiguate.",Experiment/Discussion
+"Finally, in another class of cases, of which the most prominent is probably the RP/IN/RB ambiguity of words like up, out, and on, the linguistic distinctions, while having a sound empirical basis (e.g., see Baker (1995: 198-201), are quite subtle, and often require semantic intuitions.",Experiment/Discussion
+"There are not good syntactic cues for the correct tag (and furthermore, human taggers not infrequently make errors).",Experiment/Discussion
+"Within this classification, the greatest hopes for tagging improvement appear to come from minimizing errors in the second and third classes of this classification.",Experiment/Discussion
+"In the following sections we discuss how we include additional knowledge sources to help in the assignment of tags to forms of verbs, capitalized unknown words, particle words, and in the overall accuracy of part of speech assignments.",Experiment/Discussion
+The accuracy of the baseline model is markedly lower for unknown words than for previously seen ones.,Experiment/Discussion
+"This is also the case for all other taggers, and reflects the importance of lexical information to taggers: in the best accuracy figures published for corpus-based taggers, known word accuracy is around 97%, whereas unknown word accuracy is around 85%.",Experiment/Discussion
+"In following experiments, we examined ways of using additional features to improve the accuracy of tagging unknown words.",Experiment/Discussion
+"As previously discussed in Mikheev (1999), it is possible to improve the accuracy on capitalized words that might be proper nouns or the first word in a sentence, etc.",Experiment/Discussion
+"For example, the error on the proper noun category (NNP) accounts for a significantly larger percent of the total error for unknown words than for known words.",Experiment/Discussion
+"In the Baseline model, of the unknown word error 41.3% is due to words being NNP and assigned to some other category, or being of other category and assigned NNP.",Experiment/Discussion
+The percentage of the same type of error for known words is 16.2%.,Experiment/Discussion
+"The incorporation of the following two feature schemas greatly improved NNP accuracy: Conversely, empirically it was found that the prefix features for rare words were having a net negative effect on accuracy.",Experiment/Discussion
+We do not at present have a good explanation for this phenomenon.,Experiment/Discussion
+The addition of the features (1) and (2) and the removal of the prefix features considerably improved the accuracy on unknown words and the overall accuracy.,Experiment/Discussion
+The results on the test set after adding these features are shown below: 96.76% 86.76% Unknown word error is reduced by 15% as compared to the Baseline model.,Experiment/Discussion
+It is important to note that (2) is composed of information already 'known' to the tagger in some sense.,Experiment/Discussion
+"This feature can be viewed as the conjunction of two features, one of which is already in the baseline model, and the other of which is the negation of a feature existing in the baseline model — since for words at the beginning of a sentence, the preceding tag is the pseudo-tag NA, and there is a feature looking at the preceding tag.",Experiment/Discussion
+"Even though our maximum entropy model does not require independence among the predictors, it provides for free only a simple combination of feature weights, and additional 'interaction terms' are needed to model non-additive interactions (in log-space terms) between features.",Experiment/Discussion
+Two of the most significant sources of classifier errors are the VBN/VBD ambiguity and the VBP/VB ambiguity.,Experiment/Discussion
+"As seen in Table 5, VBNNBD confusions account for 6.9% of the total word error.",Experiment/Discussion
+The VBP/VB confusions are a smaller 3.7% of the errors.,Experiment/Discussion
+In many cases it is easy for people (and for taggers) to determine the correct form.,Experiment/Discussion
+"For example, if there is a to infinitive or a modal directly preceding the VB/VBP ambiguous word, the form is certainly non-finite.",Experiment/Discussion
+"But often the modal can be several positions away from the current position — still obvious to a human, but out of sight for the baseline model.",Experiment/Discussion
+"To help resolve a VB/VBP ambiguity in such cases, we can add a feature that looks at the preceding several words (we have chosen 8 as a threshold), but not across another verb, and activates if there is a to there, a modal verb, or a form of do, let, make, or help (verbs that frequently take a bare infinitive complement).",Experiment/Discussion
+"Rather than having a separate feature look at each preceding position, we define one feature that looks at the chosen number of positions to the left.",Experiment/Discussion
+This both increases the scope of the available history for the tagger and provides a better statistic because it avoids fragmentation.,Experiment/Discussion
+We added a similar feature for resolving VBDNBN confusions.,Experiment/Discussion
+It activates if there is a have or be auxiliary form in the preceding several positions (again the value 8 is used in the implementation).,Experiment/Discussion
+"The form of these two feature templates was motivated by the structural rules of English and not induced from the training data, but it should be possible to look for &quot;predictors&quot; for certain parts of speech in the preceding words in the sentence by, for example, computing association strengths.",Experiment/Discussion
+The addition of the two feature schemas helped reduce the VBNBP and VBD/VBN confusions.,Experiment/Discussion
+Below is the performance on the test set of the resulting model when features for disambiguating verb forms are added to the model of Section 2.,Experiment/Discussion
+The number of VBNBP confusions was reduced by 23.1% as compared to the baseline.,Experiment/Discussion
+The number of VBD/VBN confusions was reduced by 12.3%.,Experiment/Discussion
+96.83% 86.87%,Experiment/Discussion
+"As discussed in section 1.3 above, the task of determining RB/RP/IN tags for words like down, out, up is difficult and in particular examples, there are often no good local syntactic indicators.",Results/Conclusion
+"For instance, in (2), we find the exact same sequence of parts of speech, but (2a) is a particle use of on, while (2b) is a prepositional use.",Results/Conclusion
+"Consequently, the accuracy on the rarer RP (particles) category is as low as 41.5% for the Baseline model (cf.",Results/Conclusion
+Table 4).,Results/Conclusion
+(2) a. Kim took on the monster. b. Kim sat on the monster.,Results/Conclusion
+"We tried to improve the tagger's capability to resolve these ambiguities through adding information on verbs' preferences to take specific words as particles, or adverbs, or prepositions.",Results/Conclusion
+"There are verbs that take particles more than others, and particular words like out are much more likely to be used as a particle in the context of some verb than other words ambiguous between these tags.",Results/Conclusion
+"We added two different feature templates to capture this information, consisting as usual of a predicate on the history h, and a condition on the tag t. The first predicate is true if the current word is often used as a particle, and if there is a verb at most 3 positions to the left, which is &quot;known&quot; to have a good chance of taking the current word as a particle.",Results/Conclusion
+The verb-particle pairs that are known by the system to be very common were collected through analysis of the training data in a preprocessing stage.,Results/Conclusion
+The second feature template has the form: The last verb is v and the current word is w and w has been tagged as a particle and the current tag is t. The last verb is the pseudo-symbol NA if there is no verb in the previous three positions.,Results/Conclusion
+These features were some help in reducing the RB/IN/RP confusions.,Results/Conclusion
+The accuracy on the RP category rose to 44.3%.,Results/Conclusion
+"Although the overall confusions in this class were reduced, some of the errors were increased, for example, the number of INs classified as RBs rose slightly.",Results/Conclusion
+"There seems to be still considerable room to improve these results, though the attainable accuracy is limited by the accuracy with which these distinctions are marked in the Penn Treebank (on a quick informal study, this accuracy seems to be around 85%).",Results/Conclusion
+The next table shows the final performance on the test set.,Results/Conclusion
+"For ease of comparison, the accuracies of all models on the test and development sets are shown in Table 7.",Results/Conclusion
+We note that accuracy is lower on the development set.,Results/Conclusion
+This presumably corresponds with Charniak's (2000: 136) observation that Section 23 of the Penn Treebank is easier than some others.,Results/Conclusion
+Table 8 shows the different number of feature templates of each kind that have been instantiated for the different models as well as the total number of features each model has.,Results/Conclusion
+"It can be seen that the features which help disambiguate verb forms, which look at capitalization and the first of the feature templates for particles are a very small number as compared to the features of the other kinds.",Results/Conclusion
+The improvement in classification accuracy therefore comes at the price of adding very few parameters to the maximum entropy model and does not result in increased model complexity.,Results/Conclusion
+"Even when the accuracy figures for corpus-based part-of-speech taggers start to look extremely similar, it is still possible to move performance levels up.",Results/Conclusion
+The work presented in this paper explored just a few information sources in addition to the ones usually used for tagging.,Results/Conclusion
+"While progress is slow, because each new feature applies only to a limited range of cases, nevertheless the improvement in accuracy as compared to previous results is noticeable, particularly for the individual decisions on which we focused.",Results/Conclusion
+The potential of maximum entropy methods has not previously been fully exploited for the task of assignment of parts of speech.,Results/Conclusion
+"We incorporated into a maximum entropy-based tagger more linguistically sophisticated features, which are non-local and do not look just at particular positions in the text.",Results/Conclusion
+We also added features that model the interactions of previously employed predictors.,Results/Conclusion
+All of these changes led to modest increases in tagging accuracy.,Results/Conclusion
+This paper has thus presented some initial experiments in improving tagger accuracy through using additional information sources.,Results/Conclusion
+In the future we hope to explore automatically discovering information sources that can be profitably incorporated into maximum entropy part-of-speech prediction.,Results/Conclusion

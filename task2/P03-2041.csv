@@ -1,156 +1,156 @@
 col1,col2
-"Often one may wish to learn a tree-to-tree mapping, training it on unaligned pairs of trees, or on a mixture of trees and strings.",{}
-Unlike previous statistical formalisms (limited to isomorphic TSG local distortion of the tree topology.,{}
-"We reformulate it to permit dependency trees, and sketch EM/Viterbi algorithms for alignment, training, and decoding.",{}
-Statistical machine translation systems are trained on pairs of sentences that are mutual translations.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"For example, (beaucoup d’enfants donnent un baiser a` Sam, kids kiss Sam quite often).","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"This translation is somewhat free, as is common in naturally occurring data.","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-The first sentence is literally Lots of’children give a kiss to Sam.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-This short paper outlines “natural” formalisms and algorithms for training on pairs of trees.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-Our methods work on either dependency trees (as shown) or phrase-structure trees.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-Note that the depicted trees are not isomorphic. enfants Our main concern is to develop models that can align and learn from these tree pairs despite the “mismatches” in tree structure.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"Many “mismatches” are characteristic of a language pair: e.g., preposition insertion (of → c), multiword locutions (kiss H give a kiss to; misinform H wrongly inform), and head-swapping (float down H descend byfloating).","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"Such systematic mismatches should be learned by the model, and used during translation.","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-It is even helpful to learn mismatches that merely tend to arise during free translation.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-Knowing that beaucoup d’ is often deleted will help in aligning the rest of the tree.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-When would learned tree-to-tree mappings be useful?,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"Obviously, in MT, when one has parsers for both the source and target language.","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"Systems for “deep” analysis and generation might wish to learn mappings between deep and surface trees (B¨ohmov´a et al., 2001) or between syntax and semantics (Shieber and Schabes, 1990).","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"Systems for summarization or paraphrase could also be trained on tree pairs (Knight and Marcu, 2000).","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-Non-NLP applications might include comparing studentwritten programs to one another or to the correct solution.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-Our methods can naturally extend to train on pairs of forests (including packed forests obtained by chart parsing).,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-The correct tree is presumed to be an element of the forest.,"{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-"This makes it possible to train even when the correct parse is not fully known, or not known at all.","{'title': '1 Introduction: Tree-to-Tree Mappings', 'number': '1'}"
-We make the quite natural proposal of using a synchronous tree substitution grammar (STSG).,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-An STSG is a collection of (ordered) pairs of aligned elementary trees.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-These may be combined into a derived pair of trees.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-Both the elementary tree pairs and the operation to combine them will be formalized in later sections.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"As an example, the tree pair shown in the introduction might have been derived by “vertically” assembling the 6 elementary tree pairs below.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"The — symbol denotes a frontier node of an elementary tree, which must be replaced by the circled root of another elementary tree.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"If two frontier nodes are linked by a dashed line labeled with the state X, then they must be replaced by two roots that are also linked by a dashed line labeled with X.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"The elementary trees represent idiomatic translation “chunks.” The frontier nodes represent unfilled roles in the chunks, and the states are effectively nonterminals that specify the type of filler that is required.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Thus, donnent un baiser a` (“give a kiss to”) corresponds to kiss, with the French subject matched to the English subject, and the French indirect object matched to the English direct object.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"The states could be more refined than those shown above: the state for the subject, for example, should probably be not NP but a pair (Npl, NP3s).","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"STSG is simply a version of synchronous treeadjoining grammar or STAG (Shieber and Schabes, 1990) that lacks the adjunction operation.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-(It is also equivalent to top-down tree transducers.),"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"What, then, is new here?","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"First, we know of no previous attempt to learn the “chunk-to-chunk” mappings.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"That is, we do not know at training time how the tree pair of section 1 was derived, or even what it was derived from.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Our approach is to reconstruct all possible derivations, using dynamic programming to decompose the tree pair into aligned pairs of elementary trees in all possible ways.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"This produces a packed forest of derivations, some more probable than others.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"We use an efficient inside-outside algorithm to do Expectation-Maximization, reestimating the model by training on all derivations in proportion to their probabilities.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"The runtime is quite low when the training trees are fully specified and elementary trees are bounded in size.1 Second, it is not a priori obvious that one can reasonably use STSG instead of the slower but more powerful STAG.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-TSG can be parsed as fast as CFG.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"But without an adjunction operation,2, one cannot break the training trees into linguistically minimal units.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"An elementary tree pair A = (elle est finalement partie, finally she left) cannot be further decomposed into B = (elle est partie, she left) and C = (finalement, finally).","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-This appears to miss a generalization.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Our perspective is that the generalization should be picked up by the statistical model that defines the probability of elementary tree pairs. p(A) can be defined using mainly the same parameters that define p(B) and p(C), with the result that p(A) ,: p(B) · p(C).","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-The balance between the STSG and the statistical model is summarized in the last paragraph of this paper.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Third, our version of the STSG formalism is more flexible than previous versions.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"We carefully address the case of empty trees, which are needed to handle freetranslation “mismatches.” In the example, an STSG cannot replace beaucoup d’ (“lots of”) in the NP by quite often in the VP; instead it must delete the former and insert the latter.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Thus we have the alignments (beaucoup d’, e) and (e, quite often).","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-These require innovations.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-The tree-internal deletion of beaucoup d’ is handled by an empty elementary tree in which the root is itself a frontier node.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"(The subject frontier node of kiss is replaced with this frontier node, which is then replaced with kids.)","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-The tree-peripheral insertion of quite often requires an English frontier node that is paired with a French null.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-We also formulate STSGs flexibly enough that they can handle both phrase-structure trees and dependency trees.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"The latter are small and simple (Alshawi et al., 2000): tree nodes are words, and there need be no other structure to recover or align.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-Selectional preferences and other interactions can be accommodated by enriching the states.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-Any STSG has a weakly equivalent SCFG that generates the same string pairs.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"So STSG (unlike STAG) has no real advantage for modeling string pairs.3 But STSGs can generate a wider variety of tree pairs, e.g., non-isomorphic ones.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"So when actual trees are provided for training, STSG can be more flexible in aligning them.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-1Goodman (2002) presents efficient TSG parsing with unbounded elementary trees.,"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Unfortunately, that clever method does not permit arbitrary models of elementary tree probabilities, nor does it appear to generalize to our synchronous case.","{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-(It would need exponentially many nonterminals to keep track of an matching of unboundedly many frontier nodes.),"{'title': '2 A Natural Proposal: Synchronous TSG', 'number': '2'}"
-"Most statistical MT derives from IBM-style models (Brown et al., 1993), which ignore syntax and allow arbitrary word-to-word translation.","{'title': '3 Past Work', 'number': '3'}"
-"Hence they are able to align any sentence pair, however mismatched.","{'title': '3 Past Work', 'number': '3'}"
-"However, they have a tendency to translate long sentences into word salad.","{'title': '3 Past Work', 'number': '3'}"
-"Their alignment and translation accuracy improves when they are forced to translate shallow phrases as contiguous, potentially idiomatic units (Och et al., 1999).","{'title': '3 Past Work', 'number': '3'}"
-"Several researchers have tried putting “more syntax” into translation models: like us, they use statistical versions of synchronous grammars, which generate source and target sentences in parallel and so describe their correspondence.4 This approach offers four features absent from IBM-style models: (1) a recursive phrase-based translation, (2) a syntax-based language model, (3) the ability to condition a word’s translation on the translation of syntactically related words, and (4) polynomial-time optimal alignment and decoding (Knight, 1999).","{'title': '3 Past Work', 'number': '3'}"
-"Previous work in statistical synchronous grammars has been limited to forms of synchronous context-free grammar (Wu, 1997; Alshawi et al., 2000; Yamada and Knight, 2001).","{'title': '3 Past Work', 'number': '3'}"
-"This means that a sentence and its translation must have isomorphic syntax trees, although they may have different numbers of surface words if null words a are allowed in one or both languages.","{'title': '3 Past Work', 'number': '3'}"
-This rigidity does not fully describe real data.,"{'title': '3 Past Work', 'number': '3'}"
-"The one exception is the synchronous DOP approach of (Poutsma, 2000), which obtains an STSG by decomposing aligned training trees in all possible ways (and using “naive” count-based probability estimates).","{'title': '3 Past Work', 'number': '3'}"
-"However, we would like to estimate a model from unaligned data.","{'title': '3 Past Work', 'number': '3'}"
-"For expository reasons (and to fill a gap in the literature), first we formally present non-synchronous TSG.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-Let Q be a set of states.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-Let L be a set of labels that may decorate nodes or edges.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-Node labels might be words or nonterminals.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-Edge labels might include grammatical roles such as Subject.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"In many trees, each node’s children have an order, recorded in labels on the node’s outgoing edges.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"An elementary tree is a a tuple (V, V i, E, `, q, s) where V is a set of nodes; V i C_ V is the set of internal nodes, and we write V f = V − V i for the set of frontier nodes; E C_ V i x V is a set of directed edges (thus all frontier nodes are leaves).","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"The graph (V, E) must be connected and acyclic, and there must be exactly one node r E V (the root) that has no incoming edges.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"The function ` : (V i U E) → L labels each internal node or edge; q E Q is the root state, and s : V f → Q assigns a frontier state to each frontier node (perhaps including r).","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"4The joint probability model can be formulated, if desired, as a language model times a channel model.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-A TSG is a set of elementary trees.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"The generation process builds up a derived tree T that has the same form as an elementary tree, and for which V f = 0.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"Initially, T is chosen to be any elementary tree whose root state T.q = Start.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"As long as T has any frontier nodes, T.V f, the process expands each frontier node d E T.V f by substituting at d an elementary tree t whose root state, t.q, equals d’s frontier state, T.s(d).","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"This operation replaces T with (T.V U t.V − {d}, T.V i U t.V i, T.E' U t.E, T. B U t.�, T.q, T.s U t.s − {d, t.q}).","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"Note that a function is regarded here as a set of (input, output) pairs.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-T.E' is a version of T.E in which d has been been replaced by t.r.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"A probabilistic TSG also includes a function p(t  |q), which, for each state q, gives a conditional probability distribution over the elementary trees t with root state q.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-The generation process uses this distribution to randomly choose which tree t to substitute at a frontier node of T having state q.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-The initial value of T is chosen from p(t | Start).,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"Thus, the probability of a given derivation is a product of p(t  |q) terms, one per chosen elementary tree.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-There is a natural analogy between (probabilistic) TSGs and (probabilistic) CFGs.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-An elementary tree t with root state q and frontier states ql ... qk (for k > 0) is analogous to a CFG rule q → t ql ... qk.,"{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"(By including t as a terminal symbol in this rule, we ensure that distinct elementary trees t with the same states correspond to distinct rules.)","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"Indeed, an equivalent definition of the generation process first generates a derivation tree from this derivation CFG, and then combines its terminal nodes t (which are elementary trees) into the derived tree T.","{'title': '4 A Probabilistic TSG Formalism', 'number': '4'}"
-"Given a a grammar G and a derived tree T, we may be interested in constructing the forest of T’s possible derivation trees (as defined above).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"We call this tree parsing, as it finds ways of decomposing T into elementary trees.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Given a node c E T.v, we would like to find all the potential elementary subtrees t of T whose root t.r could have contributed c during the derivation of T. Such an elementary tree is said to fit c, in the sense that it is isomorphic to some subgraph of T rooted at c. The following procedure finds an elementary tree t that fits c. Freely choose a connected subgraph U of T such that U is rooted at c (or is empty).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-Let t.V i be the vertex set of U.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Let t.E be the set of outgoing edges from nodes in t.Vi to their children, that is, t.E = T.E n (t.V i x T.V ).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Let t.� be the restriction of T.� to t.Vi U t.E, that is, t.� = T.� n ((t.V i U t.E) x L).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Let t.V be the set of nodes mentioned in t.E, or put t.V = {c} if t.Vi = t.E = 0.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Finally, choose t.q freely from Q, and choose s : t.Vf → Q to associate states with the frontier nodes of t; the free choice is because the nodes of the derived tree T do not specify the states used during the derivation.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-How many elementary trees can we find that fit c?,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-Let us impose an upper bound k on |t.V i |and hence on |U|.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"Then in an m-ary tree T, the above procedure considers at most mk�1 m�1 connected subgraphs U of order < k rooted at c. For dependency grammars, limiting to m < 6 and k = 3 is quite reasonable, leaving at most 43 subgraphs U rooted at each node c, of which the biggest contain only c, a child c' of c, and a child or sibling of c'.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"These will constitute the internal nodes of t, and their remaining children will be t’s frontier nodes.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"However, for each of these 43 subgraphs, we must jointly hypothesize states for all frontier nodes and the root node.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"For |Q |> 1, there are exponentially many ways to do this.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"To avoid having exponentially many hypotheses, one may restrict the form of possible elementary trees so that the possible states of each node of t can be determined somehow from the labels on the corresponding nodes in T. As a simple but useful example, a node labeled NP might be required to have state NP.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-Rich labels on the derived tree essentially provide supervision as to what the states must have been during the derivation.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-The tree parsing algorithm resembles bottom-up chart parsing under the derivation CFG.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"But the input is a tree rather than a string, and the chart is indexed by nodes of the input tree rather than spans of the input string:5 The β values are inside probabilities.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"After running the algorithm, if r is the root of T, then βr(Start) is the probability that the grammar generates T. p(t  |q) in line 4 may be found by hash lookup if the grammar is stored explicitly, or else by some probabilistic model that analyzes the structure, labels, and states of the elementary tree t to compute its probability.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"One can mechanically transform this algorithm to compute outside probabilities, the Viterbi parse, the parse forest, and other quantities (Goodman, 1999).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-One can also apply agenda-based parsing strategies.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"For a fixed grammar, the runtime and space are only O(n) for a tree of n nodes.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-The grammar constant is the number of possible fits to a node c of a fixed tree.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"As noted above, there usually not many of these (unless the states are uncertain) and they are simple to enumerate.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"As discussed above, an inside-outside algorithm may be used to compute the expected number of times each elementary tree t appeared in the derivation of T. That is the E step of the EM algorithm.","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-"In the M step, these expected counts (collected over a corpus of trees) are used to reestimate the parameters θ� of p(t  |q).","{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-One alternates O� converges to a local maximum.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-The prior p(O� can discourage overfitting.,"{'title': '5 Tree Parsing Algorithms for TSG', 'number': '5'}"
-We are now prepared to discuss the synchronous case.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-A synchronous TSG consists of a set of elementary tree pairs.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"An elementary tree pair t is a tuple (t1, t2, q, m, s).","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Here t1 and t2 are elementary trees without state labels: we write tj = (Vj,Vji,Ej,`j). q E Q is the root state as before. m C_ V1f x V2f is a matching between t1’s and t2’s frontier nodes,6.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Let m¯ denote m U {(d1, null) : d1 is unmatched in m} U {(null, d2) : d2 is unmatched in m}.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Finally, s : m¯ → Q assigns a state to each frontier node pair or unpaired frontier node.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"In the figure of section 2, donnent un baiser a` has 2 frontier nodes and kiss has 3, yielding 13 possible matchings.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Note that least one English node must remain unmatched; it still generates a full subtree, aligned with null.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"As before, a derived tree pair T has the same form as an elementary tree pair.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-The generation process is similar to before.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"As long as T. m¯ =� 0, the process expands some node pair (d1, d2) E T. ¯m.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"It chooses an elementary tree pair t such that t.q = T.s(d1, d2).","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Then for each j = 1, 2, it substitutes tj at dj if non-null.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"(If dj is null, then t.q must guarantee that tj is the special null tree.)","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"In the probabilistic case, we have a distribution p(t  |q) just as before, but this time t is an elementary tree pair.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-Several natural algorithms are now available to us: • Training.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Given an unaligned tree pair (T1, T2), we can again find the forest of all possible derivations, with expected inside-outside counts of the elementary tree pairs.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-This allows EM training of the p(t  |q) model.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-The algorithm is almost as before.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-The outer loop iterates bottom-up over nodes c1 of T1; an inner loop iterates bottom-up over c2 of T2.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Inside probabilities (for example) now have the form βc1,c2(q).","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Although this brings the complexity up to O(n2), the real complication is that there can be many fits to (c1, c2).","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"There are still not too many elementary trees t1 and t2 rooted at c1 and c2; but each (t1, t2) pair may be used in many elementary tree pairs t, since there are exponentially many matchings of their frontier nodes.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"Fortunately, most pairs of frontier nodes have low β values that indicate that their subtrees cannot be aligned well; pairing such nodes in a matching would result in poor global probability.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-This observation can be used to prune the space of matchings greatly.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-• 1-best Alignment (if desired).,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"This is just like training, except that we use the Viterbi algorithm to find the single best derivation of the input tree pair.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-This derivation can be regarded as the optimal syntactic alignment.7 We then extract the max-probability synchronous derivation and return the T2 that it derives.,"{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
-"This algorithm is essentially alignment to an unknown tree T2; we do not loop over its nodes c2, but choose t2 freely.","{'title': '6 Extending to Synchronous TSG', 'number': '6'}"
+"Often one may wish to learn a tree-to-tree mapping, training it on unaligned pairs of trees, or on a mixture of trees and strings.",Introduction
+Unlike previous statistical formalisms (limited to isomorphic TSG local distortion of the tree topology.,Introduction
+"We reformulate it to permit dependency trees, and sketch EM/Viterbi algorithms for alignment, training, and decoding.",Introduction
+Statistical machine translation systems are trained on pairs of sentences that are mutual translations.,Experiment/Discussion
+"For example, (beaucoup d’enfants donnent un baiser a` Sam, kids kiss Sam quite often).",Experiment/Discussion
+"This translation is somewhat free, as is common in naturally occurring data.",Experiment/Discussion
+The first sentence is literally Lots of’children give a kiss to Sam.,Experiment/Discussion
+This short paper outlines “natural” formalisms and algorithms for training on pairs of trees.,Experiment/Discussion
+Our methods work on either dependency trees (as shown) or phrase-structure trees.,Experiment/Discussion
+Note that the depicted trees are not isomorphic. enfants Our main concern is to develop models that can align and learn from these tree pairs despite the “mismatches” in tree structure.,Experiment/Discussion
+"Many “mismatches” are characteristic of a language pair: e.g., preposition insertion (of → c), multiword locutions (kiss H give a kiss to; misinform H wrongly inform), and head-swapping (float down H descend byfloating).",Experiment/Discussion
+"Such systematic mismatches should be learned by the model, and used during translation.",Experiment/Discussion
+It is even helpful to learn mismatches that merely tend to arise during free translation.,Experiment/Discussion
+Knowing that beaucoup d’ is often deleted will help in aligning the rest of the tree.,Experiment/Discussion
+When would learned tree-to-tree mappings be useful?,Experiment/Discussion
+"Obviously, in MT, when one has parsers for both the source and target language.",Experiment/Discussion
+"Systems for “deep” analysis and generation might wish to learn mappings between deep and surface trees (B¨ohmov´a et al., 2001) or between syntax and semantics (Shieber and Schabes, 1990).",Experiment/Discussion
+"Systems for summarization or paraphrase could also be trained on tree pairs (Knight and Marcu, 2000).",Experiment/Discussion
+Non-NLP applications might include comparing studentwritten programs to one another or to the correct solution.,Experiment/Discussion
+Our methods can naturally extend to train on pairs of forests (including packed forests obtained by chart parsing).,Experiment/Discussion
+The correct tree is presumed to be an element of the forest.,Experiment/Discussion
+"This makes it possible to train even when the correct parse is not fully known, or not known at all.",Experiment/Discussion
+We make the quite natural proposal of using a synchronous tree substitution grammar (STSG).,Experiment/Discussion
+An STSG is a collection of (ordered) pairs of aligned elementary trees.,Experiment/Discussion
+These may be combined into a derived pair of trees.,Experiment/Discussion
+Both the elementary tree pairs and the operation to combine them will be formalized in later sections.,Experiment/Discussion
+"As an example, the tree pair shown in the introduction might have been derived by “vertically” assembling the 6 elementary tree pairs below.",Experiment/Discussion
+"The — symbol denotes a frontier node of an elementary tree, which must be replaced by the circled root of another elementary tree.",Experiment/Discussion
+"If two frontier nodes are linked by a dashed line labeled with the state X, then they must be replaced by two roots that are also linked by a dashed line labeled with X.",Experiment/Discussion
+"The elementary trees represent idiomatic translation “chunks.” The frontier nodes represent unfilled roles in the chunks, and the states are effectively nonterminals that specify the type of filler that is required.",Experiment/Discussion
+"Thus, donnent un baiser a` (“give a kiss to”) corresponds to kiss, with the French subject matched to the English subject, and the French indirect object matched to the English direct object.",Experiment/Discussion
+"The states could be more refined than those shown above: the state for the subject, for example, should probably be not NP but a pair (Npl, NP3s).",Experiment/Discussion
+"STSG is simply a version of synchronous treeadjoining grammar or STAG (Shieber and Schabes, 1990) that lacks the adjunction operation.",Experiment/Discussion
+(It is also equivalent to top-down tree transducers.),Experiment/Discussion
+"What, then, is new here?",Experiment/Discussion
+"First, we know of no previous attempt to learn the “chunk-to-chunk” mappings.",Experiment/Discussion
+"That is, we do not know at training time how the tree pair of section 1 was derived, or even what it was derived from.",Experiment/Discussion
+"Our approach is to reconstruct all possible derivations, using dynamic programming to decompose the tree pair into aligned pairs of elementary trees in all possible ways.",Experiment/Discussion
+"This produces a packed forest of derivations, some more probable than others.",Experiment/Discussion
+"We use an efficient inside-outside algorithm to do Expectation-Maximization, reestimating the model by training on all derivations in proportion to their probabilities.",Experiment/Discussion
+"The runtime is quite low when the training trees are fully specified and elementary trees are bounded in size.1 Second, it is not a priori obvious that one can reasonably use STSG instead of the slower but more powerful STAG.",Experiment/Discussion
+TSG can be parsed as fast as CFG.,Experiment/Discussion
+"But without an adjunction operation,2, one cannot break the training trees into linguistically minimal units.",Experiment/Discussion
+"An elementary tree pair A = (elle est finalement partie, finally she left) cannot be further decomposed into B = (elle est partie, she left) and C = (finalement, finally).",Experiment/Discussion
+This appears to miss a generalization.,Experiment/Discussion
+"Our perspective is that the generalization should be picked up by the statistical model that defines the probability of elementary tree pairs. p(A) can be defined using mainly the same parameters that define p(B) and p(C), with the result that p(A) ,: p(B) · p(C).",Experiment/Discussion
+The balance between the STSG and the statistical model is summarized in the last paragraph of this paper.,Experiment/Discussion
+"Third, our version of the STSG formalism is more flexible than previous versions.",Experiment/Discussion
+"We carefully address the case of empty trees, which are needed to handle freetranslation “mismatches.” In the example, an STSG cannot replace beaucoup d’ (“lots of”) in the NP by quite often in the VP; instead it must delete the former and insert the latter.",Experiment/Discussion
+"Thus we have the alignments (beaucoup d’, e) and (e, quite often).",Experiment/Discussion
+These require innovations.,Experiment/Discussion
+The tree-internal deletion of beaucoup d’ is handled by an empty elementary tree in which the root is itself a frontier node.,Experiment/Discussion
+"(The subject frontier node of kiss is replaced with this frontier node, which is then replaced with kids.)",Experiment/Discussion
+The tree-peripheral insertion of quite often requires an English frontier node that is paired with a French null.,Experiment/Discussion
+We also formulate STSGs flexibly enough that they can handle both phrase-structure trees and dependency trees.,Experiment/Discussion
+"The latter are small and simple (Alshawi et al., 2000): tree nodes are words, and there need be no other structure to recover or align.",Experiment/Discussion
+Selectional preferences and other interactions can be accommodated by enriching the states.,Experiment/Discussion
+Any STSG has a weakly equivalent SCFG that generates the same string pairs.,Experiment/Discussion
+"So STSG (unlike STAG) has no real advantage for modeling string pairs.3 But STSGs can generate a wider variety of tree pairs, e.g., non-isomorphic ones.",Experiment/Discussion
+"So when actual trees are provided for training, STSG can be more flexible in aligning them.",Experiment/Discussion
+1Goodman (2002) presents efficient TSG parsing with unbounded elementary trees.,Experiment/Discussion
+"Unfortunately, that clever method does not permit arbitrary models of elementary tree probabilities, nor does it appear to generalize to our synchronous case.",Experiment/Discussion
+(It would need exponentially many nonterminals to keep track of an matching of unboundedly many frontier nodes.),Experiment/Discussion
+"Most statistical MT derives from IBM-style models (Brown et al., 1993), which ignore syntax and allow arbitrary word-to-word translation.",Experiment/Discussion
+"Hence they are able to align any sentence pair, however mismatched.",Experiment/Discussion
+"However, they have a tendency to translate long sentences into word salad.",Experiment/Discussion
+"Their alignment and translation accuracy improves when they are forced to translate shallow phrases as contiguous, potentially idiomatic units (Och et al., 1999).",Experiment/Discussion
+"Several researchers have tried putting “more syntax” into translation models: like us, they use statistical versions of synchronous grammars, which generate source and target sentences in parallel and so describe their correspondence.4 This approach offers four features absent from IBM-style models: (1) a recursive phrase-based translation, (2) a syntax-based language model, (3) the ability to condition a word’s translation on the translation of syntactically related words, and (4) polynomial-time optimal alignment and decoding (Knight, 1999).",Experiment/Discussion
+"Previous work in statistical synchronous grammars has been limited to forms of synchronous context-free grammar (Wu, 1997; Alshawi et al., 2000; Yamada and Knight, 2001).",Experiment/Discussion
+"This means that a sentence and its translation must have isomorphic syntax trees, although they may have different numbers of surface words if null words a are allowed in one or both languages.",Experiment/Discussion
+This rigidity does not fully describe real data.,Experiment/Discussion
+"The one exception is the synchronous DOP approach of (Poutsma, 2000), which obtains an STSG by decomposing aligned training trees in all possible ways (and using “naive” count-based probability estimates).",Experiment/Discussion
+"However, we would like to estimate a model from unaligned data.",Experiment/Discussion
+"For expository reasons (and to fill a gap in the literature), first we formally present non-synchronous TSG.",Experiment/Discussion
+Let Q be a set of states.,Experiment/Discussion
+Let L be a set of labels that may decorate nodes or edges.,Experiment/Discussion
+Node labels might be words or nonterminals.,Experiment/Discussion
+Edge labels might include grammatical roles such as Subject.,Experiment/Discussion
+"In many trees, each node’s children have an order, recorded in labels on the node’s outgoing edges.",Experiment/Discussion
+"An elementary tree is a a tuple (V, V i, E, `, q, s) where V is a set of nodes; V i C_ V is the set of internal nodes, and we write V f = V − V i for the set of frontier nodes; E C_ V i x V is a set of directed edges (thus all frontier nodes are leaves).",Experiment/Discussion
+"The graph (V, E) must be connected and acyclic, and there must be exactly one node r E V (the root) that has no incoming edges.",Experiment/Discussion
+"The function ` : (V i U E) → L labels each internal node or edge; q E Q is the root state, and s : V f → Q assigns a frontier state to each frontier node (perhaps including r).",Experiment/Discussion
+"4The joint probability model can be formulated, if desired, as a language model times a channel model.",Experiment/Discussion
+A TSG is a set of elementary trees.,Experiment/Discussion
+"The generation process builds up a derived tree T that has the same form as an elementary tree, and for which V f = 0.",Experiment/Discussion
+"Initially, T is chosen to be any elementary tree whose root state T.q = Start.",Experiment/Discussion
+"As long as T has any frontier nodes, T.V f, the process expands each frontier node d E T.V f by substituting at d an elementary tree t whose root state, t.q, equals d’s frontier state, T.s(d).",Experiment/Discussion
+"This operation replaces T with (T.V U t.V − {d}, T.V i U t.V i, T.E' U t.E, T. B U t.�, T.q, T.s U t.s − {d, t.q}).",Experiment/Discussion
+"Note that a function is regarded here as a set of (input, output) pairs.",Experiment/Discussion
+T.E' is a version of T.E in which d has been been replaced by t.r.,Experiment/Discussion
+"A probabilistic TSG also includes a function p(t  |q), which, for each state q, gives a conditional probability distribution over the elementary trees t with root state q.",Experiment/Discussion
+The generation process uses this distribution to randomly choose which tree t to substitute at a frontier node of T having state q.,Experiment/Discussion
+The initial value of T is chosen from p(t | Start).,Experiment/Discussion
+"Thus, the probability of a given derivation is a product of p(t  |q) terms, one per chosen elementary tree.",Experiment/Discussion
+There is a natural analogy between (probabilistic) TSGs and (probabilistic) CFGs.,Experiment/Discussion
+An elementary tree t with root state q and frontier states ql ... qk (for k > 0) is analogous to a CFG rule q → t ql ... qk.,Experiment/Discussion
+"(By including t as a terminal symbol in this rule, we ensure that distinct elementary trees t with the same states correspond to distinct rules.)",Experiment/Discussion
+"Indeed, an equivalent definition of the generation process first generates a derivation tree from this derivation CFG, and then combines its terminal nodes t (which are elementary trees) into the derived tree T.",Experiment/Discussion
+"Given a a grammar G and a derived tree T, we may be interested in constructing the forest of T’s possible derivation trees (as defined above).",Results/Conclusion
+"We call this tree parsing, as it finds ways of decomposing T into elementary trees.",Results/Conclusion
+"Given a node c E T.v, we would like to find all the potential elementary subtrees t of T whose root t.r could have contributed c during the derivation of T. Such an elementary tree is said to fit c, in the sense that it is isomorphic to some subgraph of T rooted at c. The following procedure finds an elementary tree t that fits c. Freely choose a connected subgraph U of T such that U is rooted at c (or is empty).",Results/Conclusion
+Let t.V i be the vertex set of U.,Results/Conclusion
+"Let t.E be the set of outgoing edges from nodes in t.Vi to their children, that is, t.E = T.E n (t.V i x T.V ).",Results/Conclusion
+"Let t.� be the restriction of T.� to t.Vi U t.E, that is, t.� = T.� n ((t.V i U t.E) x L).",Results/Conclusion
+"Let t.V be the set of nodes mentioned in t.E, or put t.V = {c} if t.Vi = t.E = 0.",Results/Conclusion
+"Finally, choose t.q freely from Q, and choose s : t.Vf → Q to associate states with the frontier nodes of t; the free choice is because the nodes of the derived tree T do not specify the states used during the derivation.",Results/Conclusion
+How many elementary trees can we find that fit c?,Results/Conclusion
+Let us impose an upper bound k on |t.V i |and hence on |U|.,Results/Conclusion
+"Then in an m-ary tree T, the above procedure considers at most mk�1 m�1 connected subgraphs U of order < k rooted at c. For dependency grammars, limiting to m < 6 and k = 3 is quite reasonable, leaving at most 43 subgraphs U rooted at each node c, of which the biggest contain only c, a child c' of c, and a child or sibling of c'.",Results/Conclusion
+"These will constitute the internal nodes of t, and their remaining children will be t’s frontier nodes.",Results/Conclusion
+"However, for each of these 43 subgraphs, we must jointly hypothesize states for all frontier nodes and the root node.",Results/Conclusion
+"For |Q |> 1, there are exponentially many ways to do this.",Results/Conclusion
+"To avoid having exponentially many hypotheses, one may restrict the form of possible elementary trees so that the possible states of each node of t can be determined somehow from the labels on the corresponding nodes in T. As a simple but useful example, a node labeled NP might be required to have state NP.",Results/Conclusion
+Rich labels on the derived tree essentially provide supervision as to what the states must have been during the derivation.,Results/Conclusion
+The tree parsing algorithm resembles bottom-up chart parsing under the derivation CFG.,Results/Conclusion
+"But the input is a tree rather than a string, and the chart is indexed by nodes of the input tree rather than spans of the input string:5 The β values are inside probabilities.",Results/Conclusion
+"After running the algorithm, if r is the root of T, then βr(Start) is the probability that the grammar generates T. p(t  |q) in line 4 may be found by hash lookup if the grammar is stored explicitly, or else by some probabilistic model that analyzes the structure, labels, and states of the elementary tree t to compute its probability.",Results/Conclusion
+"One can mechanically transform this algorithm to compute outside probabilities, the Viterbi parse, the parse forest, and other quantities (Goodman, 1999).",Results/Conclusion
+One can also apply agenda-based parsing strategies.,Results/Conclusion
+"For a fixed grammar, the runtime and space are only O(n) for a tree of n nodes.",Results/Conclusion
+The grammar constant is the number of possible fits to a node c of a fixed tree.,Results/Conclusion
+"As noted above, there usually not many of these (unless the states are uncertain) and they are simple to enumerate.",Results/Conclusion
+"As discussed above, an inside-outside algorithm may be used to compute the expected number of times each elementary tree t appeared in the derivation of T. That is the E step of the EM algorithm.",Results/Conclusion
+"In the M step, these expected counts (collected over a corpus of trees) are used to reestimate the parameters θ� of p(t  |q).",Results/Conclusion
+One alternates O� converges to a local maximum.,Results/Conclusion
+The prior p(O� can discourage overfitting.,Results/Conclusion
+We are now prepared to discuss the synchronous case.,Results/Conclusion
+A synchronous TSG consists of a set of elementary tree pairs.,Results/Conclusion
+"An elementary tree pair t is a tuple (t1, t2, q, m, s).",Results/Conclusion
+"Here t1 and t2 are elementary trees without state labels: we write tj = (Vj,Vji,Ej,`j). q E Q is the root state as before. m C_ V1f x V2f is a matching between t1’s and t2’s frontier nodes,6.",Results/Conclusion
+"Let m¯ denote m U {(d1, null) : d1 is unmatched in m} U {(null, d2) : d2 is unmatched in m}.",Results/Conclusion
+"Finally, s : m¯ → Q assigns a state to each frontier node pair or unpaired frontier node.",Results/Conclusion
+"In the figure of section 2, donnent un baiser a` has 2 frontier nodes and kiss has 3, yielding 13 possible matchings.",Results/Conclusion
+"Note that least one English node must remain unmatched; it still generates a full subtree, aligned with null.",Results/Conclusion
+"As before, a derived tree pair T has the same form as an elementary tree pair.",Results/Conclusion
+The generation process is similar to before.,Results/Conclusion
+"As long as T. m¯ =� 0, the process expands some node pair (d1, d2) E T. ¯m.",Results/Conclusion
+"It chooses an elementary tree pair t such that t.q = T.s(d1, d2).",Results/Conclusion
+"Then for each j = 1, 2, it substitutes tj at dj if non-null.",Results/Conclusion
+"(If dj is null, then t.q must guarantee that tj is the special null tree.)",Results/Conclusion
+"In the probabilistic case, we have a distribution p(t  |q) just as before, but this time t is an elementary tree pair.",Results/Conclusion
+Several natural algorithms are now available to us: • Training.,Results/Conclusion
+"Given an unaligned tree pair (T1, T2), we can again find the forest of all possible derivations, with expected inside-outside counts of the elementary tree pairs.",Results/Conclusion
+This allows EM training of the p(t  |q) model.,Results/Conclusion
+The algorithm is almost as before.,Results/Conclusion
+The outer loop iterates bottom-up over nodes c1 of T1; an inner loop iterates bottom-up over c2 of T2.,Results/Conclusion
+"Inside probabilities (for example) now have the form βc1,c2(q).",Results/Conclusion
+"Although this brings the complexity up to O(n2), the real complication is that there can be many fits to (c1, c2).",Results/Conclusion
+"There are still not too many elementary trees t1 and t2 rooted at c1 and c2; but each (t1, t2) pair may be used in many elementary tree pairs t, since there are exponentially many matchings of their frontier nodes.",Results/Conclusion
+"Fortunately, most pairs of frontier nodes have low β values that indicate that their subtrees cannot be aligned well; pairing such nodes in a matching would result in poor global probability.",Results/Conclusion
+This observation can be used to prune the space of matchings greatly.,Results/Conclusion
+• 1-best Alignment (if desired).,Results/Conclusion
+"This is just like training, except that we use the Viterbi algorithm to find the single best derivation of the input tree pair.",Results/Conclusion
+This derivation can be regarded as the optimal syntactic alignment.7 We then extract the max-probability synchronous derivation and return the T2 that it derives.,Results/Conclusion
+"This algorithm is essentially alignment to an unknown tree T2; we do not loop over its nodes c2, but choose t2 freely.",Results/Conclusion

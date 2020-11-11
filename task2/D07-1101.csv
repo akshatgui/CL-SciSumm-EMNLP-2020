@@ -1,120 +1,120 @@
 col1,col2
-We present experiments with a dependency parsing model defined on rich factors.,{}
-Ourmodel represents dependency trees with factors that include three types of relations be tween the tokens of a dependency and theirchildren.,{}
-"We extend the projective pars ing algorithm of Eisner (1996) for our case,and train models using the averaged perceptron.",{}
-"Our experiments show that considering higher-order information yields signifi cant improvements in parsing accuracy, but comes at a high cost in terms of both timeand memory consumption.",{}
-"In the multi lingual exercise of the CoNLL-2007 shared task (Nivre et al, 2007), our system obtains the best accuracy for English, and the second best accuracies for Basque and Czech.",{}
-Structured prediction problems usually involve models that work with factored representations of structures.,"{'title': 'Introduction', 'number': '1'}"
-The information included in the factors determines the type of features that the model can exploit.,"{'title': 'Introduction', 'number': '1'}"
-"However, richer representations translate into higher complexity of the inference algorithms associated with the model.","{'title': 'Introduction', 'number': '1'}"
-"In dependency parsing, the basic first-order modelis defined by a decomposition of a tree into head modifier dependencies.","{'title': 'Introduction', 'number': '1'}"
-Previous work extended this basic model to include second-order relations?i.e.dependencies that are adjacent to the main depen dency of the factor.,"{'title': 'Introduction', 'number': '1'}"
-"Specifically, these approaches considered sibling relations of the modifier token (Eisner, 1996; McDonald and Pereira, 2006).","{'title': 'Introduction', 'number': '1'}"
-In this paper we extend the parsing model with other typesof second-order relations.,"{'title': 'Introduction', 'number': '1'}"
-"In particular, we incorpo rate relations between the head and modifier tokens and the children of the modifier.","{'title': 'Introduction', 'number': '1'}"
-One paradigmatic case where the relations we consider are relevant is PP-attachment.,"{'title': 'Introduction', 'number': '1'}"
-"For example,in ?They sold 1,210 cars in the U.S.?, the ambigu ity problem is to determine whether the preposition ?in?","{'title': 'Introduction', 'number': '1'}"
-(which governs ?the U.S.?),"{'title': 'Introduction', 'number': '1'}"
-is modifying ?sold?,"{'title': 'Introduction', 'number': '1'}"
-"or ?cars?, the former being correct in this case.","{'title': 'Introduction', 'number': '1'}"
-"It isgenerally accepted that to solve the attachment deci sion it is necessary to look at the head noun withinthe prepositional phrase (i.e., ?U.S.?","{'title': 'Introduction', 'number': '1'}"
-"in the exam ple), which has a grand-parental relation with the two candidate tokens that the phrase may attach?see e.g.","{'title': 'Introduction', 'number': '1'}"
-"(Ratnaparkhi et al, 1994).","{'title': 'Introduction', 'number': '1'}"
-Other ambigu ities in language may also require consideration of grand-parental relations in the dependency structure.,"{'title': 'Introduction', 'number': '1'}"
-We present experiments with higher-order models trained with averaged perceptron.,"{'title': 'Introduction', 'number': '1'}"
-The second-orderrelations that we incorporate in the model yield significant improvements in accuracy.,"{'title': 'Introduction', 'number': '1'}"
-"However, the inference algorithms for our factorization are very ex pensive in terms of time and memory consumption,and become impractical when dealing with many la bels or long sentences.","{'title': 'Introduction', 'number': '1'}"
-"A dependency parser receives a sentence x of n to kens, and outputs a labeled dependency tree y. In the tree, a labeled dependency is a triple ?h, m, l?, where h ? [0 . . .","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"n] is the index of the head token, 957 lh m ccch mi mo Figure 1: A factor in the higher-order parsing model.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-m ? [1 . . .,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"n] is the index of the modifier token, and l ? [1 . . .","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-L] is the label of the dependency.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-The value h = 0 is used for dependencies where the head is a special root-symbol of the sentence.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"We denote by T (x) the set of all possible dependency structures for a sentence x. In this paper, we restrict to projective dependency trees.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The dependency tree computed by the parser for a given sentence is: y?(x) = arg max y?T (x) ? f?y score(w,x, f) The parsing model represents a structure y as a set offactors, f ? y, and scores each factor using param eters w. In a first-order model a factor corresponds to a single labeled dependency, i.e. f = ?h, m, l?.The features of the model are defined through a feature function ?1(x, h, m) which maps a sentence to gether with an unlabeled dependency to a feature vector in Rd1 . The parameters of the model are acollection of vectors wl1 ? Rd1 , one for each pos sible label.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The first-order model scores a factor as score1(w,x, ?h, m, l?)","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"= ?1(x, h, m) ? wl1.The higher-order model defined in this paper de composes a dependency structure into factors that include children of the head and the modifier.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"In particular, a factor in our model is represented by the signature f = ?h, m, l, ch, cmi, cmo?","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"where, as in the first-order model, h, m and l are respectively the head, modifier and label of the main dependency of the factor; ch is the child of h in [h . . .m] that is closest to m; cmi is child of m inside [h . . .m]that is furthest from m; cmo is the child of m outside [h . . .","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"m] that is furthest from m. Figure 1 de picts a factor of the higher-order model, and Table 1 lists the factors of an example sentence.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-Note that a factor involves a main labeled dependency and threeadjacent unlabeled dependencies that attach to chil dren of h and m. Special values are used when either of these children are null.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The higher-order model defines additional m h ch cmi cmoThey 1 2 - - sold 2 0 - 1 51,200 3 4 - - cars 4 2 - 3 in 5 2 4 - 7the 6 7 - - U.S. 7 5 - 6 Table 1: Higher-order factors for an example sentence.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"For simplicity, labels of the factors have been omitted.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"A first-ordermodel considers only ?h, m?.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The second-order model of McDonald and Pereira (2006) considers ?h, m, ch?.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"For the PP attachment decision (factor in row 5), the higher-order model allows us to define features that relate the verb (?sold?)","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-with the content word of the prepositional phrase (?U.S.?).,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"second-order features through a function ?2(x, h, m, c) which maps a head, a modifierand a child in a feature vector in Rd2 . The param eters of the model are a collection of four vectors for each dependency label: wl1 ? Rd1 as in the first-order model; and wlh,wlmi and wlmo, all three in Rd2 and each associated to one of the adjacent dependencies in the factor.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The score of a factor is: score2(w,x, ?h, m, l, ch, cmi, cmo?)","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"= ?1(x, h, m) ? wl1 + ?2(x, h, m, ch) ? wlh + ?2(x, h, m, cmi) ? wlmi + ?2(x, h, m, cmo) ? wlmoNote that the model uses a common feature func tion for second-order relations, but features could be defined specifically for each type of relation.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Note also that while the higher-order factors includefour dependencies, our modelling choice only ex ploits relations between the main dependency andsecondary dependencies.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-Considering relations between secondary dependencies would greatly in crease the cost of the associated algorithms.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-2.1 Parsing Algorithm.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-In this section we sketch an extension of the projective dynamic programming algorithm of Eisner (1996; 2000) for the higher-order model defined above.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The time complexity of the algo rithm is O(n4L), and the memory requirements areO(n2L + n3).","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"As in the Eisner approach, our algo rithm visits sentence spans in a bottom up fashion, and constructs a chart with two types of dynamic programming structures, namely open and closedstructures?see Figure 2 for a diagram.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-The dy namic programming structures are: 958 h m h m ecmo l micr+1rhc lFigure 2: Dynamic programming structures used in the pars ing algorithm.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-The variables in boldface constitute the index of the chart entry for a structure; the other variables constitute the back-pointer stored in the chart entry.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Left: an open structure for the chart entry [h, m, l]O ; the algorithm looks for the r, ch and cmi that yield the optimal score for this structure.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Right: a closed structure for the chart entry [h, e, m]C ; the algorithm looks for the l and cmo that yield the optimal score.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Open structures: For each span from s to e and each label l, the algorithm maintains a chart entry [s, e, l]O associated to the dependency ?s, e, l?.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"For each entry, the algorithm looks for the optimal splitting point r, sibling ch and grand-child cmi using parameters wl1, wlh and wlmi.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-This can be done in O(n2) because our features do not consider interactions betweench and cmi.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Similar entries [e, s, l]O are main tained for dependencies headed at e. ? Closed structures: For each span from s to e and each token m ? [s . . .","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"e], the algorithm maintains an entry [s, e, m]C associated to a partial dependency tree rooted at s in which m is the last modifier of s. The algorithm chooses the optimal dependency label l and grand-child cmo in O(nL), using parameters wlmo.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"Similarentries [e, s, m]C are maintained for dependen cies headed at e. We implemented two variants of the algorithm.The first forces the root token to participate in exactly one dependency.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-The second allows many dependencies involving the root token.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"For the singleroot case, it is necessary to treat the root token dif ferently than other tokens.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"In the experiments, weused the single-root variant if sentences in the train ing set satisfy this property.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-Otherwise we used the multi-root variant.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-2.2 Features.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The first-order features ?1(x, h, m) are the exactsame implementation as in previous CoNLL sys tem (Carreras et al, 2006).","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"In turn, those featureswere inspired by successful previous work in first order dependency parsing (McDonald et al, 2005).The most basic feature patterns consider the surface form, part-of-speech, lemma and other morpho syntactic attributes of the head or the modifier of adependency.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The representation also considers com plex features that exploit a variety of conjunctionsof the forms and part-of-speech tags of the follow ing items: the head and modifier; the head, modifier, and any token in between them; the head, modifier, and the two tokens following or preceding them.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"As for the second-order features, we again base our features with those of McDonald and Pereira (2006), who reported successful experiments with second-order models.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-We add some patterns to their features.,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-Let dir be ?right?,"{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"if h < m, and ?left?","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"otherwise; let form(xi) and cpos(xi) return the surface form and coarse part-of-speech of token xi, respectively.","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"The definition of ?2(x, h, m, c) is: ? dir ? cpos(xh) ? cpos(xm) ? cpos(xc) ? dir ? cpos(xh) ? cpos(xc) ? dir ? cpos(xm) ? cpos(xc) ? dir ? form(xh) ? form(xc) ? dir ? form(xm) ? form(xc) ? dir ? cpos(xh) ? form(xc) ? dir ? cpos(xm) ? form(xc) ? dir ? form(xh) ? cpos(xc) ? dir ? form(xm) ? cpos(xc)","{'title': 'Higher-Order Projective Models. ', 'number': '2'}"
-"We report experiments with higher-order models for the ten languages in the multilingual track of the CoNLL-2007 shared task (Nivre et al, 2007).1In all experiments, we trained our models us ing the averaged perceptron (Freund and Schapire, 1999), following the extension of Collins (2002) for structured prediction problems.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"To train models, weused ?projectivized?","{'title': 'Experiments and Results. ', 'number': '3'}"
-versions of the training depen dency trees.21We are grateful to the providers of the treebanks that con stituted the data for the shared task (Hajic?,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"et al, 2004; Aduriz et al, 2003; Mart??","{'title': 'Experiments and Results. ', 'number': '3'}"
-"et al, 2007; Chen et al, 2003; Bo?hmova?","{'title': 'Experiments and Results. ', 'number': '3'}"
-"et al., 2003; Marcus et al, 1993; Johansson and Nugues, 2007; Prokopidis et al, 2005; Csendes et al, 2005; Montemagni et al., 2003; Oflazer et al, 2003).2We obtained projective trees for training sentences by run ning the projective parser with an oracle model (that assigns a score of +1 to correct dependencies and -1 otherwise).","{'title': 'Experiments and Results. ', 'number': '3'}"
-"959 Catalan Czech English First-Order, no averaging 82.07 68.98 83.75 First-Order 86.15 75.96 87.54 Higher-Order, ch 87.50 77.15 88.70 Higher-Order, ch cmo 87.68 77.62 89.28 Higher-Order, ch cmi cmo 88.04 78.09 89.59 Table 2: Labeled attachment scores on validation data(?10,000 tokens per language), for different models that ex ploit increasing orders of factorizations.","{'title': 'Experiments and Results. ', 'number': '3'}"
-3.1 Impact of Higher-Order Factorization.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-Our first set of experiments looks at the performanceof different factorizations.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"We selected three lan guages with a large number of training sentences, namely Catalan, Czech and English.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"To evaluate models, we held out the training sentences that cover the first 10,000 tokens; the rest was used for training.","{'title': 'Experiments and Results. ', 'number': '3'}"
-We compared four models at increasing orders of factorizations.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-The first is a first-order model.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-The second model is similar to that of McDonald and Pereira (2006): a factor consists of a main labeleddependency and the head child closest to the modifier (ch).,"{'title': 'Experiments and Results. ', 'number': '3'}"
-The third model incorporates the modifier child outside the main dependency in the factorization (cmo).,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"Finally, the last model incorpo rates the modifier child inside the dependency span(cmi), thus corresponding to the complete higher order model presented in the previous section.","{'title': 'Experiments and Results. ', 'number': '3'}"
-Table 2 shows the accuracies of the models on validation data.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"Each model was trained for up to 10 epochs, and evaluated at the end of each epoch; we report the best accuracy of these evaluations.Clearly, the accuracy increases as the factors in clude richer information in terms of second-orderrelations.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"The richest model obtains the best accu racy in the three languages, being much better than that of the first-order model.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"The table also reportsthe accuracy of an unaveraged first-order model, il lustrating the benefits of parameter averaging.","{'title': 'Experiments and Results. ', 'number': '3'}"
-3.2 Results on the Multilingual Track.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"We trained a higher-order model for each language, using the averaged perceptron.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"In the experiments presented above we observed that the algorithmdoes not over-fit, and that after two or three train ing epochs only small variations in accuracy occur.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"Based on this fact, we designed a criterion to train models: we ran the training algorithm for up to three training test sent./min.","{'title': 'Experiments and Results. ', 'number': '3'}"
-mem.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-UAS LAS Arabic 1.21 1.8GB 81.48 70.20 Basque 33.15 1.2GB 81.08 75.73 Catalan 5.50 1.7GB 92.46 87.60 Chinese 1461.66 60MB 86.20 80.86 Czech 18.19 1.8GB 85.16 78.60 English 15.57 1.0GB 90.63 89.61 Greek 8.10 250MB 81.37 73.56 Hungarian 5.65 1.6GB 79.92 75.42 Italian 12.44 900MB 87.19 83.46 Turkish 116.55 600MB 82.41 75.85 Average - - 84.79 79.09 Table 3: Performance of the higher-order projective models on the multilingual track of the CoNLL-2007 task.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"The first twocolumns report the speed (in sentences per minute) and mem ory requirements of the training algorithm?these evaluationswere made on the first 1,000 training sentences with a Dual Core AMD OpteronTM Processor 256 at 1.8GHz with 4GB of memory.","{'title': 'Experiments and Results. ', 'number': '3'}"
-The last two columns report unlabelled (UAS) and labelled (LAS) attachment scores on test data.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-"days of computation, or a maximum of 15 epochs.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"For Basque, Chinese and Turkish we could complete the 15 epochs.","{'title': 'Experiments and Results. ', 'number': '3'}"
-"For Arabic and Catalan, we couldonly complete 2 epochs.","{'title': 'Experiments and Results. ', 'number': '3'}"
-Table 3 reports the perfor mance of the higher-order projective models on the ten languages of the multilingual track.,"{'title': 'Experiments and Results. ', 'number': '3'}"
-We have presented dependency parsing models that exploit higher-order factorizations of trees.,"{'title': 'Conclusion. ', 'number': '4'}"
-Such factorizations allow the definition of second-order features associated with sibling and grand-parental relations.,"{'title': 'Conclusion. ', 'number': '4'}"
-"For some languages, our models obtain state-of-the-art results.One drawback of our approach is that the inference algorithms for higher-order models are very expensive.","{'title': 'Conclusion. ', 'number': '4'}"
-"For languages with many dependency la bels or long sentences, training and parsing becomes impractical for current machines.","{'title': 'Conclusion. ', 'number': '4'}"
-"Thus, a promising line of research is the investigation of methods toefficiently incorporate higher-order relations in dis criminative parsing.","{'title': 'Conclusion. ', 'number': '4'}"
-"Acknowledgments I am grateful to Terry Koo, Amir Globerson and Michael Collins for their helpful comments relating this work, and to the anonymous reviewers for their suggestions.","{'title': 'Conclusion. ', 'number': '4'}"
-"A significant part of the system and the code was based on my previous system in the CoNLL-X task, developed with Mihai Surdeanu and Llu??s Ma`rquez at the UPC.","{'title': 'Conclusion. ', 'number': '4'}"
-"The author was supported by the Catalan Ministry of Innovation, Universities and Enterprise.","{'title': 'Conclusion. ', 'number': '4'}"
-960,"{'title': 'Conclusion. ', 'number': '4'}"
+We present experiments with a dependency parsing model defined on rich factors.,Introduction
+Ourmodel represents dependency trees with factors that include three types of relations be tween the tokens of a dependency and theirchildren.,Introduction
+"We extend the projective pars ing algorithm of Eisner (1996) for our case,and train models using the averaged perceptron.",Introduction
+"Our experiments show that considering higher-order information yields signifi cant improvements in parsing accuracy, but comes at a high cost in terms of both timeand memory consumption.",Introduction
+"In the multi lingual exercise of the CoNLL-2007 shared task (Nivre et al, 2007), our system obtains the best accuracy for English, and the second best accuracies for Basque and Czech.",Introduction
+Structured prediction problems usually involve models that work with factored representations of structures.,Experiment/Discussion
+The information included in the factors determines the type of features that the model can exploit.,Experiment/Discussion
+"However, richer representations translate into higher complexity of the inference algorithms associated with the model.",Experiment/Discussion
+"In dependency parsing, the basic first-order modelis defined by a decomposition of a tree into head modifier dependencies.",Experiment/Discussion
+Previous work extended this basic model to include second-order relations?i.e.dependencies that are adjacent to the main depen dency of the factor.,Experiment/Discussion
+"Specifically, these approaches considered sibling relations of the modifier token (Eisner, 1996; McDonald and Pereira, 2006).",Experiment/Discussion
+In this paper we extend the parsing model with other typesof second-order relations.,Experiment/Discussion
+"In particular, we incorpo rate relations between the head and modifier tokens and the children of the modifier.",Experiment/Discussion
+One paradigmatic case where the relations we consider are relevant is PP-attachment.,Experiment/Discussion
+"For example,in ?They sold 1,210 cars in the U.S.?, the ambigu ity problem is to determine whether the preposition ?in?",Experiment/Discussion
+(which governs ?the U.S.?),Experiment/Discussion
+is modifying ?sold?,Experiment/Discussion
+"or ?cars?, the former being correct in this case.",Experiment/Discussion
+"It isgenerally accepted that to solve the attachment deci sion it is necessary to look at the head noun withinthe prepositional phrase (i.e., ?U.S.?",Experiment/Discussion
+"in the exam ple), which has a grand-parental relation with the two candidate tokens that the phrase may attach?see e.g.",Experiment/Discussion
+"(Ratnaparkhi et al, 1994).",Experiment/Discussion
+Other ambigu ities in language may also require consideration of grand-parental relations in the dependency structure.,Experiment/Discussion
+We present experiments with higher-order models trained with averaged perceptron.,Experiment/Discussion
+The second-orderrelations that we incorporate in the model yield significant improvements in accuracy.,Experiment/Discussion
+"However, the inference algorithms for our factorization are very ex pensive in terms of time and memory consumption,and become impractical when dealing with many la bels or long sentences.",Experiment/Discussion
+"A dependency parser receives a sentence x of n to kens, and outputs a labeled dependency tree y. In the tree, a labeled dependency is a triple ?h, m, l?, where h ? [0 . . .",Experiment/Discussion
+"n] is the index of the head token, 957 lh m ccch mi mo Figure 1: A factor in the higher-order parsing model.",Experiment/Discussion
+m ? [1 . . .,Experiment/Discussion
+"n] is the index of the modifier token, and l ? [1 . . .",Experiment/Discussion
+L] is the label of the dependency.,Experiment/Discussion
+The value h = 0 is used for dependencies where the head is a special root-symbol of the sentence.,Experiment/Discussion
+"We denote by T (x) the set of all possible dependency structures for a sentence x. In this paper, we restrict to projective dependency trees.",Experiment/Discussion
+"The dependency tree computed by the parser for a given sentence is: y?(x) = arg max y?T (x) ? f?y score(w,x, f) The parsing model represents a structure y as a set offactors, f ? y, and scores each factor using param eters w. In a first-order model a factor corresponds to a single labeled dependency, i.e. f = ?h, m, l?.The features of the model are defined through a feature function ?1(x, h, m) which maps a sentence to gether with an unlabeled dependency to a feature vector in Rd1 . The parameters of the model are acollection of vectors wl1 ? Rd1 , one for each pos sible label.",Experiment/Discussion
+"The first-order model scores a factor as score1(w,x, ?h, m, l?)",Experiment/Discussion
+"= ?1(x, h, m) ? wl1.The higher-order model defined in this paper de composes a dependency structure into factors that include children of the head and the modifier.",Experiment/Discussion
+"In particular, a factor in our model is represented by the signature f = ?h, m, l, ch, cmi, cmo?",Experiment/Discussion
+"where, as in the first-order model, h, m and l are respectively the head, modifier and label of the main dependency of the factor; ch is the child of h in [h . . .m] that is closest to m; cmi is child of m inside [h . . .m]that is furthest from m; cmo is the child of m outside [h . . .",Experiment/Discussion
+"m] that is furthest from m. Figure 1 de picts a factor of the higher-order model, and Table 1 lists the factors of an example sentence.",Experiment/Discussion
+Note that a factor involves a main labeled dependency and threeadjacent unlabeled dependencies that attach to chil dren of h and m. Special values are used when either of these children are null.,Experiment/Discussion
+"The higher-order model defines additional m h ch cmi cmoThey 1 2 - - sold 2 0 - 1 51,200 3 4 - - cars 4 2 - 3 in 5 2 4 - 7the 6 7 - - U.S. 7 5 - 6 Table 1: Higher-order factors for an example sentence.",Experiment/Discussion
+"For simplicity, labels of the factors have been omitted.",Experiment/Discussion
+"A first-ordermodel considers only ?h, m?.",Experiment/Discussion
+"The second-order model of McDonald and Pereira (2006) considers ?h, m, ch?.",Experiment/Discussion
+"For the PP attachment decision (factor in row 5), the higher-order model allows us to define features that relate the verb (?sold?)",Experiment/Discussion
+with the content word of the prepositional phrase (?U.S.?).,Experiment/Discussion
+"second-order features through a function ?2(x, h, m, c) which maps a head, a modifierand a child in a feature vector in Rd2 . The param eters of the model are a collection of four vectors for each dependency label: wl1 ? Rd1 as in the first-order model; and wlh,wlmi and wlmo, all three in Rd2 and each associated to one of the adjacent dependencies in the factor.",Experiment/Discussion
+"The score of a factor is: score2(w,x, ?h, m, l, ch, cmi, cmo?)",Experiment/Discussion
+"= ?1(x, h, m) ? wl1 + ?2(x, h, m, ch) ? wlh + ?2(x, h, m, cmi) ? wlmi + ?2(x, h, m, cmo) ? wlmoNote that the model uses a common feature func tion for second-order relations, but features could be defined specifically for each type of relation.",Experiment/Discussion
+"Note also that while the higher-order factors includefour dependencies, our modelling choice only ex ploits relations between the main dependency andsecondary dependencies.",Experiment/Discussion
+Considering relations between secondary dependencies would greatly in crease the cost of the associated algorithms.,Experiment/Discussion
+2.1 Parsing Algorithm.,Experiment/Discussion
+In this section we sketch an extension of the projective dynamic programming algorithm of Eisner (1996; 2000) for the higher-order model defined above.,Experiment/Discussion
+"The time complexity of the algo rithm is O(n4L), and the memory requirements areO(n2L + n3).",Experiment/Discussion
+"As in the Eisner approach, our algo rithm visits sentence spans in a bottom up fashion, and constructs a chart with two types of dynamic programming structures, namely open and closedstructures?see Figure 2 for a diagram.",Experiment/Discussion
+The dy namic programming structures are: 958 h m h m ecmo l micr+1rhc lFigure 2: Dynamic programming structures used in the pars ing algorithm.,Experiment/Discussion
+The variables in boldface constitute the index of the chart entry for a structure; the other variables constitute the back-pointer stored in the chart entry.,Experiment/Discussion
+"Left: an open structure for the chart entry [h, m, l]O ; the algorithm looks for the r, ch and cmi that yield the optimal score for this structure.",Experiment/Discussion
+"Right: a closed structure for the chart entry [h, e, m]C ; the algorithm looks for the l and cmo that yield the optimal score.",Experiment/Discussion
+"Open structures: For each span from s to e and each label l, the algorithm maintains a chart entry [s, e, l]O associated to the dependency ?s, e, l?.",Experiment/Discussion
+"For each entry, the algorithm looks for the optimal splitting point r, sibling ch and grand-child cmi using parameters wl1, wlh and wlmi.",Experiment/Discussion
+This can be done in O(n2) because our features do not consider interactions betweench and cmi.,Experiment/Discussion
+"Similar entries [e, s, l]O are main tained for dependencies headed at e. ? Closed structures: For each span from s to e and each token m ? [s . . .",Experiment/Discussion
+"e], the algorithm maintains an entry [s, e, m]C associated to a partial dependency tree rooted at s in which m is the last modifier of s. The algorithm chooses the optimal dependency label l and grand-child cmo in O(nL), using parameters wlmo.",Experiment/Discussion
+"Similarentries [e, s, m]C are maintained for dependen cies headed at e. We implemented two variants of the algorithm.The first forces the root token to participate in exactly one dependency.",Experiment/Discussion
+The second allows many dependencies involving the root token.,Experiment/Discussion
+"For the singleroot case, it is necessary to treat the root token dif ferently than other tokens.",Experiment/Discussion
+"In the experiments, weused the single-root variant if sentences in the train ing set satisfy this property.",Experiment/Discussion
+Otherwise we used the multi-root variant.,Experiment/Discussion
+2.2 Features.,Experiment/Discussion
+"The first-order features ?1(x, h, m) are the exactsame implementation as in previous CoNLL sys tem (Carreras et al, 2006).",Experiment/Discussion
+"In turn, those featureswere inspired by successful previous work in first order dependency parsing (McDonald et al, 2005).The most basic feature patterns consider the surface form, part-of-speech, lemma and other morpho syntactic attributes of the head or the modifier of adependency.",Experiment/Discussion
+"The representation also considers com plex features that exploit a variety of conjunctionsof the forms and part-of-speech tags of the follow ing items: the head and modifier; the head, modifier, and any token in between them; the head, modifier, and the two tokens following or preceding them.",Experiment/Discussion
+"As for the second-order features, we again base our features with those of McDonald and Pereira (2006), who reported successful experiments with second-order models.",Experiment/Discussion
+We add some patterns to their features.,Experiment/Discussion
+Let dir be ?right?,Experiment/Discussion
+"if h < m, and ?left?",Experiment/Discussion
+"otherwise; let form(xi) and cpos(xi) return the surface form and coarse part-of-speech of token xi, respectively.",Experiment/Discussion
+"The definition of ?2(x, h, m, c) is: ? dir ? cpos(xh) ? cpos(xm) ? cpos(xc) ? dir ? cpos(xh) ? cpos(xc) ? dir ? cpos(xm) ? cpos(xc) ? dir ? form(xh) ? form(xc) ? dir ? form(xm) ? form(xc) ? dir ? cpos(xh) ? form(xc) ? dir ? cpos(xm) ? form(xc) ? dir ? form(xh) ? cpos(xc) ? dir ? form(xm) ? cpos(xc)",Experiment/Discussion
+"We report experiments with higher-order models for the ten languages in the multilingual track of the CoNLL-2007 shared task (Nivre et al, 2007).1In all experiments, we trained our models us ing the averaged perceptron (Freund and Schapire, 1999), following the extension of Collins (2002) for structured prediction problems.",Results/Conclusion
+"To train models, weused ?projectivized?",Results/Conclusion
+versions of the training depen dency trees.21We are grateful to the providers of the treebanks that con stituted the data for the shared task (Hajic?,Results/Conclusion
+"et al, 2004; Aduriz et al, 2003; Mart??",Results/Conclusion
+"et al, 2007; Chen et al, 2003; Bo?hmova?",Results/Conclusion
+"et al., 2003; Marcus et al, 1993; Johansson and Nugues, 2007; Prokopidis et al, 2005; Csendes et al, 2005; Montemagni et al., 2003; Oflazer et al, 2003).2We obtained projective trees for training sentences by run ning the projective parser with an oracle model (that assigns a score of +1 to correct dependencies and -1 otherwise).",Results/Conclusion
+"959 Catalan Czech English First-Order, no averaging 82.07 68.98 83.75 First-Order 86.15 75.96 87.54 Higher-Order, ch 87.50 77.15 88.70 Higher-Order, ch cmo 87.68 77.62 89.28 Higher-Order, ch cmi cmo 88.04 78.09 89.59 Table 2: Labeled attachment scores on validation data(?10,000 tokens per language), for different models that ex ploit increasing orders of factorizations.",Results/Conclusion
+3.1 Impact of Higher-Order Factorization.,Results/Conclusion
+Our first set of experiments looks at the performanceof different factorizations.,Results/Conclusion
+"We selected three lan guages with a large number of training sentences, namely Catalan, Czech and English.",Results/Conclusion
+"To evaluate models, we held out the training sentences that cover the first 10,000 tokens; the rest was used for training.",Results/Conclusion
+We compared four models at increasing orders of factorizations.,Results/Conclusion
+The first is a first-order model.,Results/Conclusion
+The second model is similar to that of McDonald and Pereira (2006): a factor consists of a main labeleddependency and the head child closest to the modifier (ch).,Results/Conclusion
+The third model incorporates the modifier child outside the main dependency in the factorization (cmo).,Results/Conclusion
+"Finally, the last model incorpo rates the modifier child inside the dependency span(cmi), thus corresponding to the complete higher order model presented in the previous section.",Results/Conclusion
+Table 2 shows the accuracies of the models on validation data.,Results/Conclusion
+"Each model was trained for up to 10 epochs, and evaluated at the end of each epoch; we report the best accuracy of these evaluations.Clearly, the accuracy increases as the factors in clude richer information in terms of second-orderrelations.",Results/Conclusion
+"The richest model obtains the best accu racy in the three languages, being much better than that of the first-order model.",Results/Conclusion
+"The table also reportsthe accuracy of an unaveraged first-order model, il lustrating the benefits of parameter averaging.",Results/Conclusion
+3.2 Results on the Multilingual Track.,Results/Conclusion
+"We trained a higher-order model for each language, using the averaged perceptron.",Results/Conclusion
+"In the experiments presented above we observed that the algorithmdoes not over-fit, and that after two or three train ing epochs only small variations in accuracy occur.",Results/Conclusion
+"Based on this fact, we designed a criterion to train models: we ran the training algorithm for up to three training test sent./min.",Results/Conclusion
+mem.,Results/Conclusion
+UAS LAS Arabic 1.21 1.8GB 81.48 70.20 Basque 33.15 1.2GB 81.08 75.73 Catalan 5.50 1.7GB 92.46 87.60 Chinese 1461.66 60MB 86.20 80.86 Czech 18.19 1.8GB 85.16 78.60 English 15.57 1.0GB 90.63 89.61 Greek 8.10 250MB 81.37 73.56 Hungarian 5.65 1.6GB 79.92 75.42 Italian 12.44 900MB 87.19 83.46 Turkish 116.55 600MB 82.41 75.85 Average - - 84.79 79.09 Table 3: Performance of the higher-order projective models on the multilingual track of the CoNLL-2007 task.,Results/Conclusion
+"The first twocolumns report the speed (in sentences per minute) and mem ory requirements of the training algorithm?these evaluationswere made on the first 1,000 training sentences with a Dual Core AMD OpteronTM Processor 256 at 1.8GHz with 4GB of memory.",Results/Conclusion
+The last two columns report unlabelled (UAS) and labelled (LAS) attachment scores on test data.,Results/Conclusion
+"days of computation, or a maximum of 15 epochs.",Results/Conclusion
+"For Basque, Chinese and Turkish we could complete the 15 epochs.",Results/Conclusion
+"For Arabic and Catalan, we couldonly complete 2 epochs.",Results/Conclusion
+Table 3 reports the perfor mance of the higher-order projective models on the ten languages of the multilingual track.,Results/Conclusion
+We have presented dependency parsing models that exploit higher-order factorizations of trees.,Results/Conclusion
+Such factorizations allow the definition of second-order features associated with sibling and grand-parental relations.,Results/Conclusion
+"For some languages, our models obtain state-of-the-art results.One drawback of our approach is that the inference algorithms for higher-order models are very expensive.",Results/Conclusion
+"For languages with many dependency la bels or long sentences, training and parsing becomes impractical for current machines.",Results/Conclusion
+"Thus, a promising line of research is the investigation of methods toefficiently incorporate higher-order relations in dis criminative parsing.",Results/Conclusion
+"Acknowledgments I am grateful to Terry Koo, Amir Globerson and Michael Collins for their helpful comments relating this work, and to the anonymous reviewers for their suggestions.",Results/Conclusion
+"A significant part of the system and the code was based on my previous system in the CoNLL-X task, developed with Mihai Surdeanu and Llu??s Ma`rquez at the UPC.",Results/Conclusion
+"The author was supported by the Catalan Ministry of Innovation, Universities and Enterprise.",Results/Conclusion
+960,Results/Conclusion

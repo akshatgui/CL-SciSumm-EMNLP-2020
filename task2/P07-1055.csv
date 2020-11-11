@@ -1,172 +1,172 @@
 col1,col2
-In this paper we investigate a structured model for jointly classifying the sentiment of text at varying levels of granularity.,{}
-Inference in the model is based on standard sequence classification techniques using constrained Viterbi to ensure consistent solutions.,{}
-The primary advantage of such a model is that it allows classification decisions from one level in the text to influence decisions at another.,{}
-Experiments show that this method can significantly reduce classification error relative to models trained in isolation.,{}
-Extracting sentiment from text is a challenging problem with applications throughout Natural Language Processing and Information Retrieval.,"{'title': '1 Introduction', 'number': '1'}"
-"Previous work on sentiment analysis has covered a wide range of tasks, including polarity classification (Pang et al., 2002; Turney, 2002), opinion extraction (Pang and Lee, 2004), and opinion source assignment (Choi et al., 2005; Choi et al., 2006).","{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, these systems have tackled the problem at different levels of granularity, from the document level (Pang et al., 2002), sentence level (Pang and Lee, 2004; Mao and Lebanon, 2006), phrase level (Turney, 2002; Choi et al., 2005), as well as the speaker level in debates (Thomas et al., 2006).","{'title': '1 Introduction', 'number': '1'}"
-The ability to classify sentiment on multiple levels is important since different applications have different needs.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, a summarization system for product reviews might require polarity classification at the sentence or phrase level; a question answering system would most likely require the sentiment of paragraphs; and a system that determines which articles from an online news source are editorial in nature would require a document level analysis.","{'title': '1 Introduction', 'number': '1'}"
-This work focuses on models that jointly classify sentiment on multiple levels of granularity.,"{'title': '1 Introduction', 'number': '1'}"
-"Consider the following example, This is the first Mp3 player that I have used ...","{'title': '1 Introduction', 'number': '1'}"
-"I thought it sounded great ... After only a few weeks, it started having trouble with the earphone connection ...","{'title': '1 Introduction', 'number': '1'}"
-I won’t be buying another.,"{'title': '1 Introduction', 'number': '1'}"
-This excerpt expresses an overall negative opinion of the product being reviewed.,"{'title': '1 Introduction', 'number': '1'}"
-"However, not all parts of the review are negative.","{'title': '1 Introduction', 'number': '1'}"
-"The first sentence merely provides some context on the reviewer’s experience with such devices and the second sentence indicates that, at least in one regard, the product performed well.","{'title': '1 Introduction', 'number': '1'}"
-"We call the problem of identifying the sentiment of the document and of all its subcomponents, whether at the paragraph, sentence, phrase or word level, fine-to-coarse sentiment analysis.","{'title': '1 Introduction', 'number': '1'}"
-The simplest approach to fine-to-coarse sentiment analysis would be to create a separate system for each level of granularity.,"{'title': '1 Introduction', 'number': '1'}"
-"There are, however, obvious advantages to building a single model that classifies each level in tandem.","{'title': '1 Introduction', 'number': '1'}"
-"Consider the sentence, for a piece of fitness equipment, where hard essen- labeling or chunking, but have also been applied to tially means good workout.","{'title': '1 Introduction', 'number': '1'}"
-"In this domain, hard’s parsing (Taskar et al., 2004; McDonald et al., 2005), sentiment can only be determined in context (i.e., machine translation (Liang et al., 2006) and summahard to assemble versus a hard workout).","{'title': '1 Introduction', 'number': '1'}"
-"If the clas- rization (Daum´e III et al., 2006). sifier knew the overall sentiment of a document, then Structured models have previously been used for disambiguating such cases would be easier. sentiment analysis.","{'title': '1 Introduction', 'number': '1'}"
-"Choi et al. (2005, 2006) use Conversely, document level analysis can benefit CRFs to learn a global sequence model to classify from finer level classification by taking advantage and assign sources to opinions.","{'title': '1 Introduction', 'number': '1'}"
-"Mao and Lebanon of common discourse cues, such as the last sentence (2006) used a sequential CRF regression model to being a reliable indicator for overall sentiment in re- measure polarity on the sentence level in order to views.","{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, during training, the model will determine the sentiment flow of authors in reviews. not need to modify its parameters to explain phe- Here we show that fine-to-coarse models of sentinomena like the typically positive word great ap- ment can often be reduced to the sequential case. pearing in a negative text (as is the case above).","{'title': '1 Introduction', 'number': '1'}"
-The Cascaded models for fine-to-coarse sentiment model can also avoid overfitting to features derived analysis were studied by Pang and Lee (2004).,"{'title': '1 Introduction', 'number': '1'}"
-In from neutral or objective sentences.,"{'title': '1 Introduction', 'number': '1'}"
-"In fact, it has al- that work an initial model classified each sentence ready been established that sentence level classifica- as being subjective or objective using a global mintion can improve document level analysis (Pang and cut inference algorithm that considered local labelLee, 2004).","{'title': '1 Introduction', 'number': '1'}"
-This line of reasoning suggests that a ing consistencies.,"{'title': '1 Introduction', 'number': '1'}"
-The top subjective sentences are cascaded approach would also be insufficient.,"{'title': '1 Introduction', 'number': '1'}"
-"Valu- then input into a standard document level polarity able information is passed in both directions, which classifier with improved results.","{'title': '1 Introduction', 'number': '1'}"
-The current work means any model of fine-to-coarse analysis should differs from that in Pang and Lee through the use of account for this. a single joint structured model for both sentence and In Section 2 we describe a simple structured document level analysis. model that jointly learns and infers sentiment on dif- Many problems in natural language processing ferent levels of granularity.,"{'title': '1 Introduction', 'number': '1'}"
-"In particular, we reduce can be improved by learning and/or predicting multhe problem of joint sentence and document level tiple outputs jointly.","{'title': '1 Introduction', 'number': '1'}"
-"This includes parsing and relaanalysis to a sequential classification problem us- tion extraction (Miller et al., 2000), entity labeling ing constrained Viterbi inference.","{'title': '1 Introduction', 'number': '1'}"
-"Extensions to the and relation extraction (Roth and Yih, 2004), and model that move beyond just two-levels of analysis part-of-speech tagging and chunking (Sutton et al., are also presented.","{'title': '1 Introduction', 'number': '1'}"
-In Section 3 an empirical eval- 2004).,"{'title': '1 Introduction', 'number': '1'}"
-One interesting work on sentiment analysis uation of the model is given that shows significant is that of Popescu and Etzioni (2005) which attempts gains in accuracy over both single level classifiers to classify the sentiment of phrases with respect to and cascaded systems. possible product features.,"{'title': '1 Introduction', 'number': '1'}"
-"To do this an iterative al1.1 Related Work gorithm is used that attempts to globally maximize The models in this work fall into the broad class of the classification of all phrases while satisfying local global structured models, which are typically trained consistency constraints. with structured learning algorithms.","{'title': '1 Introduction', 'number': '1'}"
-"Hidden Markov 2 Structured Model models (Rabiner, 1989) are one of the earliest struc- In this section we present a structured model for tured learning algorithms, which have recently been fine-to-coarse sentiment analysis.","{'title': '1 Introduction', 'number': '1'}"
-"We start by examfollowed by discriminative learning approaches such ining the simple case with two-levels of granularity as conditional random fields (CRFs) (Lafferty et al., – the sentence and document – and show that the 2001; Sutton and McCallum, 2006), the structured problem can be reduced to sequential classification perceptron (Collins, 2002) and its large-margin vari- with constrained inference.","{'title': '1 Introduction', 'number': '1'}"
-"We then discuss the feaants (Taskar et al., 2003; Tsochantaridis et al., 2004; ture space and give an algorithm for learning the paMcDonald et al., 2005; Daum´e III et al., 2006). rameters based on large-margin structured learning.","{'title': '1 Introduction', 'number': '1'}"
-These algorithms are usually applied to sequential 433 Extensions to the model are also examined.,"{'title': '1 Introduction', 'number': '1'}"
-Let Y(d) be a discrete set of sentiment labels at the document level and Y(s) be a discrete set of sentiment labels at the sentence level.,"{'title': '1 Introduction', 'number': '1'}"
-"As input a system is given a document containing sentences s = s1, ... , sn and must produce sentiment labels for the document, yd E Y(d), and each individual sentence, ys = ys1, ... , ysn, where ysi E Y(s) V 1 G i G n. Define y = (yd, ys) = (yd, ys1, .","{'title': '1 Introduction', 'number': '1'}"
-"..,ysn) as the joint labeling of the document and sentences.","{'title': '1 Introduction', 'number': '1'}"
-"For instance, in Pang and Lee (2004), yd would be the polarity of the document and ysi would indicate whether sentence si is subjective or objective.","{'title': '1 Introduction', 'number': '1'}"
-The models presented here are compatible with arbitrary sets of discrete output labels.,"{'title': '1 Introduction', 'number': '1'}"
-Figure 1 presents a model for jointly classifying the sentiment of both the sentences and the document.,"{'title': '1 Introduction', 'number': '1'}"
-"In this undirected graphical model, the label of each sentence is dependent on the labels of its neighbouring sentences plus the label of the document.","{'title': '1 Introduction', 'number': '1'}"
-The label of the document is dependent on the label of every sentence.,"{'title': '1 Introduction', 'number': '1'}"
-"Note that the edges between the input (each sentence) and the output labels are not solid, indicating that they are given as input and are not being modeled.","{'title': '1 Introduction', 'number': '1'}"
-"The fact that the sentiment of sentences is dependent not only on the local sentiment of other sentences, but also the global document sentiment – and vice versa – allows the model to directly capture the importance of classification decisions across levels in fine-tocoarse sentiment analysis.","{'title': '1 Introduction', 'number': '1'}"
-The local dependencies between sentiment labels on sentences is similar to the work of Pang and Lee (2004) where soft local consistency constraints were created between every sentence in a document and inference was solved using a min-cut algorithm.,"{'title': '1 Introduction', 'number': '1'}"
-"However, jointly modeling the document label and allowing for non-binary labels complicates min-cut style solutions as inference becomes intractable.","{'title': '1 Introduction', 'number': '1'}"
-Learning and inference in undirected graphical models is a well studied problem in machine learning and NLP.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, CRFs define the probability over the labels conditioned on the input using the property that the joint probability distribution over the labels factors over clique potentials in undirected graphical models (Lafferty et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-"In this work we will use structured linear classifiers (Collins, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"We denote the score of a labeling y for an input s as score(y, s) and define this score as the sum of scores over each clique, where each clique score is a linear combination of features and their weights, score(yd, ysi�1, ysi , s) = w · f(yd, ysi�1, ysi , s) (1) and f is a high dimensional feature representation of the clique and w a corresponding weight vector.","{'title': '1 Introduction', 'number': '1'}"
-Note that s is included in each score since it is given as input and can always be conditioned on.,"{'title': '1 Introduction', 'number': '1'}"
-"In general, inference in undirected graphical models is intractable.","{'title': '1 Introduction', 'number': '1'}"
-"However, for the common case of sequences (a.k.a. linear-chain models) the Viterbi algorithm can be used (Rabiner, 1989; Lafferty et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-Fortunately there is a simple technique that reduces inference in the above model to sequence classification with a constrained version of Viterbi.,"{'title': '1 Introduction', 'number': '1'}"
-"The inference problem is to find the highest scoring labeling y for an input s, i.e., arg max score(y, s) Y If the document label yd is fixed, then inference in the model from Figure 1 reduces to the sequential case.","{'title': '1 Introduction', 'number': '1'}"
-"This is because the search space is only over the sentence labels ysi , whose graphical structure forms a chain.","{'title': '1 Introduction', 'number': '1'}"
-"Thus the problem of finding the The argmax in line 3 can be solved using Viterbi’s algorithm since yd is fixed. highest scoring sentiment labels for all sentences, given a particular document label yd, can be solved efficiently using Viterbi’s algorithm.","{'title': '1 Introduction', 'number': '1'}"
-"The general inference problem can then be solved by iterating over each possible yd, finding y8 maximizing score((yd, y8), s) and keeping the single best y = (yd, y8).","{'title': '1 Introduction', 'number': '1'}"
-"This algorithm is outlined in Figure 2 and has a runtime of O(|Y(d)||Y(s)|2n), due to running Viterbi |Y(d) |times over a label space of size |Y(s)|.","{'title': '1 Introduction', 'number': '1'}"
-The algorithm can be extended to produce exact k-best lists.,"{'title': '1 Introduction', 'number': '1'}"
-This is achieved by using k-best Viterbi techniques to return the k-best global labelings for each document label in line 3.,"{'title': '1 Introduction', 'number': '1'}"
-Merging these sets will produce the final k-best list.,"{'title': '1 Introduction', 'number': '1'}"
-It is possible to view the inference algorithm in Figure 2 as a constrained Viterbi search since it is equivalent to flattening the model in Figure 1 to a sequential model with sentence labels from the set Y(s) x Y(d).,"{'title': '1 Introduction', 'number': '1'}"
-"The resulting Viterbi search would then need to be constrained to ensure consistent solutions, i.e., the label assignments agree on the document label over all sentences.","{'title': '1 Introduction', 'number': '1'}"
-"If viewed this way, it is also possible to run a constrained forwardbackward algorithm and learn the parameters for CRFs as well.","{'title': '1 Introduction', 'number': '1'}"
-"In this section we define the feature representation for each clique, f(yd, ysi_1, ysi , s).","{'title': '1 Introduction', 'number': '1'}"
-Assume that each sentence si is represented by a set of binary predicates P(si).,"{'title': '1 Introduction', 'number': '1'}"
-"This set can contain any predicate over the input s, but for the present purposes it will include all the unigram, bigram and trigrams in the sentence si conjoined with their part-of-speech (obtained from an automatic classifier).","{'title': '1 Introduction', 'number': '1'}"
-Back-offs of each predicate are also included where one or more word is discarded.,"{'title': '1 Introduction', 'number': '1'}"
-"For instance, if P(si) contains the predicate a:DT great:JJ product:NN, then it would also have the predicates a:DT great:JJ *:NN, a:DT *:JJ product:NN, *:DT great:JJ product:NN, a:DT *:JJ *:NN, etc.","{'title': '1 Introduction', 'number': '1'}"
-"Each predicate, p, is then conjoined with the label information to construct a binary feature.","{'title': '1 Introduction', 'number': '1'}"
-"For example, if the sentence label set is Y(s) = {subj, obj} and the document set is Y(d) = {pos, neg}, then the system might contain the following feature, { 1 if p E P(si) and y!","{'title': '1 Introduction', 'number': '1'}"
-= obj and ysi = subj and yd = neg 0 otherwise Where f(j) is the jth dimension of the feature space.,"{'title': '1 Introduction', 'number': '1'}"
-"For each feature, a set of back-off features are included that only consider the document label yd, the current sentence label ysi , the current sentence and document label ysi and yd, and the current and previous sentence labels ysi and ysi�1.","{'title': '1 Introduction', 'number': '1'}"
-Note that through these back-off features the joint models feature set will subsume the feature set of any individual level model.,"{'title': '1 Introduction', 'number': '1'}"
-Only features observed in the training data were considered.,"{'title': '1 Introduction', 'number': '1'}"
-"Depending on the data set, the dimension of the feature vector f ranged from 350K to 500K.","{'title': '1 Introduction', 'number': '1'}"
-"Though the feature vectors can be sparse, the feature weights will be learned using large-margin techniques that are well known to be robust to large and sparse feature representations.","{'title': '1 Introduction', 'number': '1'}"
-"Let Y = Y(d) x Y(s)n be the set of all valid sentence-document labelings for an input s. The weights, w, are set using the MIRA learning algorithm, which is an inference based online largemargin learning technique (Crammer and Singer, 2003; McDonald et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-An advantage of this algorithm is that it relies only on inference to learn the weight vector (see Section 2.1.1).,"{'title': '1 Introduction', 'number': '1'}"
-"MIRA has been shown to provide state-of-the-art accuracy for many language processing tasks including parsing, chunking and entity extraction (McDonald, 2006).","{'title': '1 Introduction', 'number': '1'}"
-The basic algorithm is outlined in Figure 3.,"{'title': '1 Introduction', 'number': '1'}"
-The algorithm works by considering a single training instance during each iteration.,"{'title': '1 Introduction', 'number': '1'}"
-The weight vector w is updated in line 4 through a quadratic programming problem.,"{'title': '1 Introduction', 'number': '1'}"
-This update modifies the weight vector so a margin proportional to the loss.,"{'title': '1 Introduction', 'number': '1'}"
-"The constraint set C can be chosen arbitrarily, but it is usually taken to be the k labelings that have the highest score under the old weight vector w(z) (McDonald et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-"In this manner, the learning algorithm can update its parameters relative to those labelings closest to the decision boundary.","{'title': '1 Introduction', 'number': '1'}"
-"Of all the weight vectors that satisfy these constraints, MIRA chooses the one that is as close as possible to the previous weight vector in order to retain information about previous updates.","{'title': '1 Introduction', 'number': '1'}"
-"The loss function L(y, y') is a positive real valued function and is equal to zero when y = y'.","{'title': '1 Introduction', 'number': '1'}"
-"This function is task specific and is usually the hamming loss for sequence classification problems (Taskar et al., 2003).","{'title': '1 Introduction', 'number': '1'}"
-Experiments with different loss functions for the joint sentence-document model on a development data set indicated that the hamming loss over sentence labels multiplied by the 0-1 loss over document labels worked best.,"{'title': '1 Introduction', 'number': '1'}"
-An important modification that was made to the learning algorithm deals with how the k constraints are chosen for the optimization.,"{'title': '1 Introduction', 'number': '1'}"
-Typically these constraints are the k highest scoring labelings under the current weight vector.,"{'title': '1 Introduction', 'number': '1'}"
-"However, early experiments showed that the model quickly learned to discard any labeling with an incorrect document label for the instances in the training set.","{'title': '1 Introduction', 'number': '1'}"
-"As a result, the constraints were dominated by labelings that only differed over sentence labels.","{'title': '1 Introduction', 'number': '1'}"
-This did not allow the algorithm adequate opportunity to set parameters relative to incorrect document labeling decisions.,"{'title': '1 Introduction', 'number': '1'}"
-"To combat this, k was divided by the number of document labels, to get a new value k'.","{'title': '1 Introduction', 'number': '1'}"
-"For each document label, the k' highest scoring labelings were To this point, we have focused solely on a model for two-level fine-to-coarse sentiment analysis not only for simplicity, but because the experiments in Section 3 deal exclusively with this scenario.","{'title': '1 Introduction', 'number': '1'}"
-"In this section, we briefly discuss possible extensions for more complex situations.","{'title': '1 Introduction', 'number': '1'}"
-"For example, longer documents might benefit from an analysis on the paragraph level as well as the sentence and document levels.","{'title': '1 Introduction', 'number': '1'}"
-"One possible model for this case is given in Figure 4, which essentially inserts an additional layer between the sentence and document level from the original model.","{'title': '1 Introduction', 'number': '1'}"
-"Sentence level analysis is dependent on neighbouring sentences as well as the paragraph level analysis, and the paragraph analysis is dependent on each of the sentences within it, the neighbouring paragraphs, and the document level analysis.","{'title': '1 Introduction', 'number': '1'}"
-This can be extended to an arbitrary level of fine-to-coarse sentiment analysis by simply inserting new layers in this fashion to create more complex hierarchical models.,"{'title': '1 Introduction', 'number': '1'}"
-"The advantage of using hierarchical models of this form is that they are nested, which keeps inference tractable.","{'title': '1 Introduction', 'number': '1'}"
-Observe that each pair of adjacent levels in the model is equivalent to the original model from Figure 1.,"{'title': '1 Introduction', 'number': '1'}"
-"As a result, the scores of the every label at each node in the graph can be calculated with a straight-forward bottom-up dynamic programming algorithm.","{'title': '1 Introduction', 'number': '1'}"
-"Details are omitted Three baseline systems were created, for space reasons.","{'title': '1 Introduction', 'number': '1'}"
-"Other models are possible where dependencies occur across non-neighbouring levels, e.g., by inserting edges between the sentence level nodes and the document level node.","{'title': '1 Introduction', 'number': '1'}"
-"In the general case, inference is exponential in the size of each clique.","{'title': '1 Introduction', 'number': '1'}"
-Both the models in Figure 1 and Figure 4 have maximum clique sizes of three.,"{'title': '1 Introduction', 'number': '1'}"
-"To test the model we compiled a corpus of 600 online product reviews from three domains: car seats for children, fitness equipment, and Mp3 players.","{'title': '3 Experiments', 'number': '2'}"
-"Of the original 600 reviews that were gathered, we discarded duplicate reviews, reviews with insufficient text, and spam.","{'title': '3 Experiments', 'number': '2'}"
-"All reviews were labeled by online customers as having a positive or negative polarity on the document level, i.e., Y(d) _ {pos, neg}.","{'title': '3 Experiments', 'number': '2'}"
-"Each review was then split into sentences and every sentence annotated by a single annotator as either being positive, negative or neutral, i.e., Y( s) _ {pos, neg, neu}.","{'title': '3 Experiments', 'number': '2'}"
-Data statistics for the corpus are given in Table 1.,"{'title': '3 Experiments', 'number': '2'}"
-All sentences were annotated based on their context within the document.,"{'title': '3 Experiments', 'number': '2'}"
-Sentences were annotated as neutral if they conveyed no sentiment or had indeterminate sentiment from their context.,"{'title': '3 Experiments', 'number': '2'}"
-Many neutral sentences pertain to the circumstances under which the product was purchased.,"{'title': '3 Experiments', 'number': '2'}"
-A common class of sentences were those containing product features.,"{'title': '3 Experiments', 'number': '2'}"
-These sentences were annotated as having positive or negative polarity if the context supported it.,"{'title': '3 Experiments', 'number': '2'}"
-"This could include punctuation such as exclamation points, smiley/frowny faces, question marks, etc.","{'title': '3 Experiments', 'number': '2'}"
-"The supporting evidence could also come from another sentence, e.g., “I love it.","{'title': '3 Experiments', 'number': '2'}"
-It has 64Mb of memory and comes with a set of earphones”. ure 1 without the top level document node.,"{'title': '3 Experiments', 'number': '2'}"
-This baseline will help to gage the empirical gains of the different components of the joint structured model on sentence level classification.,"{'title': '3 Experiments', 'number': '2'}"
-The model described in Section 2 will be called Joint-Structured.,"{'title': '3 Experiments', 'number': '2'}"
-"All models use the same basic predicate space: unigram, bigram, trigram conjoined with part-of-speech, plus back-offs of these (see Section 2.1.2 for more).","{'title': '3 Experiments', 'number': '2'}"
-"However, due to the structure of the model and its label space, the feature space of each might be different, e.g., the document classifier will only conjoin predicates with the document label to create the feature set.","{'title': '3 Experiments', 'number': '2'}"
-All models are trained using the MIRA learning algorithm.,"{'title': '3 Experiments', 'number': '2'}"
-Results for each model are given in the first four rows of Table 2.,"{'title': '3 Experiments', 'number': '2'}"
-These results were gathered using 10-fold cross validation with one fold for development and the other nine folds for evaluation.,"{'title': '3 Experiments', 'number': '2'}"
-This table shows that classifying sentences in isolation from one another is inferior to accounting for a more global context.,"{'title': '3 Experiments', 'number': '2'}"
-A significant increase in performance can be obtained when labeling decisions between sentences are modeled (Sentence-Structured).,"{'title': '3 Experiments', 'number': '2'}"
-"More interestingly, even further gains can be had when document level decisions are modeled (JointStructured).","{'title': '3 Experiments', 'number': '2'}"
-"In many cases, these improvements are highly statistically significant.","{'title': '3 Experiments', 'number': '2'}"
-"On the document level, performance can also be improved by incorporating sentence level decisions – though these improvements are not consistent.","{'title': '3 Experiments', 'number': '2'}"
-This inconsistency may be a result of the model overfitting on the small set of training data.,"{'title': '3 Experiments', 'number': '2'}"
-We suspect this because the document level error rate is a slight improvement in performance suggesting on the Mp3 training set converges to zero much that an iterative approach might be beneficial.,"{'title': '3 Experiments', 'number': '2'}"
-"That more rapidly for the Joint-Structured model than the is, a system could start by classifying documents, Document-Classifier.","{'title': '3 Experiments', 'number': '2'}"
-"This suggests that the Joint- use the document information to classify sentences, Structured model might be relying too much on use the sentence information to classify documents, the sentence level sentiment features – in order to and repeat until convergence.","{'title': '3 Experiments', 'number': '2'}"
-"However, experiments minimize its error rate – instead of distributing the showed that this did not improve accuracy over a sinweights across all features more evenly. gle iteration and often hurt performance.","{'title': '3 Experiments', 'number': '2'}"
-One interesting application of sentence level sen- Improvements from the cascaded models are far timent analysis is summarizing product reviews on less consistent than those given from the joint strucretail websites like Amazon.com or review aggrega- ture model.,"{'title': '3 Experiments', 'number': '2'}"
-This is because decisions in the castors like Yelp.com.,"{'title': '3 Experiments', 'number': '2'}"
-"In this setting the correct polar- caded system are passed to the next layer as the ity of a document is often known, but we wish to “gold” standard at test time, which results in errors label sentiment on the sentence or phrase level to from the first classifier propagating to errors in the aid in generating a cohesive and informative sum- second.","{'title': '3 Experiments', 'number': '2'}"
-This could be improved by passing a lattice mary.,"{'title': '3 Experiments', 'number': '2'}"
-The joint model can be used to classify sen- of possibilities from the first classifier to the second tences in this setting by constraining inference to the with corresponding confidences.,"{'title': '3 Experiments', 'number': '2'}"
-"However, solutions known fixed document label for a review.","{'title': '3 Experiments', 'number': '2'}"
-"If this is such as these are really just approximations of the done, then sentiment accuracy on the sentence level joint structured model that was presented here. increases substantially from 62.6% to 70.3%.","{'title': '3 Experiments', 'number': '2'}"
-4 Future Work Finally we should note that experiments using One important extension to this work is to augment CRFs to train the structured models and logistic re- the models for partially labeled data.,"{'title': '3 Experiments', 'number': '2'}"
-It is realistic gression to train the local models yielded similar re- to imagine a training set where many examples do sults to those in Table 2. not have every level of sentiment annotated.,"{'title': '3 Experiments', 'number': '2'}"
-"For 3.2.1 Cascaded Models example, there are thousands of online product reAnother approach to fine-to-coarse sentiment views with labeled document sentiment, but a much analysis is to use a cascaded system.","{'title': '3 Experiments', 'number': '2'}"
-"In such a sys- smaller amount where sentences are also labeled. tem, a sentence level classifier might first be run Work on learning with hidden variables can be used on the data, and then the results input into a docu- for both CRFs (Quattoni et al., 2004) and for inment level classifier – or vice-versa.'","{'title': '3 Experiments', 'number': '2'}"
-Two cascaded ference based learning algorithms like those used in systems were built.,"{'title': '3 Experiments', 'number': '2'}"
-"The first uses the Sentence- this work (Liang et al., 2006).","{'title': '3 Experiments', 'number': '2'}"
-"Structured classifier to classify all the sentences Another area of future work is to empirically infrom a review, then passes this information to the vestigate the use of these models on longer docudocument classifier as input.","{'title': '3 Experiments', 'number': '2'}"
-"In particular, for ev- ments that require more levels of sentiment analery predicate in the original document classifier, an ysis than product reviews.","{'title': '3 Experiments', 'number': '2'}"
-"In particular, the relaadditional predicate that specifies the polarity of the tive position of a phrase to a contrastive discourse sentence in which this predicate occurred was cre- connective or a cue phrase like “in conclusion” or ated.","{'title': '3 Experiments', 'number': '2'}"
-"The second cascaded system uses the docu- “to summarize” may lead to improved performance ment classifier to determine the global polarity, then since higher level classifications can learn to weigh passes this information as input into the Sentence- information passed from these lower level compoStructured model, constructing predicates in a simi- nents more heavily. lar manner.","{'title': '3 Experiments', 'number': '2'}"
-5 Discussion The results for these two systems can be seen in In this paper we have investigated the use of a global the last two rows of Table 2.,"{'title': '3 Experiments', 'number': '2'}"
-In both cases there structured model that learns to predict sentiment on different levels of granularity for a text.,"{'title': '3 Experiments', 'number': '2'}"
-"We de'Alternatively, decisions from the sentence classifier can guide which input is seen by the document level classifier (Pang and Lee, 2004).","{'title': '3 Experiments', 'number': '2'}"
-438 scribed a simple model for sentence-document analysis and showed that inference in it is tractable.,"{'title': '3 Experiments', 'number': '2'}"
-Experiments show that this model obtains higher accuracy than classifiers trained in isolation as well as cascaded systems that pass information from one level to another at test time.,"{'title': '3 Experiments', 'number': '2'}"
-"Furthermore, extensions to the sentence-document model were discussed and it was argued that a nested hierarchical structure would be beneficial since it would allow for efficient inference algorithms.","{'title': '3 Experiments', 'number': '2'}"
+In this paper we investigate a structured model for jointly classifying the sentiment of text at varying levels of granularity.,Introduction
+Inference in the model is based on standard sequence classification techniques using constrained Viterbi to ensure consistent solutions.,Introduction
+The primary advantage of such a model is that it allows classification decisions from one level in the text to influence decisions at another.,Introduction
+Experiments show that this method can significantly reduce classification error relative to models trained in isolation.,Introduction
+Extracting sentiment from text is a challenging problem with applications throughout Natural Language Processing and Information Retrieval.,Results/Conclusion
+"Previous work on sentiment analysis has covered a wide range of tasks, including polarity classification (Pang et al., 2002; Turney, 2002), opinion extraction (Pang and Lee, 2004), and opinion source assignment (Choi et al., 2005; Choi et al., 2006).",Results/Conclusion
+"Furthermore, these systems have tackled the problem at different levels of granularity, from the document level (Pang et al., 2002), sentence level (Pang and Lee, 2004; Mao and Lebanon, 2006), phrase level (Turney, 2002; Choi et al., 2005), as well as the speaker level in debates (Thomas et al., 2006).",Results/Conclusion
+The ability to classify sentiment on multiple levels is important since different applications have different needs.,Results/Conclusion
+"For example, a summarization system for product reviews might require polarity classification at the sentence or phrase level; a question answering system would most likely require the sentiment of paragraphs; and a system that determines which articles from an online news source are editorial in nature would require a document level analysis.",Results/Conclusion
+This work focuses on models that jointly classify sentiment on multiple levels of granularity.,Results/Conclusion
+"Consider the following example, This is the first Mp3 player that I have used ...",Results/Conclusion
+"I thought it sounded great ... After only a few weeks, it started having trouble with the earphone connection ...",Results/Conclusion
+I won’t be buying another.,Results/Conclusion
+This excerpt expresses an overall negative opinion of the product being reviewed.,Results/Conclusion
+"However, not all parts of the review are negative.",Results/Conclusion
+"The first sentence merely provides some context on the reviewer’s experience with such devices and the second sentence indicates that, at least in one regard, the product performed well.",Results/Conclusion
+"We call the problem of identifying the sentiment of the document and of all its subcomponents, whether at the paragraph, sentence, phrase or word level, fine-to-coarse sentiment analysis.",Results/Conclusion
+The simplest approach to fine-to-coarse sentiment analysis would be to create a separate system for each level of granularity.,Results/Conclusion
+"There are, however, obvious advantages to building a single model that classifies each level in tandem.",Results/Conclusion
+"Consider the sentence, for a piece of fitness equipment, where hard essen- labeling or chunking, but have also been applied to tially means good workout.",Results/Conclusion
+"In this domain, hard’s parsing (Taskar et al., 2004; McDonald et al., 2005), sentiment can only be determined in context (i.e., machine translation (Liang et al., 2006) and summahard to assemble versus a hard workout).",Results/Conclusion
+"If the clas- rization (Daum´e III et al., 2006). sifier knew the overall sentiment of a document, then Structured models have previously been used for disambiguating such cases would be easier. sentiment analysis.",Results/Conclusion
+"Choi et al. (2005, 2006) use Conversely, document level analysis can benefit CRFs to learn a global sequence model to classify from finer level classification by taking advantage and assign sources to opinions.",Results/Conclusion
+"Mao and Lebanon of common discourse cues, such as the last sentence (2006) used a sequential CRF regression model to being a reliable indicator for overall sentiment in re- measure polarity on the sentence level in order to views.",Results/Conclusion
+"Furthermore, during training, the model will determine the sentiment flow of authors in reviews. not need to modify its parameters to explain phe- Here we show that fine-to-coarse models of sentinomena like the typically positive word great ap- ment can often be reduced to the sequential case. pearing in a negative text (as is the case above).",Results/Conclusion
+The Cascaded models for fine-to-coarse sentiment model can also avoid overfitting to features derived analysis were studied by Pang and Lee (2004).,Results/Conclusion
+In from neutral or objective sentences.,Results/Conclusion
+"In fact, it has al- that work an initial model classified each sentence ready been established that sentence level classifica- as being subjective or objective using a global mintion can improve document level analysis (Pang and cut inference algorithm that considered local labelLee, 2004).",Results/Conclusion
+This line of reasoning suggests that a ing consistencies.,Results/Conclusion
+The top subjective sentences are cascaded approach would also be insufficient.,Results/Conclusion
+"Valu- then input into a standard document level polarity able information is passed in both directions, which classifier with improved results.",Results/Conclusion
+The current work means any model of fine-to-coarse analysis should differs from that in Pang and Lee through the use of account for this. a single joint structured model for both sentence and In Section 2 we describe a simple structured document level analysis. model that jointly learns and infers sentiment on dif- Many problems in natural language processing ferent levels of granularity.,Results/Conclusion
+"In particular, we reduce can be improved by learning and/or predicting multhe problem of joint sentence and document level tiple outputs jointly.",Results/Conclusion
+"This includes parsing and relaanalysis to a sequential classification problem us- tion extraction (Miller et al., 2000), entity labeling ing constrained Viterbi inference.",Results/Conclusion
+"Extensions to the and relation extraction (Roth and Yih, 2004), and model that move beyond just two-levels of analysis part-of-speech tagging and chunking (Sutton et al., are also presented.",Results/Conclusion
+In Section 3 an empirical eval- 2004).,Results/Conclusion
+One interesting work on sentiment analysis uation of the model is given that shows significant is that of Popescu and Etzioni (2005) which attempts gains in accuracy over both single level classifiers to classify the sentiment of phrases with respect to and cascaded systems. possible product features.,Results/Conclusion
+"To do this an iterative al1.1 Related Work gorithm is used that attempts to globally maximize The models in this work fall into the broad class of the classification of all phrases while satisfying local global structured models, which are typically trained consistency constraints. with structured learning algorithms.",Results/Conclusion
+"Hidden Markov 2 Structured Model models (Rabiner, 1989) are one of the earliest struc- In this section we present a structured model for tured learning algorithms, which have recently been fine-to-coarse sentiment analysis.",Results/Conclusion
+"We start by examfollowed by discriminative learning approaches such ining the simple case with two-levels of granularity as conditional random fields (CRFs) (Lafferty et al., – the sentence and document – and show that the 2001; Sutton and McCallum, 2006), the structured problem can be reduced to sequential classification perceptron (Collins, 2002) and its large-margin vari- with constrained inference.",Results/Conclusion
+"We then discuss the feaants (Taskar et al., 2003; Tsochantaridis et al., 2004; ture space and give an algorithm for learning the paMcDonald et al., 2005; Daum´e III et al., 2006). rameters based on large-margin structured learning.",Results/Conclusion
+These algorithms are usually applied to sequential 433 Extensions to the model are also examined.,Results/Conclusion
+Let Y(d) be a discrete set of sentiment labels at the document level and Y(s) be a discrete set of sentiment labels at the sentence level.,Results/Conclusion
+"As input a system is given a document containing sentences s = s1, ... , sn and must produce sentiment labels for the document, yd E Y(d), and each individual sentence, ys = ys1, ... , ysn, where ysi E Y(s) V 1 G i G n. Define y = (yd, ys) = (yd, ys1, .",Results/Conclusion
+"..,ysn) as the joint labeling of the document and sentences.",Results/Conclusion
+"For instance, in Pang and Lee (2004), yd would be the polarity of the document and ysi would indicate whether sentence si is subjective or objective.",Results/Conclusion
+The models presented here are compatible with arbitrary sets of discrete output labels.,Results/Conclusion
+Figure 1 presents a model for jointly classifying the sentiment of both the sentences and the document.,Results/Conclusion
+"In this undirected graphical model, the label of each sentence is dependent on the labels of its neighbouring sentences plus the label of the document.",Results/Conclusion
+The label of the document is dependent on the label of every sentence.,Results/Conclusion
+"Note that the edges between the input (each sentence) and the output labels are not solid, indicating that they are given as input and are not being modeled.",Results/Conclusion
+"The fact that the sentiment of sentences is dependent not only on the local sentiment of other sentences, but also the global document sentiment – and vice versa – allows the model to directly capture the importance of classification decisions across levels in fine-tocoarse sentiment analysis.",Results/Conclusion
+The local dependencies between sentiment labels on sentences is similar to the work of Pang and Lee (2004) where soft local consistency constraints were created between every sentence in a document and inference was solved using a min-cut algorithm.,Results/Conclusion
+"However, jointly modeling the document label and allowing for non-binary labels complicates min-cut style solutions as inference becomes intractable.",Results/Conclusion
+Learning and inference in undirected graphical models is a well studied problem in machine learning and NLP.,Results/Conclusion
+"For example, CRFs define the probability over the labels conditioned on the input using the property that the joint probability distribution over the labels factors over clique potentials in undirected graphical models (Lafferty et al., 2001).",Results/Conclusion
+"In this work we will use structured linear classifiers (Collins, 2002).",Results/Conclusion
+"We denote the score of a labeling y for an input s as score(y, s) and define this score as the sum of scores over each clique, where each clique score is a linear combination of features and their weights, score(yd, ysi�1, ysi , s) = w · f(yd, ysi�1, ysi , s) (1) and f is a high dimensional feature representation of the clique and w a corresponding weight vector.",Results/Conclusion
+Note that s is included in each score since it is given as input and can always be conditioned on.,Results/Conclusion
+"In general, inference in undirected graphical models is intractable.",Results/Conclusion
+"However, for the common case of sequences (a.k.a. linear-chain models) the Viterbi algorithm can be used (Rabiner, 1989; Lafferty et al., 2001).",Results/Conclusion
+Fortunately there is a simple technique that reduces inference in the above model to sequence classification with a constrained version of Viterbi.,Results/Conclusion
+"The inference problem is to find the highest scoring labeling y for an input s, i.e., arg max score(y, s) Y If the document label yd is fixed, then inference in the model from Figure 1 reduces to the sequential case.",Results/Conclusion
+"This is because the search space is only over the sentence labels ysi , whose graphical structure forms a chain.",Results/Conclusion
+"Thus the problem of finding the The argmax in line 3 can be solved using Viterbi’s algorithm since yd is fixed. highest scoring sentiment labels for all sentences, given a particular document label yd, can be solved efficiently using Viterbi’s algorithm.",Results/Conclusion
+"The general inference problem can then be solved by iterating over each possible yd, finding y8 maximizing score((yd, y8), s) and keeping the single best y = (yd, y8).",Results/Conclusion
+"This algorithm is outlined in Figure 2 and has a runtime of O(|Y(d)||Y(s)|2n), due to running Viterbi |Y(d) |times over a label space of size |Y(s)|.",Results/Conclusion
+The algorithm can be extended to produce exact k-best lists.,Results/Conclusion
+This is achieved by using k-best Viterbi techniques to return the k-best global labelings for each document label in line 3.,Results/Conclusion
+Merging these sets will produce the final k-best list.,Results/Conclusion
+It is possible to view the inference algorithm in Figure 2 as a constrained Viterbi search since it is equivalent to flattening the model in Figure 1 to a sequential model with sentence labels from the set Y(s) x Y(d).,Results/Conclusion
+"The resulting Viterbi search would then need to be constrained to ensure consistent solutions, i.e., the label assignments agree on the document label over all sentences.",Results/Conclusion
+"If viewed this way, it is also possible to run a constrained forwardbackward algorithm and learn the parameters for CRFs as well.",Results/Conclusion
+"In this section we define the feature representation for each clique, f(yd, ysi_1, ysi , s).",Results/Conclusion
+Assume that each sentence si is represented by a set of binary predicates P(si).,Results/Conclusion
+"This set can contain any predicate over the input s, but for the present purposes it will include all the unigram, bigram and trigrams in the sentence si conjoined with their part-of-speech (obtained from an automatic classifier).",Results/Conclusion
+Back-offs of each predicate are also included where one or more word is discarded.,Results/Conclusion
+"For instance, if P(si) contains the predicate a:DT great:JJ product:NN, then it would also have the predicates a:DT great:JJ *:NN, a:DT *:JJ product:NN, *:DT great:JJ product:NN, a:DT *:JJ *:NN, etc.",Results/Conclusion
+"Each predicate, p, is then conjoined with the label information to construct a binary feature.",Results/Conclusion
+"For example, if the sentence label set is Y(s) = {subj, obj} and the document set is Y(d) = {pos, neg}, then the system might contain the following feature, { 1 if p E P(si) and y!",Results/Conclusion
+= obj and ysi = subj and yd = neg 0 otherwise Where f(j) is the jth dimension of the feature space.,Results/Conclusion
+"For each feature, a set of back-off features are included that only consider the document label yd, the current sentence label ysi , the current sentence and document label ysi and yd, and the current and previous sentence labels ysi and ysi�1.",Results/Conclusion
+Note that through these back-off features the joint models feature set will subsume the feature set of any individual level model.,Results/Conclusion
+Only features observed in the training data were considered.,Results/Conclusion
+"Depending on the data set, the dimension of the feature vector f ranged from 350K to 500K.",Results/Conclusion
+"Though the feature vectors can be sparse, the feature weights will be learned using large-margin techniques that are well known to be robust to large and sparse feature representations.",Results/Conclusion
+"Let Y = Y(d) x Y(s)n be the set of all valid sentence-document labelings for an input s. The weights, w, are set using the MIRA learning algorithm, which is an inference based online largemargin learning technique (Crammer and Singer, 2003; McDonald et al., 2005).",Results/Conclusion
+An advantage of this algorithm is that it relies only on inference to learn the weight vector (see Section 2.1.1).,Results/Conclusion
+"MIRA has been shown to provide state-of-the-art accuracy for many language processing tasks including parsing, chunking and entity extraction (McDonald, 2006).",Results/Conclusion
+The basic algorithm is outlined in Figure 3.,Results/Conclusion
+The algorithm works by considering a single training instance during each iteration.,Results/Conclusion
+The weight vector w is updated in line 4 through a quadratic programming problem.,Results/Conclusion
+This update modifies the weight vector so a margin proportional to the loss.,Results/Conclusion
+"The constraint set C can be chosen arbitrarily, but it is usually taken to be the k labelings that have the highest score under the old weight vector w(z) (McDonald et al., 2005).",Results/Conclusion
+"In this manner, the learning algorithm can update its parameters relative to those labelings closest to the decision boundary.",Results/Conclusion
+"Of all the weight vectors that satisfy these constraints, MIRA chooses the one that is as close as possible to the previous weight vector in order to retain information about previous updates.",Results/Conclusion
+"The loss function L(y, y') is a positive real valued function and is equal to zero when y = y'.",Results/Conclusion
+"This function is task specific and is usually the hamming loss for sequence classification problems (Taskar et al., 2003).",Results/Conclusion
+Experiments with different loss functions for the joint sentence-document model on a development data set indicated that the hamming loss over sentence labels multiplied by the 0-1 loss over document labels worked best.,Results/Conclusion
+An important modification that was made to the learning algorithm deals with how the k constraints are chosen for the optimization.,Results/Conclusion
+Typically these constraints are the k highest scoring labelings under the current weight vector.,Results/Conclusion
+"However, early experiments showed that the model quickly learned to discard any labeling with an incorrect document label for the instances in the training set.",Results/Conclusion
+"As a result, the constraints were dominated by labelings that only differed over sentence labels.",Results/Conclusion
+This did not allow the algorithm adequate opportunity to set parameters relative to incorrect document labeling decisions.,Results/Conclusion
+"To combat this, k was divided by the number of document labels, to get a new value k'.",Results/Conclusion
+"For each document label, the k' highest scoring labelings were To this point, we have focused solely on a model for two-level fine-to-coarse sentiment analysis not only for simplicity, but because the experiments in Section 3 deal exclusively with this scenario.",Results/Conclusion
+"In this section, we briefly discuss possible extensions for more complex situations.",Results/Conclusion
+"For example, longer documents might benefit from an analysis on the paragraph level as well as the sentence and document levels.",Results/Conclusion
+"One possible model for this case is given in Figure 4, which essentially inserts an additional layer between the sentence and document level from the original model.",Results/Conclusion
+"Sentence level analysis is dependent on neighbouring sentences as well as the paragraph level analysis, and the paragraph analysis is dependent on each of the sentences within it, the neighbouring paragraphs, and the document level analysis.",Results/Conclusion
+This can be extended to an arbitrary level of fine-to-coarse sentiment analysis by simply inserting new layers in this fashion to create more complex hierarchical models.,Results/Conclusion
+"The advantage of using hierarchical models of this form is that they are nested, which keeps inference tractable.",Results/Conclusion
+Observe that each pair of adjacent levels in the model is equivalent to the original model from Figure 1.,Results/Conclusion
+"As a result, the scores of the every label at each node in the graph can be calculated with a straight-forward bottom-up dynamic programming algorithm.",Results/Conclusion
+"Details are omitted Three baseline systems were created, for space reasons.",Results/Conclusion
+"Other models are possible where dependencies occur across non-neighbouring levels, e.g., by inserting edges between the sentence level nodes and the document level node.",Results/Conclusion
+"In the general case, inference is exponential in the size of each clique.",Results/Conclusion
+Both the models in Figure 1 and Figure 4 have maximum clique sizes of three.,Results/Conclusion
+"To test the model we compiled a corpus of 600 online product reviews from three domains: car seats for children, fitness equipment, and Mp3 players.",Results/Conclusion
+"Of the original 600 reviews that were gathered, we discarded duplicate reviews, reviews with insufficient text, and spam.",Results/Conclusion
+"All reviews were labeled by online customers as having a positive or negative polarity on the document level, i.e., Y(d) _ {pos, neg}.",Results/Conclusion
+"Each review was then split into sentences and every sentence annotated by a single annotator as either being positive, negative or neutral, i.e., Y( s) _ {pos, neg, neu}.",Results/Conclusion
+Data statistics for the corpus are given in Table 1.,Results/Conclusion
+All sentences were annotated based on their context within the document.,Results/Conclusion
+Sentences were annotated as neutral if they conveyed no sentiment or had indeterminate sentiment from their context.,Results/Conclusion
+Many neutral sentences pertain to the circumstances under which the product was purchased.,Results/Conclusion
+A common class of sentences were those containing product features.,Results/Conclusion
+These sentences were annotated as having positive or negative polarity if the context supported it.,Results/Conclusion
+"This could include punctuation such as exclamation points, smiley/frowny faces, question marks, etc.",Results/Conclusion
+"The supporting evidence could also come from another sentence, e.g., “I love it.",Results/Conclusion
+It has 64Mb of memory and comes with a set of earphones”. ure 1 without the top level document node.,Results/Conclusion
+This baseline will help to gage the empirical gains of the different components of the joint structured model on sentence level classification.,Results/Conclusion
+The model described in Section 2 will be called Joint-Structured.,Results/Conclusion
+"All models use the same basic predicate space: unigram, bigram, trigram conjoined with part-of-speech, plus back-offs of these (see Section 2.1.2 for more).",Results/Conclusion
+"However, due to the structure of the model and its label space, the feature space of each might be different, e.g., the document classifier will only conjoin predicates with the document label to create the feature set.",Results/Conclusion
+All models are trained using the MIRA learning algorithm.,Results/Conclusion
+Results for each model are given in the first four rows of Table 2.,Results/Conclusion
+These results were gathered using 10-fold cross validation with one fold for development and the other nine folds for evaluation.,Results/Conclusion
+This table shows that classifying sentences in isolation from one another is inferior to accounting for a more global context.,Results/Conclusion
+A significant increase in performance can be obtained when labeling decisions between sentences are modeled (Sentence-Structured).,Results/Conclusion
+"More interestingly, even further gains can be had when document level decisions are modeled (JointStructured).",Results/Conclusion
+"In many cases, these improvements are highly statistically significant.",Results/Conclusion
+"On the document level, performance can also be improved by incorporating sentence level decisions – though these improvements are not consistent.",Results/Conclusion
+This inconsistency may be a result of the model overfitting on the small set of training data.,Results/Conclusion
+We suspect this because the document level error rate is a slight improvement in performance suggesting on the Mp3 training set converges to zero much that an iterative approach might be beneficial.,Results/Conclusion
+"That more rapidly for the Joint-Structured model than the is, a system could start by classifying documents, Document-Classifier.",Results/Conclusion
+"This suggests that the Joint- use the document information to classify sentences, Structured model might be relying too much on use the sentence information to classify documents, the sentence level sentiment features – in order to and repeat until convergence.",Results/Conclusion
+"However, experiments minimize its error rate – instead of distributing the showed that this did not improve accuracy over a sinweights across all features more evenly. gle iteration and often hurt performance.",Results/Conclusion
+One interesting application of sentence level sen- Improvements from the cascaded models are far timent analysis is summarizing product reviews on less consistent than those given from the joint strucretail websites like Amazon.com or review aggrega- ture model.,Results/Conclusion
+This is because decisions in the castors like Yelp.com.,Results/Conclusion
+"In this setting the correct polar- caded system are passed to the next layer as the ity of a document is often known, but we wish to “gold” standard at test time, which results in errors label sentiment on the sentence or phrase level to from the first classifier propagating to errors in the aid in generating a cohesive and informative sum- second.",Results/Conclusion
+This could be improved by passing a lattice mary.,Results/Conclusion
+The joint model can be used to classify sen- of possibilities from the first classifier to the second tences in this setting by constraining inference to the with corresponding confidences.,Results/Conclusion
+"However, solutions known fixed document label for a review.",Results/Conclusion
+"If this is such as these are really just approximations of the done, then sentiment accuracy on the sentence level joint structured model that was presented here. increases substantially from 62.6% to 70.3%.",Results/Conclusion
+4 Future Work Finally we should note that experiments using One important extension to this work is to augment CRFs to train the structured models and logistic re- the models for partially labeled data.,Results/Conclusion
+It is realistic gression to train the local models yielded similar re- to imagine a training set where many examples do sults to those in Table 2. not have every level of sentiment annotated.,Results/Conclusion
+"For 3.2.1 Cascaded Models example, there are thousands of online product reAnother approach to fine-to-coarse sentiment views with labeled document sentiment, but a much analysis is to use a cascaded system.",Results/Conclusion
+"In such a sys- smaller amount where sentences are also labeled. tem, a sentence level classifier might first be run Work on learning with hidden variables can be used on the data, and then the results input into a docu- for both CRFs (Quattoni et al., 2004) and for inment level classifier – or vice-versa.'",Results/Conclusion
+Two cascaded ference based learning algorithms like those used in systems were built.,Results/Conclusion
+"The first uses the Sentence- this work (Liang et al., 2006).",Results/Conclusion
+"Structured classifier to classify all the sentences Another area of future work is to empirically infrom a review, then passes this information to the vestigate the use of these models on longer docudocument classifier as input.",Results/Conclusion
+"In particular, for ev- ments that require more levels of sentiment analery predicate in the original document classifier, an ysis than product reviews.",Results/Conclusion
+"In particular, the relaadditional predicate that specifies the polarity of the tive position of a phrase to a contrastive discourse sentence in which this predicate occurred was cre- connective or a cue phrase like “in conclusion” or ated.",Results/Conclusion
+"The second cascaded system uses the docu- “to summarize” may lead to improved performance ment classifier to determine the global polarity, then since higher level classifications can learn to weigh passes this information as input into the Sentence- information passed from these lower level compoStructured model, constructing predicates in a simi- nents more heavily. lar manner.",Results/Conclusion
+5 Discussion The results for these two systems can be seen in In this paper we have investigated the use of a global the last two rows of Table 2.,Results/Conclusion
+In both cases there structured model that learns to predict sentiment on different levels of granularity for a text.,Results/Conclusion
+"We de'Alternatively, decisions from the sentence classifier can guide which input is seen by the document level classifier (Pang and Lee, 2004).",Results/Conclusion
+438 scribed a simple model for sentence-document analysis and showed that inference in it is tractable.,Results/Conclusion
+Experiments show that this model obtains higher accuracy than classifiers trained in isolation as well as cascaded systems that pass information from one level to another at test time.,Results/Conclusion
+"Furthermore, extensions to the sentence-document model were discussed and it was argued that a nested hierarchical structure would be beneficial since it would allow for efficient inference algorithms.",Results/Conclusion

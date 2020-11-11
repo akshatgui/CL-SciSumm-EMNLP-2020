@@ -1,145 +1,145 @@
 col1,col2
-"Many different metrics exist for evaluating parsing results, including Viterbi, Crossing Brackets Rate, Zero Crossing Brackets Rate, and several others.",{}
-"However, most parsing algorithms, including the Viterbi algorithm, attempt to optimize the same metric, namely the probability of getting the correct labelled tree.",{}
-"By choosing a parsing algorithm appropriate for the evaluation metric, better performance can be achieved.",{}
-"We present two new algorithms: the &quot;Labelled Recall Algorithm,&quot; which maximizes the expected Labelled Recall Rate, and the &quot;Bracketed Recall Algorithm,&quot; which maximizes the Bracketed Recall Rate.",{}
-"Experimental results are given, showing that the two new algorithms have improved performance over the Viterbi algorithm on many criteria, especially the ones that they optimize",{}
-"In corpus-based approaches to parsing, one is given a treebank (a collection of text annotated with the &quot;correct&quot; parse tree) and attempts to find algorithms that, given unlabelled text from the treebank, produce as similar a parse as possible to the one in the treebank.","{'title': '1 Introduction', 'number': '1'}"
-Various methods can be used for finding these parses.,"{'title': '1 Introduction', 'number': '1'}"
-"Some of the most common involve inducing Probabilistic Context-Free Grammars (PCFGs), and then parsing with an algorithm such as the Labelled Tree (Viterbi) Algorithm, which maximizes the probability that the output of the parser (the &quot;guessed&quot; tree) is the one that the PCFG produced.","{'title': '1 Introduction', 'number': '1'}"
-This implicitly assumes that the induced PCFG does a good job modeling the corpus.,"{'title': '1 Introduction', 'number': '1'}"
-There are many different ways to evaluate these parses.,"{'title': '1 Introduction', 'number': '1'}"
-"The most common include the Labelled Tree Rate (also called the Viterbi Criterion or Exact Match Rate), Consistent Brackets Recall Rate (also called the Crossing Brackets Rate), Consistent Brackets Tree Rate (also called the Zero Crossing Brackets Rate), and Precision and Recall.","{'title': '1 Introduction', 'number': '1'}"
-"Despite the variety of evaluation metrics, nearly all researchers use algorithms that maximize performance on the Labelled Tree Rate, even in domains where they are evaluating using other criteria.","{'title': '1 Introduction', 'number': '1'}"
-"We propose that by creating algorithms that optimize the evaluation criterion, rather than some related criterion, improved performance can be achieved.","{'title': '1 Introduction', 'number': '1'}"
-"In Section 2, we define most of the evaluation metrics used in this paper and discuss previous approaches.","{'title': '1 Introduction', 'number': '1'}"
-"Then, in Section 3, we discuss the Labelled Recall Algorithm, a new algorithm that maximizes performance on the Labelled Recall Rate.","{'title': '1 Introduction', 'number': '1'}"
-"In Section 4, we discuss another new algorithm, the Bracketed Recall Algorithm, that maximizes performance on the Bracketed Recall Rate (closely related to the Consistent Brackets Recall Rate).","{'title': '1 Introduction', 'number': '1'}"
-"Finally, we give experimental results in Section 5 using these two algorithms in appropriate domains, and compare them to the Labelled Tree (Viterbi) Algorithm, showing that each algorithm generally works best when evaluated on the criterion that it optimizes.","{'title': '1 Introduction', 'number': '1'}"
-"In this section, we first define basic terms and symbols.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Next, we define the different metrics used in evaluation.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Finally, we discuss the relationship of these metrics to parsing algorithms.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-Let wa denote word a of the sentence under consideration.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-Let wab denote wa wa +1 ... tvb _ ; in particular let writ denote the entire sequence of terminals (words) in the sentence under consideration.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-In this paper we assume all guessed parse trees are binary branching.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Let a parse tree T be defined as a set of triples (s, t, X)—where s denotes the position of the first symbol in a constituent, t denotes the position of the last symbol, and X represents a terminal or nonterminal symbol—meeting the following three requirements: Let Tc denote the &quot;correct&quot; parse (the one in the treebank) and let TG denote the &quot;guessed&quot; parse (the one output by the parsing algorithm).","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Let NG denote ITGI, the number of nonterminals in the guessed parse tree, and let Nc denote ITc I, the number of nonterminals in the correct parse tree.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-There are various levels of strictness for determining whether a constituent (element of TG) is &quot;correct.&quot; The strictest of these is Labelled Match.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"A constituent (s,t, X) E TG is correct according to Labelled Match if and only if (s, t, X) E T. In other words, a constituent in the guessed parse tree is correct if and only if it occurs in the correct parse tree.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-The next level of strictness is Bracketed Match.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Bracketed match is like labelled match, except that the nonterminal label is ignored.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Formally, a constituent (s, t, X) E TG is correct according to Bracketed Match if and only if there exists a Y such that (s,t,Y) E T. The least strict level is Consistent Brackets (also called Crossing Brackets).","{'title': '2 Evaluation Metrics', 'number': '2'}"
-Consistent Brackets is like Bracketed Match in that the label is ignored.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"It is even less strict in that the observed (s, t, X) need not be in Tc —it must simply not be ruled out by any (q,r,Y) E Tc.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"A particular triple (q,r,Y) rules out (s, t, X) if there is no way that (s, t, X) and (q,r,Y) could both be in the same parse tree.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"In particular, if the interval (s, t) crosses the interval (q, r), then (s, t, X) is ruled out and counted as an error.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Formally, we say that (s, t) crosses (q, r) if and only ifs<q<t<rorq<s<r<t.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"If Tc is binary branching, then Consistent Brackets and Bracketed Match are identical.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"The following symbols denote the number of constituents that match according to each of these criteria. crossing (s, t)} : the number of constituents in TG correct according to Consistent Brackets.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-Following are the definitions of the six metrics used in this paper for evaluating binary branching trees: ( 5 ) Consistent Brackets Recall Rate = CING.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-It is often called the Crossing Brackets Rate.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"In the case where the parses are binary branching, this criterion is the same as the Bracketed Recall Rate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-(6) Consistent Brackets Tree Rate = 1 if C = NG.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-This metric is closely related to the Bracketed Tree Rate.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"In the case where the parses are binary branching, the two metrics are the same.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-This criterion is also called the Zero Crossing Brackets Rate.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"The preceding six metrics each correspond to cells in the following table: Despite this long list of possible metrics, there is only one metric most parsing algorithms attempt to maximize, namely the Labelled Tree Rate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"That is, most parsing algorithms assume that the test corpus was generated by the model, and then attempt to evaluate the following expression, where E denotes the expected value operator: TG arg mTaxE( 1 if = Nc) (1) This is true of the Labelled Tree Algorithm and stochastic versions of Earley's Algorithm (Stolcke, 1993), and variations such as those used in Picky parsing (Magerman and Weir, 1992).","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Even in probabilistic models not closely related to PCFGs, such as Spatter parsing (Magerman, 1994), expression (1) is still computed.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"One notable exception is Brill's Transformation-Based Error Driven system (Brill, 1993), which induces a set of transformations designed to maximize the Consistent Brackets Recall Rate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"However, Brill's system is not probabilistic.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Intuitively, if one were to match the parsing algorithm to the evaluation criterion, better performance should be achieved.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Ideally, one might try to directly maximize the most commonly used evaluation criteria, such as Consistent Brackets Recall (Crossing Brackets) Rate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Unfortunately, this criterion is relatively difficult to maximize, since it is time-consuming to compute the probability that a particular constituent crosses some constituent in the correct parse.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"On the other hand, the Bracketed Recall and Bracketed Tree Rates are easier to handle, since computing the probability that a bracket matches one in the correct parse is inexpensive.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-It is plausible that algorithms which optimize these closely related criteria will do well on the analogous Consistent Brackets criteria.,"{'title': '2 Evaluation Metrics', 'number': '2'}"
-"When building an actual system, one should use the metric most appropriate for the problem.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"For instance, if one were creating a database query system, such as an ATIS system, then the Labelled Tree (Viterbi) metric would be most appropriate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"A single error in the syntactic representation of a query will likely result in an error in the semantic representation, and therefore in an incorrect database query, leading to an incorrect result.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"For instance, if the user request &quot;Find me all flights on Tuesday&quot; is misparsed with the prepositional phrase attached to the verb, then the system might wait until Tuesday before responding: a single error leads to completely incorrect behavior.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Thus, the Labelled Tree criterion is appropriate.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"On the other hand, consider a machine assisted translation system, in which the system provides translations, and then a fluent human manually edits them.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Imagine that the system is given the foreign language equivalent of &quot;His credentials are nothing which should be laughed at,&quot; and makes the single mistake of attaching the relative clause at the sentential level, translating the sentence as &quot;His credentials are nothing, which should make you laugh.&quot; While the human translator must make some changes, he certainly needs to do less editing than he would if the sentence were completely misparsed.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"The more errors there are, the more editing the human translator needs to do.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-"Thus, a criterion such as the Labelled Recall criterion is appropriate for this task, where the number of incorrect constituents correlates to application performance.","{'title': '2 Evaluation Metrics', 'number': '2'}"
-Consider writing a parser for a domain such as machine assisted translation.,"{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"One could use the Labelled Tree Algorithm, which would maximize the expected number of exactly correct parses.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"However, since the number of correct constituents is a better measure of application performance for this domain than the number of correct trees, perhaps one should use an algorithm which maximizes the Labelled Recall criterion, rather than the Labelled Tree criterion.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"The Labelled Recall Algorithm finds that tree TG which has the highest expected value for the Labelled Recall Rate, LINc (where L is the number of correct labelled constituents, and Nc is the number of nodes in the correct parse).","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"This can be written as follows: It is not immediately obvious that the maximization of expression (2) is in fact different from the maximization of expression (1), but a simple example illustrates the difference.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"The following grammar generates four trees with equal probability: For the first tree, the probabilities of being correct are S: 100%; A:50%; and C: 25%.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-Similar counting holds for the other three.,"{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"Thus, the expected value of L for any of these trees is 1.75.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"On the other hand, the optimal Labelled Recall parse is This tree has 0 probability according to the grammar, and thus is non-optimal according to the Labelled Tree Rate criterion.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"However, for this tree the probabilities of each node being correct are S: 100%; A: 50%; and 8: 50%.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"The expected value of L is 2.0, the highest of any tree.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-This tree therefore optimizes the Labelled Recall Rate.,"{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-We now derive an algorithm for finding the parse that maximizes the expected Labelled Recall Rate.,"{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"We do this by expanding expression (2) out into a probabilistic form, converting this into a recursive equation, and finally creating an equivalent dynamic programming algorithm.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"We begin by rewriting expression (2), expanding out the expected value operator, and removing the A, B, C, D, E, F The four trees are c, which is the same for all TG, and so plays no role in the maximization.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"Now, given a PCFG with start symbol S, the following equality holds: By rearranging the summation in expression (5) and then substituting this equality, we get At this point, it is useful to introduce the Inside and Outside probabilities, due to Baker (1979), and explained by Lan and Young (1990).","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"The Inside probability is defined as e(s,t, X) = P(X Os) and the Outside probability is f(s,t, X) = P(S 3-1 X n W1 wt-1-1)• Note that while Baker and others have used these probabilites for inducing grammars, here they are used only for parsing.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"Let us define a new function, g(s,t, X).","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"Now, the definition of a Labelled Recall Parse can be rewritten as Given the matrix g(s,t, X), it is a simple matter of dynamic programming to determine the parse that maximizes the Labelled Recall criterion.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"Define loop over nonterminals X let max_g:=maximum of g(s,t,X) loop over r such that s <= r < t let best_split:= max of maxc [s ,r] + maxc [r+1, t] maxc[s, t] := max_g + best_split; It is clear that MAXC(1, n) contains the score of the best parse according to the Labelled Recall criterion.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-This equation can be converted into the dynamic programming algorithm shown in Figure 1.,"{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"For a grammar with r rules and k nonterminals, the run time of this algorithm is 0(n3 kn2) since there are two layers of outer loops, each with run time at most n, and an inner loop, over nonterminals and n. However, this is dominated by the computation of the Inside and Outside probabilities, which takes time 0(rn3).","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"By modifying the algorithm slightly to record the actual split used at each node, we can recover the best parse.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-"The entry maxc [1, n] contains the expected number of correct constituents, given the model.","{'title': '3 Labelled Recall Parsing', 'number': '3'}"
-The Labelled Recall Algorithm maximizes the expected number of correct labelled constituents.,"{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"However, many commonly used evaluation metrics, such as the Consistent Brackets Recall Rate, ignore labels.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"Similarly, some grammar induction algorithms, such as those used by Pereira and Schabes (1992) do not produce meaningful labels.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"In particular, the Pereira and Schabes method induces a grammar from the brackets in the treebank, ignoring the labels.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"While the induced grammar has labels, they are not related to those in the treebank.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"Thus, although the Labelled Recall Algorithm could be used in these domains, perhaps maximizing a criterion that is more closely tied to the domain will produce better results.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"Ideally, we would maximize the Consistent Brackets Recall Rate directly.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"However, since it is time-consuming to deal with Consistent Brackets, we instead use the closely related Bracketed Recall Rate.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"For the Bracketed Recall Algorithm, we find the parse that maximizes the expected Bracketed Recall Rate, BINc.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"(Remember that B is the number of brackets that are correct, and Nc is the number of constituents in the correct parse.)","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-The algorithm for Bracketed Recall parsing is extremely similar to that for Labelled Recall parsing.,"{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-"The only required change is that we sum over the symbols X to calculate max_g, rather than maximize over them.","{'title': '4 Bracketed Recall Parsing', 'number': '4'}"
-We describe two experiments for testing these algorithms.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The first uses a grammar without meaningful nonterminal symbols, and compares the Bracketed Recall Algorithm to the traditional Labelled Tree (Viterbi) Algorithm.","{'title': '5 Experimental Results', 'number': '5'}"
-"The second uses a grammar with meaningful nonterminal symbols and performs a three-way comparison between the Labelled Recall, Bracketed Recall, and Labelled Tree Algorithms.","{'title': '5 Experimental Results', 'number': '5'}"
-These experiments show that use of an algorithm matched appropriately to the evaluation criterion can lead to as much as a 10% reduction in error rate.,"{'title': '5 Experimental Results', 'number': '5'}"
-"In both experiments the grammars could not parse some sentences, 0.5% and 9%, respectively.","{'title': '5 Experimental Results', 'number': '5'}"
-The unparsable data were assigned a right branching structure with their rightmost element attached high.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Since all three algorithms fail on the same sentences, all algorithms were affected equally.","{'title': '5 Experimental Results', 'number': '5'}"
-5.1 Experiment with Grammar Induced by Pereira and Schabes Method The experiment of Pereira and Schabes (1992) was duplicated.,"{'title': '5 Experimental Results', 'number': '5'}"
-"In that experiment, a grammar was trained from a bracketed form of the TI section of the ATIS corpus' using a modified form of the InsideOutside Algorithm.","{'title': '5 Experimental Results', 'number': '5'}"
-Pereira and Schabes then used the Labelled Tree Algorithm to select the best parse for sentences in held out test data.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The experiment was repeated here, except that both the Labelled Tree and Labelled Recall Algorithm were run for each sentence.","{'title': '5 Experimental Results', 'number': '5'}"
-"In contrast to previous research, we repeated the experiment ten times, with different training set, test set, and initial conditions each time.","{'title': '5 Experimental Results', 'number': '5'}"
-"Table 1 shows the results of running this experiment, giving the minimum, maximum, mean, and standard deviation for three criteria, Consistent Brackets Recall, Consistent Brackets Tree, and sus Bracketed Recall for Pereira and Schabes Bracketed Recall.","{'title': '5 Experimental Results', 'number': '5'}"
-"We also display these statistics for the paired differences between the algorithms The only statistically significant difference is that for Consistent Brackets Recall Rate, which was significant to the 2% significance level (paired t-test).","{'title': '5 Experimental Results', 'number': '5'}"
-"Thus, use of the Bracketed Recall Algorithm leads to a 10% reduction in error rate.","{'title': '5 Experimental Results', 'number': '5'}"
-"In addition, the performance of the Bracketed Recall Algorithm was also qualitatively more appealing.","{'title': '5 Experimental Results', 'number': '5'}"
-Figure 2 shows typical results.,"{'title': '5 Experimental Results', 'number': '5'}"
-Notice that the Bracketed Recall Algorithm's Consistent Brackets Rate (versus iteration) is smoother and more nearly monotonic than the Labelled Tree Algorithm's.,"{'title': '5 Experimental Results', 'number': '5'}"
-"The Bracketed Recall Algorithm also gets off to a much faster start, and is generally (although not always) above the Labelled Tree level.","{'title': '5 Experimental Results', 'number': '5'}"
-"For the Labelled Tree Rate, the two are usually very comparable.","{'title': '5 Experimental Results', 'number': '5'}"
-The replication of the Pereira and Schabes experiment was useful for testing the Bracketed Recall Algorithm.,"{'title': '5 Experimental Results', 'number': '5'}"
-"However, since that experiment induces a grammar with nonterminals not comparable to those in the training, a different experiment is needed to evaluate the Labelled Recall Algorithm, one in which the nonterminals in the induced grammar are the same as the nonterminals in the test set.","{'title': '5 Experimental Results', 'number': '5'}"
-"For this experiment, a very simple grammar was induced by counting, using a portion of the Penn Tree Bank, version 0.5.","{'title': '5 Experimental Results', 'number': '5'}"
-"In particular, the trees were first made binary branching by removing epsilon productions, collapsing singleton productions, and converting n-ary productions (n > 2) as in figure 3.","{'title': '5 Experimental Results', 'number': '5'}"
-The resulting trees were treated as the &quot;Correct&quot; trees in the evaluation.,"{'title': '5 Experimental Results', 'number': '5'}"
-Only trees with forty or fewer symbols were used in this experiment.,"{'title': '5 Experimental Results', 'number': '5'}"
-"A grammar was then induced in a straightforward way from these trees, simply by giving one count for each observed production.","{'title': '5 Experimental Results', 'number': '5'}"
-No smoothing was done.,"{'title': '5 Experimental Results', 'number': '5'}"
-There were 1805 sentences and 38610 nonterminals in the test data.,"{'title': '5 Experimental Results', 'number': '5'}"
-"Table 2 shows the results of running all three algorithms, evaluating against five criteria.","{'title': '5.2.2 Results', 'number': '6'}"
-"Notice that for each algorithm, for the criterion that it optimizes it is the best algorithm.","{'title': '5.2.2 Results', 'number': '6'}"
-"That is, the Labelled Tree Algorithm is the best for the Labelled Tree Rate, the Labelled Recall Algorithm is the best for the Labelled Recall Rate, and the Bracketed Recall Algorithm is the best for the Bracketed Recall Rate.","{'title': '5.2.2 Results', 'number': '6'}"
-Matching parsing algorithms to evaluation criteria is a powerful technique that can be used to improve performance.,"{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"In particular, the Labelled Recall Algorithm can improve performance versus the Labelled Tree Algorithm on the Consistent Brackets, Labelled Recall, and Bracketed Recall criteria.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Similarly, the Bracketed Recall Algorithm improves performance (versus Labelled Tree) on Consistent Brackets and Bracketed Recall criteria.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Thus, these algorithms improve performance not only on the measures that they were designed for, but also on related criteria.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Furthermore, in some cases these techniques can make parsing fast when it was previously impractical.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"We have used the technique outlined in this paper in other work (Goodman, 1996) to efficiently parse the DOP model; in that model, the only previously known algorithm which summed over all the possible derivations was a slow Monte Carlo algorithm (Bod, 1993).","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"However, by maximizing the Labelled Recall criterion, rather than the Labelled Tree criterion, it was possible to use a much simpler algorithm, a variation on the Labelled Recall Algorithm.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Using this technique, along with other optimizations, we achieved a 500 times speedup.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"In future work we will show the surprising result that the last element of Table 3, maximizing the Bracketed Tree criterion, equivalent to maximizing performance on Consistent Brackets Tree (Zero Crossing Brackets) Rate in the binary branching case, is NP-complete.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Furthermore, we will show that the two algorithms presented, the Labelled Recall Algorithm and the Bracketed Recall Algorithm, are both special cases of a more general algorithm, the General Recall Algorithm.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"Finally, we hope to extend this work to the n-ary branching case.","{'title': '6 Conclusions and Future Work', 'number': '7'}"
-"I would like to acknowledge support from National Science Foundation Grant IRI-9350192, National Science Foundation infrastructure grant CDA 9401024, and a National Science Foundation Graduate Student Fellowship.","{'title': '7 Acknowledgements', 'number': '8'}"
-"I would also like to thank Stanley Chen, Andrew Kehler, Lillian Lee, and Stuart Shieber for helpful discussions, and comments on earlier drafts, and the anonymous reviewers for their comments.","{'title': '7 Acknowledgements', 'number': '8'}"
+"Many different metrics exist for evaluating parsing results, including Viterbi, Crossing Brackets Rate, Zero Crossing Brackets Rate, and several others.",Introduction
+"However, most parsing algorithms, including the Viterbi algorithm, attempt to optimize the same metric, namely the probability of getting the correct labelled tree.",Introduction
+"By choosing a parsing algorithm appropriate for the evaluation metric, better performance can be achieved.",Introduction
+"We present two new algorithms: the &quot;Labelled Recall Algorithm,&quot; which maximizes the expected Labelled Recall Rate, and the &quot;Bracketed Recall Algorithm,&quot; which maximizes the Bracketed Recall Rate.",Introduction
+"Experimental results are given, showing that the two new algorithms have improved performance over the Viterbi algorithm on many criteria, especially the ones that they optimize",Introduction
+"In corpus-based approaches to parsing, one is given a treebank (a collection of text annotated with the &quot;correct&quot; parse tree) and attempts to find algorithms that, given unlabelled text from the treebank, produce as similar a parse as possible to the one in the treebank.",Experiment/Discussion
+Various methods can be used for finding these parses.,Experiment/Discussion
+"Some of the most common involve inducing Probabilistic Context-Free Grammars (PCFGs), and then parsing with an algorithm such as the Labelled Tree (Viterbi) Algorithm, which maximizes the probability that the output of the parser (the &quot;guessed&quot; tree) is the one that the PCFG produced.",Experiment/Discussion
+This implicitly assumes that the induced PCFG does a good job modeling the corpus.,Experiment/Discussion
+There are many different ways to evaluate these parses.,Experiment/Discussion
+"The most common include the Labelled Tree Rate (also called the Viterbi Criterion or Exact Match Rate), Consistent Brackets Recall Rate (also called the Crossing Brackets Rate), Consistent Brackets Tree Rate (also called the Zero Crossing Brackets Rate), and Precision and Recall.",Experiment/Discussion
+"Despite the variety of evaluation metrics, nearly all researchers use algorithms that maximize performance on the Labelled Tree Rate, even in domains where they are evaluating using other criteria.",Experiment/Discussion
+"We propose that by creating algorithms that optimize the evaluation criterion, rather than some related criterion, improved performance can be achieved.",Experiment/Discussion
+"In Section 2, we define most of the evaluation metrics used in this paper and discuss previous approaches.",Experiment/Discussion
+"Then, in Section 3, we discuss the Labelled Recall Algorithm, a new algorithm that maximizes performance on the Labelled Recall Rate.",Experiment/Discussion
+"In Section 4, we discuss another new algorithm, the Bracketed Recall Algorithm, that maximizes performance on the Bracketed Recall Rate (closely related to the Consistent Brackets Recall Rate).",Experiment/Discussion
+"Finally, we give experimental results in Section 5 using these two algorithms in appropriate domains, and compare them to the Labelled Tree (Viterbi) Algorithm, showing that each algorithm generally works best when evaluated on the criterion that it optimizes.",Experiment/Discussion
+"In this section, we first define basic terms and symbols.",Experiment/Discussion
+"Next, we define the different metrics used in evaluation.",Experiment/Discussion
+"Finally, we discuss the relationship of these metrics to parsing algorithms.",Experiment/Discussion
+Let wa denote word a of the sentence under consideration.,Experiment/Discussion
+Let wab denote wa wa +1 ... tvb _ ; in particular let writ denote the entire sequence of terminals (words) in the sentence under consideration.,Experiment/Discussion
+In this paper we assume all guessed parse trees are binary branching.,Experiment/Discussion
+"Let a parse tree T be defined as a set of triples (s, t, X)—where s denotes the position of the first symbol in a constituent, t denotes the position of the last symbol, and X represents a terminal or nonterminal symbol—meeting the following three requirements: Let Tc denote the &quot;correct&quot; parse (the one in the treebank) and let TG denote the &quot;guessed&quot; parse (the one output by the parsing algorithm).",Experiment/Discussion
+"Let NG denote ITGI, the number of nonterminals in the guessed parse tree, and let Nc denote ITc I, the number of nonterminals in the correct parse tree.",Experiment/Discussion
+There are various levels of strictness for determining whether a constituent (element of TG) is &quot;correct.&quot; The strictest of these is Labelled Match.,Experiment/Discussion
+"A constituent (s,t, X) E TG is correct according to Labelled Match if and only if (s, t, X) E T. In other words, a constituent in the guessed parse tree is correct if and only if it occurs in the correct parse tree.",Experiment/Discussion
+The next level of strictness is Bracketed Match.,Experiment/Discussion
+"Bracketed match is like labelled match, except that the nonterminal label is ignored.",Experiment/Discussion
+"Formally, a constituent (s, t, X) E TG is correct according to Bracketed Match if and only if there exists a Y such that (s,t,Y) E T. The least strict level is Consistent Brackets (also called Crossing Brackets).",Experiment/Discussion
+Consistent Brackets is like Bracketed Match in that the label is ignored.,Experiment/Discussion
+"It is even less strict in that the observed (s, t, X) need not be in Tc —it must simply not be ruled out by any (q,r,Y) E Tc.",Experiment/Discussion
+"A particular triple (q,r,Y) rules out (s, t, X) if there is no way that (s, t, X) and (q,r,Y) could both be in the same parse tree.",Experiment/Discussion
+"In particular, if the interval (s, t) crosses the interval (q, r), then (s, t, X) is ruled out and counted as an error.",Experiment/Discussion
+"Formally, we say that (s, t) crosses (q, r) if and only ifs<q<t<rorq<s<r<t.",Experiment/Discussion
+"If Tc is binary branching, then Consistent Brackets and Bracketed Match are identical.",Experiment/Discussion
+"The following symbols denote the number of constituents that match according to each of these criteria. crossing (s, t)} : the number of constituents in TG correct according to Consistent Brackets.",Experiment/Discussion
+Following are the definitions of the six metrics used in this paper for evaluating binary branching trees: ( 5 ) Consistent Brackets Recall Rate = CING.,Experiment/Discussion
+It is often called the Crossing Brackets Rate.,Experiment/Discussion
+"In the case where the parses are binary branching, this criterion is the same as the Bracketed Recall Rate.",Experiment/Discussion
+(6) Consistent Brackets Tree Rate = 1 if C = NG.,Experiment/Discussion
+This metric is closely related to the Bracketed Tree Rate.,Experiment/Discussion
+"In the case where the parses are binary branching, the two metrics are the same.",Experiment/Discussion
+This criterion is also called the Zero Crossing Brackets Rate.,Experiment/Discussion
+"The preceding six metrics each correspond to cells in the following table: Despite this long list of possible metrics, there is only one metric most parsing algorithms attempt to maximize, namely the Labelled Tree Rate.",Experiment/Discussion
+"That is, most parsing algorithms assume that the test corpus was generated by the model, and then attempt to evaluate the following expression, where E denotes the expected value operator: TG arg mTaxE( 1 if = Nc) (1) This is true of the Labelled Tree Algorithm and stochastic versions of Earley's Algorithm (Stolcke, 1993), and variations such as those used in Picky parsing (Magerman and Weir, 1992).",Experiment/Discussion
+"Even in probabilistic models not closely related to PCFGs, such as Spatter parsing (Magerman, 1994), expression (1) is still computed.",Experiment/Discussion
+"One notable exception is Brill's Transformation-Based Error Driven system (Brill, 1993), which induces a set of transformations designed to maximize the Consistent Brackets Recall Rate.",Experiment/Discussion
+"However, Brill's system is not probabilistic.",Experiment/Discussion
+"Intuitively, if one were to match the parsing algorithm to the evaluation criterion, better performance should be achieved.",Experiment/Discussion
+"Ideally, one might try to directly maximize the most commonly used evaluation criteria, such as Consistent Brackets Recall (Crossing Brackets) Rate.",Experiment/Discussion
+"Unfortunately, this criterion is relatively difficult to maximize, since it is time-consuming to compute the probability that a particular constituent crosses some constituent in the correct parse.",Experiment/Discussion
+"On the other hand, the Bracketed Recall and Bracketed Tree Rates are easier to handle, since computing the probability that a bracket matches one in the correct parse is inexpensive.",Experiment/Discussion
+It is plausible that algorithms which optimize these closely related criteria will do well on the analogous Consistent Brackets criteria.,Experiment/Discussion
+"When building an actual system, one should use the metric most appropriate for the problem.",Experiment/Discussion
+"For instance, if one were creating a database query system, such as an ATIS system, then the Labelled Tree (Viterbi) metric would be most appropriate.",Experiment/Discussion
+"A single error in the syntactic representation of a query will likely result in an error in the semantic representation, and therefore in an incorrect database query, leading to an incorrect result.",Experiment/Discussion
+"For instance, if the user request &quot;Find me all flights on Tuesday&quot; is misparsed with the prepositional phrase attached to the verb, then the system might wait until Tuesday before responding: a single error leads to completely incorrect behavior.",Experiment/Discussion
+"Thus, the Labelled Tree criterion is appropriate.",Experiment/Discussion
+"On the other hand, consider a machine assisted translation system, in which the system provides translations, and then a fluent human manually edits them.",Experiment/Discussion
+"Imagine that the system is given the foreign language equivalent of &quot;His credentials are nothing which should be laughed at,&quot; and makes the single mistake of attaching the relative clause at the sentential level, translating the sentence as &quot;His credentials are nothing, which should make you laugh.&quot; While the human translator must make some changes, he certainly needs to do less editing than he would if the sentence were completely misparsed.",Experiment/Discussion
+"The more errors there are, the more editing the human translator needs to do.",Experiment/Discussion
+"Thus, a criterion such as the Labelled Recall criterion is appropriate for this task, where the number of incorrect constituents correlates to application performance.",Experiment/Discussion
+Consider writing a parser for a domain such as machine assisted translation.,Experiment/Discussion
+"One could use the Labelled Tree Algorithm, which would maximize the expected number of exactly correct parses.",Experiment/Discussion
+"However, since the number of correct constituents is a better measure of application performance for this domain than the number of correct trees, perhaps one should use an algorithm which maximizes the Labelled Recall criterion, rather than the Labelled Tree criterion.",Experiment/Discussion
+"The Labelled Recall Algorithm finds that tree TG which has the highest expected value for the Labelled Recall Rate, LINc (where L is the number of correct labelled constituents, and Nc is the number of nodes in the correct parse).",Experiment/Discussion
+"This can be written as follows: It is not immediately obvious that the maximization of expression (2) is in fact different from the maximization of expression (1), but a simple example illustrates the difference.",Experiment/Discussion
+"The following grammar generates four trees with equal probability: For the first tree, the probabilities of being correct are S: 100%; A:50%; and C: 25%.",Experiment/Discussion
+Similar counting holds for the other three.,Experiment/Discussion
+"Thus, the expected value of L for any of these trees is 1.75.",Experiment/Discussion
+"On the other hand, the optimal Labelled Recall parse is This tree has 0 probability according to the grammar, and thus is non-optimal according to the Labelled Tree Rate criterion.",Experiment/Discussion
+"However, for this tree the probabilities of each node being correct are S: 100%; A: 50%; and 8: 50%.",Experiment/Discussion
+"The expected value of L is 2.0, the highest of any tree.",Experiment/Discussion
+This tree therefore optimizes the Labelled Recall Rate.,Experiment/Discussion
+We now derive an algorithm for finding the parse that maximizes the expected Labelled Recall Rate.,Experiment/Discussion
+"We do this by expanding expression (2) out into a probabilistic form, converting this into a recursive equation, and finally creating an equivalent dynamic programming algorithm.",Experiment/Discussion
+"We begin by rewriting expression (2), expanding out the expected value operator, and removing the A, B, C, D, E, F The four trees are c, which is the same for all TG, and so plays no role in the maximization.",Experiment/Discussion
+"Now, given a PCFG with start symbol S, the following equality holds: By rearranging the summation in expression (5) and then substituting this equality, we get At this point, it is useful to introduce the Inside and Outside probabilities, due to Baker (1979), and explained by Lan and Young (1990).",Experiment/Discussion
+"The Inside probability is defined as e(s,t, X) = P(X Os) and the Outside probability is f(s,t, X) = P(S 3-1 X n W1 wt-1-1)• Note that while Baker and others have used these probabilites for inducing grammars, here they are used only for parsing.",Experiment/Discussion
+"Let us define a new function, g(s,t, X).",Experiment/Discussion
+"Now, the definition of a Labelled Recall Parse can be rewritten as Given the matrix g(s,t, X), it is a simple matter of dynamic programming to determine the parse that maximizes the Labelled Recall criterion.",Experiment/Discussion
+"Define loop over nonterminals X let max_g:=maximum of g(s,t,X) loop over r such that s <= r < t let best_split:= max of maxc [s ,r] + maxc [r+1, t] maxc[s, t] := max_g + best_split; It is clear that MAXC(1, n) contains the score of the best parse according to the Labelled Recall criterion.",Experiment/Discussion
+This equation can be converted into the dynamic programming algorithm shown in Figure 1.,Experiment/Discussion
+"For a grammar with r rules and k nonterminals, the run time of this algorithm is 0(n3 kn2) since there are two layers of outer loops, each with run time at most n, and an inner loop, over nonterminals and n. However, this is dominated by the computation of the Inside and Outside probabilities, which takes time 0(rn3).",Experiment/Discussion
+"By modifying the algorithm slightly to record the actual split used at each node, we can recover the best parse.",Experiment/Discussion
+"The entry maxc [1, n] contains the expected number of correct constituents, given the model.",Experiment/Discussion
+The Labelled Recall Algorithm maximizes the expected number of correct labelled constituents.,Experiment/Discussion
+"However, many commonly used evaluation metrics, such as the Consistent Brackets Recall Rate, ignore labels.",Experiment/Discussion
+"Similarly, some grammar induction algorithms, such as those used by Pereira and Schabes (1992) do not produce meaningful labels.",Experiment/Discussion
+"In particular, the Pereira and Schabes method induces a grammar from the brackets in the treebank, ignoring the labels.",Experiment/Discussion
+"While the induced grammar has labels, they are not related to those in the treebank.",Experiment/Discussion
+"Thus, although the Labelled Recall Algorithm could be used in these domains, perhaps maximizing a criterion that is more closely tied to the domain will produce better results.",Experiment/Discussion
+"Ideally, we would maximize the Consistent Brackets Recall Rate directly.",Experiment/Discussion
+"However, since it is time-consuming to deal with Consistent Brackets, we instead use the closely related Bracketed Recall Rate.",Experiment/Discussion
+"For the Bracketed Recall Algorithm, we find the parse that maximizes the expected Bracketed Recall Rate, BINc.",Experiment/Discussion
+"(Remember that B is the number of brackets that are correct, and Nc is the number of constituents in the correct parse.)",Experiment/Discussion
+The algorithm for Bracketed Recall parsing is extremely similar to that for Labelled Recall parsing.,Experiment/Discussion
+"The only required change is that we sum over the symbols X to calculate max_g, rather than maximize over them.",Experiment/Discussion
+We describe two experiments for testing these algorithms.,Experiment/Discussion
+"The first uses a grammar without meaningful nonterminal symbols, and compares the Bracketed Recall Algorithm to the traditional Labelled Tree (Viterbi) Algorithm.",Experiment/Discussion
+"The second uses a grammar with meaningful nonterminal symbols and performs a three-way comparison between the Labelled Recall, Bracketed Recall, and Labelled Tree Algorithms.",Experiment/Discussion
+These experiments show that use of an algorithm matched appropriately to the evaluation criterion can lead to as much as a 10% reduction in error rate.,Experiment/Discussion
+"In both experiments the grammars could not parse some sentences, 0.5% and 9%, respectively.",Experiment/Discussion
+The unparsable data were assigned a right branching structure with their rightmost element attached high.,Experiment/Discussion
+"Since all three algorithms fail on the same sentences, all algorithms were affected equally.",Experiment/Discussion
+5.1 Experiment with Grammar Induced by Pereira and Schabes Method The experiment of Pereira and Schabes (1992) was duplicated.,Experiment/Discussion
+"In that experiment, a grammar was trained from a bracketed form of the TI section of the ATIS corpus' using a modified form of the InsideOutside Algorithm.",Experiment/Discussion
+Pereira and Schabes then used the Labelled Tree Algorithm to select the best parse for sentences in held out test data.,Experiment/Discussion
+"The experiment was repeated here, except that both the Labelled Tree and Labelled Recall Algorithm were run for each sentence.",Experiment/Discussion
+"In contrast to previous research, we repeated the experiment ten times, with different training set, test set, and initial conditions each time.",Experiment/Discussion
+"Table 1 shows the results of running this experiment, giving the minimum, maximum, mean, and standard deviation for three criteria, Consistent Brackets Recall, Consistent Brackets Tree, and sus Bracketed Recall for Pereira and Schabes Bracketed Recall.",Experiment/Discussion
+"We also display these statistics for the paired differences between the algorithms The only statistically significant difference is that for Consistent Brackets Recall Rate, which was significant to the 2% significance level (paired t-test).",Experiment/Discussion
+"Thus, use of the Bracketed Recall Algorithm leads to a 10% reduction in error rate.",Experiment/Discussion
+"In addition, the performance of the Bracketed Recall Algorithm was also qualitatively more appealing.",Experiment/Discussion
+Figure 2 shows typical results.,Experiment/Discussion
+Notice that the Bracketed Recall Algorithm's Consistent Brackets Rate (versus iteration) is smoother and more nearly monotonic than the Labelled Tree Algorithm's.,Experiment/Discussion
+"The Bracketed Recall Algorithm also gets off to a much faster start, and is generally (although not always) above the Labelled Tree level.",Experiment/Discussion
+"For the Labelled Tree Rate, the two are usually very comparable.",Experiment/Discussion
+The replication of the Pereira and Schabes experiment was useful for testing the Bracketed Recall Algorithm.,Experiment/Discussion
+"However, since that experiment induces a grammar with nonterminals not comparable to those in the training, a different experiment is needed to evaluate the Labelled Recall Algorithm, one in which the nonterminals in the induced grammar are the same as the nonterminals in the test set.",Experiment/Discussion
+"For this experiment, a very simple grammar was induced by counting, using a portion of the Penn Tree Bank, version 0.5.",Experiment/Discussion
+"In particular, the trees were first made binary branching by removing epsilon productions, collapsing singleton productions, and converting n-ary productions (n > 2) as in figure 3.",Experiment/Discussion
+The resulting trees were treated as the &quot;Correct&quot; trees in the evaluation.,Experiment/Discussion
+Only trees with forty or fewer symbols were used in this experiment.,Experiment/Discussion
+"A grammar was then induced in a straightforward way from these trees, simply by giving one count for each observed production.",Experiment/Discussion
+No smoothing was done.,Experiment/Discussion
+There were 1805 sentences and 38610 nonterminals in the test data.,Experiment/Discussion
+"Table 2 shows the results of running all three algorithms, evaluating against five criteria.",Experiment/Discussion
+"Notice that for each algorithm, for the criterion that it optimizes it is the best algorithm.",Experiment/Discussion
+"That is, the Labelled Tree Algorithm is the best for the Labelled Tree Rate, the Labelled Recall Algorithm is the best for the Labelled Recall Rate, and the Bracketed Recall Algorithm is the best for the Bracketed Recall Rate.",Experiment/Discussion
+Matching parsing algorithms to evaluation criteria is a powerful technique that can be used to improve performance.,Results/Conclusion
+"In particular, the Labelled Recall Algorithm can improve performance versus the Labelled Tree Algorithm on the Consistent Brackets, Labelled Recall, and Bracketed Recall criteria.",Results/Conclusion
+"Similarly, the Bracketed Recall Algorithm improves performance (versus Labelled Tree) on Consistent Brackets and Bracketed Recall criteria.",Results/Conclusion
+"Thus, these algorithms improve performance not only on the measures that they were designed for, but also on related criteria.",Results/Conclusion
+"Furthermore, in some cases these techniques can make parsing fast when it was previously impractical.",Results/Conclusion
+"We have used the technique outlined in this paper in other work (Goodman, 1996) to efficiently parse the DOP model; in that model, the only previously known algorithm which summed over all the possible derivations was a slow Monte Carlo algorithm (Bod, 1993).",Results/Conclusion
+"However, by maximizing the Labelled Recall criterion, rather than the Labelled Tree criterion, it was possible to use a much simpler algorithm, a variation on the Labelled Recall Algorithm.",Results/Conclusion
+"Using this technique, along with other optimizations, we achieved a 500 times speedup.",Results/Conclusion
+"In future work we will show the surprising result that the last element of Table 3, maximizing the Bracketed Tree criterion, equivalent to maximizing performance on Consistent Brackets Tree (Zero Crossing Brackets) Rate in the binary branching case, is NP-complete.",Results/Conclusion
+"Furthermore, we will show that the two algorithms presented, the Labelled Recall Algorithm and the Bracketed Recall Algorithm, are both special cases of a more general algorithm, the General Recall Algorithm.",Results/Conclusion
+"Finally, we hope to extend this work to the n-ary branching case.",Results/Conclusion
+"I would like to acknowledge support from National Science Foundation Grant IRI-9350192, National Science Foundation infrastructure grant CDA 9401024, and a National Science Foundation Graduate Student Fellowship.",Results/Conclusion
+"I would also like to thank Stanley Chen, Andrew Kehler, Lillian Lee, and Stuart Shieber for helpful discussions, and comments on earlier drafts, and the anonymous reviewers for their comments.",Results/Conclusion

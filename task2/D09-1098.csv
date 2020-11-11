@@ -1,184 +1,184 @@
 col1,col2
-Computing the pairwise semantic similarity between all words on the Web is a computationally challenging task.,{}
-Parallelization and optimizations are necessary.,{}
-"We propose a highly scalable implementation based on distributional similarity, implemented in the MapReduce framework and deployed over a 200 billion word crawl of the Web.",{}
-The pairwise similarity between 500 million terms is computed in 50 hours using 200 quad-core nodes.,{}
-"We apply the learned similarity matrix to the task of automatic set expansion and present a large empirical study to quantify the effect on expansion performance of corpus size, corpus quality, seed composition and seed size.",{}
-We make public an experimental testbed for set expansion analysis that includes a large collection of diverse entity sets extracted from Wikipedia.,{}
-"Computing the semantic similarity between terms has many applications in NLP including word classification (Turney and Littman 2003), word sense disambiguation (Yuret and Yatbaz 2009), contextspelling correction (Jones and Martin 1997), fact extraction (Paşca et al. 2006), semantic role labeling (Erk 2007), and applications in IR such as query expansion (Cao et al.","{'title': '1 Introduction', 'number': '1'}"
-2008) and textual advertising (Chang et al. 2009).,"{'title': '1 Introduction', 'number': '1'}"
-"For commercial engines such as Yahoo! and Google, creating lists of named entities found on the Web is critical for query analysis, document categorization, and ad matching.","{'title': '1 Introduction', 'number': '1'}"
-Computing term similarity is typically done by comparing cooccurrence vectors between all pairs of terms (Sarmento et al. 2007).,"{'title': '1 Introduction', 'number': '1'}"
-Scaling this task to the Web requires parallelization and optimizations.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we propose a large-scale term similarity algorithm, based on distributional similarity, implemented in the MapReduce framework and deployed over a 200 billion word crawl of the Web.","{'title': '1 Introduction', 'number': '1'}"
-The resulting similarity matrix between 500 million terms is applied to the task of expanding lists of named entities (automatic set expansion).,"{'title': '1 Introduction', 'number': '1'}"
-"We provide a detailed empirical analysis of the discovered named entities and quantify the effect on expansion accuracy of corpus size, corpus quality, seed composition, and seed set size.","{'title': '1 Introduction', 'number': '1'}"
-Below we review relevant work in optimizing similarity computations and automatic set expansion.,"{'title': '2 Related Work', 'number': '2'}"
-"The distributional hypothesis (Harris 1954), which links the meaning of words to their contexts, has inspired many algorithms for computing term similarities (Lund and Burgess 1996; Lin 1998; Lee 1999; Erk and Padó 2008; Agirre et al. 2009).","{'title': '2 Related Work', 'number': '2'}"
-"Brute force similarity computation compares all the contexts for each pair of terms, with complexity O(n2m) where n is the number of terms and m is the number of possible contexts.","{'title': '2 Related Work', 'number': '2'}"
-More efficient strategies are of three kinds: Smoothing: Techniques such as Latent Semantic Analysis reduce the context space by applying truncated Singular Value Decomposition (SVD) (Deerwester et al. 1990).,"{'title': '2 Related Work', 'number': '2'}"
-Computing the matrix decomposition however does not scale well to web-size term-context matrices.,"{'title': '2 Related Work', 'number': '2'}"
-"Other currently unscalable smoothing techniques include Probabilistic Latent Semantic Analysis (Hofmann 1999), Iterative Scaling (Ando 2000), and Latent Dirichlet Allocation (Blei et al. 2003).","{'title': '2 Related Work', 'number': '2'}"
-Randomized Algorithms: Randomized techniques for approximating various similarity measures have been successfully applied to term similarity (Ravichandran et al. 2005; Gorman and Curran 2006).,"{'title': '2 Related Work', 'number': '2'}"
-Common techniques include Random Indexing based on Sparse Distributed Memory (Kanerva 1993) and Locality Sensitive Hashing (Broder 1997).,"{'title': '2 Related Work', 'number': '2'}"
-Bayardo et al. (2007) present a sparse matrix optimization strategy capable of efficiently computing the similarity between terms which’s similarity exceeds a given threshold.,"{'title': '2 Related Work', 'number': '2'}"
-"Rychlý and Kilgarriff (2007), Elsayed et al. (2008) and Agirre et al.","{'title': '2 Related Work', 'number': '2'}"
-(2009) use reverse indexing and the MapReduce framework to distribute the similarity computations across several machines.,"{'title': '2 Related Work', 'number': '2'}"
-"Our proposed approach combines these two strategies and efficiently computes the exact similarity (cosine, Jaccard, Dice, and Overlap) between all pairs.","{'title': '2 Related Work', 'number': '2'}"
-"Building entity lexicons is a task of great interest for which structured, semi-structured and unstructured data have all been explored (GoogleSets; Sarmento et al. 2007; Wang and Cohen 2007; Bunescu and Mooney 2004; Etzioni et al.","{'title': '2 Related Work', 'number': '2'}"
-2005; Paşca et al. 2006).,"{'title': '2 Related Work', 'number': '2'}"
-Our own work focuses on set expansion from unstructured Web text.,"{'title': '2 Related Work', 'number': '2'}"
-"Apart from the choice of a data source, state-of-the-art entity extraction methods differ in their use of numerous, few or no labeled examples, the open or targeted nature of the extraction as well as the types of features employed.","{'title': '2 Related Work', 'number': '2'}"
-"Supervised approaches (McCallum and Li 2003, Bunescu and Mooney 2004) rely on large sets of labeled examples, perform targeted extraction and employ a variety of sentence- and corpus-level features.","{'title': '2 Related Work', 'number': '2'}"
-"While very precise, these methods are typically used for coarse grained entity classes (People, Organizations, Companies) for which large training data sets are available.","{'title': '2 Related Work', 'number': '2'}"
-Unsupervised approaches rely on no labeled data and use either bootstrapped class-specific extraction patterns (Etzioni et al. 2005) to find new elements of a given class (for targeted extraction) or corpusbased term similarity (Pantel and Lin 2002) to find term clusters (in an open extraction framework).,"{'title': '2 Related Work', 'number': '2'}"
-"Finally, semi-supervised methods have shown great promise for identifying and labeling entities (Riloff and Shepherd 1997; Riloff and Jones 1999; Banko et al. 2007; Downey et al.","{'title': '2 Related Work', 'number': '2'}"
-2007; Paşca et al. 2006; Paşca 2007a; Paşca 2007b; Paşca and Durme 2008).,"{'title': '2 Related Work', 'number': '2'}"
-"Starting with a set of seed entities, semisupervised extraction methods use either classspecific patterns to populate an entity class or distributional similarity to find terms similar to the seed set (Paşca’s work also examines the advantages of combining these approaches).","{'title': '2 Related Work', 'number': '2'}"
-"Semisupervised methods (including ours) are useful for extending finer grain entity classes, for which large unlabeled data sets are available.","{'title': '2 Related Work', 'number': '2'}"
-"Previous work has examined the effect of using large, sometimes Web-size corpora, on system performance in the case of familiar NLP tasks.","{'title': '2 Related Work', 'number': '2'}"
-Banko and Brill (2001) show that Web-scale data helps with confusion set disambiguation while Lapata and Keller (2005) find that the Web is a good source of n-gram counts for unsupervised models.,"{'title': '2 Related Work', 'number': '2'}"
-Atterer and Schutze (2006) examine the influence of corpus size on combining a supervised approach with an unsupervised one for relative clause and PP-attachment.,"{'title': '2 Related Work', 'number': '2'}"
-Etzioni et al. (2005) and Pantel et al.,"{'title': '2 Related Work', 'number': '2'}"
-(2004) show the advantages of using large quantities of generic Web text over smaller corpora for extracting relations and named entities.,"{'title': '2 Related Work', 'number': '2'}"
-"Overall, corpus size and quality are both found to be important for extraction.","{'title': '2 Related Work', 'number': '2'}"
-Our paper adds to this body of work by focusing on the task of similarity-based set expansion and providing a large empirical study quantify the relative corpus effects.,"{'title': '2 Related Work', 'number': '2'}"
-"Previous extraction systems report on the size and quality of the training data or, if semi-supervised, the size and quality of entity or pattern seed sets.","{'title': '2 Related Work', 'number': '2'}"
-"Narrowing the focus to closely related work, Paşca (2007a; 2007b) and Paşca and Durme (2008) show the impact of varying the number of instances representative of a given class and the size of the attribute seed set on the precision of class attribute extraction.","{'title': '2 Related Work', 'number': '2'}"
-An example observation is that good quality class attributes can still be extracted using 20 or even 10 instances to represent an entity class.,"{'title': '2 Related Work', 'number': '2'}"
-"Among others, Etzioni et al. (2005) shows that a small pattern set can help bootstrap useful entity seed sets and reports on the impact of seed set noise on final performance.","{'title': '2 Related Work', 'number': '2'}"
-"Unlike previous work, empirically quantifying the influence of seed set size and quality on extraction performance of random entity types is a key objective of this paper.","{'title': '2 Related Work', 'number': '2'}"
-"Term semantic models normally invoke the distributional hypothesis (Harris 1985), which links the meaning of terms to their contexts.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Models are built by recording the surrounding contexts for each term in a large collection of unstructured text and storing them in a term-context matrix.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Methods differ in their definition of a context (e.g., text window or syntactic relations), or by a means to weigh contexts (e.g., frequency, tf-idf, pointwise mutual information), or ultimately in measuring the similarity between two context vectors (e.g., using Euclidean distance, Cosine, Dice).","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In this paper, we adopt the following methodology for computing term similarity.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Our various web crawls, described in Section 6.1, are POStagged using Brill’s tagger (1995) and chunked using a variant of the Abney chunker (Abney 1991).","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Terms are NP chunks with some modifiers removed; their contexts (i.e., features) are defined as their rightmost and leftmost stemmed chunks.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-We weigh each context f using pointwise mutual information (Church and Hanks 1989).,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Let PMI(w) denote a pointwise mutual information vector, constructed for each term as follows: PMI(w) = (pmiw1, pmiw2, ..., pmiwm), where pmiwf is the pointwise mutual information between term w and feature f: where cwf is the frequency of feature f occurring for term w, n is the number of unique terms and N is the total number of features for all terms.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Term similarities are computed by comparing these pmi context vectors using measures such as cosine, Jaccard, and Dice.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Computing the similarity between terms on a large Web crawl is a non-trivial problem, with a worst case cubic running time – O(n2m) where n is the number of terms and m is the dimensionality of the feature space.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Section 2.1 introduces several optimization techniques; below we propose an algorithm for large-scale term similarity computation which calculates exact scores for all pairs of terms, generalizes to several different metrics, and is scalable to a large crawl of the Web.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Our optimization strategy follows a generalized sparse-matrix multiplication approach (Sarawagi and Kirpal 2004), which is based on the wellknown observation that a scalar product of two vectors depends only on the coordinates for which both vectors have non-zero values.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Further, we observe that most commonly used similarity scores for feature vectors x� and y�, such as cosine and Dice, can be decomposed into three values: one depending only on features of x�, another depending only on features of y�, and the third depending on the features shared both by x� and y�.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"More formally, commonly used similarity scores F(x�, y) can be expressed as: and f3 for some common similarity functions.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"For each of these scores, f2 = f3.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In our work, we compute all of these scores, but report our results using only the cosine function.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Let A and B be two matrices of PMI feature vectors.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Our task is to compute the similarity between all vectors in A and all vectors in B.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In computing the similarity between all pairs of terms, A = B.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Figure 1 outlines our algorithm for computing the similarity between all elements of A and B.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Efficient computation of the similarity matrix can be achieved by leveraging the fact that is determined solely by the features shared by and (i.e., = = 0 for any x) an d that most of the feature vectors are very sparse (i.e., most possible contexts never occur for a given term).","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In this case, calculating f1(x, y) is only required when both feature vectors have a shared non-zero feature, significantly reducing the cost of computation.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Determining which vectors share a non-zero feature can easily be achieved by first building an inverted index for the features.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"The computational cost of this algorithm is ∑ 2 Ni , where Ni is the number of vectors that have a non-zero ith coordinate.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Its worst case time complexity is O(ncv) where n is the number of terms to be compared, c is the maximum number of non-zero coordinates of any vector, and v is the number of vectors that have a nonzero ith coordinate where i is the coordinate which is non-zero for the most vectors.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In other words, the algorithm is efficient only when the density of the coordinates is low.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"On our datasets, we observed near linear running time in the corpus size.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Bayardo et al. (2007) described a strategy that potentially reduces the cost even further by omitting the coordinates with the highest number of non-zero value.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"However, their algorithm gives a significant advantage only when we are interested in finding solely the similarity between highly similar terms.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In our experiments, we compute the exact similarity between all pairs of terms.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"The pseudo-code in Figure 1 assumes that A can fit into memory, which for large A may be impossible.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Also, as each element of B is processed independently, running parallel processes for nonintersecting subsets of B makes the processing faster.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"In this section, we outline our MapReduce implementation of Figure 1 deployed using Hadoop1, the open-source software package implementing the MapReduce framework and distributed file system.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Hadoop has been shown to scale to several thousands of machines, allowing users to write simple “map” and “reduce” code, and to seamlessly manage the sophisticated parallel execution of the code.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-A good primer on MapReduce programming is in (Dean and Ghemawat 2008).,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Our implementation employs the MapReduce model by using the Map step to start M×N Map tasks in parallel, each caching 1/Mth part of A as an inverted index and streaming 1/Nth part of B through it.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-The actual inputs are read by the tasks Input: Two matrices A and B of feature vectors.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"## Build an inverted index for A (optimiza## tion for data sparseness) for k in non-zero features of A[i]: if k not in AA: AA[k] = empty-set ## append <vector-id, feature-value> ## pairs to the set of non-zero ## values for feature k directly from HDFS (Hadoop Distributed File System).","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"Each part of A is processed N times, and each part of B is processed M times.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-"M is determined by the amount of memory dedicated for the inverted index, and N should be determined by trading off the fact that as N increases, more parallelism can be obtained at the increased cost of building the same inverse index N times.","{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-The similarity algorithm from Figure 1 is run in each task of the Map step of a MapReduce job.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-The Reduce step is used to group the output by bi.,"{'title': '3 Large-Scale Similarity Model', 'number': '3'}"
-Creating lists of named entities is a critical problem at commercial engines such as Yahoo! and Google.,"{'title': '4 Application to Set Expansion', 'number': '4'}"
-"The types of entities to be expanded are often not known a priori, leaving supervised classifiers undesirable.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"Additionally, list creators typically need the ability to expand sets of varying granularity.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-Semi-supervised approaches are predominantly adopted since they allow targeted expansions while requiring only small sets of seed entities.,"{'title': '4 Application to Set Expansion', 'number': '4'}"
-State-of-the-art techniques first compute term-term similarities for all available terms and then select candidates for set expansion from amongst the terms most similar to the seeds (Sarmento et al. 2007).,"{'title': '4 Application to Set Expansion', 'number': '4'}"
-"Formally, we define our expansion task as: Task Definition: Given a set of seed entities S = {s1, s2, ..., sk} of a class C = {s1, s2, ..., sk, ...,, sn} and an unlabeled textual corpus T, find all members of the class C. For example, consider the class of Bottled Water Brands.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"Given the set of seeds S = {Volvic, San Pellegrino, Gerolsteiner Brunnen, Bling H2O}, our task is to find all other members of this class, such as {Agua Vida, Apenta, Culligan, Dasani, Ethos Water, Iceland Pure Spring Water, Imsdal, ...} Our goal is not to propose a new set expansion algorithm, but instead to test the effect of using our Web-scale term similarity matrix (enabled by the algorithm proposed in Section 3) on a state-of-theart distributional set expansion algorithm, namely (Sarmento et al. 2007).","{'title': '4 Application to Set Expansion', 'number': '4'}"
-We consider S as a set of prototypical examples of the underlying entity set.,"{'title': '4 Application to Set Expansion', 'number': '4'}"
-"A representation for the meaning of S is computed by building a feature vector consisting of a weighted average of the features of its seed elements s1, s2, ..., sk, a centroid.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"For example, given the seed elements {Volvic, San Pellegrino, Gerolsteiner Brunnen, Bling H2O}, the resulting centroid consists of (details of the feature extraction protocol are in Section 6.1): brand, mineral water, monitor, lake, water, take over, ... Centroids are represented in the same space as terms allowing us to compute the similarity between centroids and all terms in our corpus.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"A scored and ranked set for expansion is ultimately generated by sorting all terms according to their similarity to the seed set centroid, and applying a cutoff on either the similarity score or on the total number of retrieved terms.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"In our reported experiments, we expanded over 22,000 seed sets using our Web similarity model from Section 3.","{'title': '4 Application to Set Expansion', 'number': '4'}"
-"In this section, we describe our methodology for evaluating Web-scale set expansion.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Estimating the quality of a set expansion algorithm requires a random sample from the universe of all entity sets that may ever be expanded, where a set represents some concept such as Stage Actors.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-An approximation of this universe can be extracted from the “List of” pages in Wikipedia2.,"{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Upon inspection of a random sample of the “List of” pages, we found that several lists were compositions or joins of concepts, for example “List of World War II aces from Denmark” and “List of people who claimed to be God”.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-We addressed this issue by constructing a quasi-random sample as follows.,"{'title': '5 Evaluation Methodology', 'number': '5'}"
-We randomly sorted the list of every noun occurring in Wikipedia2.,"{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Then, for each noun we verified whether or not it existed in a Wikipedia list, and if so we extracted this list.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"If a noun belonged to multiple lists, the authors chose the list that seemed most appropriate.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Although this does not generate a perfect random sample, diversity is ensured by the random selection of nouns and relevancy is ensured by the author adjudication.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"The final gold standard consists of 50 sets, including: classical pianists, Spanish provinces, Texas counties, male tennis players, first ladies, cocktails, bottled water brands, and Archbishops of Canterbury.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"For each set, we then manually scraped every instance from Wikipedia keeping track also of the listed variants names.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"The gold standard is available for download at: http://www.patrickpantel.com/cgi-bin/Web/Tools/getfile.pl?type=data&id=ssegold/wikipedia.20071218.goldsets.tgz The 50 sets consist on average of 208 instances (with a minimum of 11 and a maximum of 1,116) for a total of 10,377 instances.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"In order to analyze the corpus and seed effects on performance, we created 30 copies of each of the 50 sets and randomly sorted each copy.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Then, for each of the 1500 copies, we created a trial for each of the following 23 seed sizes: 1, 2, 5, 10, 20, 30, 40, ..., 200.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-Each trial of seed size s was created by taking the first s entries in each of the 1500 random copies.,"{'title': '5 Evaluation Methodology', 'number': '5'}"
-"For sets that contained fewer than 200 items, we only generated trials for seed sizes smaller than the set size.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"The resulting trial dataset consists of 20,220 trials3.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Set expansion systems consist of an expansion algorithm (such as the one described in Section 4.1) as well as a corpus (such as Wikipedia, a news corpus, or a web crawl).","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"For a given system, each of the 20,220 trials described in the previous section are expanded.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"In our work, we limited the total number of system expansions, per trial, to 1000.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Before judgment of an expanded set, we first collapse each instance that is a variant of another (determined using the variants in our gold standard) into one single instance (keeping the highest system score)4.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Then, each expanded instance is judged as correct or incorrect automatically against the gold standard described in Section 5.1.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Our experiments in Section 6 consist of precision vs. recall or precision vs. rank curves, where: a) precision is defined as the percentage of correct instances in the expansion of a seed set; and b) recall is defined as the percentage of non-seed gold standard instances retrieved by the system.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-"Since the gold standard sets vary significantly in size, we also provide the R-precision metric to normalize for set size: For the above metrics, 95% confidence bounds are computed using the randomly generated samples described in Section 5.2.","{'title': '5 Evaluation Methodology', 'number': '5'}"
-Our goal is to study the performance gains on set expansion using our Web-scale term similarity algorithm from Section 3.,"{'title': '6 Experimental Results', 'number': '6'}"
-We present a large empirical study quantifying the importance of corpus and seeds on expansion accuracy.,"{'title': '6 Experimental Results', 'number': '6'}"
-"We extracted statistics to build our model from Section 3 using four different corpora, outlined in Table 2.","{'title': '6 Experimental Results', 'number': '6'}"
-The Wikipedia corpus consists of a snapshot of the English articles in December 20085.,"{'title': '6 Experimental Results', 'number': '6'}"
-"The Web100 corpus consists of an extraction from a large crawl of the Web, from Yahoo!, of over 600 million English webpages.","{'title': '6 Experimental Results', 'number': '6'}"
-"For each crawled document, we removed paragraphs containing fewer than 50 tokens (as a rough approximation of the narrative part of a webpage) and then removed all duplicate sentences.","{'title': '6 Experimental Results', 'number': '6'}"
-The resulting corpus consists of over 200 billion words.,"{'title': '6 Experimental Results', 'number': '6'}"
-The Web020 corpus is a random sample of 1/5th of the sentences in Web100 whereas Web004 is a random sample of 1/25th of Web100.,"{'title': '6 Experimental Results', 'number': '6'}"
-"For each corpus, we tagged and chunked each sentence as described in Section 3.","{'title': '6 Experimental Results', 'number': '6'}"
-We then computed the similarity between all noun phrase chunks using the model of Section 3.1.,"{'title': '6 Experimental Results', 'number': '6'}"
-Our proposed optimization for term similarity computation produces exact scores (unlike randomized techniques) for all pairs of terms on a large Web crawl.,"{'title': '6 Experimental Results', 'number': '6'}"
-"For our largest corpus, Web100, we computed the pairwise similarity between over 500 million words in 50 hours using 200 four-core machines.","{'title': '6 Experimental Results', 'number': '6'}"
-Web004 is of similar scale to the largest reported randomized technique (Ravichandran et al. 2005).,"{'title': '6 Experimental Results', 'number': '6'}"
-"On this scale, we compute the exact similarity matrix in a little over two hours whereas Ravichandran et al. (2005) compute an approximation in 570 hours.","{'title': '6 Experimental Results', 'number': '6'}"
-"On average they only find 73% 5 To avoid biasing our Wikipedia corpus with the test sets, Wikipedia “List of” pages were omitted from our statistics as were any page linked to gold standard list members from “List of” pages. of the top-1000 similar terms of a random term whereas we find all of them.","{'title': '6 Experimental Results', 'number': '6'}"
-"For set expansion, experiments have been run on corpora as large as Web004 and Wikipedia (Sarmento et al. 2007), a corpora 300 times smaller than our Web crawl.","{'title': '6 Experimental Results', 'number': '6'}"
-"Below, we compare the expansion accuracy of Sarmento et al. (2007) on Wikipedia and our Web crawls.","{'title': '6 Experimental Results', 'number': '6'}"
-"Figure 2 illustrates the precision and recall tradeoff for our four corpora, with 95% confidence intervals computed over all 20,220 trials described in Section 4.2.","{'title': '6 Experimental Results', 'number': '6'}"
-"Table 3 lists the resulting Rprecision along with the system precisions at ranks 25, 50, and 100 (see Figure 2 for detailed precision analysis).","{'title': '6 Experimental Results', 'number': '6'}"
-Why are the precision scores so low?,"{'title': '6 Experimental Results', 'number': '6'}"
-"Compared with previous work that manually select entity types for expansion, such as countries and companies, our work is the first to evaluate over a large set of randomly selected entity types.","{'title': '6 Experimental Results', 'number': '6'}"
-"On just the countries class, our R-Precision was 0.816 using Web100.","{'title': '6 Experimental Results', 'number': '6'}"
-"The following sections analyze the effects of various expansion variables: corpus size, corpus quality, seed size, and seed quality.","{'title': '6 Experimental Results', 'number': '6'}"
-"Not surprisingly, corpus size and quality have a significant impact on expansion performance.","{'title': '6 Experimental Results', 'number': '6'}"
-Figure 2 and Table 3 quantify this expectation.,"{'title': '6 Experimental Results', 'number': '6'}"
-"On our Web crawl corpora, we observe that the full 200+ billion token crawl (Web100) has an average Rprecision 13% higher than 1/5th of the crawl (Web020) and 53% higher than 1/25th of the crawl.","{'title': '6 Experimental Results', 'number': '6'}"
-"Figure 2 also illustrates that throughout the full precision/recall curve, Web100 significantly outperforms Web020, which in turn significantly outperforms Web004.","{'title': '6 Experimental Results', 'number': '6'}"
-"The higher text quality Wikipedia corpus, which consists of roughly 60 times fewer tokens than Web020, performs nearly as well as Web020 (see Figure 2).","{'title': '6 Experimental Results', 'number': '6'}"
-We omitted statistics from Wikipedia “List of” pages in order to not bias our evaluation to the test set described in Section 5.1.,"{'title': '6 Experimental Results', 'number': '6'}"
-"Inspection of the precision vs. rank graph (omitted for lack of space) revealed that from rank 1 thru 550, Wikipedia had the same precision as Web020.","{'title': '6 Experimental Results', 'number': '6'}"
-"From rank 550 to 1000, however, Wikipedia’s precision dropped off significantly compared with Web020, accounting for the fact that the Web corpus contains a higher recall of gold standard instances.","{'title': '6 Experimental Results', 'number': '6'}"
-The R-precision reported in Table 3 shows that this precision drop-off results in a significantly lower R-precision for Wikipedia compared with Web020.,"{'title': '6 Experimental Results', 'number': '6'}"
-"Intuitively, some seeds are better than others.","{'title': '6 Experimental Results', 'number': '6'}"
-We study the impact of seed selection effect by inspecting the system performance for several randomly selected seed sets of fixed size and we find that seed set composition greatly affects performance.,"{'title': '6 Experimental Results', 'number': '6'}"
-"Figure 3 illustrates the precision vs. recall tradeoff on our best performing corpus Web100 for 30 random seed sets of size 10 for each of our 50 gold standard sets (i.e., 1500 trials were tested.)","{'title': '6 Experimental Results', 'number': '6'}"
-Each of the trials performed better than the average system performance (the double-lined curve lowest in Figure 3).,"{'title': '6 Experimental Results', 'number': '6'}"
-"Distinguishing between the various data series is not important, however important to notice is the very large gap between the precision/recall curves of the best and worst performing random seed sets.","{'title': '6 Experimental Results', 'number': '6'}"
-"On average, the best performing seed sets had 42% higher precision and 39% higher recall than the worst performing seed set.","{'title': '6 Experimental Results', 'number': '6'}"
-"Similar curves were observed for inspected seed sets of size 5, 20, 30, and 40.","{'title': '6 Experimental Results', 'number': '6'}"
-"Although outside of the scope of this paper, we are currently investigating ways to automatically detect which seed elements are better than others in order to reduce the impact of seed selection effect.","{'title': '6 Experimental Results', 'number': '6'}"
-"Here we aim to confirm, with a large empirical study, the anecdotal claims in (Paşca and Durme 2008) that few seeds are necessary.","{'title': '6 Experimental Results', 'number': '6'}"
-"We found that a) very small seed sets of size 1 or 2 are not sufficient for representing the intended entity set; b) 520 seeds yield on average best performance; and c) surprisingly, increasing the seed set size beyond 20 or 30 on average does not find any new correct instances.","{'title': '6 Experimental Results', 'number': '6'}"
-We inspected the effect of seed size on Rprecision over the four corpora.,"{'title': '6 Experimental Results', 'number': '6'}"
-Each seed size curve is computed by averaging the system performance over the 30 random trials of all 50 sets.,"{'title': '6 Experimental Results', 'number': '6'}"
-"For each corpus, R-precision increased sharply from seed size 1 to 10 and the curve flattened out for seed sizes larger than 20 (figure omitted for lack of space).","{'title': '6 Experimental Results', 'number': '6'}"
-"Error analysis on the Web100 corpus shows that once our model has seen 10-20 seeds, the distributional similarity model seems to have enough statistics to discover as many new correct instances as it could ever find.","{'title': '6 Experimental Results', 'number': '6'}"
-Some entities could never be found by the distributional similarity model since they either do not occur or infrequently occur in the corpus or they occur in contexts that vary a great deal from other set elements.,"{'title': '6 Experimental Results', 'number': '6'}"
-"Figure 4 illustrates this behavior by plotting for each seed set size the rate of increase in discovery of new correct instances (i.e., not found in smaller seed set sizes).","{'title': '6 Experimental Results', 'number': '6'}"
-We see that most gold standard instances are discovered with the first 5-10 seeds.,"{'title': '6 Experimental Results', 'number': '6'}"
-"After the 30th seed is introduced, no new correct instances are found.","{'title': '6 Experimental Results', 'number': '6'}"
-An important finding is that the error rate does not increase with increased seed set size (see Figure 5).,"{'title': '6 Experimental Results', 'number': '6'}"
-This study shows that only few seeds (10-20) yield best performance and that adding more seeds beyond this does not on average affect performance in a positive or negative way.,"{'title': '6 Experimental Results', 'number': '6'}"
-"We proposed a highly scalable term similarity algorithm, implemented in the MapReduce framework, and deployed over a 200 billion word crawl of the Web.","{'title': '7 Conclusion', 'number': '7'}"
-The pairwise similarity between 500 million terms was computed in 50 hours using 200 quad-core nodes.,"{'title': '7 Conclusion', 'number': '7'}"
-We evaluated the impact of the large similarity matrix on a set expansion task and found that the Web similarity matrix gave a large performance boost over a state-of-the-art expansion algorithm using Wikipedia.,"{'title': '7 Conclusion', 'number': '7'}"
-"Finally, we release to the community a testbed for experimentally analyzing automatic set expansion, which includes a large collection of nearly random entity sets extracted from Wikipedia and over 22,000 randomly sampled seed expansion trials.","{'title': '7 Conclusion', 'number': '7'}"
+Computing the pairwise semantic similarity between all words on the Web is a computationally challenging task.,Introduction
+Parallelization and optimizations are necessary.,Introduction
+"We propose a highly scalable implementation based on distributional similarity, implemented in the MapReduce framework and deployed over a 200 billion word crawl of the Web.",Introduction
+The pairwise similarity between 500 million terms is computed in 50 hours using 200 quad-core nodes.,Introduction
+"We apply the learned similarity matrix to the task of automatic set expansion and present a large empirical study to quantify the effect on expansion performance of corpus size, corpus quality, seed composition and seed size.",Introduction
+We make public an experimental testbed for set expansion analysis that includes a large collection of diverse entity sets extracted from Wikipedia.,Introduction
+"Computing the semantic similarity between terms has many applications in NLP including word classification (Turney and Littman 2003), word sense disambiguation (Yuret and Yatbaz 2009), contextspelling correction (Jones and Martin 1997), fact extraction (Paşca et al. 2006), semantic role labeling (Erk 2007), and applications in IR such as query expansion (Cao et al.",Experiment/Discussion
+2008) and textual advertising (Chang et al. 2009).,Experiment/Discussion
+"For commercial engines such as Yahoo! and Google, creating lists of named entities found on the Web is critical for query analysis, document categorization, and ad matching.",Experiment/Discussion
+Computing term similarity is typically done by comparing cooccurrence vectors between all pairs of terms (Sarmento et al. 2007).,Experiment/Discussion
+Scaling this task to the Web requires parallelization and optimizations.,Experiment/Discussion
+"In this paper, we propose a large-scale term similarity algorithm, based on distributional similarity, implemented in the MapReduce framework and deployed over a 200 billion word crawl of the Web.",Experiment/Discussion
+The resulting similarity matrix between 500 million terms is applied to the task of expanding lists of named entities (automatic set expansion).,Experiment/Discussion
+"We provide a detailed empirical analysis of the discovered named entities and quantify the effect on expansion accuracy of corpus size, corpus quality, seed composition, and seed set size.",Experiment/Discussion
+Below we review relevant work in optimizing similarity computations and automatic set expansion.,Experiment/Discussion
+"The distributional hypothesis (Harris 1954), which links the meaning of words to their contexts, has inspired many algorithms for computing term similarities (Lund and Burgess 1996; Lin 1998; Lee 1999; Erk and Padó 2008; Agirre et al. 2009).",Experiment/Discussion
+"Brute force similarity computation compares all the contexts for each pair of terms, with complexity O(n2m) where n is the number of terms and m is the number of possible contexts.",Experiment/Discussion
+More efficient strategies are of three kinds: Smoothing: Techniques such as Latent Semantic Analysis reduce the context space by applying truncated Singular Value Decomposition (SVD) (Deerwester et al. 1990).,Experiment/Discussion
+Computing the matrix decomposition however does not scale well to web-size term-context matrices.,Experiment/Discussion
+"Other currently unscalable smoothing techniques include Probabilistic Latent Semantic Analysis (Hofmann 1999), Iterative Scaling (Ando 2000), and Latent Dirichlet Allocation (Blei et al. 2003).",Experiment/Discussion
+Randomized Algorithms: Randomized techniques for approximating various similarity measures have been successfully applied to term similarity (Ravichandran et al. 2005; Gorman and Curran 2006).,Experiment/Discussion
+Common techniques include Random Indexing based on Sparse Distributed Memory (Kanerva 1993) and Locality Sensitive Hashing (Broder 1997).,Experiment/Discussion
+Bayardo et al. (2007) present a sparse matrix optimization strategy capable of efficiently computing the similarity between terms which’s similarity exceeds a given threshold.,Experiment/Discussion
+"Rychlý and Kilgarriff (2007), Elsayed et al. (2008) and Agirre et al.",Experiment/Discussion
+(2009) use reverse indexing and the MapReduce framework to distribute the similarity computations across several machines.,Experiment/Discussion
+"Our proposed approach combines these two strategies and efficiently computes the exact similarity (cosine, Jaccard, Dice, and Overlap) between all pairs.",Experiment/Discussion
+"Building entity lexicons is a task of great interest for which structured, semi-structured and unstructured data have all been explored (GoogleSets; Sarmento et al. 2007; Wang and Cohen 2007; Bunescu and Mooney 2004; Etzioni et al.",Experiment/Discussion
+2005; Paşca et al. 2006).,Experiment/Discussion
+Our own work focuses on set expansion from unstructured Web text.,Experiment/Discussion
+"Apart from the choice of a data source, state-of-the-art entity extraction methods differ in their use of numerous, few or no labeled examples, the open or targeted nature of the extraction as well as the types of features employed.",Experiment/Discussion
+"Supervised approaches (McCallum and Li 2003, Bunescu and Mooney 2004) rely on large sets of labeled examples, perform targeted extraction and employ a variety of sentence- and corpus-level features.",Experiment/Discussion
+"While very precise, these methods are typically used for coarse grained entity classes (People, Organizations, Companies) for which large training data sets are available.",Experiment/Discussion
+Unsupervised approaches rely on no labeled data and use either bootstrapped class-specific extraction patterns (Etzioni et al. 2005) to find new elements of a given class (for targeted extraction) or corpusbased term similarity (Pantel and Lin 2002) to find term clusters (in an open extraction framework).,Experiment/Discussion
+"Finally, semi-supervised methods have shown great promise for identifying and labeling entities (Riloff and Shepherd 1997; Riloff and Jones 1999; Banko et al. 2007; Downey et al.",Experiment/Discussion
+2007; Paşca et al. 2006; Paşca 2007a; Paşca 2007b; Paşca and Durme 2008).,Experiment/Discussion
+"Starting with a set of seed entities, semisupervised extraction methods use either classspecific patterns to populate an entity class or distributional similarity to find terms similar to the seed set (Paşca’s work also examines the advantages of combining these approaches).",Experiment/Discussion
+"Semisupervised methods (including ours) are useful for extending finer grain entity classes, for which large unlabeled data sets are available.",Experiment/Discussion
+"Previous work has examined the effect of using large, sometimes Web-size corpora, on system performance in the case of familiar NLP tasks.",Experiment/Discussion
+Banko and Brill (2001) show that Web-scale data helps with confusion set disambiguation while Lapata and Keller (2005) find that the Web is a good source of n-gram counts for unsupervised models.,Experiment/Discussion
+Atterer and Schutze (2006) examine the influence of corpus size on combining a supervised approach with an unsupervised one for relative clause and PP-attachment.,Experiment/Discussion
+Etzioni et al. (2005) and Pantel et al.,Experiment/Discussion
+(2004) show the advantages of using large quantities of generic Web text over smaller corpora for extracting relations and named entities.,Experiment/Discussion
+"Overall, corpus size and quality are both found to be important for extraction.",Experiment/Discussion
+Our paper adds to this body of work by focusing on the task of similarity-based set expansion and providing a large empirical study quantify the relative corpus effects.,Experiment/Discussion
+"Previous extraction systems report on the size and quality of the training data or, if semi-supervised, the size and quality of entity or pattern seed sets.",Experiment/Discussion
+"Narrowing the focus to closely related work, Paşca (2007a; 2007b) and Paşca and Durme (2008) show the impact of varying the number of instances representative of a given class and the size of the attribute seed set on the precision of class attribute extraction.",Experiment/Discussion
+An example observation is that good quality class attributes can still be extracted using 20 or even 10 instances to represent an entity class.,Experiment/Discussion
+"Among others, Etzioni et al. (2005) shows that a small pattern set can help bootstrap useful entity seed sets and reports on the impact of seed set noise on final performance.",Experiment/Discussion
+"Unlike previous work, empirically quantifying the influence of seed set size and quality on extraction performance of random entity types is a key objective of this paper.",Experiment/Discussion
+"Term semantic models normally invoke the distributional hypothesis (Harris 1985), which links the meaning of terms to their contexts.",Experiment/Discussion
+Models are built by recording the surrounding contexts for each term in a large collection of unstructured text and storing them in a term-context matrix.,Experiment/Discussion
+"Methods differ in their definition of a context (e.g., text window or syntactic relations), or by a means to weigh contexts (e.g., frequency, tf-idf, pointwise mutual information), or ultimately in measuring the similarity between two context vectors (e.g., using Euclidean distance, Cosine, Dice).",Experiment/Discussion
+"In this paper, we adopt the following methodology for computing term similarity.",Experiment/Discussion
+"Our various web crawls, described in Section 6.1, are POStagged using Brill’s tagger (1995) and chunked using a variant of the Abney chunker (Abney 1991).",Experiment/Discussion
+"Terms are NP chunks with some modifiers removed; their contexts (i.e., features) are defined as their rightmost and leftmost stemmed chunks.",Experiment/Discussion
+We weigh each context f using pointwise mutual information (Church and Hanks 1989).,Experiment/Discussion
+"Let PMI(w) denote a pointwise mutual information vector, constructed for each term as follows: PMI(w) = (pmiw1, pmiw2, ..., pmiwm), where pmiwf is the pointwise mutual information between term w and feature f: where cwf is the frequency of feature f occurring for term w, n is the number of unique terms and N is the total number of features for all terms.",Experiment/Discussion
+"Term similarities are computed by comparing these pmi context vectors using measures such as cosine, Jaccard, and Dice.",Experiment/Discussion
+"Computing the similarity between terms on a large Web crawl is a non-trivial problem, with a worst case cubic running time – O(n2m) where n is the number of terms and m is the dimensionality of the feature space.",Experiment/Discussion
+"Section 2.1 introduces several optimization techniques; below we propose an algorithm for large-scale term similarity computation which calculates exact scores for all pairs of terms, generalizes to several different metrics, and is scalable to a large crawl of the Web.",Experiment/Discussion
+"Our optimization strategy follows a generalized sparse-matrix multiplication approach (Sarawagi and Kirpal 2004), which is based on the wellknown observation that a scalar product of two vectors depends only on the coordinates for which both vectors have non-zero values.",Experiment/Discussion
+"Further, we observe that most commonly used similarity scores for feature vectors x� and y�, such as cosine and Dice, can be decomposed into three values: one depending only on features of x�, another depending only on features of y�, and the third depending on the features shared both by x� and y�.",Experiment/Discussion
+"More formally, commonly used similarity scores F(x�, y) can be expressed as: and f3 for some common similarity functions.",Experiment/Discussion
+"For each of these scores, f2 = f3.",Experiment/Discussion
+"In our work, we compute all of these scores, but report our results using only the cosine function.",Experiment/Discussion
+Let A and B be two matrices of PMI feature vectors.,Experiment/Discussion
+Our task is to compute the similarity between all vectors in A and all vectors in B.,Experiment/Discussion
+"In computing the similarity between all pairs of terms, A = B.",Experiment/Discussion
+Figure 1 outlines our algorithm for computing the similarity between all elements of A and B.,Experiment/Discussion
+"Efficient computation of the similarity matrix can be achieved by leveraging the fact that is determined solely by the features shared by and (i.e., = = 0 for any x) an d that most of the feature vectors are very sparse (i.e., most possible contexts never occur for a given term).",Experiment/Discussion
+"In this case, calculating f1(x, y) is only required when both feature vectors have a shared non-zero feature, significantly reducing the cost of computation.",Experiment/Discussion
+Determining which vectors share a non-zero feature can easily be achieved by first building an inverted index for the features.,Experiment/Discussion
+"The computational cost of this algorithm is ∑ 2 Ni , where Ni is the number of vectors that have a non-zero ith coordinate.",Experiment/Discussion
+"Its worst case time complexity is O(ncv) where n is the number of terms to be compared, c is the maximum number of non-zero coordinates of any vector, and v is the number of vectors that have a nonzero ith coordinate where i is the coordinate which is non-zero for the most vectors.",Experiment/Discussion
+"In other words, the algorithm is efficient only when the density of the coordinates is low.",Experiment/Discussion
+"On our datasets, we observed near linear running time in the corpus size.",Experiment/Discussion
+Bayardo et al. (2007) described a strategy that potentially reduces the cost even further by omitting the coordinates with the highest number of non-zero value.,Experiment/Discussion
+"However, their algorithm gives a significant advantage only when we are interested in finding solely the similarity between highly similar terms.",Experiment/Discussion
+"In our experiments, we compute the exact similarity between all pairs of terms.",Experiment/Discussion
+"The pseudo-code in Figure 1 assumes that A can fit into memory, which for large A may be impossible.",Experiment/Discussion
+"Also, as each element of B is processed independently, running parallel processes for nonintersecting subsets of B makes the processing faster.",Experiment/Discussion
+"In this section, we outline our MapReduce implementation of Figure 1 deployed using Hadoop1, the open-source software package implementing the MapReduce framework and distributed file system.",Experiment/Discussion
+"Hadoop has been shown to scale to several thousands of machines, allowing users to write simple “map” and “reduce” code, and to seamlessly manage the sophisticated parallel execution of the code.",Experiment/Discussion
+A good primer on MapReduce programming is in (Dean and Ghemawat 2008).,Experiment/Discussion
+"Our implementation employs the MapReduce model by using the Map step to start M×N Map tasks in parallel, each caching 1/Mth part of A as an inverted index and streaming 1/Nth part of B through it.",Experiment/Discussion
+The actual inputs are read by the tasks Input: Two matrices A and B of feature vectors.,Experiment/Discussion
+"## Build an inverted index for A (optimiza## tion for data sparseness) for k in non-zero features of A[i]: if k not in AA: AA[k] = empty-set ## append <vector-id, feature-value> ## pairs to the set of non-zero ## values for feature k directly from HDFS (Hadoop Distributed File System).",Experiment/Discussion
+"Each part of A is processed N times, and each part of B is processed M times.",Experiment/Discussion
+"M is determined by the amount of memory dedicated for the inverted index, and N should be determined by trading off the fact that as N increases, more parallelism can be obtained at the increased cost of building the same inverse index N times.",Experiment/Discussion
+The similarity algorithm from Figure 1 is run in each task of the Map step of a MapReduce job.,Experiment/Discussion
+The Reduce step is used to group the output by bi.,Experiment/Discussion
+Creating lists of named entities is a critical problem at commercial engines such as Yahoo! and Google.,Experiment/Discussion
+"The types of entities to be expanded are often not known a priori, leaving supervised classifiers undesirable.",Experiment/Discussion
+"Additionally, list creators typically need the ability to expand sets of varying granularity.",Experiment/Discussion
+Semi-supervised approaches are predominantly adopted since they allow targeted expansions while requiring only small sets of seed entities.,Experiment/Discussion
+State-of-the-art techniques first compute term-term similarities for all available terms and then select candidates for set expansion from amongst the terms most similar to the seeds (Sarmento et al. 2007).,Experiment/Discussion
+"Formally, we define our expansion task as: Task Definition: Given a set of seed entities S = {s1, s2, ..., sk} of a class C = {s1, s2, ..., sk, ...,, sn} and an unlabeled textual corpus T, find all members of the class C. For example, consider the class of Bottled Water Brands.",Experiment/Discussion
+"Given the set of seeds S = {Volvic, San Pellegrino, Gerolsteiner Brunnen, Bling H2O}, our task is to find all other members of this class, such as {Agua Vida, Apenta, Culligan, Dasani, Ethos Water, Iceland Pure Spring Water, Imsdal, ...} Our goal is not to propose a new set expansion algorithm, but instead to test the effect of using our Web-scale term similarity matrix (enabled by the algorithm proposed in Section 3) on a state-of-theart distributional set expansion algorithm, namely (Sarmento et al. 2007).",Experiment/Discussion
+We consider S as a set of prototypical examples of the underlying entity set.,Experiment/Discussion
+"A representation for the meaning of S is computed by building a feature vector consisting of a weighted average of the features of its seed elements s1, s2, ..., sk, a centroid.",Experiment/Discussion
+"For example, given the seed elements {Volvic, San Pellegrino, Gerolsteiner Brunnen, Bling H2O}, the resulting centroid consists of (details of the feature extraction protocol are in Section 6.1): brand, mineral water, monitor, lake, water, take over, ... Centroids are represented in the same space as terms allowing us to compute the similarity between centroids and all terms in our corpus.",Experiment/Discussion
+"A scored and ranked set for expansion is ultimately generated by sorting all terms according to their similarity to the seed set centroid, and applying a cutoff on either the similarity score or on the total number of retrieved terms.",Experiment/Discussion
+"In our reported experiments, we expanded over 22,000 seed sets using our Web similarity model from Section 3.",Experiment/Discussion
+"In this section, we describe our methodology for evaluating Web-scale set expansion.",Experiment/Discussion
+"Estimating the quality of a set expansion algorithm requires a random sample from the universe of all entity sets that may ever be expanded, where a set represents some concept such as Stage Actors.",Experiment/Discussion
+An approximation of this universe can be extracted from the “List of” pages in Wikipedia2.,Experiment/Discussion
+"Upon inspection of a random sample of the “List of” pages, we found that several lists were compositions or joins of concepts, for example “List of World War II aces from Denmark” and “List of people who claimed to be God”.",Experiment/Discussion
+We addressed this issue by constructing a quasi-random sample as follows.,Experiment/Discussion
+We randomly sorted the list of every noun occurring in Wikipedia2.,Experiment/Discussion
+"Then, for each noun we verified whether or not it existed in a Wikipedia list, and if so we extracted this list.",Experiment/Discussion
+"If a noun belonged to multiple lists, the authors chose the list that seemed most appropriate.",Experiment/Discussion
+"Although this does not generate a perfect random sample, diversity is ensured by the random selection of nouns and relevancy is ensured by the author adjudication.",Experiment/Discussion
+"The final gold standard consists of 50 sets, including: classical pianists, Spanish provinces, Texas counties, male tennis players, first ladies, cocktails, bottled water brands, and Archbishops of Canterbury.",Experiment/Discussion
+"For each set, we then manually scraped every instance from Wikipedia keeping track also of the listed variants names.",Experiment/Discussion
+"The gold standard is available for download at: http://www.patrickpantel.com/cgi-bin/Web/Tools/getfile.pl?type=data&id=ssegold/wikipedia.20071218.goldsets.tgz The 50 sets consist on average of 208 instances (with a minimum of 11 and a maximum of 1,116) for a total of 10,377 instances.",Experiment/Discussion
+"In order to analyze the corpus and seed effects on performance, we created 30 copies of each of the 50 sets and randomly sorted each copy.",Experiment/Discussion
+"Then, for each of the 1500 copies, we created a trial for each of the following 23 seed sizes: 1, 2, 5, 10, 20, 30, 40, ..., 200.",Experiment/Discussion
+Each trial of seed size s was created by taking the first s entries in each of the 1500 random copies.,Experiment/Discussion
+"For sets that contained fewer than 200 items, we only generated trials for seed sizes smaller than the set size.",Experiment/Discussion
+"The resulting trial dataset consists of 20,220 trials3.",Experiment/Discussion
+"Set expansion systems consist of an expansion algorithm (such as the one described in Section 4.1) as well as a corpus (such as Wikipedia, a news corpus, or a web crawl).",Experiment/Discussion
+"For a given system, each of the 20,220 trials described in the previous section are expanded.",Experiment/Discussion
+"In our work, we limited the total number of system expansions, per trial, to 1000.",Experiment/Discussion
+"Before judgment of an expanded set, we first collapse each instance that is a variant of another (determined using the variants in our gold standard) into one single instance (keeping the highest system score)4.",Experiment/Discussion
+"Then, each expanded instance is judged as correct or incorrect automatically against the gold standard described in Section 5.1.",Experiment/Discussion
+"Our experiments in Section 6 consist of precision vs. recall or precision vs. rank curves, where: a) precision is defined as the percentage of correct instances in the expansion of a seed set; and b) recall is defined as the percentage of non-seed gold standard instances retrieved by the system.",Experiment/Discussion
+"Since the gold standard sets vary significantly in size, we also provide the R-precision metric to normalize for set size: For the above metrics, 95% confidence bounds are computed using the randomly generated samples described in Section 5.2.",Experiment/Discussion
+Our goal is to study the performance gains on set expansion using our Web-scale term similarity algorithm from Section 3.,Results/Conclusion
+We present a large empirical study quantifying the importance of corpus and seeds on expansion accuracy.,Results/Conclusion
+"We extracted statistics to build our model from Section 3 using four different corpora, outlined in Table 2.",Results/Conclusion
+The Wikipedia corpus consists of a snapshot of the English articles in December 20085.,Results/Conclusion
+"The Web100 corpus consists of an extraction from a large crawl of the Web, from Yahoo!, of over 600 million English webpages.",Results/Conclusion
+"For each crawled document, we removed paragraphs containing fewer than 50 tokens (as a rough approximation of the narrative part of a webpage) and then removed all duplicate sentences.",Results/Conclusion
+The resulting corpus consists of over 200 billion words.,Results/Conclusion
+The Web020 corpus is a random sample of 1/5th of the sentences in Web100 whereas Web004 is a random sample of 1/25th of Web100.,Results/Conclusion
+"For each corpus, we tagged and chunked each sentence as described in Section 3.",Results/Conclusion
+We then computed the similarity between all noun phrase chunks using the model of Section 3.1.,Results/Conclusion
+Our proposed optimization for term similarity computation produces exact scores (unlike randomized techniques) for all pairs of terms on a large Web crawl.,Results/Conclusion
+"For our largest corpus, Web100, we computed the pairwise similarity between over 500 million words in 50 hours using 200 four-core machines.",Results/Conclusion
+Web004 is of similar scale to the largest reported randomized technique (Ravichandran et al. 2005).,Results/Conclusion
+"On this scale, we compute the exact similarity matrix in a little over two hours whereas Ravichandran et al. (2005) compute an approximation in 570 hours.",Results/Conclusion
+"On average they only find 73% 5 To avoid biasing our Wikipedia corpus with the test sets, Wikipedia “List of” pages were omitted from our statistics as were any page linked to gold standard list members from “List of” pages. of the top-1000 similar terms of a random term whereas we find all of them.",Results/Conclusion
+"For set expansion, experiments have been run on corpora as large as Web004 and Wikipedia (Sarmento et al. 2007), a corpora 300 times smaller than our Web crawl.",Results/Conclusion
+"Below, we compare the expansion accuracy of Sarmento et al. (2007) on Wikipedia and our Web crawls.",Results/Conclusion
+"Figure 2 illustrates the precision and recall tradeoff for our four corpora, with 95% confidence intervals computed over all 20,220 trials described in Section 4.2.",Results/Conclusion
+"Table 3 lists the resulting Rprecision along with the system precisions at ranks 25, 50, and 100 (see Figure 2 for detailed precision analysis).",Results/Conclusion
+Why are the precision scores so low?,Results/Conclusion
+"Compared with previous work that manually select entity types for expansion, such as countries and companies, our work is the first to evaluate over a large set of randomly selected entity types.",Results/Conclusion
+"On just the countries class, our R-Precision was 0.816 using Web100.",Results/Conclusion
+"The following sections analyze the effects of various expansion variables: corpus size, corpus quality, seed size, and seed quality.",Results/Conclusion
+"Not surprisingly, corpus size and quality have a significant impact on expansion performance.",Results/Conclusion
+Figure 2 and Table 3 quantify this expectation.,Results/Conclusion
+"On our Web crawl corpora, we observe that the full 200+ billion token crawl (Web100) has an average Rprecision 13% higher than 1/5th of the crawl (Web020) and 53% higher than 1/25th of the crawl.",Results/Conclusion
+"Figure 2 also illustrates that throughout the full precision/recall curve, Web100 significantly outperforms Web020, which in turn significantly outperforms Web004.",Results/Conclusion
+"The higher text quality Wikipedia corpus, which consists of roughly 60 times fewer tokens than Web020, performs nearly as well as Web020 (see Figure 2).",Results/Conclusion
+We omitted statistics from Wikipedia “List of” pages in order to not bias our evaluation to the test set described in Section 5.1.,Results/Conclusion
+"Inspection of the precision vs. rank graph (omitted for lack of space) revealed that from rank 1 thru 550, Wikipedia had the same precision as Web020.",Results/Conclusion
+"From rank 550 to 1000, however, Wikipedia’s precision dropped off significantly compared with Web020, accounting for the fact that the Web corpus contains a higher recall of gold standard instances.",Results/Conclusion
+The R-precision reported in Table 3 shows that this precision drop-off results in a significantly lower R-precision for Wikipedia compared with Web020.,Results/Conclusion
+"Intuitively, some seeds are better than others.",Results/Conclusion
+We study the impact of seed selection effect by inspecting the system performance for several randomly selected seed sets of fixed size and we find that seed set composition greatly affects performance.,Results/Conclusion
+"Figure 3 illustrates the precision vs. recall tradeoff on our best performing corpus Web100 for 30 random seed sets of size 10 for each of our 50 gold standard sets (i.e., 1500 trials were tested.)",Results/Conclusion
+Each of the trials performed better than the average system performance (the double-lined curve lowest in Figure 3).,Results/Conclusion
+"Distinguishing between the various data series is not important, however important to notice is the very large gap between the precision/recall curves of the best and worst performing random seed sets.",Results/Conclusion
+"On average, the best performing seed sets had 42% higher precision and 39% higher recall than the worst performing seed set.",Results/Conclusion
+"Similar curves were observed for inspected seed sets of size 5, 20, 30, and 40.",Results/Conclusion
+"Although outside of the scope of this paper, we are currently investigating ways to automatically detect which seed elements are better than others in order to reduce the impact of seed selection effect.",Results/Conclusion
+"Here we aim to confirm, with a large empirical study, the anecdotal claims in (Paşca and Durme 2008) that few seeds are necessary.",Results/Conclusion
+"We found that a) very small seed sets of size 1 or 2 are not sufficient for representing the intended entity set; b) 520 seeds yield on average best performance; and c) surprisingly, increasing the seed set size beyond 20 or 30 on average does not find any new correct instances.",Results/Conclusion
+We inspected the effect of seed size on Rprecision over the four corpora.,Results/Conclusion
+Each seed size curve is computed by averaging the system performance over the 30 random trials of all 50 sets.,Results/Conclusion
+"For each corpus, R-precision increased sharply from seed size 1 to 10 and the curve flattened out for seed sizes larger than 20 (figure omitted for lack of space).",Results/Conclusion
+"Error analysis on the Web100 corpus shows that once our model has seen 10-20 seeds, the distributional similarity model seems to have enough statistics to discover as many new correct instances as it could ever find.",Results/Conclusion
+Some entities could never be found by the distributional similarity model since they either do not occur or infrequently occur in the corpus or they occur in contexts that vary a great deal from other set elements.,Results/Conclusion
+"Figure 4 illustrates this behavior by plotting for each seed set size the rate of increase in discovery of new correct instances (i.e., not found in smaller seed set sizes).",Results/Conclusion
+We see that most gold standard instances are discovered with the first 5-10 seeds.,Results/Conclusion
+"After the 30th seed is introduced, no new correct instances are found.",Results/Conclusion
+An important finding is that the error rate does not increase with increased seed set size (see Figure 5).,Results/Conclusion
+This study shows that only few seeds (10-20) yield best performance and that adding more seeds beyond this does not on average affect performance in a positive or negative way.,Results/Conclusion
+"We proposed a highly scalable term similarity algorithm, implemented in the MapReduce framework, and deployed over a 200 billion word crawl of the Web.",Results/Conclusion
+The pairwise similarity between 500 million terms was computed in 50 hours using 200 quad-core nodes.,Results/Conclusion
+We evaluated the impact of the large similarity matrix on a set expansion task and found that the Web similarity matrix gave a large performance boost over a state-of-the-art expansion algorithm using Wikipedia.,Results/Conclusion
+"Finally, we release to the community a testbed for experimentally analyzing automatic set expansion, which includes a large collection of nearly random entity sets extracted from Wikipedia and over 22,000 randomly sampled seed expansion trials.",Results/Conclusion

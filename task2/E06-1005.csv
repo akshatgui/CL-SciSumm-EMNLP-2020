@@ -1,168 +1,168 @@
 col1,col2
-This paper describes a novel method for computing a consensus translation from the outputs of multiple machine translation (MT) systems.,{}
-The outputs are combined and a possibly new translation hypothesis can be generated.,{}
-"Similarly to the well-established ROVER approach of (Fiscus, 1997) for combining speech recognition hypotheses, the consensus translation is computed by voting on a confusion network.",{}
-"To create the confusion network, we produce pairwise word alignments of the original machine translation hypotheses with an enhanced statistical alignment algorithm that explicitly models word reordering.",{}
-The context of a whole document of translations rather than a single sentence is taken into account to produce the alignment.,{}
-"The proposed alignment and voting approach was evaluated on several machine translation tasks, including a large vocabulary task.",{}
-The method was also tested in the framework of multi-source and speech translation.,{}
-"On all tasks and conditions, we achieved significant improvements in translation quality, increasing e. g. the BLEU score by as much as 15% relative.",{}
-In this work we describe a novel technique for computing a consensus translation from the outputs of multiple machine translation systems.,"{'title': '1 Introduction', 'number': '1'}"
-Combining outputs from different systems was shown to be quite successful in automatic speech recognition (ASR).,"{'title': '1 Introduction', 'number': '1'}"
-"Voting schemes like the ROVER approach of (Fiscus, 1997) use edit distance alignment and time information to create confusion networks from the output of several ASR systems.","{'title': '1 Introduction', 'number': '1'}"
-Some research on multi-engine machine translation has also been performed in recent years.,"{'title': '1 Introduction', 'number': '1'}"
-"The most straightforward approaches simply select, for each sentence, one of the provided hypotheses.","{'title': '1 Introduction', 'number': '1'}"
-"The selection is made based on the scores of translation, language, and other models (Nomoto, 2004; Paul et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-"Other approaches combine lattices or N-best lists from several different MT systems (Frederking and Nirenburg, 1994).","{'title': '1 Introduction', 'number': '1'}"
-"To be successful, such approaches require compatible lattices and comparable scores of the (word) hypotheses in the lattices.","{'title': '1 Introduction', 'number': '1'}"
-"However, the scores of most statistical machine translation (SMT) systems are not normalized and therefore not directly comparable.","{'title': '1 Introduction', 'number': '1'}"
-"For some other MT systems (e.g. knowledge-based systems), the lattices and/or scores of hypotheses may not be even available.","{'title': '1 Introduction', 'number': '1'}"
-"(Bangalore et al., 2001) used the edit distance alignment extended to multiple sequences to construct a confusion network from several translation hypotheses.","{'title': '1 Introduction', 'number': '1'}"
-"This algorithm produces monotone alignments only (i. e. allows insertion, deletion, and substitution of words); it is not able to align translation hypotheses with significantly different word order.","{'title': '1 Introduction', 'number': '1'}"
-"(Jayaraman and Lavie, 2005) try to overcome this problem.","{'title': '1 Introduction', 'number': '1'}"
-They introduce a method that allows non-monotone alignments of words in different translation hypotheses for the same sentence.,"{'title': '1 Introduction', 'number': '1'}"
-"However, this approach uses many heuristics and is based on the alignment that is performed to calculate a specific MT error measure; the performance improvements are reported only in terms of this measure.","{'title': '1 Introduction', 'number': '1'}"
-"Here, we propose an alignment procedure that explicitly models reordering of words in the hypotheses.","{'title': '1 Introduction', 'number': '1'}"
-"In contrast to existing approaches, the context of the whole document rather than a single sentence is considered in this iterative, unsupervised procedure, yielding a more reliable alignment.","{'title': '1 Introduction', 'number': '1'}"
-"Based on the alignment, we construct a confusion network from the (possibly reordered) translation hypotheses, similarly to the approach of (Bangalore et al., 2001).","{'title': '1 Introduction', 'number': '1'}"
-"Using global system probabilities and other statistical models, the voting procedure selects the best consensus hypothesis from the confusion network.","{'title': '1 Introduction', 'number': '1'}"
-This consensus translation may be different from the original translations.,"{'title': '1 Introduction', 'number': '1'}"
-This paper is organized as follows.,"{'title': '1 Introduction', 'number': '1'}"
-"In Section 2, we will describe the computation of consensus translations with our approach.","{'title': '1 Introduction', 'number': '1'}"
-"In particular, we will present details of the enhanced alignment and reordering procedure.","{'title': '1 Introduction', 'number': '1'}"
-"A large set of experimental results on several machine translation tasks is presented in Section 3, which is followed by a summary.","{'title': '1 Introduction', 'number': '1'}"
-The proposed approach takes advantage of multiple translations for a whole test corpus to compute a consensus translation for each sentence in this corpus.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Given a single source sentence in the test corpus, we combine M translation hypotheses Ei, ... , EM from M MT engines.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-We first choose one of the hypotheses Em as the primary one.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-We consider this primary hypothesis to have the “correct” word order.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"We then align and reorder the other, secondary hypotheses En(n = 1, ..., M; n =� m) to match this word order.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Since each hypothesis may have an acceptable word order, we let every hypothesis play the role of the primary translation once, and thus align all pairs of hypotheses (En, Em); n =� m. In the following subsections, we will explain the word alignment procedure, the reordering approach, and the construction of confusion networks.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The word alignment is performed in analogy to the training procedure in SMT.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-The difference is that the two sentences that have to be aligned are in the same language.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"We consider the conditional probability Pr(En|Em) of the event that, given Em, another hypothesis En is generated from the Em.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Then, the alignment between the two hypotheses is introduced as a hidden variable: This probability is then decomposed into the alignment probability Pr(A|Em) and the lexicon probability Pr(En|A, Em): As in statistical machine translation, we make modelling assumptions.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"We use the IBM Model 1 (Brown et al., 1993) (uniform distribution) and the Hidden Markov Model (HMM, first-order dependency, (Vogel et al., 1996)) to estimate the alignment model.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The lexicon probability of a sentence pair is modelled as a product of single-word based probabilities of the aligned words.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-The training corpus for alignment is created from a test corpus of N sentences (usually a few hundred) translated by all of the involved MT engines.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"However, the effective size of the training corpus is larger than N, since all pairs of different hypotheses have to be aligned.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Thus, the effective size of the training corpus is M · (M −1) · N. The single-word based lexicon probabilities p(en|em) are initialized with normalized lexicon counts collected over the sentence pairs (En, Em) on this corpus.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Since all of the hypotheses are in the same language, we count co-occurring equal words, i. e. if en is the same word as em.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"In addition, we add a fraction of a count for words with identical prefixes.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The initialization could be furthermore improved by using word classes, part-of-speech tags, or a list of synonyms.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The model parameters are trained iteratively in an unsupervised manner with the EM algorithm using the GIZA++ toolkit (Och and Ney, 2003).","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The training is performed in the directions En → Em and Em → En.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-The updated lexicon tables from the two directions are interpolated after each iteration.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The final alignments are determined using cost matrices defined by the state occupation probabilities of the trained HMM (Matusov et al., 2004).","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The alignments are used for reordering each secondary translation En and for computing the confusion network. with symbol |).,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-The words of the primary hypothesis are printed in bold.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The symbol $ denotes a null alignment or an e-arc in the corresponding part of the confusion network. alignment would|would you|you have|like coffee|coffee or|or tea|tea and would|would you|you like|like your|$ coffee|coffee or|or $|tea reordering I|$ would|would you|you like|like have|$ some|$ coffee|coffee $|or tea|tea $ would you like $ $ coffee or tea confusion $ would you have $ $ coffee or tea network $ would you like your $ coffee or $ I would you like have some coffee $ tea The alignment between En and the primary hypothesis E,,t used for reordering is computed as a function of words in the secondary translation En with minimal costs, with an additional constraint that identical words in En can not be all aligned to the same word in E,,t.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-This constraint is necessary to avoid that reordered hypotheses with e. g. multiple consecutive articles “the” would be produced if fewer articles were used in the primary hypothesis.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The new word order for En is obtained through sorting the words in En by the indices of the words in E,,t to which they are aligned.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Two words in En which are aligned to the same word in E,,t are kept in the original order.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"After reordering each secondary hypothesis En, we determine M − 1 monotone one-to-one alignments between E,,t and En, n = 1, ... , M; n =6 m. In case of many-toone connections of words in En to a single word in E,,t, we only keep the connection with the lowest alignment costs.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The one-to-one alignments are convenient for constructing a confusion network in the next step of the algorithm.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Given the M−1 monotone one-to-one alignments, the transformation to a confusion network as described by (Bangalore et al., 2001) is straightforward.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-It is explained by the example in Figure 1.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Here, the original 4 hypotheses are shown, followed by the alignment of the reordered secondary hypotheses 2-4 with the primary hypothesis 1.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The alignment is shown with the  |symbol, and the words of the primary hypothesis are to the right of this symbol.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"The symbol $ denotes a null alignment or an e-arc in the corresponding part of the confusion network, which is shown at the bottom of the figure.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-Note that the word “have” in translation 2 is aligned to the word “like” in translation 1.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-This alignment is acceptable considering the two translations alone.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"However, given the presence of the word “have” in translation 4, this is not the best alignment.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Yet the problems of this type can in part be solved by the proposed approach, since every translation once plays the role of the primary translation.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-"For each sentence, we obtain a total of M confusion networks and unite them in a single lattice.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The consensus translation can be chosen among different alignment and reordering paths in this lattice.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-The “voting” on the union of confusion networks is straightforward and analogous to the ROVER system.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-We sum up the probabilities of the arcs which are labeled with the same word and have the same start and the same end state.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-These probabilities are the global probabilities assigned to the different MT systems.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-They are manually adjusted based on the performance of the involved MT systems on a held-out development set.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"In general, a better consensus translation can be produced if the words hypothesized by a betterperforming system get a higher probability.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-Additional scores like word confidence measures can be used to score the arcs in the lattice.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"In the final step, the consensus translation is extracted as the best path from the union of confusion networks.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-Note that the extracted consensus translation can be different from the original M translations.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Alternatively, the N-best hypotheses can be extracted for rescoring by additional models.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-We performed experiments with both approaches.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Since M confusion networks are used, the lattice may contain two best paths with the same probability, the same words, but different word order.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-We extended the algorithm to favor more well-formed word sequences.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-We assign a higher probability to each arc of the primary (unreordered) translation in each of the M confusion networks.,"{'title': '2 Description of the Algorithm', 'number': '2'}"
-"Experimentally, this extension improved translation fluency on some tasks.","{'title': '2 Description of the Algorithm', 'number': '2'}"
-The alignment and voting algorithm was evaluated on both small and large vocabulary tasks.,"{'title': '3 Experimental Results', 'number': '3'}"
-"Initial experiments were performed on the IWSLT 2004 Chinese-English and Japanese-English tasks (Akiba et al., 2004).","{'title': '3 Experimental Results', 'number': '3'}"
-"The data for these tasks come from the Basic Travel Expression corpus (BTEC), consisting of tourism-related sentences.","{'title': '3 Experimental Results', 'number': '3'}"
-We combined the outputs of several MT systems that had officially been submitted to the IWSLT 2004 evaluation.,"{'title': '3 Experimental Results', 'number': '3'}"
-Each system had used 20K sentence pairs (180K running words) from the BTEC corpus for training.,"{'title': '3 Experimental Results', 'number': '3'}"
-"Experiments with translations of automatically recognized speech were performed on the BTEC Italian-English task (Federico, 2003).","{'title': '3 Experimental Results', 'number': '3'}"
-"Here, the involved MT systems had used about 60K sentence pairs (420K running words) for training.","{'title': '3 Experimental Results', 'number': '3'}"
-"Finally, we also computed consensus translation from some of the submissions to the TC-STAR 2005 evaluation campaign (TC-STAR, 2005).","{'title': '3 Experimental Results', 'number': '3'}"
-The TC-STAR participants had submitted translations of manually transcribed speeches from the European Parliament Plenary Sessions (EPPS).,"{'title': '3 Experimental Results', 'number': '3'}"
-"In our experiments, we used the translations from Spanish to English.","{'title': '3 Experimental Results', 'number': '3'}"
-The MT engines for this task had been trained on 1.2M sentence pairs (32M running words).,"{'title': '3 Experimental Results', 'number': '3'}"
-"Table 1 gives an overview of the test corpora, on which the enhanced hypotheses alignment was computed, and for which the consensus translations were determined.","{'title': '3 Experimental Results', 'number': '3'}"
-The official IWSLT04 test corpus was used for the IWSLT 04 tasks; the CSTAR03 test corpus was used for the speech translation task.,"{'title': '3 Experimental Results', 'number': '3'}"
-The March 2005 test corpus of the TC-STAR evaluation (verbatim condition) was used for the EPPS task.,"{'title': '3 Experimental Results', 'number': '3'}"
-"In Table 1, the number of running words in English is the average number of running words in the hypotheses, from which the consensus translation was computed; the vocabulary of English is the merged vocabulary of these hypotheses.","{'title': '3 Experimental Results', 'number': '3'}"
-"For the BTEC IWSLT04 corpus, the statistics for English is given for the experiments described in Sections 3.3 and 3.5, respectively.","{'title': '3 Experimental Results', 'number': '3'}"
-"Well-established objective evaluation measures like the word error rate (WER), positionindependent word error rate (PER), and the BLEU score (Papineni et al., 2002) were used to assess the translation quality.","{'title': '3 Experimental Results', 'number': '3'}"
-All measures were computed with respect to multiple reference translations.,"{'title': '3 Experimental Results', 'number': '3'}"
-"The evaluation (as well as the alignment training) was case-insensitive, without considering the punctuation marks.","{'title': '3 Experimental Results', 'number': '3'}"
-Different applications of the proposed combination method have been evaluated.,"{'title': '3 Experimental Results', 'number': '3'}"
-"First, we focused on combining different MT systems which have the same source and target language.","{'title': '3 Experimental Results', 'number': '3'}"
-The initial experiments were performed on the BTEC Chinese-English task.,"{'title': '3 Experimental Results', 'number': '3'}"
-We combined translations produced by 5 different MT systems.,"{'title': '3 Experimental Results', 'number': '3'}"
-Table 2 shows the performance of the best and the worst of these systems in terms of the BLEU score.,"{'title': '3 Experimental Results', 'number': '3'}"
-The results for the consensus translation show a dramatic improvement in translation quality.,"{'title': '3 Experimental Results', 'number': '3'}"
-The word error rate is reduced e. g. from 54.6 to 47.8%.,"{'title': '3 Experimental Results', 'number': '3'}"
-The research group which had submitted the best translation in 2004 translated the same test set a year later with an improved system.,"{'title': '3 Experimental Results', 'number': '3'}"
-We compared the consensus translation with this new translation (last line of Table 2).,"{'title': '3 Experimental Results', 'number': '3'}"
-It can be observed that the consensus translation based on the MT systems developed in 2004 is still superior to this 2005 single system translation in terms of all error measures.,"{'title': '3 Experimental Results', 'number': '3'}"
-We also checked how many sentences in the consensus translation of the test corpus are different from the 5 original translations.,"{'title': '3 Experimental Results', 'number': '3'}"
-185 out of 500 sentences (37%) had new translations.,"{'title': '3 Experimental Results', 'number': '3'}"
-"Computing the error measures on these sentences only, we observed significant improvements in WER and PER and a small improvement in BLEU with respect to the original translations.","{'title': '3 Experimental Results', 'number': '3'}"
-"Thus, the quality of previously unseen consensus translations as generated from the original translations is acceptable.","{'title': '3 Experimental Results', 'number': '3'}"
-"In this experiment, the global system probabilities for scoring the confusion networks were tuned manually on a development set.","{'title': '3 Experimental Results', 'number': '3'}"
-"The distribution was 0.35, 0.25, 0.2, 0.1, 0.1, with 0.35 for the words of the best single system and 0.1 for the words of the worst single system.","{'title': '3 Experimental Results', 'number': '3'}"
-We observed that the consensus translation did not change significantly with small perturbations of these values.,"{'title': '3 Experimental Results', 'number': '3'}"
-"However, the relation between the probabilities is very important for good performance.","{'title': '3 Experimental Results', 'number': '3'}"
-No improvement can be achieved with a uniform probability distribution – it is necessary to penalize translations of low quality.,"{'title': '3 Experimental Results', 'number': '3'}"
-The improvements in translation quality are also significant on the TC-STAR EPPS SpanishEnglish task.,"{'title': '3 Experimental Results', 'number': '3'}"
-"Here, we combined four different systems which performed best in the TC-STAR 2005 evaluation, see Table 3.","{'title': '3 Experimental Results', 'number': '3'}"
-"Compared to the best performing single system, the consensus hypothesis reduces the WER from 41.0 to 39.1%.","{'title': '3 Experimental Results', 'number': '3'}"
-This result is further improved by rescoring the N-best lists derived from the confusion networks (N=1000).,"{'title': '3 Experimental Results', 'number': '3'}"
-"For rescoring, a word penalty feature, the IBM Model 1, and a 4-gram target language model were included.","{'title': '3 Experimental Results', 'number': '3'}"
-The linear interpolation weights of these models and the score from the confusion network were optimized on a separate development set with respect to word error rate.,"{'title': '3 Experimental Results', 'number': '3'}"
-Table 4 gives examples of improved translation quality by using the consensus translation as derived from the rescored N-best lists.,"{'title': '3 Experimental Results', 'number': '3'}"
-"In the IWSLT 2004 evaluation, the English reference translations for the Chinese-English and Japanese-English test corpora were the same, except for a permutation of the sentences.","{'title': '3 Experimental Results', 'number': '3'}"
-"Thus, we could combine MT systems which have different source and the same target language, performing multi-source machine translation (described e. g. by (Och and Ney, 2001)).","{'title': '3 Experimental Results', 'number': '3'}"
-We combined two Japanese-English and two Chinese-English systems.,"{'title': '3 Experimental Results', 'number': '3'}"
-"The best performing system was a JapaneseEnglish system with a BLEU score of 44.7%, see Table 5.","{'title': '3 Experimental Results', 'number': '3'}"
-"By computing the consensus translation, we improved this score to 49.6%, and also significantly reduced the error rates.","{'title': '3 Experimental Results', 'number': '3'}"
-"To investigate the potential of the proposed approach, we generated the N-best lists (N = 1000) of consensus translations.","{'title': '3 Experimental Results', 'number': '3'}"
-"Then, for each sentence, we selected the hypothesis in the N-best list with the lowest word error rate with respect to the multiple reference translations for the sentence.","{'title': '3 Experimental Results', 'number': '3'}"
-We then evaluated the quality of these “oracle” translations with all error measures.,"{'title': '3 Experimental Results', 'number': '3'}"
-"In a contrastive experiment, for each sentence we simply selected the translation with the lowest WER from the original 4 MT system outputs.","{'title': '3 Experimental Results', 'number': '3'}"
-Table 6 shows that the potential for improvement is significantly larger for the consensus-based combination of translation outputs than for simple selection of the best translation1.,"{'title': '3 Experimental Results', 'number': '3'}"
-"In our future work, we plan to improve the scoring of hypotheses in the confusion networks to explore this large potential.","{'title': '3 Experimental Results', 'number': '3'}"
-Some state-of-the-art speech translation systems can translate either the first best recognition hypotheses or the word lattices of an ASR system.,"{'title': '3 Experimental Results', 'number': '3'}"
-It has been previously shown that word lattice input generally improves translation quality.,"{'title': '3 Experimental Results', 'number': '3'}"
-"In practice, however, the translation system may choose, for some sentences, the paths in the lattice with many recognition errors and thus produce inferior translations.","{'title': '3 Experimental Results', 'number': '3'}"
-These translations can be improved if we compute a consensus translation from the output of at least two different speech translation systems.,"{'title': '3 Experimental Results', 'number': '3'}"
-"From each system, we take the translation of the single best ASR output, and the translation of the ASR word lattice.","{'title': '3 Experimental Results', 'number': '3'}"
-"Two different statistical MT systems capable of translating ASR word lattices have been compared by (Matusov and Ney, 2005).","{'title': '3 Experimental Results', 'number': '3'}"
-Both systems produced translations of better quality on the BTEC Italian-English speech translation task when using lattices instead of single best ASR output.,"{'title': '3 Experimental Results', 'number': '3'}"
-We obtained the output of each of the two systems under each of these translation scenarios on the CSTAR03 test corpus.,"{'title': '3 Experimental Results', 'number': '3'}"
-The first-best recognition word error rate on this corpus is 22.3%.,"{'title': '3 Experimental Results', 'number': '3'}"
-The objective error measures for the 4 translation hypotheses are given in Table 7.,"{'title': '3 Experimental Results', 'number': '3'}"
-We then computed a consensus translation of the 4 outputs with the proposed method.,"{'title': '3 Experimental Results', 'number': '3'}"
-The better performing word lattice translations were given higher system probabilities.,"{'title': '3 Experimental Results', 'number': '3'}"
-"With the consensus hypothesis, the word error rate went down from 29.5 to 28.5%.","{'title': '3 Experimental Results', 'number': '3'}"
-"Thus, the negative effect of recognition errors on the translation quality was further reduced.","{'title': '3 Experimental Results', 'number': '3'}"
-"In this work, we proposed a novel, theoretically well-founded procedure for computing a possibly new consensus translation from the outputs of multiple MT systems.","{'title': '4 Conclusions', 'number': '4'}"
-"In summary, the main conthe BTEC Italian-English task through computing consensus translations from the output of two speech translation systems with different types of source language input. tributions of this work compared to previous approaches are as follows: • The words of the original translation hypotheses are aligned in order to create a confusion network.","{'title': '4 Conclusions', 'number': '4'}"
-The alignment procedure explicitly models word reordering.,"{'title': '4 Conclusions', 'number': '4'}"
-• A test corpus of translations generated by each of the systems is used for the unsupervised statistical alignment training.,"{'title': '4 Conclusions', 'number': '4'}"
-"Thus, the decision on how to align two translations of a sentence takes the whole document context into account. plied in speech translation in order to cope with the negative impact of speech recognition errors on translation accuracy.","{'title': '4 Conclusions', 'number': '4'}"
-An important feature of a real-life application of the proposed alignment technique is that the lexicon and alignment probabilities can be updated with each translated sentence and/or text.,"{'title': '4 Conclusions', 'number': '4'}"
-"Thus, the correspondence between words in different hypotheses and, consequently, the consensus translation can be improved overtime.","{'title': '4 Conclusions', 'number': '4'}"
-This paper is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Contract No.,"{'title': '5 Acknowledgement', 'number': '5'}"
-HR0011-06-C0023.,"{'title': '5 Acknowledgement', 'number': '5'}"
-This work was also in part funded by the European Union under the integrated project TCSTAR – Technology and Corpora for Speech to Speech Translation (IST-2002-FP6-506738).,"{'title': '5 Acknowledgement', 'number': '5'}"
+This paper describes a novel method for computing a consensus translation from the outputs of multiple machine translation (MT) systems.,Introduction
+The outputs are combined and a possibly new translation hypothesis can be generated.,Introduction
+"Similarly to the well-established ROVER approach of (Fiscus, 1997) for combining speech recognition hypotheses, the consensus translation is computed by voting on a confusion network.",Introduction
+"To create the confusion network, we produce pairwise word alignments of the original machine translation hypotheses with an enhanced statistical alignment algorithm that explicitly models word reordering.",Introduction
+The context of a whole document of translations rather than a single sentence is taken into account to produce the alignment.,Introduction
+"The proposed alignment and voting approach was evaluated on several machine translation tasks, including a large vocabulary task.",Introduction
+The method was also tested in the framework of multi-source and speech translation.,Introduction
+"On all tasks and conditions, we achieved significant improvements in translation quality, increasing e. g. the BLEU score by as much as 15% relative.",Introduction
+In this work we describe a novel technique for computing a consensus translation from the outputs of multiple machine translation systems.,Experiment/Discussion
+Combining outputs from different systems was shown to be quite successful in automatic speech recognition (ASR).,Experiment/Discussion
+"Voting schemes like the ROVER approach of (Fiscus, 1997) use edit distance alignment and time information to create confusion networks from the output of several ASR systems.",Experiment/Discussion
+Some research on multi-engine machine translation has also been performed in recent years.,Experiment/Discussion
+"The most straightforward approaches simply select, for each sentence, one of the provided hypotheses.",Experiment/Discussion
+"The selection is made based on the scores of translation, language, and other models (Nomoto, 2004; Paul et al., 2005).",Experiment/Discussion
+"Other approaches combine lattices or N-best lists from several different MT systems (Frederking and Nirenburg, 1994).",Experiment/Discussion
+"To be successful, such approaches require compatible lattices and comparable scores of the (word) hypotheses in the lattices.",Experiment/Discussion
+"However, the scores of most statistical machine translation (SMT) systems are not normalized and therefore not directly comparable.",Experiment/Discussion
+"For some other MT systems (e.g. knowledge-based systems), the lattices and/or scores of hypotheses may not be even available.",Experiment/Discussion
+"(Bangalore et al., 2001) used the edit distance alignment extended to multiple sequences to construct a confusion network from several translation hypotheses.",Experiment/Discussion
+"This algorithm produces monotone alignments only (i. e. allows insertion, deletion, and substitution of words); it is not able to align translation hypotheses with significantly different word order.",Experiment/Discussion
+"(Jayaraman and Lavie, 2005) try to overcome this problem.",Experiment/Discussion
+They introduce a method that allows non-monotone alignments of words in different translation hypotheses for the same sentence.,Experiment/Discussion
+"However, this approach uses many heuristics and is based on the alignment that is performed to calculate a specific MT error measure; the performance improvements are reported only in terms of this measure.",Experiment/Discussion
+"Here, we propose an alignment procedure that explicitly models reordering of words in the hypotheses.",Experiment/Discussion
+"In contrast to existing approaches, the context of the whole document rather than a single sentence is considered in this iterative, unsupervised procedure, yielding a more reliable alignment.",Experiment/Discussion
+"Based on the alignment, we construct a confusion network from the (possibly reordered) translation hypotheses, similarly to the approach of (Bangalore et al., 2001).",Experiment/Discussion
+"Using global system probabilities and other statistical models, the voting procedure selects the best consensus hypothesis from the confusion network.",Experiment/Discussion
+This consensus translation may be different from the original translations.,Experiment/Discussion
+This paper is organized as follows.,Experiment/Discussion
+"In Section 2, we will describe the computation of consensus translations with our approach.",Experiment/Discussion
+"In particular, we will present details of the enhanced alignment and reordering procedure.",Experiment/Discussion
+"A large set of experimental results on several machine translation tasks is presented in Section 3, which is followed by a summary.",Experiment/Discussion
+The proposed approach takes advantage of multiple translations for a whole test corpus to compute a consensus translation for each sentence in this corpus.,Experiment/Discussion
+"Given a single source sentence in the test corpus, we combine M translation hypotheses Ei, ... , EM from M MT engines.",Experiment/Discussion
+We first choose one of the hypotheses Em as the primary one.,Experiment/Discussion
+We consider this primary hypothesis to have the “correct” word order.,Experiment/Discussion
+"We then align and reorder the other, secondary hypotheses En(n = 1, ..., M; n =� m) to match this word order.",Experiment/Discussion
+"Since each hypothesis may have an acceptable word order, we let every hypothesis play the role of the primary translation once, and thus align all pairs of hypotheses (En, Em); n =� m. In the following subsections, we will explain the word alignment procedure, the reordering approach, and the construction of confusion networks.",Experiment/Discussion
+The word alignment is performed in analogy to the training procedure in SMT.,Experiment/Discussion
+The difference is that the two sentences that have to be aligned are in the same language.,Experiment/Discussion
+"We consider the conditional probability Pr(En|Em) of the event that, given Em, another hypothesis En is generated from the Em.",Experiment/Discussion
+"Then, the alignment between the two hypotheses is introduced as a hidden variable: This probability is then decomposed into the alignment probability Pr(A|Em) and the lexicon probability Pr(En|A, Em): As in statistical machine translation, we make modelling assumptions.",Experiment/Discussion
+"We use the IBM Model 1 (Brown et al., 1993) (uniform distribution) and the Hidden Markov Model (HMM, first-order dependency, (Vogel et al., 1996)) to estimate the alignment model.",Experiment/Discussion
+The lexicon probability of a sentence pair is modelled as a product of single-word based probabilities of the aligned words.,Experiment/Discussion
+The training corpus for alignment is created from a test corpus of N sentences (usually a few hundred) translated by all of the involved MT engines.,Experiment/Discussion
+"However, the effective size of the training corpus is larger than N, since all pairs of different hypotheses have to be aligned.",Experiment/Discussion
+"Thus, the effective size of the training corpus is M · (M −1) · N. The single-word based lexicon probabilities p(en|em) are initialized with normalized lexicon counts collected over the sentence pairs (En, Em) on this corpus.",Experiment/Discussion
+"Since all of the hypotheses are in the same language, we count co-occurring equal words, i. e. if en is the same word as em.",Experiment/Discussion
+"In addition, we add a fraction of a count for words with identical prefixes.",Experiment/Discussion
+"The initialization could be furthermore improved by using word classes, part-of-speech tags, or a list of synonyms.",Experiment/Discussion
+"The model parameters are trained iteratively in an unsupervised manner with the EM algorithm using the GIZA++ toolkit (Och and Ney, 2003).",Experiment/Discussion
+The training is performed in the directions En → Em and Em → En.,Experiment/Discussion
+The updated lexicon tables from the two directions are interpolated after each iteration.,Experiment/Discussion
+"The final alignments are determined using cost matrices defined by the state occupation probabilities of the trained HMM (Matusov et al., 2004).",Experiment/Discussion
+The alignments are used for reordering each secondary translation En and for computing the confusion network. with symbol |).,Experiment/Discussion
+The words of the primary hypothesis are printed in bold.,Experiment/Discussion
+"The symbol $ denotes a null alignment or an e-arc in the corresponding part of the confusion network. alignment would|would you|you have|like coffee|coffee or|or tea|tea and would|would you|you like|like your|$ coffee|coffee or|or $|tea reordering I|$ would|would you|you like|like have|$ some|$ coffee|coffee $|or tea|tea $ would you like $ $ coffee or tea confusion $ would you have $ $ coffee or tea network $ would you like your $ coffee or $ I would you like have some coffee $ tea The alignment between En and the primary hypothesis E,,t used for reordering is computed as a function of words in the secondary translation En with minimal costs, with an additional constraint that identical words in En can not be all aligned to the same word in E,,t.",Experiment/Discussion
+This constraint is necessary to avoid that reordered hypotheses with e. g. multiple consecutive articles “the” would be produced if fewer articles were used in the primary hypothesis.,Experiment/Discussion
+"The new word order for En is obtained through sorting the words in En by the indices of the words in E,,t to which they are aligned.",Experiment/Discussion
+"Two words in En which are aligned to the same word in E,,t are kept in the original order.",Experiment/Discussion
+"After reordering each secondary hypothesis En, we determine M − 1 monotone one-to-one alignments between E,,t and En, n = 1, ... , M; n =6 m. In case of many-toone connections of words in En to a single word in E,,t, we only keep the connection with the lowest alignment costs.",Experiment/Discussion
+The one-to-one alignments are convenient for constructing a confusion network in the next step of the algorithm.,Experiment/Discussion
+"Given the M−1 monotone one-to-one alignments, the transformation to a confusion network as described by (Bangalore et al., 2001) is straightforward.",Experiment/Discussion
+It is explained by the example in Figure 1.,Experiment/Discussion
+"Here, the original 4 hypotheses are shown, followed by the alignment of the reordered secondary hypotheses 2-4 with the primary hypothesis 1.",Experiment/Discussion
+"The alignment is shown with the  |symbol, and the words of the primary hypothesis are to the right of this symbol.",Experiment/Discussion
+"The symbol $ denotes a null alignment or an e-arc in the corresponding part of the confusion network, which is shown at the bottom of the figure.",Experiment/Discussion
+Note that the word “have” in translation 2 is aligned to the word “like” in translation 1.,Experiment/Discussion
+This alignment is acceptable considering the two translations alone.,Experiment/Discussion
+"However, given the presence of the word “have” in translation 4, this is not the best alignment.",Experiment/Discussion
+"Yet the problems of this type can in part be solved by the proposed approach, since every translation once plays the role of the primary translation.",Experiment/Discussion
+"For each sentence, we obtain a total of M confusion networks and unite them in a single lattice.",Experiment/Discussion
+The consensus translation can be chosen among different alignment and reordering paths in this lattice.,Experiment/Discussion
+The “voting” on the union of confusion networks is straightforward and analogous to the ROVER system.,Experiment/Discussion
+We sum up the probabilities of the arcs which are labeled with the same word and have the same start and the same end state.,Experiment/Discussion
+These probabilities are the global probabilities assigned to the different MT systems.,Experiment/Discussion
+They are manually adjusted based on the performance of the involved MT systems on a held-out development set.,Experiment/Discussion
+"In general, a better consensus translation can be produced if the words hypothesized by a betterperforming system get a higher probability.",Experiment/Discussion
+Additional scores like word confidence measures can be used to score the arcs in the lattice.,Experiment/Discussion
+"In the final step, the consensus translation is extracted as the best path from the union of confusion networks.",Experiment/Discussion
+Note that the extracted consensus translation can be different from the original M translations.,Experiment/Discussion
+"Alternatively, the N-best hypotheses can be extracted for rescoring by additional models.",Experiment/Discussion
+We performed experiments with both approaches.,Experiment/Discussion
+"Since M confusion networks are used, the lattice may contain two best paths with the same probability, the same words, but different word order.",Experiment/Discussion
+We extended the algorithm to favor more well-formed word sequences.,Experiment/Discussion
+We assign a higher probability to each arc of the primary (unreordered) translation in each of the M confusion networks.,Experiment/Discussion
+"Experimentally, this extension improved translation fluency on some tasks.",Experiment/Discussion
+The alignment and voting algorithm was evaluated on both small and large vocabulary tasks.,Experiment/Discussion
+"Initial experiments were performed on the IWSLT 2004 Chinese-English and Japanese-English tasks (Akiba et al., 2004).",Experiment/Discussion
+"The data for these tasks come from the Basic Travel Expression corpus (BTEC), consisting of tourism-related sentences.",Experiment/Discussion
+We combined the outputs of several MT systems that had officially been submitted to the IWSLT 2004 evaluation.,Experiment/Discussion
+Each system had used 20K sentence pairs (180K running words) from the BTEC corpus for training.,Experiment/Discussion
+"Experiments with translations of automatically recognized speech were performed on the BTEC Italian-English task (Federico, 2003).",Experiment/Discussion
+"Here, the involved MT systems had used about 60K sentence pairs (420K running words) for training.",Experiment/Discussion
+"Finally, we also computed consensus translation from some of the submissions to the TC-STAR 2005 evaluation campaign (TC-STAR, 2005).",Experiment/Discussion
+The TC-STAR participants had submitted translations of manually transcribed speeches from the European Parliament Plenary Sessions (EPPS).,Experiment/Discussion
+"In our experiments, we used the translations from Spanish to English.",Experiment/Discussion
+The MT engines for this task had been trained on 1.2M sentence pairs (32M running words).,Experiment/Discussion
+"Table 1 gives an overview of the test corpora, on which the enhanced hypotheses alignment was computed, and for which the consensus translations were determined.",Experiment/Discussion
+The official IWSLT04 test corpus was used for the IWSLT 04 tasks; the CSTAR03 test corpus was used for the speech translation task.,Experiment/Discussion
+The March 2005 test corpus of the TC-STAR evaluation (verbatim condition) was used for the EPPS task.,Experiment/Discussion
+"In Table 1, the number of running words in English is the average number of running words in the hypotheses, from which the consensus translation was computed; the vocabulary of English is the merged vocabulary of these hypotheses.",Experiment/Discussion
+"For the BTEC IWSLT04 corpus, the statistics for English is given for the experiments described in Sections 3.3 and 3.5, respectively.",Experiment/Discussion
+"Well-established objective evaluation measures like the word error rate (WER), positionindependent word error rate (PER), and the BLEU score (Papineni et al., 2002) were used to assess the translation quality.",Experiment/Discussion
+All measures were computed with respect to multiple reference translations.,Experiment/Discussion
+"The evaluation (as well as the alignment training) was case-insensitive, without considering the punctuation marks.",Experiment/Discussion
+Different applications of the proposed combination method have been evaluated.,Experiment/Discussion
+"First, we focused on combining different MT systems which have the same source and target language.",Experiment/Discussion
+The initial experiments were performed on the BTEC Chinese-English task.,Experiment/Discussion
+We combined translations produced by 5 different MT systems.,Experiment/Discussion
+Table 2 shows the performance of the best and the worst of these systems in terms of the BLEU score.,Experiment/Discussion
+The results for the consensus translation show a dramatic improvement in translation quality.,Experiment/Discussion
+The word error rate is reduced e. g. from 54.6 to 47.8%.,Experiment/Discussion
+The research group which had submitted the best translation in 2004 translated the same test set a year later with an improved system.,Experiment/Discussion
+We compared the consensus translation with this new translation (last line of Table 2).,Experiment/Discussion
+It can be observed that the consensus translation based on the MT systems developed in 2004 is still superior to this 2005 single system translation in terms of all error measures.,Experiment/Discussion
+We also checked how many sentences in the consensus translation of the test corpus are different from the 5 original translations.,Experiment/Discussion
+185 out of 500 sentences (37%) had new translations.,Experiment/Discussion
+"Computing the error measures on these sentences only, we observed significant improvements in WER and PER and a small improvement in BLEU with respect to the original translations.",Experiment/Discussion
+"Thus, the quality of previously unseen consensus translations as generated from the original translations is acceptable.",Experiment/Discussion
+"In this experiment, the global system probabilities for scoring the confusion networks were tuned manually on a development set.",Experiment/Discussion
+"The distribution was 0.35, 0.25, 0.2, 0.1, 0.1, with 0.35 for the words of the best single system and 0.1 for the words of the worst single system.",Experiment/Discussion
+We observed that the consensus translation did not change significantly with small perturbations of these values.,Experiment/Discussion
+"However, the relation between the probabilities is very important for good performance.",Experiment/Discussion
+No improvement can be achieved with a uniform probability distribution – it is necessary to penalize translations of low quality.,Experiment/Discussion
+The improvements in translation quality are also significant on the TC-STAR EPPS SpanishEnglish task.,Experiment/Discussion
+"Here, we combined four different systems which performed best in the TC-STAR 2005 evaluation, see Table 3.",Experiment/Discussion
+"Compared to the best performing single system, the consensus hypothesis reduces the WER from 41.0 to 39.1%.",Experiment/Discussion
+This result is further improved by rescoring the N-best lists derived from the confusion networks (N=1000).,Experiment/Discussion
+"For rescoring, a word penalty feature, the IBM Model 1, and a 4-gram target language model were included.",Experiment/Discussion
+The linear interpolation weights of these models and the score from the confusion network were optimized on a separate development set with respect to word error rate.,Experiment/Discussion
+Table 4 gives examples of improved translation quality by using the consensus translation as derived from the rescored N-best lists.,Experiment/Discussion
+"In the IWSLT 2004 evaluation, the English reference translations for the Chinese-English and Japanese-English test corpora were the same, except for a permutation of the sentences.",Experiment/Discussion
+"Thus, we could combine MT systems which have different source and the same target language, performing multi-source machine translation (described e. g. by (Och and Ney, 2001)).",Experiment/Discussion
+We combined two Japanese-English and two Chinese-English systems.,Experiment/Discussion
+"The best performing system was a JapaneseEnglish system with a BLEU score of 44.7%, see Table 5.",Experiment/Discussion
+"By computing the consensus translation, we improved this score to 49.6%, and also significantly reduced the error rates.",Experiment/Discussion
+"To investigate the potential of the proposed approach, we generated the N-best lists (N = 1000) of consensus translations.",Experiment/Discussion
+"Then, for each sentence, we selected the hypothesis in the N-best list with the lowest word error rate with respect to the multiple reference translations for the sentence.",Experiment/Discussion
+We then evaluated the quality of these “oracle” translations with all error measures.,Experiment/Discussion
+"In a contrastive experiment, for each sentence we simply selected the translation with the lowest WER from the original 4 MT system outputs.",Experiment/Discussion
+Table 6 shows that the potential for improvement is significantly larger for the consensus-based combination of translation outputs than for simple selection of the best translation1.,Experiment/Discussion
+"In our future work, we plan to improve the scoring of hypotheses in the confusion networks to explore this large potential.",Experiment/Discussion
+Some state-of-the-art speech translation systems can translate either the first best recognition hypotheses or the word lattices of an ASR system.,Experiment/Discussion
+It has been previously shown that word lattice input generally improves translation quality.,Experiment/Discussion
+"In practice, however, the translation system may choose, for some sentences, the paths in the lattice with many recognition errors and thus produce inferior translations.",Experiment/Discussion
+These translations can be improved if we compute a consensus translation from the output of at least two different speech translation systems.,Experiment/Discussion
+"From each system, we take the translation of the single best ASR output, and the translation of the ASR word lattice.",Experiment/Discussion
+"Two different statistical MT systems capable of translating ASR word lattices have been compared by (Matusov and Ney, 2005).",Experiment/Discussion
+Both systems produced translations of better quality on the BTEC Italian-English speech translation task when using lattices instead of single best ASR output.,Experiment/Discussion
+We obtained the output of each of the two systems under each of these translation scenarios on the CSTAR03 test corpus.,Experiment/Discussion
+The first-best recognition word error rate on this corpus is 22.3%.,Experiment/Discussion
+The objective error measures for the 4 translation hypotheses are given in Table 7.,Experiment/Discussion
+We then computed a consensus translation of the 4 outputs with the proposed method.,Experiment/Discussion
+The better performing word lattice translations were given higher system probabilities.,Experiment/Discussion
+"With the consensus hypothesis, the word error rate went down from 29.5 to 28.5%.",Experiment/Discussion
+"Thus, the negative effect of recognition errors on the translation quality was further reduced.",Experiment/Discussion
+"In this work, we proposed a novel, theoretically well-founded procedure for computing a possibly new consensus translation from the outputs of multiple MT systems.",Results/Conclusion
+"In summary, the main conthe BTEC Italian-English task through computing consensus translations from the output of two speech translation systems with different types of source language input. tributions of this work compared to previous approaches are as follows: • The words of the original translation hypotheses are aligned in order to create a confusion network.",Results/Conclusion
+The alignment procedure explicitly models word reordering.,Results/Conclusion
+• A test corpus of translations generated by each of the systems is used for the unsupervised statistical alignment training.,Results/Conclusion
+"Thus, the decision on how to align two translations of a sentence takes the whole document context into account. plied in speech translation in order to cope with the negative impact of speech recognition errors on translation accuracy.",Results/Conclusion
+An important feature of a real-life application of the proposed alignment technique is that the lexicon and alignment probabilities can be updated with each translated sentence and/or text.,Results/Conclusion
+"Thus, the correspondence between words in different hypotheses and, consequently, the consensus translation can be improved overtime.",Results/Conclusion
+This paper is based upon work supported by the Defense Advanced Research Projects Agency (DARPA) under Contract No.,Results/Conclusion
+HR0011-06-C0023.,Results/Conclusion
+This work was also in part funded by the European Union under the integrated project TCSTAR – Technology and Corpora for Speech to Speech Translation (IST-2002-FP6-506738).,Results/Conclusion

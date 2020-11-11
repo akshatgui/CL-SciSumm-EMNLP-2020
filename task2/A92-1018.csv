@@ -1,288 +1,288 @@
 col1,col2
-We present an implementation of a part-of-speech tagger based on a hidden Markov model.,{}
-The methodology enables robust and accurate tagging with few resource requirements.,{}
-Only a lexicon and some unlabeled training text are required.,{}
-Accuracy exceeds 96%.,{}
-We describe implementation strategies and optimizations which result in high-speed operation.,{}
-Three applications for tagging are described: phrase recognition; word sense disambiguation; and grammatical function assignment.,{}
-1 Desiderata Many words are ambiguous in their part of speech.,{}
-"For example, &quot;tag&quot; can be a noun or a verb.",{}
-"However, when a word appears in the context of other words, the ambiguity is often reduced: in &quot;a tag is a part-of-speech label,&quot; the &quot;tag&quot; can only be a noun.",{}
-A tagger is a system that uses context to assign parts of speech to words.,{}
-Automatic text tagging is an important first step in discovering the linguistic structure of large text corpora.,{}
-"Part-of-speech information facilitates higher-level analysis, such as recognizing noun phrases and other patterns in text.",{}
-"For a tagger to function as a practical component in a language processing system, we believe that a tagger must be: corpora contain ungrammatical constructions, isolated phrases (such as titles), and nonlinguistic data (such as tables).",{}
-Corpora are also likely to contain words that are unknown to the tagger.,{}
-"It is desirable that a tagger deal gracefully with these situations. a tagger is to be used to analyze arbitrarily large corpora, it must be efficient—performing in time linear in the number of words tagged.",{}
-"Any training required should also be fast, enabling rapid turnaround with new corpora and new text genres.",{}
-A should attempt to assign the correct part-of-speech tag to every word encountered.,{}
-A should be able to take advantage of linguistic insights.,{}
-"One should be able to correct errors by supplying appropriate priori &quot;hints.&quot; It should be possible to give different hints for different corpora. effort required to retarget a tagger to new corpora, new tagsets, and new languages should be minimal.",{}
-2 Methodology 2.1 Background Several different approaches have been used for building text taggers.,{}
-"Greene and Rubin used a rule-based approach in the TAGGIT program [Greene and Rubin, 1971], which was an aid in tagging the Brown corpus [Francis and KuEera, 1982].",{}
-TAGGIT disambiguated 77% of the corpus; the rest was done manually over a period of several years.,{}
-"More recently, Koskenniemi also used a rule-based approach implemented with finite-state machines [Koskenniemi, 1990].",{}
-"Statistical methods have also been used (e.g., [DeRose, [Garside al., These provide the capability of resolving ambiguity on the basis of most likely interpretation.",{}
-"A form of Markov model has been widely used that assumes that a word depends probabilistically on just its part-of-speech category, which in turn depends solely on the categories of the preceding two words.",{}
-"Two types of training (i.e., parameter estimation) have been used with this model.",{}
-The first makes use of a tagged training corpus.,{}
-"Derouault and Merialdo use a bootstrap method for training [Derouault and Merialdo, 1986].",{}
-"At first, a relatively small amount of text is manually tagged and used to train a partially accurate model.",{}
-"The model is then used to tag more text, and the tags are manually corrected and then used to retrain the model.",{}
-"Church uses the tagged Brown corpus for training [Church, 1988].",{}
-"These models involve probabilities for each word in the lexicon, so large tagged corpora are required for reliable estimation.",{}
-The second method of training does not require a tagged training corpus.,{}
-"In this situation the Baum-Welch algorithm (also known as the forward-backward algorithm) can be used [Baum, 1972].",{}
-"Under this regime the model is a Markov model as state transitions (i.e., part-of-speech categories) are assumed to be unobservable.",{}
-"Jelinek has used this method for training a text tagger [Jelinek, 1985].",{}
-"Parameter smoothing can be conachieved using the method of interpolawhich weighted estimates are taken from secondand first-order models and a uniform probability distribution [Jelinek and Mercer, 1980].",{}
-"Kupiec used word equivclasses (referred to here as classes) on parts of speech, to pool data from individual words [Kupiec, 1989b].",{}
-"The most common words are still represented individually, as sufficient data exist for robust estimation.",{}
-133 However all other words are represented according to the set of possible categories they can assume.,{}
-"In this manner, the vocabulary of 50,000 words in the Brown corpus can be reduced to approximately 400 distinct ambiguity classes [Kupiec, 1992].",{}
-"To further reduce the number of parameters, a first-order model can be employed (this assumes that a word's category depends only on the immediately preceding word's category).",{}
-"In [Kupiec, 1989a], networks are used to selectively augment the context in a basic firstorder model, rather than using uniformly second-order dependencies.",{}
-2.2 Our approach We next describe how our choice of techniques satisfies the listed in section 1.,{}
-The use of an complete flexibility in the choice of training corpora.,{}
-"Text from any desired domain can be used, and a tagger can be tailored for use with a particular text database by training on a portion of that database.",{}
-"Lexicons containing alternative tag sets can be easily accommodated without any need for re-labeling the training corpus, affording further flexibility in the use of specialized tags.",{}
-"As the resources required are simply a lexicon and a suitably large sample of ordinary text, taggers can be built with minimal effort, even for other languages, such as French (e.g., [Kupiec, 1992]).",{}
-The use of ambiguity classes and a first-order model reduces the number of parameters to be estimated without significant reduction in accuracy (discussed in section 5).,{}
-This also enables a tagger to be reliably trained using only moderate amounts of text.,{}
-"We have produced reasonable results training on as few as 3,000 sentences.",{}
-Fewer parameters also reduce the time required for training.,{}
-"Relatively few ambiguity classes are sufficient for wide coverage, so it is unlikely that adding new words to the lexicon requires retraining, as their ambiguity classes are already accommodated.",{}
-"Vocabulary independence is achieved by predicting categories for words not in the lexicon, using both context and suffix information.",{}
-"Probabilities corresponding to category sequences that never occurred in the training data are assigned small, non-zero values, ensuring that the model will accept any sequence of tokens, while still providing the most likely tagging.",{}
-"By using the fact that words are typically associated with only a few part-ofspeech categories, and carefully ordering the computation, the algorithms have linear complexity (section 3.3).",{}
-3 Hidden Markov Modeling The hidden Markov modeling component of our tagger is implemented as an independent module following the specgiven in [Levinson et with special attention to space and time efficiency issues.,{}
-Only first-order modeling is addressed and will be presumed for the remainder of this discussion.,{}
-"3.1 Formalism brief, an a doubly stochastic process that generates sequence of symbols ={Sl,S2, , 1 <i< where W is some finite set of possible symbols, by composing an underlying Markov process with a state-dependent symbol generator (i.e., a Markov process with noise).'",{}
-"Th Markov process captures the notion of sequence depen and is described by a set of a matrix c probabilities A -= 1 < a, the probability of moving from state i to state of initial probabilities H = {70 1 < i < is the probability of starting in state i.",{}
-"The symbol ger erator is a state-dependent measure on V described by of symbol probabilities 1 < j < < < M = IW I is the probability ( symbol given that the Markov process is i In part-of-speech tagging, we will model word order di pendency through an underlying Markov process that 01 erates in terms of lexical tags,' yet we will only be ab to observe the sets of tags, or ambiguity classes, that ai possible for individual words.",{}
-"The ambiguity class of eac word is the set of its permitted parts of speech, only or of which is correct in context.",{}
-"Given the parameters .4, Markov modeling allows us to compute ti most probable sequence of state transitions, and hence a mostly likely sequence of lexical tags, corresponding to of ambiguity classes.",{}
-"In the following, identified with the number of possible .tags, and W wil the set of all ambiguity classes.",{}
-"Applying an HMM consists of two tasks: estimating ti parameters A, a training set; ar computing the most likely sequence of underlying sta transitions given new observations.",{}
-"Maximum likeliho( estimates (that is, estimates that maximize the probabili of the training set) can be found through application of z ternating expectation in a procedure known as the Baur Welch, or forward-backward, algorithm [Baum, 1972]. proceeds by recursively defining two sets of probabiliti( the forward probabilities eft+1.",{}
-"(i) = bi(St+i) < t < T — 1, ( = for all the backward prob bilities, i3(i) = — 1 < t < 1, ( 1.1 1 for all forward probabili the joint probability of the sequence up to tir t, S2, , the event that the Markov pr is in state i at time the backwa is the probability of seeing the sequen , ST} that the Markov process is state i at time t. It follows that the probability of t entire sequence is N N =",{}
-Many words are ambiguous in their part of speech.,"{'title': '1 Desiderata', 'number': '1'}"
-"For example, &quot;tag&quot; can be a noun or a verb.","{'title': '1 Desiderata', 'number': '1'}"
-"However, when a word appears in the context of other words, the ambiguity is often reduced: in &quot;a tag is a part-of-speech label,&quot; the word &quot;tag&quot; can only be a noun.","{'title': '1 Desiderata', 'number': '1'}"
-A part-of-speech tagger is a system that uses context to assign parts of speech to words.,"{'title': '1 Desiderata', 'number': '1'}"
-Automatic text tagging is an important first step in discovering the linguistic structure of large text corpora.,"{'title': '1 Desiderata', 'number': '1'}"
-"Part-of-speech information facilitates higher-level analysis, such as recognizing noun phrases and other patterns in text.","{'title': '1 Desiderata', 'number': '1'}"
-"For a tagger to function as a practical component in a language processing system, we believe that a tagger must be: Robust Text corpora contain ungrammatical constructions, isolated phrases (such as titles), and nonlinguistic data (such as tables).","{'title': '1 Desiderata', 'number': '1'}"
-Corpora are also likely to contain words that are unknown to the tagger.,"{'title': '1 Desiderata', 'number': '1'}"
-It is desirable that a tagger deal gracefully with these situations.,"{'title': '1 Desiderata', 'number': '1'}"
-"Efficient If a tagger is to be used to analyze arbitrarily large corpora, it must be efficient—performing in time linear in the number of words tagged.","{'title': '1 Desiderata', 'number': '1'}"
-"Any training required should also be fast, enabling rapid turnaround with new corpora and new text genres.","{'title': '1 Desiderata', 'number': '1'}"
-Accurate A tagger should attempt to assign the correct part-of-speech tag to every word encountered.,"{'title': '1 Desiderata', 'number': '1'}"
-Tunable A tagger should be able to take advantage of linguistic insights.,"{'title': '1 Desiderata', 'number': '1'}"
-One should be able to correct systematic errors by supplying appropriate a priori &quot;hints.&quot; It should be possible to give different hints for different corpora.,"{'title': '1 Desiderata', 'number': '1'}"
-"Reusable The effort required to retarget a tagger to new corpora, new tagsets, and new languages should be minimal.","{'title': '1 Desiderata', 'number': '1'}"
-Several different approaches have been used for building text taggers.,"{'title': '2 Methodology', 'number': '2'}"
-"Greene and Rubin used a rule-based approach in the TAGGIT program [Greene and Rubin, 1971], which was an aid in tagging the Brown corpus [Francis and KuEera, 1982].","{'title': '2 Methodology', 'number': '2'}"
-TAGGIT disambiguated 77% of the corpus; the rest was done manually over a period of several years.,"{'title': '2 Methodology', 'number': '2'}"
-"More recently, Koskenniemi also used a rule-based approach implemented with finite-state machines [Koskenniemi, 1990].","{'title': '2 Methodology', 'number': '2'}"
-"Statistical methods have also been used (e.g., [DeRose, 1988], [Garside et al., 1987]).","{'title': '2 Methodology', 'number': '2'}"
-These provide the capability of resolving ambiguity on the basis of most likely interpretation.,"{'title': '2 Methodology', 'number': '2'}"
-"A form of Markov model has been widely used that assumes that a word depends probabilistically on just its part-of-speech category, which in turn depends solely on the categories of the preceding two words.","{'title': '2 Methodology', 'number': '2'}"
-"Two types of training (i.e., parameter estimation) have been used with this model.","{'title': '2 Methodology', 'number': '2'}"
-The first makes use of a tagged training corpus.,"{'title': '2 Methodology', 'number': '2'}"
-"Derouault and Merialdo use a bootstrap method for training [Derouault and Merialdo, 1986].","{'title': '2 Methodology', 'number': '2'}"
-"At first, a relatively small amount of text is manually tagged and used to train a partially accurate model.","{'title': '2 Methodology', 'number': '2'}"
-"The model is then used to tag more text, and the tags are manually corrected and then used to retrain the model.","{'title': '2 Methodology', 'number': '2'}"
-"Church uses the tagged Brown corpus for training [Church, 1988].","{'title': '2 Methodology', 'number': '2'}"
-"These models involve probabilities for each word in the lexicon, so large tagged corpora are required for reliable estimation.","{'title': '2 Methodology', 'number': '2'}"
-The second method of training does not require a tagged training corpus.,"{'title': '2 Methodology', 'number': '2'}"
-"In this situation the Baum-Welch algorithm (also known as the forward-backward algorithm) can be used [Baum, 1972].","{'title': '2 Methodology', 'number': '2'}"
-"Under this regime the model is called a hidden Markov model (HMM), as state transitions (i.e., part-of-speech categories) are assumed to be unobservable.","{'title': '2 Methodology', 'number': '2'}"
-"Jelinek has used this method for training a text tagger [Jelinek, 1985].","{'title': '2 Methodology', 'number': '2'}"
-"Parameter smoothing can be conveniently achieved using the method of deleted interpolation in which weighted estimates are taken from secondand first-order models and a uniform probability distribution [Jelinek and Mercer, 1980].","{'title': '2 Methodology', 'number': '2'}"
-"Kupiec used word equivalence classes (referred to here as ambiguity classes) based on parts of speech, to pool data from individual words [Kupiec, 1989b].","{'title': '2 Methodology', 'number': '2'}"
-"The most common words are still represented individually, as sufficient data exist for robust estimation.","{'title': '2 Methodology', 'number': '2'}"
-However all other words are represented according to the set of possible categories they can assume.,"{'title': '2 Methodology', 'number': '2'}"
-"In this manner, the vocabulary of 50,000 words in the Brown corpus can be reduced to approximately 400 distinct ambiguity classes [Kupiec, 1992].","{'title': '2 Methodology', 'number': '2'}"
-"To further reduce the number of parameters, a first-order model can be employed (this assumes that a word's category depends only on the immediately preceding word's category).","{'title': '2 Methodology', 'number': '2'}"
-"In [Kupiec, 1989a], networks are used to selectively augment the context in a basic firstorder model, rather than using uniformly second-order dependencies.","{'title': '2 Methodology', 'number': '2'}"
-We next describe how our choice of techniques satisfies the criteria listed in section 1.,"{'title': '2 Methodology', 'number': '2'}"
-The use of an HMM permits complete flexibility in the choice of training corpora.,"{'title': '2 Methodology', 'number': '2'}"
-"Text from any desired domain can be used, and a tagger can be tailored for use with a particular text database by training on a portion of that database.","{'title': '2 Methodology', 'number': '2'}"
-"Lexicons containing alternative tag sets can be easily accommodated without any need for re-labeling the training corpus, affording further flexibility in the use of specialized tags.","{'title': '2 Methodology', 'number': '2'}"
-"As the resources required are simply a lexicon and a suitably large sample of ordinary text, taggers can be built with minimal effort, even for other languages, such as French (e.g., [Kupiec, 1992]).","{'title': '2 Methodology', 'number': '2'}"
-The use of ambiguity classes and a first-order model reduces the number of parameters to be estimated without significant reduction in accuracy (discussed in section 5).,"{'title': '2 Methodology', 'number': '2'}"
-This also enables a tagger to be reliably trained using only moderate amounts of text.,"{'title': '2 Methodology', 'number': '2'}"
-"We have produced reasonable results training on as few as 3,000 sentences.","{'title': '2 Methodology', 'number': '2'}"
-Fewer parameters also reduce the time required for training.,"{'title': '2 Methodology', 'number': '2'}"
-"Relatively few ambiguity classes are sufficient for wide coverage, so it is unlikely that adding new words to the lexicon requires retraining, as their ambiguity classes are already accommodated.","{'title': '2 Methodology', 'number': '2'}"
-"Vocabulary independence is achieved by predicting categories for words not in the lexicon, using both context and suffix information.","{'title': '2 Methodology', 'number': '2'}"
-"Probabilities corresponding to category sequences that never occurred in the training data are assigned small, non-zero values, ensuring that the model will accept any sequence of tokens, while still providing the most likely tagging.","{'title': '2 Methodology', 'number': '2'}"
-"By using the fact that words are typically associated with only a few part-ofspeech categories, and carefully ordering the computation, the algorithms have linear complexity (section 3.3).","{'title': '2 Methodology', 'number': '2'}"
-"The hidden Markov modeling component of our tagger is implemented as an independent module following the specification given in [Levinson et al., 1983], with special attention to space and time efficiency issues.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Only first-order modeling is addressed and will be presumed for the remainder of this discussion.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"In brief, an HMM is a doubly stochastic process that generates sequence of symbols S ={Sl,S2, , ST}, S,EW 1 <i< T, where W is some finite set of possible symbols, by composing an underlying Markov process with a state-dependent symbol generator (i.e., a Markov process with noise).'","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Th Markov process captures the notion of sequence depen dency and is described by a set of N states, a matrix c transition probabilities A -= la,11 1 < i, j < N where a, is the probability of moving from state i to state j, and vector of initial probabilities H = {70 1 < i < N where 71 is the probability of starting in state i.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"The symbol ger erator is a state-dependent measure on V described by matrix of symbol probabilities B {kik} 1 < j < N an 1 < k < M where M = IW I and kik is the probability ( generating symbol sk given that the Markov process is i state j.2 In part-of-speech tagging, we will model word order di pendency through an underlying Markov process that 01 erates in terms of lexical tags,' yet we will only be ab to observe the sets of tags, or ambiguity classes, that ai possible for individual words.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"The ambiguity class of eac word is the set of its permitted parts of speech, only or of which is correct in context.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Given the parameters .4, and II, hidden Markov modeling allows us to compute ti most probable sequence of state transitions, and hence a mostly likely sequence of lexical tags, corresponding to sequence of ambiguity classes.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"In the following, N can identified with the number of possible .tags, and W wil the set of all ambiguity classes.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Applying an HMM consists of two tasks: estimating ti model parameters A, B and H from a training set; ar computing the most likely sequence of underlying sta transitions given new observations.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Maximum likeliho( estimates (that is, estimates that maximize the probabili of the training set) can be found through application of z ternating expectation in a procedure known as the Baur Welch, or forward-backward, algorithm [Baum, 1972]. proceeds by recursively defining two sets of probabiliti( the forward probabilities where ot1(i) = ribi(51) for all i; and the backward prob bilities, where OT(j) = 1 for all j.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"The forward probabili oet(i) is the joint probability of the sequence up to tir t, {S1, S2, , St}, and the event that the Markov pr cess is in state i at time t. Similarly, the backwa probability Ot(j) is the probability of seeing the sequen {St+i, St+2, , ST} given that the Markov process is state i at time t. It follows that the probability of t entire sequence is for any tin the range 1 <t < T — 1.3 'For an introduction to hidden Markov modeling see [F biner and Juang, 1986].","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Given an initial choice for the parameters A, B, and H the expected number of transitions, , from state i to state j conditioned on the observation sequence S may be computed as follows: rescale.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"One approach premultiplies the a and 0 probabilities with an accumulating product depending on t [Levinson et al., 1983].","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Let ei1(i) = ai(i) and define and 1 .,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-= —(Y1(001(0.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"(5) In summary, to find maximum likelihood estimates for A, B, and H, via the Baum-Welch algorithm, one chooses some starting values, applies equations 3-5 to compute new values, and then iterates until convergence.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"It can be shown that this algorithm will converge, although possibly to a non-global maximum [Baum, 19721.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Once a model has been estimated, selecting the most likely underlying sequence of state transitions corresponding to an observation S can be thought of as a maximization over all sequences that might generate S. An efficient dynamic programming procedure, known as the Viterbi algorithm [Viterbi, 1967], arranges for this computation to proceed in time proportional to T. Suppose V = {v(t)} 1 < t < T is a state sequence that generates S, then the probability that V generates S is, To find the most probable such sequence we start by defining 01(i) = rabi(Si) for 1 < i < N and then perform the recursion for 2 < t < T and 1 < j < N. The crucial observation is that for each time t and each state i one need only consider the most probable sequence arriving at state i at time t. The probability of the most probable sequence is maxi<,<N[OT(i)] while the sequence itself can be reconstructed by defining v(T) = max<N OT(i) and v(t - 1) = Ike(qt) for T > t > 2.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-The Baum-Welch algorithm (equations 1-5) and the Viterbi algorithm (equation 6) involve operations on products of numbers constrained to be between 0 and 1.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Since these products can easily underflow, measures must be taken to Now define &t(i) = cicit(i) and use a' in place of a in equation 1 to define & for the next iteration: Note that Ein_i eet(i) = 1 for 1 < t < T. Similarly, let OT(i) = OT(i) and define $t(i) = ct4t(i) for T > t > 1 where The scaled backward and forward probabilities, & and 0-, can be exchanged for the unscaled probabilities in equations 3-5 without affecting the value of the ratios.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"To see this, note that &t(i) = Cat(i) and 0t(i) where Now, in terms of the scaled probabilities, equation 5, for example, can be seen to be unchanged: A slight difficulty occurs in equation 3 that can be cured by the addition of a new term, ct+i, in each product of the upper sum: Numerical instability in the Viterbi algorithm can be ameliorated by operating on a logarithmic scale [Levinson et al., 1983].","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"That is, one maximizes the log probability of each sequence of state transitions, Care must be taken with zero probabilities.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"However, this can be elegantly handled through the use of IEEE negative infinity [P754, 1981].","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"As can be seen from equations 1-5, the time cost of training is 0(TN2).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Similarly, as given in equation 6, the Viterbi algorithm is also 0(TN2).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"However, in part-of-speech tagging, the problem structure dictates that the matrix of symbol probabilities B is sparsely populated.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"That is, 0 if the ambiguity class corresponding to symbol j includes the part-of-speech tag associated with state i.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"In practice, the degree of overlap between ambiguity classes is relatively low; some tokens are assigned unique tags, and hence have only one non-zero symbol probability.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-The sparseness of B leads one to consider restructuring equations 1-6 so a check for zero symbol probability can obviate the need for further computation.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Equation 1 is already conveniently factored so that the dependence on bj(St+i ) is outside the inner sum.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Hence, if k is the average number of non-zero entries in each row of B, the cost of computing equation 1 can be reduced to 0(kTN).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Equations 2-4 can be similarly reduced by switching the order of iteration.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"For example, in equation 2, rather than for a given t computing ot(i) for each i one at a time, one can accumulate terms for all i in parallel.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-The net effect of this rewriting is to place a b3(St+i) = 0 check outside the innermost iteration.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Equations 3 and 4 submit to a similar approach.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Equation 5 is already only 0(N).,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Hence, the overall cost of training can be reduced to 0(kTN), which, in our experience, amounts to an order of magnitude speedup.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-4 The time complexity of the Viterbi algorithm can also be reduced to 0(kTN) by noting that b3 (S) can be factored out of the maximization of equation 6.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Adding up the sizes of the probability matrices A, B, and H, it is easy to see that the storage cost for directly representing one model is proportional to N(N M 1).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Running the Baum-Welch algorithm requires storage for the sequence of observations, the a and 3 probabilities, the vector {c}, and copies of the A and B matrices (since the originals cannot be overwritten until the end of each iteration).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Hence, the grand total of space required for training is proportional to T +2N(T N M + 1).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Since N and M are fixed by the model, the only parameter that can be varied to reduce storage costs is T. Now, adequate training requires processing from tens of thousands to hundreds of thousands of tokens [Kupiec, 1989a].","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"The training set can be considered one long sequence, it which case T is very large indeed, or it can be broken up into a number of smaller sequences at convenient boundaries.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"In first-order hidden Markov modeling, the stochastic process effectively restarts at unambiguous tokens, such as sentence and paragraph markers, hence these tokens are convenient points at which to break the training set.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"If the Baum-Welch algorithm is run separately (from the same starting point) on each piece, the resulting trained models must be recombined in some way.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-One obvious approach is simply to average.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"However, this fails if any two 'An equivalent approach maintains a mapping from states i to non-zero symbol probabilities and simply avoids, in the inner iteration, computing products which must be zero [Kupiec, 1992]. states are indistinguishable (in the sense that they had the same transition probabilities and the same symbol probabilities at start), because states are then not matched across trained models.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"It is therefore important that each state have a distinguished role, which is relatively easy to achieve in part-of-speech tagging.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Our implementation of the Baum-Welch algorithm breaks up the input into fixed-sized pieces of training text.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-The Baum-Welch algorithm is then run separately on each piece and the results are averaged together.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Running the Viterbi algorithm requires storage for the sequence of observations, a vector of current maxes, a scratch array of the same size, and a matrix of i,b indices, for a total proportional to T + N(2 +T) and a grand total (including the model) of T N(N + M +T +3).","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Again, N and M are fixed.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"However, T need not be longer than a single sentence, since, as was observed above, the HMM, and hence the Viterbi algorithm, restarts at sentence boundaries.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-An HMM for part-of-speech tagging can be tuned in a variety of ways.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"First, the choice of tagset and lexicon determines the initial model.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Second, empirical and a priori information can influence the choice of starting values for the Baum-Welch algorithm.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"For example, counting instances of ambiguity classes in running text allows one to assign non-uniform starting probabilities in A for a particular tag's realization as a particular ambiguity class.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"Alternatively, one can state a priori that a particular ambiguity class is most likely to be the reflection of some subset of its component tags.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"For example, if an ambiguity class consisting of the open class tags is used for unknown words, one may encode the fact that most unknown words are nouns or proper nouns by biasing the initial probabilities in B.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Another biasing of starting values can arises from noting that some tags are unlikely to be followed by others.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"For example, the lexical item &quot;to&quot; maps to an ambiguity class containing two tags, infinitive-marker and to-aspreposition, neither of which occurs in any other ambiguity class.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"If nothing more were stated, the HMM would have two states which were indistinguishable.","{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-This can be remedied by setting the initial transition probabilities from infinitive-marker to strongly favor transitions to such states as verb-uninflected and adverb.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Our implementation allows for two sorts of biasing of starting values: ambiguity classes can be annotated with favored tags; and states can be annotated with favored transitions.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-These biases may be specified either as sets or as set complements.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-Biases are implemented by replacing the disfavored probabilities with a small constant (machine epsilon) and redistributing mass to the other possibilities.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-This has the effect of disfavoring the indicated outcomes without disallowing them; sufficient converse data can rehabilitate these values.,"{'title': '3 Hidden Markov Modeling', 'number': '3'}"
-"In support of this and other work, we have developed a system architecture for text access [Cutting et al., 1991].","{'title': '4 Architecture', 'number': '4'}"
-"This architecture defines five components for such systems: corpus, which provides text in a generic manner; analysis, which extracts terms from the text; index which stores term occurrence statistics; and search, which utilizes these statistics to resolve queries.","{'title': '4 Architecture', 'number': '4'}"
-The part-of-speech tagger described here is implemented as an analysis module.,"{'title': '4 Architecture', 'number': '4'}"
-"Figure 1 illustrates the overall architecture, showing the tagger analysis implementation in detail.","{'title': '4 Architecture', 'number': '4'}"
-"The tagger itself has a modular architecture, isolating behind standard protocols those elements which may vary, enabling easy substitution of alternate implementations.","{'title': '4 Architecture', 'number': '4'}"
-Also illustrated here are the data types which flow between tagger components.,"{'title': '4 Architecture', 'number': '4'}"
-"As an analysis implementation, the tagger must generate terms from text.","{'title': '4 Architecture', 'number': '4'}"
-"In this context, a term is a word stem annotated with part of speech.","{'title': '4 Architecture', 'number': '4'}"
-"Text enters the analysis sub-system where the first processing module it encounters is the tokenizer, whose duty is to convert text (a sequence of characters) into a sequence of tokens.","{'title': '4 Architecture', 'number': '4'}"
-Sentence boundaries are also identified by the tokenizer and are passed as reserved tokens.,"{'title': '4 Architecture', 'number': '4'}"
-The tokenizer subsequently passes tokens to the lexicon.,"{'title': '4 Architecture', 'number': '4'}"
-"Here tokens are converted into a set of stems, each annotated with a part-of-speech tag.","{'title': '4 Architecture', 'number': '4'}"
-The set of tags identifies an ambiguity class.,"{'title': '4 Architecture', 'number': '4'}"
-The identification of these classes is also the responsibility of the lexicon.,"{'title': '4 Architecture', 'number': '4'}"
-"Thus the lexicon delivers a set of stems paired with tags, and an ambiguity class.","{'title': '4 Architecture', 'number': '4'}"
-The training module takes long sequences of ambiguity classes as input.,"{'title': '4 Architecture', 'number': '4'}"
-"It uses the Baum-Welch algorithm to produce a trained HMM, an input to the tagging module.","{'title': '4 Architecture', 'number': '4'}"
-"Training is typically performed on a sample of the corpus at hand, with the trained HMM being saved for subsequent use on the corpus at large.","{'title': '4 Architecture', 'number': '4'}"
-The tagging module buffers sequences of ambiguity classes between sentence boundaries.,"{'title': '4 Architecture', 'number': '4'}"
-These sequences are disambiguated by computing the maximal path through the HMM with the Viterbi algorithm.,"{'title': '4 Architecture', 'number': '4'}"
-"Operating at sentence granularity provides fast throughput without loss of accuracy, as sentence boundaries are unambiguous.","{'title': '4 Architecture', 'number': '4'}"
-The resulting sequence of tags is used to select the appropriate stems.,"{'title': '4 Architecture', 'number': '4'}"
-Pairs of stems and tags are subsequently emitted.,"{'title': '4 Architecture', 'number': '4'}"
-"The tagger may function as a complete analysis component, providing tagged text to search and indexing components, or as a sub-system of a more elaborate analysis, such as phrase recognition.","{'title': '4 Architecture', 'number': '4'}"
-The problem of tokenization has been well addressed by much work in compilation of programming languages.,"{'title': '4 Architecture', 'number': '4'}"
-The accepted approach is to specify token classes with regular expressions.,"{'title': '4 Architecture', 'number': '4'}"
-"These may be compiled into a single deterministic finite state automaton which partitions character streams into labeled tokens [Aho et al., 1986, Lesk, 19751.","{'title': '4 Architecture', 'number': '4'}"
-"In the context of tagging, we require at least two token classes: sentence boundary and word.","{'title': '4 Architecture', 'number': '4'}"
-"Other classes may include numbers, paragraph boundaries and various sorts of punctuation (e.g., braces of various types, commas).","{'title': '4 Architecture', 'number': '4'}"
-"However, for simplicity, we will henceforth assume only words and sentence boundaries are extracted.","{'title': '4 Architecture', 'number': '4'}"
-"Just as with programming languages, with text it is not always possible to unambiguously specify the required token classes with regular expressions.","{'title': '4 Architecture', 'number': '4'}"
-"However the addition of a simple lookahead mechanism which allows specification of right context ameliorates this [Aho et al., 1986, Lesk, 1975].","{'title': '4 Architecture', 'number': '4'}"
-"For example, a sentence boundary in English text might be identified by a period, followed bywhitespace, followed by an uppercase letter.","{'title': '4 Architecture', 'number': '4'}"
-"However the uppercase letter must not be consumed, as it is the first component of the next token.","{'title': '4 Architecture', 'number': '4'}"
-A lookahead mechanism allows us to specify in the sentence-boundary regular expression that the final character matched should not be considered a part of the token.,"{'title': '4 Architecture', 'number': '4'}"
-This method meets our stated goals for the overall system.,"{'title': '4 Architecture', 'number': '4'}"
-"It is efficient, requiring that each character be examined only once (modulo lookahead).","{'title': '4 Architecture', 'number': '4'}"
-"It is easily parameterizable, providing the expressive power to concisely define accurate and robust token classes.","{'title': '4 Architecture', 'number': '4'}"
-The lexicon module is responsible for enumerating parts of speech and their associated stems for each word it is given.,"{'title': '4 Architecture', 'number': '4'}"
-"For the English word &quot;does,&quot; the lexicon might return &quot;do, verb&quot; and &quot;doe, plural-noun.&quot; It is also responsible for identifying ambiguity classes based upon sets of tags.","{'title': '4 Architecture', 'number': '4'}"
-"We have employed a three-stage implementation: First, we consult a manually-constructed lexicon to find stems and parts of speech.","{'title': '4 Architecture', 'number': '4'}"
-"Exhaustive lexicons of this sort are expensive, if not impossible, to produce.","{'title': '4 Architecture', 'number': '4'}"
-"Fortunately, a small set of words accounts for the vast majority of word occurences.","{'title': '4 Architecture', 'number': '4'}"
-Thus high coverage can be obtained without prohibitive effort.,"{'title': '4 Architecture', 'number': '4'}"
-Words not found in the manually constructed lexicon are generally both open class and regularly inflected.,"{'title': '4 Architecture', 'number': '4'}"
-"As a second stage, a language-specific method can be employed to guess ambiguity classes for unknown words.","{'title': '4 Architecture', 'number': '4'}"
-"For many languages (e.g., English and French), word suffixes provide strong cues to words' possible categories.","{'title': '4 Architecture', 'number': '4'}"
-"Probabalistic predictions of a word's category can be made by analyzing suffixes in untagged text [Kupiec, 1992, Meteer et al., 1991].","{'title': '4 Architecture', 'number': '4'}"
-"As a final stage, if a word is not in the manually constructed lexicon, and its suffix is not recognized, a default ambiguity class is used.","{'title': '4 Architecture', 'number': '4'}"
-This class typically contains all the open class categories in the language.,"{'title': '4 Architecture', 'number': '4'}"
-"Dictionaries and suffix tables are both efficiently implementable as letter trees, or tries [Knuth, 1973], which require that each character of a word be examined only once during a lookup.","{'title': '4 Architecture', 'number': '4'}"
-"In this section, we detail how our tagger meets the desiderata that we outlined in section 1.","{'title': '5 Performance', 'number': '5'}"
-"The system is implemented in Common Lisp [Steele, 1990].","{'title': '5 Performance', 'number': '5'}"
-All timings reported are for a Sun SPARCStation2.,"{'title': '5 Performance', 'number': '5'}"
-The English lexicon used contains 38 tags (M = 38) and 174 ambiguity classes (N = 174).,"{'title': '5 Performance', 'number': '5'}"
-"Training was performed on 25,000 words in articles selected randomly from Grolier's Encyclopedia.","{'title': '5 Performance', 'number': '5'}"
-Five iterations of training were performed in a total time of 115 CPU seconds.,"{'title': '5 Performance', 'number': '5'}"
-"Following is a time breakdown by component: Training: average pseconds per token tokenizer lexicon 1 iteration 5 iterations total 640 400 680 3400 4600 Tagging was performed on 115,822 words in a collection of articles by the journalist Dave Barry.","{'title': '5 Performance', 'number': '5'}"
-This required a total of of 143 CPU seconds.,"{'title': '5 Performance', 'number': '5'}"
-"The time breakdown for this was as follows: Tagging: average pseconds per token tokenizer lexicon Viterbi total 604 388 233 1235 It can be seen from these figures that training on a new corpus may be accomplished in a matter of minutes, and that tens of megabytes of text may then be tagged per hour.","{'title': '5 Performance', 'number': '5'}"
-"When using a lexicon and tagset built from the tagged text of the Brown corpus [Francis and KuEera, 1982], training on one half of the corpus (about 500,000 words) and tagging the other, 96% of word instances were assigned the correct tag.","{'title': '5 Performance', 'number': '5'}"
-Eight iterations of training were used.,"{'title': '5 Performance', 'number': '5'}"
-"This level of accuracy is comparable to the best achieved by other taggers [Church, 1988, Merialdo, 1991].","{'title': '5 Performance', 'number': '5'}"
-"The Brown Corpus contains fragments and ungrammaticalities, thus providing a good demonstration of robustness.","{'title': '5 Performance', 'number': '5'}"
-"A tagger should be tunable, so that systematic tagging errors and anomalies can be addressed.","{'title': '5 Performance', 'number': '5'}"
-"Similarly, it is important that it be fast and easy to target the tagger to new genres and languages, and to experiment with different tagsets reflecting different insights into the linguistic phenomena found in text.","{'title': '5 Performance', 'number': '5'}"
-"In section 3.5, we describe how the HMM implementation itself supports tuning.","{'title': '5 Performance', 'number': '5'}"
-"In addition, our implementation supports a number of explicit parameters to facilitate tuning and reuse, including specification of lexicon and training corpus.","{'title': '5 Performance', 'number': '5'}"
-There is also support for a flexible tagset.,"{'title': '5 Performance', 'number': '5'}"
-"For example, if we want to collapse distinctions in the lexicon, such as those between positive, comparative, and superlative adjectives, we only have to make a small change in the mapping from lexicon to tagset.","{'title': '5 Performance', 'number': '5'}"
-"Similarly, if we wish to make finer grain distinctions than those available in the lexicon, such as case marking on pronouns, there is a simple way to note such exceptions.","{'title': '5 Performance', 'number': '5'}"
-We have used the tagger in a number of applications.,"{'title': '6 Applications', 'number': '6'}"
-We describe three applications here: phrase recognition; word sense disambiguation; and grammatical function assignment.,"{'title': '6 Applications', 'number': '6'}"
-These projects are part of a research effort to use shallow analysis techniques to extract content from unrestricted text.,"{'title': '6 Applications', 'number': '6'}"
-We have constructed a system that recognizes simple phrases when given as input the sequence of tags for a sentence.,"{'title': '6 Applications', 'number': '6'}"
-"There are recognizers for noun phrases, verb groups adverbial phrases, and prepositional phrases.","{'title': '6 Applications', 'number': '6'}"
-Each of these phrases comprises a contiguous sequence of tags that sat is. fies a simple grammar.,"{'title': '6 Applications', 'number': '6'}"
-"For example, a noun phrase can be a unary sequence containing a pronoun tag or an arbitrar. ily long sequence of noun and adjective tags, possibly pre. ceded by a determiner tag and possibly with an embeddec possessive marker.","{'title': '6 Applications', 'number': '6'}"
-"The longest possible sequence is founc (e.g., &quot;the program committee&quot; but not &quot;the program') Conjunctions are not recognized as part of any phrase; for example, in the fragment &quot;the cats and dogs,&quot; &quot;the cats&quot; and &quot;dogs&quot; will be recognized as two noun phrases.","{'title': '6 Applications', 'number': '6'}"
-Prepositional phrase attachment is not performed at this stage of processing.,"{'title': '6 Applications', 'number': '6'}"
-"This approach to phrase recognition in some cases captures only parts of some phrases; however, our approach minimizes false positives, so that we can rely on the recognizers' results.","{'title': '6 Applications', 'number': '6'}"
-"Part-of-speech tagging in and of itself is a useful tool in lexical disambiguation; for example, knowing that &quot;dig&quot; is being used as a noun rather than as a verb indicates the word's appropriate meaning.","{'title': '6 Applications', 'number': '6'}"
-But many words have multiple meanings even while occupying the same part of speech.,"{'title': '6 Applications', 'number': '6'}"
-"To this end, the tagger has been used in the implementation of an experimental noun homograph disambiguation algorithm [Hearst, 1991].","{'title': '6 Applications', 'number': '6'}"
-"The algorithm (known as CatchWord) performs supervised training over a large text corpus, gathering lexical, orthographic, and simple syntactic evidence for each sense of the ambiguous noun.","{'title': '6 Applications', 'number': '6'}"
-"After a period of training, Catch Word classifies new instances of the noun by checking its context against that of previously observed instances and choosing the sense for which the most evidence is found.","{'title': '6 Applications', 'number': '6'}"
-"Because the sense distinctions made are coarse, the disambiguation can be accomplished without the expense of knowledge bases or inference mechanisms.","{'title': '6 Applications', 'number': '6'}"
-Initial tests resulted in accuracies of around 90% for nouns with strongly distinct senses.,"{'title': '6 Applications', 'number': '6'}"
-This algorithm uses the tagger in two ways: (i) to determine the part of speech of the target word (filtering out the non-noun usages) and (ii) as a step in the phrase recognition analysis of the context surrounding the noun.,"{'title': '6 Applications', 'number': '6'}"
-"The phrase recognizers also provide input to a system, Sopa [Sibun, 1991], which recognizes nominal arguments of verbs, specifically, Subject, Object, and Predicative Arguments.","{'title': '6 Applications', 'number': '6'}"
-Sopa does not rely on information (such as arity or voice) specific to the particular verbs involved.,"{'title': '6 Applications', 'number': '6'}"
-The first step in assigning grammatical functions is to partition the tag sequence of each sentence into phrases.,"{'title': '6 Applications', 'number': '6'}"
-"The phrase types include those mentioned in section 6.1, additional types to account for conjunctions, complementizers, and indicators of sentence boundaries, and an &quot;unknown&quot; type.","{'title': '6 Applications', 'number': '6'}"
-"After a sentence has been partitioned, each simple noun phrase is examined in the context of the phrase to its left and the phrase to its right.","{'title': '6 Applications', 'number': '6'}"
-"On the basis of this local context and a set of rules, the noun phrase is marked as a syntactic Subject, Object, Predicative, or is not marked at all.","{'title': '6 Applications', 'number': '6'}"
-"A label of Predicative is assigned only if it can be determined that the governing verb group is a form of a predicating verb (e.g., a form of &quot;be&quot;).","{'title': '6 Applications', 'number': '6'}"
-"Because this cannot always be determined, some Predicatives are labeled Objects.","{'title': '6 Applications', 'number': '6'}"
-"If a noun phrase is labeled, it is also annotated as to whether the governing verb is the closest verb group to the right or to the left.","{'title': '6 Applications', 'number': '6'}"
-The algorithm has an accuracy of approximately 80% in assigning grammatical functions.,"{'title': '6 Applications', 'number': '6'}"
-"We would like to thank Marti Hearst for her contributions to this paper, Lauri Karttunen and Annie Zaenen for their work on lexicons, and Kris Halvorsen for supporting this project.","{'title': 'Acknowledgments', 'number': '7'}"
+We present an implementation of a part-of-speech tagger based on a hidden Markov model.,Introduction
+The methodology enables robust and accurate tagging with few resource requirements.,Introduction
+Only a lexicon and some unlabeled training text are required.,Introduction
+Accuracy exceeds 96%.,Introduction
+We describe implementation strategies and optimizations which result in high-speed operation.,Introduction
+Three applications for tagging are described: phrase recognition; word sense disambiguation; and grammatical function assignment.,Introduction
+1 Desiderata Many words are ambiguous in their part of speech.,Introduction
+"For example, &quot;tag&quot; can be a noun or a verb.",Introduction
+"However, when a word appears in the context of other words, the ambiguity is often reduced: in &quot;a tag is a part-of-speech label,&quot; the &quot;tag&quot; can only be a noun.",Introduction
+A tagger is a system that uses context to assign parts of speech to words.,Introduction
+Automatic text tagging is an important first step in discovering the linguistic structure of large text corpora.,Introduction
+"Part-of-speech information facilitates higher-level analysis, such as recognizing noun phrases and other patterns in text.",Introduction
+"For a tagger to function as a practical component in a language processing system, we believe that a tagger must be: corpora contain ungrammatical constructions, isolated phrases (such as titles), and nonlinguistic data (such as tables).",Introduction
+Corpora are also likely to contain words that are unknown to the tagger.,Introduction
+"It is desirable that a tagger deal gracefully with these situations. a tagger is to be used to analyze arbitrarily large corpora, it must be efficient—performing in time linear in the number of words tagged.",Introduction
+"Any training required should also be fast, enabling rapid turnaround with new corpora and new text genres.",Introduction
+A should attempt to assign the correct part-of-speech tag to every word encountered.,Introduction
+A should be able to take advantage of linguistic insights.,Introduction
+"One should be able to correct errors by supplying appropriate priori &quot;hints.&quot; It should be possible to give different hints for different corpora. effort required to retarget a tagger to new corpora, new tagsets, and new languages should be minimal.",Introduction
+2 Methodology 2.1 Background Several different approaches have been used for building text taggers.,Introduction
+"Greene and Rubin used a rule-based approach in the TAGGIT program [Greene and Rubin, 1971], which was an aid in tagging the Brown corpus [Francis and KuEera, 1982].",Introduction
+TAGGIT disambiguated 77% of the corpus; the rest was done manually over a period of several years.,Introduction
+"More recently, Koskenniemi also used a rule-based approach implemented with finite-state machines [Koskenniemi, 1990].",Introduction
+"Statistical methods have also been used (e.g., [DeRose, [Garside al., These provide the capability of resolving ambiguity on the basis of most likely interpretation.",Introduction
+"A form of Markov model has been widely used that assumes that a word depends probabilistically on just its part-of-speech category, which in turn depends solely on the categories of the preceding two words.",Introduction
+"Two types of training (i.e., parameter estimation) have been used with this model.",Introduction
+The first makes use of a tagged training corpus.,Introduction
+"Derouault and Merialdo use a bootstrap method for training [Derouault and Merialdo, 1986].",Introduction
+"At first, a relatively small amount of text is manually tagged and used to train a partially accurate model.",Introduction
+"The model is then used to tag more text, and the tags are manually corrected and then used to retrain the model.",Introduction
+"Church uses the tagged Brown corpus for training [Church, 1988].",Introduction
+"These models involve probabilities for each word in the lexicon, so large tagged corpora are required for reliable estimation.",Introduction
+The second method of training does not require a tagged training corpus.,Introduction
+"In this situation the Baum-Welch algorithm (also known as the forward-backward algorithm) can be used [Baum, 1972].",Introduction
+"Under this regime the model is a Markov model as state transitions (i.e., part-of-speech categories) are assumed to be unobservable.",Introduction
+"Jelinek has used this method for training a text tagger [Jelinek, 1985].",Introduction
+"Parameter smoothing can be conachieved using the method of interpolawhich weighted estimates are taken from secondand first-order models and a uniform probability distribution [Jelinek and Mercer, 1980].",Introduction
+"Kupiec used word equivclasses (referred to here as classes) on parts of speech, to pool data from individual words [Kupiec, 1989b].",Introduction
+"The most common words are still represented individually, as sufficient data exist for robust estimation.",Introduction
+133 However all other words are represented according to the set of possible categories they can assume.,Introduction
+"In this manner, the vocabulary of 50,000 words in the Brown corpus can be reduced to approximately 400 distinct ambiguity classes [Kupiec, 1992].",Introduction
+"To further reduce the number of parameters, a first-order model can be employed (this assumes that a word's category depends only on the immediately preceding word's category).",Introduction
+"In [Kupiec, 1989a], networks are used to selectively augment the context in a basic firstorder model, rather than using uniformly second-order dependencies.",Introduction
+2.2 Our approach We next describe how our choice of techniques satisfies the listed in section 1.,Introduction
+The use of an complete flexibility in the choice of training corpora.,Introduction
+"Text from any desired domain can be used, and a tagger can be tailored for use with a particular text database by training on a portion of that database.",Introduction
+"Lexicons containing alternative tag sets can be easily accommodated without any need for re-labeling the training corpus, affording further flexibility in the use of specialized tags.",Introduction
+"As the resources required are simply a lexicon and a suitably large sample of ordinary text, taggers can be built with minimal effort, even for other languages, such as French (e.g., [Kupiec, 1992]).",Introduction
+The use of ambiguity classes and a first-order model reduces the number of parameters to be estimated without significant reduction in accuracy (discussed in section 5).,Introduction
+This also enables a tagger to be reliably trained using only moderate amounts of text.,Introduction
+"We have produced reasonable results training on as few as 3,000 sentences.",Introduction
+Fewer parameters also reduce the time required for training.,Introduction
+"Relatively few ambiguity classes are sufficient for wide coverage, so it is unlikely that adding new words to the lexicon requires retraining, as their ambiguity classes are already accommodated.",Introduction
+"Vocabulary independence is achieved by predicting categories for words not in the lexicon, using both context and suffix information.",Introduction
+"Probabilities corresponding to category sequences that never occurred in the training data are assigned small, non-zero values, ensuring that the model will accept any sequence of tokens, while still providing the most likely tagging.",Introduction
+"By using the fact that words are typically associated with only a few part-ofspeech categories, and carefully ordering the computation, the algorithms have linear complexity (section 3.3).",Introduction
+3 Hidden Markov Modeling The hidden Markov modeling component of our tagger is implemented as an independent module following the specgiven in [Levinson et with special attention to space and time efficiency issues.,Introduction
+Only first-order modeling is addressed and will be presumed for the remainder of this discussion.,Introduction
+"3.1 Formalism brief, an a doubly stochastic process that generates sequence of symbols ={Sl,S2, , 1 <i< where W is some finite set of possible symbols, by composing an underlying Markov process with a state-dependent symbol generator (i.e., a Markov process with noise).'",Introduction
+"Th Markov process captures the notion of sequence depen and is described by a set of a matrix c probabilities A -= 1 < a, the probability of moving from state i to state of initial probabilities H = {70 1 < i < is the probability of starting in state i.",Introduction
+"The symbol ger erator is a state-dependent measure on V described by of symbol probabilities 1 < j < < < M = IW I is the probability ( symbol given that the Markov process is i In part-of-speech tagging, we will model word order di pendency through an underlying Markov process that 01 erates in terms of lexical tags,' yet we will only be ab to observe the sets of tags, or ambiguity classes, that ai possible for individual words.",Introduction
+"The ambiguity class of eac word is the set of its permitted parts of speech, only or of which is correct in context.",Introduction
+"Given the parameters .4, Markov modeling allows us to compute ti most probable sequence of state transitions, and hence a mostly likely sequence of lexical tags, corresponding to of ambiguity classes.",Introduction
+"In the following, identified with the number of possible .tags, and W wil the set of all ambiguity classes.",Introduction
+"Applying an HMM consists of two tasks: estimating ti parameters A, a training set; ar computing the most likely sequence of underlying sta transitions given new observations.",Introduction
+"Maximum likeliho( estimates (that is, estimates that maximize the probabili of the training set) can be found through application of z ternating expectation in a procedure known as the Baur Welch, or forward-backward, algorithm [Baum, 1972]. proceeds by recursively defining two sets of probabiliti( the forward probabilities eft+1.",Introduction
+"(i) = bi(St+i) < t < T — 1, ( = for all the backward prob bilities, i3(i) = — 1 < t < 1, ( 1.1 1 for all forward probabili the joint probability of the sequence up to tir t, S2, , the event that the Markov pr is in state i at time the backwa is the probability of seeing the sequen , ST} that the Markov process is state i at time t. It follows that the probability of t entire sequence is N N =",Introduction
+Many words are ambiguous in their part of speech.,Experiment/Discussion
+"For example, &quot;tag&quot; can be a noun or a verb.",Experiment/Discussion
+"However, when a word appears in the context of other words, the ambiguity is often reduced: in &quot;a tag is a part-of-speech label,&quot; the word &quot;tag&quot; can only be a noun.",Experiment/Discussion
+A part-of-speech tagger is a system that uses context to assign parts of speech to words.,Experiment/Discussion
+Automatic text tagging is an important first step in discovering the linguistic structure of large text corpora.,Experiment/Discussion
+"Part-of-speech information facilitates higher-level analysis, such as recognizing noun phrases and other patterns in text.",Experiment/Discussion
+"For a tagger to function as a practical component in a language processing system, we believe that a tagger must be: Robust Text corpora contain ungrammatical constructions, isolated phrases (such as titles), and nonlinguistic data (such as tables).",Experiment/Discussion
+Corpora are also likely to contain words that are unknown to the tagger.,Experiment/Discussion
+It is desirable that a tagger deal gracefully with these situations.,Experiment/Discussion
+"Efficient If a tagger is to be used to analyze arbitrarily large corpora, it must be efficient—performing in time linear in the number of words tagged.",Experiment/Discussion
+"Any training required should also be fast, enabling rapid turnaround with new corpora and new text genres.",Experiment/Discussion
+Accurate A tagger should attempt to assign the correct part-of-speech tag to every word encountered.,Experiment/Discussion
+Tunable A tagger should be able to take advantage of linguistic insights.,Experiment/Discussion
+One should be able to correct systematic errors by supplying appropriate a priori &quot;hints.&quot; It should be possible to give different hints for different corpora.,Experiment/Discussion
+"Reusable The effort required to retarget a tagger to new corpora, new tagsets, and new languages should be minimal.",Experiment/Discussion
+Several different approaches have been used for building text taggers.,Experiment/Discussion
+"Greene and Rubin used a rule-based approach in the TAGGIT program [Greene and Rubin, 1971], which was an aid in tagging the Brown corpus [Francis and KuEera, 1982].",Experiment/Discussion
+TAGGIT disambiguated 77% of the corpus; the rest was done manually over a period of several years.,Experiment/Discussion
+"More recently, Koskenniemi also used a rule-based approach implemented with finite-state machines [Koskenniemi, 1990].",Experiment/Discussion
+"Statistical methods have also been used (e.g., [DeRose, 1988], [Garside et al., 1987]).",Experiment/Discussion
+These provide the capability of resolving ambiguity on the basis of most likely interpretation.,Experiment/Discussion
+"A form of Markov model has been widely used that assumes that a word depends probabilistically on just its part-of-speech category, which in turn depends solely on the categories of the preceding two words.",Experiment/Discussion
+"Two types of training (i.e., parameter estimation) have been used with this model.",Experiment/Discussion
+The first makes use of a tagged training corpus.,Experiment/Discussion
+"Derouault and Merialdo use a bootstrap method for training [Derouault and Merialdo, 1986].",Experiment/Discussion
+"At first, a relatively small amount of text is manually tagged and used to train a partially accurate model.",Experiment/Discussion
+"The model is then used to tag more text, and the tags are manually corrected and then used to retrain the model.",Experiment/Discussion
+"Church uses the tagged Brown corpus for training [Church, 1988].",Experiment/Discussion
+"These models involve probabilities for each word in the lexicon, so large tagged corpora are required for reliable estimation.",Experiment/Discussion
+The second method of training does not require a tagged training corpus.,Experiment/Discussion
+"In this situation the Baum-Welch algorithm (also known as the forward-backward algorithm) can be used [Baum, 1972].",Experiment/Discussion
+"Under this regime the model is called a hidden Markov model (HMM), as state transitions (i.e., part-of-speech categories) are assumed to be unobservable.",Experiment/Discussion
+"Jelinek has used this method for training a text tagger [Jelinek, 1985].",Experiment/Discussion
+"Parameter smoothing can be conveniently achieved using the method of deleted interpolation in which weighted estimates are taken from secondand first-order models and a uniform probability distribution [Jelinek and Mercer, 1980].",Experiment/Discussion
+"Kupiec used word equivalence classes (referred to here as ambiguity classes) based on parts of speech, to pool data from individual words [Kupiec, 1989b].",Experiment/Discussion
+"The most common words are still represented individually, as sufficient data exist for robust estimation.",Experiment/Discussion
+However all other words are represented according to the set of possible categories they can assume.,Experiment/Discussion
+"In this manner, the vocabulary of 50,000 words in the Brown corpus can be reduced to approximately 400 distinct ambiguity classes [Kupiec, 1992].",Experiment/Discussion
+"To further reduce the number of parameters, a first-order model can be employed (this assumes that a word's category depends only on the immediately preceding word's category).",Experiment/Discussion
+"In [Kupiec, 1989a], networks are used to selectively augment the context in a basic firstorder model, rather than using uniformly second-order dependencies.",Experiment/Discussion
+We next describe how our choice of techniques satisfies the criteria listed in section 1.,Experiment/Discussion
+The use of an HMM permits complete flexibility in the choice of training corpora.,Experiment/Discussion
+"Text from any desired domain can be used, and a tagger can be tailored for use with a particular text database by training on a portion of that database.",Experiment/Discussion
+"Lexicons containing alternative tag sets can be easily accommodated without any need for re-labeling the training corpus, affording further flexibility in the use of specialized tags.",Experiment/Discussion
+"As the resources required are simply a lexicon and a suitably large sample of ordinary text, taggers can be built with minimal effort, even for other languages, such as French (e.g., [Kupiec, 1992]).",Experiment/Discussion
+The use of ambiguity classes and a first-order model reduces the number of parameters to be estimated without significant reduction in accuracy (discussed in section 5).,Experiment/Discussion
+This also enables a tagger to be reliably trained using only moderate amounts of text.,Experiment/Discussion
+"We have produced reasonable results training on as few as 3,000 sentences.",Experiment/Discussion
+Fewer parameters also reduce the time required for training.,Experiment/Discussion
+"Relatively few ambiguity classes are sufficient for wide coverage, so it is unlikely that adding new words to the lexicon requires retraining, as their ambiguity classes are already accommodated.",Experiment/Discussion
+"Vocabulary independence is achieved by predicting categories for words not in the lexicon, using both context and suffix information.",Experiment/Discussion
+"Probabilities corresponding to category sequences that never occurred in the training data are assigned small, non-zero values, ensuring that the model will accept any sequence of tokens, while still providing the most likely tagging.",Experiment/Discussion
+"By using the fact that words are typically associated with only a few part-ofspeech categories, and carefully ordering the computation, the algorithms have linear complexity (section 3.3).",Experiment/Discussion
+"The hidden Markov modeling component of our tagger is implemented as an independent module following the specification given in [Levinson et al., 1983], with special attention to space and time efficiency issues.",Experiment/Discussion
+Only first-order modeling is addressed and will be presumed for the remainder of this discussion.,Experiment/Discussion
+"In brief, an HMM is a doubly stochastic process that generates sequence of symbols S ={Sl,S2, , ST}, S,EW 1 <i< T, where W is some finite set of possible symbols, by composing an underlying Markov process with a state-dependent symbol generator (i.e., a Markov process with noise).'",Experiment/Discussion
+"Th Markov process captures the notion of sequence depen dency and is described by a set of N states, a matrix c transition probabilities A -= la,11 1 < i, j < N where a, is the probability of moving from state i to state j, and vector of initial probabilities H = {70 1 < i < N where 71 is the probability of starting in state i.",Experiment/Discussion
+"The symbol ger erator is a state-dependent measure on V described by matrix of symbol probabilities B {kik} 1 < j < N an 1 < k < M where M = IW I and kik is the probability ( generating symbol sk given that the Markov process is i state j.2 In part-of-speech tagging, we will model word order di pendency through an underlying Markov process that 01 erates in terms of lexical tags,' yet we will only be ab to observe the sets of tags, or ambiguity classes, that ai possible for individual words.",Experiment/Discussion
+"The ambiguity class of eac word is the set of its permitted parts of speech, only or of which is correct in context.",Experiment/Discussion
+"Given the parameters .4, and II, hidden Markov modeling allows us to compute ti most probable sequence of state transitions, and hence a mostly likely sequence of lexical tags, corresponding to sequence of ambiguity classes.",Experiment/Discussion
+"In the following, N can identified with the number of possible .tags, and W wil the set of all ambiguity classes.",Experiment/Discussion
+"Applying an HMM consists of two tasks: estimating ti model parameters A, B and H from a training set; ar computing the most likely sequence of underlying sta transitions given new observations.",Experiment/Discussion
+"Maximum likeliho( estimates (that is, estimates that maximize the probabili of the training set) can be found through application of z ternating expectation in a procedure known as the Baur Welch, or forward-backward, algorithm [Baum, 1972]. proceeds by recursively defining two sets of probabiliti( the forward probabilities where ot1(i) = ribi(51) for all i; and the backward prob bilities, where OT(j) = 1 for all j.",Experiment/Discussion
+"The forward probabili oet(i) is the joint probability of the sequence up to tir t, {S1, S2, , St}, and the event that the Markov pr cess is in state i at time t. Similarly, the backwa probability Ot(j) is the probability of seeing the sequen {St+i, St+2, , ST} given that the Markov process is state i at time t. It follows that the probability of t entire sequence is for any tin the range 1 <t < T — 1.3 'For an introduction to hidden Markov modeling see [F biner and Juang, 1986].",Experiment/Discussion
+"Given an initial choice for the parameters A, B, and H the expected number of transitions, , from state i to state j conditioned on the observation sequence S may be computed as follows: rescale.",Experiment/Discussion
+"One approach premultiplies the a and 0 probabilities with an accumulating product depending on t [Levinson et al., 1983].",Experiment/Discussion
+Let ei1(i) = ai(i) and define and 1 .,Experiment/Discussion
+= —(Y1(001(0.,Experiment/Discussion
+"(5) In summary, to find maximum likelihood estimates for A, B, and H, via the Baum-Welch algorithm, one chooses some starting values, applies equations 3-5 to compute new values, and then iterates until convergence.",Experiment/Discussion
+"It can be shown that this algorithm will converge, although possibly to a non-global maximum [Baum, 19721.",Experiment/Discussion
+"Once a model has been estimated, selecting the most likely underlying sequence of state transitions corresponding to an observation S can be thought of as a maximization over all sequences that might generate S. An efficient dynamic programming procedure, known as the Viterbi algorithm [Viterbi, 1967], arranges for this computation to proceed in time proportional to T. Suppose V = {v(t)} 1 < t < T is a state sequence that generates S, then the probability that V generates S is, To find the most probable such sequence we start by defining 01(i) = rabi(Si) for 1 < i < N and then perform the recursion for 2 < t < T and 1 < j < N. The crucial observation is that for each time t and each state i one need only consider the most probable sequence arriving at state i at time t. The probability of the most probable sequence is maxi<,<N[OT(i)] while the sequence itself can be reconstructed by defining v(T) = max<N OT(i) and v(t - 1) = Ike(qt) for T > t > 2.",Experiment/Discussion
+The Baum-Welch algorithm (equations 1-5) and the Viterbi algorithm (equation 6) involve operations on products of numbers constrained to be between 0 and 1.,Experiment/Discussion
+"Since these products can easily underflow, measures must be taken to Now define &t(i) = cicit(i) and use a' in place of a in equation 1 to define & for the next iteration: Note that Ein_i eet(i) = 1 for 1 < t < T. Similarly, let OT(i) = OT(i) and define $t(i) = ct4t(i) for T > t > 1 where The scaled backward and forward probabilities, & and 0-, can be exchanged for the unscaled probabilities in equations 3-5 without affecting the value of the ratios.",Experiment/Discussion
+"To see this, note that &t(i) = Cat(i) and 0t(i) where Now, in terms of the scaled probabilities, equation 5, for example, can be seen to be unchanged: A slight difficulty occurs in equation 3 that can be cured by the addition of a new term, ct+i, in each product of the upper sum: Numerical instability in the Viterbi algorithm can be ameliorated by operating on a logarithmic scale [Levinson et al., 1983].",Experiment/Discussion
+"That is, one maximizes the log probability of each sequence of state transitions, Care must be taken with zero probabilities.",Experiment/Discussion
+"However, this can be elegantly handled through the use of IEEE negative infinity [P754, 1981].",Experiment/Discussion
+"As can be seen from equations 1-5, the time cost of training is 0(TN2).",Experiment/Discussion
+"Similarly, as given in equation 6, the Viterbi algorithm is also 0(TN2).",Experiment/Discussion
+"However, in part-of-speech tagging, the problem structure dictates that the matrix of symbol probabilities B is sparsely populated.",Experiment/Discussion
+"That is, 0 if the ambiguity class corresponding to symbol j includes the part-of-speech tag associated with state i.",Experiment/Discussion
+"In practice, the degree of overlap between ambiguity classes is relatively low; some tokens are assigned unique tags, and hence have only one non-zero symbol probability.",Experiment/Discussion
+The sparseness of B leads one to consider restructuring equations 1-6 so a check for zero symbol probability can obviate the need for further computation.,Experiment/Discussion
+Equation 1 is already conveniently factored so that the dependence on bj(St+i ) is outside the inner sum.,Experiment/Discussion
+"Hence, if k is the average number of non-zero entries in each row of B, the cost of computing equation 1 can be reduced to 0(kTN).",Experiment/Discussion
+Equations 2-4 can be similarly reduced by switching the order of iteration.,Experiment/Discussion
+"For example, in equation 2, rather than for a given t computing ot(i) for each i one at a time, one can accumulate terms for all i in parallel.",Experiment/Discussion
+The net effect of this rewriting is to place a b3(St+i) = 0 check outside the innermost iteration.,Experiment/Discussion
+Equations 3 and 4 submit to a similar approach.,Experiment/Discussion
+Equation 5 is already only 0(N).,Experiment/Discussion
+"Hence, the overall cost of training can be reduced to 0(kTN), which, in our experience, amounts to an order of magnitude speedup.",Experiment/Discussion
+4 The time complexity of the Viterbi algorithm can also be reduced to 0(kTN) by noting that b3 (S) can be factored out of the maximization of equation 6.,Experiment/Discussion
+"Adding up the sizes of the probability matrices A, B, and H, it is easy to see that the storage cost for directly representing one model is proportional to N(N M 1).",Experiment/Discussion
+"Running the Baum-Welch algorithm requires storage for the sequence of observations, the a and 3 probabilities, the vector {c}, and copies of the A and B matrices (since the originals cannot be overwritten until the end of each iteration).",Experiment/Discussion
+"Hence, the grand total of space required for training is proportional to T +2N(T N M + 1).",Experiment/Discussion
+"Since N and M are fixed by the model, the only parameter that can be varied to reduce storage costs is T. Now, adequate training requires processing from tens of thousands to hundreds of thousands of tokens [Kupiec, 1989a].",Experiment/Discussion
+"The training set can be considered one long sequence, it which case T is very large indeed, or it can be broken up into a number of smaller sequences at convenient boundaries.",Experiment/Discussion
+"In first-order hidden Markov modeling, the stochastic process effectively restarts at unambiguous tokens, such as sentence and paragraph markers, hence these tokens are convenient points at which to break the training set.",Experiment/Discussion
+"If the Baum-Welch algorithm is run separately (from the same starting point) on each piece, the resulting trained models must be recombined in some way.",Experiment/Discussion
+One obvious approach is simply to average.,Experiment/Discussion
+"However, this fails if any two 'An equivalent approach maintains a mapping from states i to non-zero symbol probabilities and simply avoids, in the inner iteration, computing products which must be zero [Kupiec, 1992]. states are indistinguishable (in the sense that they had the same transition probabilities and the same symbol probabilities at start), because states are then not matched across trained models.",Experiment/Discussion
+"It is therefore important that each state have a distinguished role, which is relatively easy to achieve in part-of-speech tagging.",Experiment/Discussion
+Our implementation of the Baum-Welch algorithm breaks up the input into fixed-sized pieces of training text.,Experiment/Discussion
+The Baum-Welch algorithm is then run separately on each piece and the results are averaged together.,Experiment/Discussion
+"Running the Viterbi algorithm requires storage for the sequence of observations, a vector of current maxes, a scratch array of the same size, and a matrix of i,b indices, for a total proportional to T + N(2 +T) and a grand total (including the model) of T N(N + M +T +3).",Experiment/Discussion
+"Again, N and M are fixed.",Experiment/Discussion
+"However, T need not be longer than a single sentence, since, as was observed above, the HMM, and hence the Viterbi algorithm, restarts at sentence boundaries.",Experiment/Discussion
+An HMM for part-of-speech tagging can be tuned in a variety of ways.,Experiment/Discussion
+"First, the choice of tagset and lexicon determines the initial model.",Experiment/Discussion
+"Second, empirical and a priori information can influence the choice of starting values for the Baum-Welch algorithm.",Experiment/Discussion
+"For example, counting instances of ambiguity classes in running text allows one to assign non-uniform starting probabilities in A for a particular tag's realization as a particular ambiguity class.",Experiment/Discussion
+"Alternatively, one can state a priori that a particular ambiguity class is most likely to be the reflection of some subset of its component tags.",Experiment/Discussion
+"For example, if an ambiguity class consisting of the open class tags is used for unknown words, one may encode the fact that most unknown words are nouns or proper nouns by biasing the initial probabilities in B.",Experiment/Discussion
+Another biasing of starting values can arises from noting that some tags are unlikely to be followed by others.,Experiment/Discussion
+"For example, the lexical item &quot;to&quot; maps to an ambiguity class containing two tags, infinitive-marker and to-aspreposition, neither of which occurs in any other ambiguity class.",Experiment/Discussion
+"If nothing more were stated, the HMM would have two states which were indistinguishable.",Experiment/Discussion
+This can be remedied by setting the initial transition probabilities from infinitive-marker to strongly favor transitions to such states as verb-uninflected and adverb.,Experiment/Discussion
+Our implementation allows for two sorts of biasing of starting values: ambiguity classes can be annotated with favored tags; and states can be annotated with favored transitions.,Experiment/Discussion
+These biases may be specified either as sets or as set complements.,Experiment/Discussion
+Biases are implemented by replacing the disfavored probabilities with a small constant (machine epsilon) and redistributing mass to the other possibilities.,Experiment/Discussion
+This has the effect of disfavoring the indicated outcomes without disallowing them; sufficient converse data can rehabilitate these values.,Experiment/Discussion
+"In support of this and other work, we have developed a system architecture for text access [Cutting et al., 1991].",Experiment/Discussion
+"This architecture defines five components for such systems: corpus, which provides text in a generic manner; analysis, which extracts terms from the text; index which stores term occurrence statistics; and search, which utilizes these statistics to resolve queries.",Experiment/Discussion
+The part-of-speech tagger described here is implemented as an analysis module.,Experiment/Discussion
+"Figure 1 illustrates the overall architecture, showing the tagger analysis implementation in detail.",Experiment/Discussion
+"The tagger itself has a modular architecture, isolating behind standard protocols those elements which may vary, enabling easy substitution of alternate implementations.",Experiment/Discussion
+Also illustrated here are the data types which flow between tagger components.,Experiment/Discussion
+"As an analysis implementation, the tagger must generate terms from text.",Experiment/Discussion
+"In this context, a term is a word stem annotated with part of speech.",Experiment/Discussion
+"Text enters the analysis sub-system where the first processing module it encounters is the tokenizer, whose duty is to convert text (a sequence of characters) into a sequence of tokens.",Experiment/Discussion
+Sentence boundaries are also identified by the tokenizer and are passed as reserved tokens.,Experiment/Discussion
+The tokenizer subsequently passes tokens to the lexicon.,Experiment/Discussion
+"Here tokens are converted into a set of stems, each annotated with a part-of-speech tag.",Experiment/Discussion
+The set of tags identifies an ambiguity class.,Experiment/Discussion
+The identification of these classes is also the responsibility of the lexicon.,Experiment/Discussion
+"Thus the lexicon delivers a set of stems paired with tags, and an ambiguity class.",Experiment/Discussion
+The training module takes long sequences of ambiguity classes as input.,Experiment/Discussion
+"It uses the Baum-Welch algorithm to produce a trained HMM, an input to the tagging module.",Experiment/Discussion
+"Training is typically performed on a sample of the corpus at hand, with the trained HMM being saved for subsequent use on the corpus at large.",Experiment/Discussion
+The tagging module buffers sequences of ambiguity classes between sentence boundaries.,Experiment/Discussion
+These sequences are disambiguated by computing the maximal path through the HMM with the Viterbi algorithm.,Experiment/Discussion
+"Operating at sentence granularity provides fast throughput without loss of accuracy, as sentence boundaries are unambiguous.",Experiment/Discussion
+The resulting sequence of tags is used to select the appropriate stems.,Experiment/Discussion
+Pairs of stems and tags are subsequently emitted.,Experiment/Discussion
+"The tagger may function as a complete analysis component, providing tagged text to search and indexing components, or as a sub-system of a more elaborate analysis, such as phrase recognition.",Experiment/Discussion
+The problem of tokenization has been well addressed by much work in compilation of programming languages.,Experiment/Discussion
+The accepted approach is to specify token classes with regular expressions.,Experiment/Discussion
+"These may be compiled into a single deterministic finite state automaton which partitions character streams into labeled tokens [Aho et al., 1986, Lesk, 19751.",Experiment/Discussion
+"In the context of tagging, we require at least two token classes: sentence boundary and word.",Experiment/Discussion
+"Other classes may include numbers, paragraph boundaries and various sorts of punctuation (e.g., braces of various types, commas).",Experiment/Discussion
+"However, for simplicity, we will henceforth assume only words and sentence boundaries are extracted.",Experiment/Discussion
+"Just as with programming languages, with text it is not always possible to unambiguously specify the required token classes with regular expressions.",Experiment/Discussion
+"However the addition of a simple lookahead mechanism which allows specification of right context ameliorates this [Aho et al., 1986, Lesk, 1975].",Experiment/Discussion
+"For example, a sentence boundary in English text might be identified by a period, followed bywhitespace, followed by an uppercase letter.",Experiment/Discussion
+"However the uppercase letter must not be consumed, as it is the first component of the next token.",Experiment/Discussion
+A lookahead mechanism allows us to specify in the sentence-boundary regular expression that the final character matched should not be considered a part of the token.,Experiment/Discussion
+This method meets our stated goals for the overall system.,Experiment/Discussion
+"It is efficient, requiring that each character be examined only once (modulo lookahead).",Experiment/Discussion
+"It is easily parameterizable, providing the expressive power to concisely define accurate and robust token classes.",Experiment/Discussion
+The lexicon module is responsible for enumerating parts of speech and their associated stems for each word it is given.,Experiment/Discussion
+"For the English word &quot;does,&quot; the lexicon might return &quot;do, verb&quot; and &quot;doe, plural-noun.&quot; It is also responsible for identifying ambiguity classes based upon sets of tags.",Experiment/Discussion
+"We have employed a three-stage implementation: First, we consult a manually-constructed lexicon to find stems and parts of speech.",Experiment/Discussion
+"Exhaustive lexicons of this sort are expensive, if not impossible, to produce.",Experiment/Discussion
+"Fortunately, a small set of words accounts for the vast majority of word occurences.",Experiment/Discussion
+Thus high coverage can be obtained without prohibitive effort.,Experiment/Discussion
+Words not found in the manually constructed lexicon are generally both open class and regularly inflected.,Experiment/Discussion
+"As a second stage, a language-specific method can be employed to guess ambiguity classes for unknown words.",Experiment/Discussion
+"For many languages (e.g., English and French), word suffixes provide strong cues to words' possible categories.",Experiment/Discussion
+"Probabalistic predictions of a word's category can be made by analyzing suffixes in untagged text [Kupiec, 1992, Meteer et al., 1991].",Experiment/Discussion
+"As a final stage, if a word is not in the manually constructed lexicon, and its suffix is not recognized, a default ambiguity class is used.",Experiment/Discussion
+This class typically contains all the open class categories in the language.,Experiment/Discussion
+"Dictionaries and suffix tables are both efficiently implementable as letter trees, or tries [Knuth, 1973], which require that each character of a word be examined only once during a lookup.",Experiment/Discussion
+"In this section, we detail how our tagger meets the desiderata that we outlined in section 1.",Experiment/Discussion
+"The system is implemented in Common Lisp [Steele, 1990].",Experiment/Discussion
+All timings reported are for a Sun SPARCStation2.,Experiment/Discussion
+The English lexicon used contains 38 tags (M = 38) and 174 ambiguity classes (N = 174).,Experiment/Discussion
+"Training was performed on 25,000 words in articles selected randomly from Grolier's Encyclopedia.",Experiment/Discussion
+Five iterations of training were performed in a total time of 115 CPU seconds.,Experiment/Discussion
+"Following is a time breakdown by component: Training: average pseconds per token tokenizer lexicon 1 iteration 5 iterations total 640 400 680 3400 4600 Tagging was performed on 115,822 words in a collection of articles by the journalist Dave Barry.",Experiment/Discussion
+This required a total of of 143 CPU seconds.,Experiment/Discussion
+"The time breakdown for this was as follows: Tagging: average pseconds per token tokenizer lexicon Viterbi total 604 388 233 1235 It can be seen from these figures that training on a new corpus may be accomplished in a matter of minutes, and that tens of megabytes of text may then be tagged per hour.",Experiment/Discussion
+"When using a lexicon and tagset built from the tagged text of the Brown corpus [Francis and KuEera, 1982], training on one half of the corpus (about 500,000 words) and tagging the other, 96% of word instances were assigned the correct tag.",Experiment/Discussion
+Eight iterations of training were used.,Experiment/Discussion
+"This level of accuracy is comparable to the best achieved by other taggers [Church, 1988, Merialdo, 1991].",Experiment/Discussion
+"The Brown Corpus contains fragments and ungrammaticalities, thus providing a good demonstration of robustness.",Experiment/Discussion
+"A tagger should be tunable, so that systematic tagging errors and anomalies can be addressed.",Experiment/Discussion
+"Similarly, it is important that it be fast and easy to target the tagger to new genres and languages, and to experiment with different tagsets reflecting different insights into the linguistic phenomena found in text.",Experiment/Discussion
+"In section 3.5, we describe how the HMM implementation itself supports tuning.",Experiment/Discussion
+"In addition, our implementation supports a number of explicit parameters to facilitate tuning and reuse, including specification of lexicon and training corpus.",Experiment/Discussion
+There is also support for a flexible tagset.,Experiment/Discussion
+"For example, if we want to collapse distinctions in the lexicon, such as those between positive, comparative, and superlative adjectives, we only have to make a small change in the mapping from lexicon to tagset.",Experiment/Discussion
+"Similarly, if we wish to make finer grain distinctions than those available in the lexicon, such as case marking on pronouns, there is a simple way to note such exceptions.",Experiment/Discussion
+We have used the tagger in a number of applications.,Results/Conclusion
+We describe three applications here: phrase recognition; word sense disambiguation; and grammatical function assignment.,Results/Conclusion
+These projects are part of a research effort to use shallow analysis techniques to extract content from unrestricted text.,Results/Conclusion
+We have constructed a system that recognizes simple phrases when given as input the sequence of tags for a sentence.,Results/Conclusion
+"There are recognizers for noun phrases, verb groups adverbial phrases, and prepositional phrases.",Results/Conclusion
+Each of these phrases comprises a contiguous sequence of tags that sat is. fies a simple grammar.,Results/Conclusion
+"For example, a noun phrase can be a unary sequence containing a pronoun tag or an arbitrar. ily long sequence of noun and adjective tags, possibly pre. ceded by a determiner tag and possibly with an embeddec possessive marker.",Results/Conclusion
+"The longest possible sequence is founc (e.g., &quot;the program committee&quot; but not &quot;the program') Conjunctions are not recognized as part of any phrase; for example, in the fragment &quot;the cats and dogs,&quot; &quot;the cats&quot; and &quot;dogs&quot; will be recognized as two noun phrases.",Results/Conclusion
+Prepositional phrase attachment is not performed at this stage of processing.,Results/Conclusion
+"This approach to phrase recognition in some cases captures only parts of some phrases; however, our approach minimizes false positives, so that we can rely on the recognizers' results.",Results/Conclusion
+"Part-of-speech tagging in and of itself is a useful tool in lexical disambiguation; for example, knowing that &quot;dig&quot; is being used as a noun rather than as a verb indicates the word's appropriate meaning.",Results/Conclusion
+But many words have multiple meanings even while occupying the same part of speech.,Results/Conclusion
+"To this end, the tagger has been used in the implementation of an experimental noun homograph disambiguation algorithm [Hearst, 1991].",Results/Conclusion
+"The algorithm (known as CatchWord) performs supervised training over a large text corpus, gathering lexical, orthographic, and simple syntactic evidence for each sense of the ambiguous noun.",Results/Conclusion
+"After a period of training, Catch Word classifies new instances of the noun by checking its context against that of previously observed instances and choosing the sense for which the most evidence is found.",Results/Conclusion
+"Because the sense distinctions made are coarse, the disambiguation can be accomplished without the expense of knowledge bases or inference mechanisms.",Results/Conclusion
+Initial tests resulted in accuracies of around 90% for nouns with strongly distinct senses.,Results/Conclusion
+This algorithm uses the tagger in two ways: (i) to determine the part of speech of the target word (filtering out the non-noun usages) and (ii) as a step in the phrase recognition analysis of the context surrounding the noun.,Results/Conclusion
+"The phrase recognizers also provide input to a system, Sopa [Sibun, 1991], which recognizes nominal arguments of verbs, specifically, Subject, Object, and Predicative Arguments.",Results/Conclusion
+Sopa does not rely on information (such as arity or voice) specific to the particular verbs involved.,Results/Conclusion
+The first step in assigning grammatical functions is to partition the tag sequence of each sentence into phrases.,Results/Conclusion
+"The phrase types include those mentioned in section 6.1, additional types to account for conjunctions, complementizers, and indicators of sentence boundaries, and an &quot;unknown&quot; type.",Results/Conclusion
+"After a sentence has been partitioned, each simple noun phrase is examined in the context of the phrase to its left and the phrase to its right.",Results/Conclusion
+"On the basis of this local context and a set of rules, the noun phrase is marked as a syntactic Subject, Object, Predicative, or is not marked at all.",Results/Conclusion
+"A label of Predicative is assigned only if it can be determined that the governing verb group is a form of a predicating verb (e.g., a form of &quot;be&quot;).",Results/Conclusion
+"Because this cannot always be determined, some Predicatives are labeled Objects.",Results/Conclusion
+"If a noun phrase is labeled, it is also annotated as to whether the governing verb is the closest verb group to the right or to the left.",Results/Conclusion
+The algorithm has an accuracy of approximately 80% in assigning grammatical functions.,Results/Conclusion
+"We would like to thank Marti Hearst for her contributions to this paper, Lauri Karttunen and Annie Zaenen for their work on lexicons, and Kris Halvorsen for supporting this project.",Results/Conclusion

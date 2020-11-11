@@ -1,262 +1,262 @@
 col1,col2
-present a statistical machine translation model that uses that contain subphrases.,{}
-The model is formally a synchronous context-free grammar but is learned from a parallel text without any syntactic annotations.,{}
-Thus it can be seen as combining fundamental ideas from both syntax-based translation and phrase-based translation.,{}
-"We describe our system’s training and decoding methods in detail, and evaluate it for translation speed and translation accuracy.",{}
-"Using BLEU as a metric of translation accuracy, we find that our system performs significantly better than the Alignment Template System, a state-of-the-art phrasebased system.",{}
-We present a statistical machine translation model that uses hierarchical phrases—phrases that contain subphrases.,"{'title': '', 'number': '1'}"
-The model is formally a synchronous context-free grammar but is learned from a parallel text without any syntactic annotations.,"{'title': '', 'number': '1'}"
-Thus it can be seen as combining fundamental ideas from both syntax-based translation and phrase-based translation.,"{'title': '', 'number': '1'}"
-"We describe our system’s training and decoding methods in detail, and evaluate it for translation speed and translation accuracy.","{'title': '', 'number': '1'}"
-"Using BLEU as a metric of translation accuracy, we find that our system performs significantly better than the Alignment Template System, a state-of-the-art phrasebased system.","{'title': '', 'number': '1'}"
-"The alignment template translation model (Och and Ney 2004) and related phrase-based models advanced the state of the art in machine translation by expanding the basic unit of translation from words to phrases, that is, substrings of potentially unlimited size (but not necessarily phrases in any syntactic theory).","{'title': '1.', 'number': '2'}"
-"These phrases allow a model to learn local reorderings, translations of multiword expressions, or insertions and deletions that are sensitive to local context.","{'title': '1.', 'number': '2'}"
-This makes them a simple and powerful mechanism for translation.,"{'title': '1.', 'number': '2'}"
-The basic phrase-based model is an instance of the noisy-channel approach (Brown et al. 1993).,"{'title': '1.', 'number': '2'}"
-"Following convention, we call the source language “French” and the target language “English”; the translation of a French sentence f into an English sentence e is modeled as: The phrase-based translation model P( f  |e) “encodes” e into f by the following steps: Other phrase-based models model the joint distribution P(e,f ) (Marcu and Wong 2002) or make P(e) and P(f I e) into features of a log-linear model (Och and Ney 2002).","{'title': '1.', 'number': '2'}"
-"But the basic architecture of phrase segmentation (or generation), phrase reordering, and phrase translation remains the same.","{'title': '1.', 'number': '2'}"
-Phrase-based models can robustly perform translations that are localized to substrings that are common enough to have been observed in training.,"{'title': '1.', 'number': '2'}"
-"But Koehn, Och, and Marcu (2003) find that phrases longer than three words improve performance little for training corpora of up to 20 million words, suggesting that the data may be too sparse to learn longer phrases.","{'title': '1.', 'number': '2'}"
-"Above the phrase level, some models perform no reordering (Zens and Ney 2004; Kumar, Deng, and Byrne 2006), some have a simple distortion model that reorders phrases independently of their content (Koehn, Och, and Marcu 2003; Och and Ney 2004), and some, for example, the Alignment Template System (Och et al. 2004; Thayer et al.","{'title': '1.', 'number': '2'}"
-"2004), hereafter ATS, and the IBM phrase-based system (Tillmann 2004; Tillmann and Zhang 2005), have phrase-reordering models that add some lexical sensitivity.","{'title': '1.', 'number': '2'}"
-"But, as an illustration of the limitations of phrase reordering, consider the following Mandarin example and its English translation: M1)11'1 � Æ JLF01 P �� n �� 0* �Aozhou shi yu Beihan you bangjiao de shaoshu guojia zhiyi Australia is with North Korea have dipl. rels. that few countries one of .","{'title': '1.', 'number': '2'}"
-.,"{'title': '1.', 'number': '2'}"
-Australia is one of the few countries that have diplomatic relations with North Korea.,"{'title': '1.', 'number': '2'}"
-"If we count zhiyi (literally, ‘of-one’) as a single token, then translating this sentence correctly into English requires identifying a sequence of five word groups that need to be reversed.","{'title': '1.', 'number': '2'}"
-"When we run a phrase-based system, ATS, on this sentence (using the experimental setup described herein), we get the following phrases with translations: [Aozhou] [shi]1 [yu Beihan]2 [you] [bangjiao] [de shaoshu guojia zhiyi] [.]","{'title': '1.', 'number': '2'}"
-[Australia] [has] [dipl. rels.],"{'title': '1.', 'number': '2'}"
-[with North Korea]2 [is]1 [one of the few countries] [.] where we have used subscripts to indicate the reordering of phrases.,"{'title': '1.', 'number': '2'}"
-"The phrase-based model is able to order “has diplomatic relations with North Korea” correctly (using phrase reordering) and “is one of the few countries” correctly (using a combination of phrase translation and phrase reordering), but does not invert these two groups as it should.","{'title': '1.', 'number': '2'}"
-"We propose a solution to these problems that does not interfere with the strengths of the phrase-based approach, but rather capitalizes on them: Because phrases are good for learning reorderings of words, we can use them to learn reorderings of phrases as well.","{'title': '1.', 'number': '2'}"
-In order to do this we need hierarchical phrases that can contain other phrases.,"{'title': '1.', 'number': '2'}"
-"For example, a hierarchical phrase pair that might help with the above example is (yu 1 you 2 , have 2 with 1 ) (3) where 1 and 2 are placeholders for subphrases (Chiang 2005).","{'title': '1.', 'number': '2'}"
-"This would capture the fact that Chinese prepositional phrases almost always modify verb phrases on the left, whereas English prepositional phrases usually modify verb phrases on the right.","{'title': '1.', 'number': '2'}"
-"Because it generalizes over possible prepositional objects and direct objects, it acts both as a discontinuous phrase pair and as a phrase-reordering rule.","{'title': '1.', 'number': '2'}"
-Thus it is considerably more powerful than a conventional phrase pair.,"{'title': '1.', 'number': '2'}"
-"Similarly, the hierarchical phrase pair ( 1 de 2 , the 2 that 1 ) (4) would capture the fact that Chinese relative clauses modify NPs on the left, whereas English relative clauses modify on the right; and the pair ( 1 zhiyi, one of 1 ) (5) would render the construction zhiyi in English word order.","{'title': '1.', 'number': '2'}"
-"These three rules, along with some conventional phrase pairs, suffice to translate the sentence correctly: [Aozhou] [shi] [[[yu [Beihan]1 you [bangjiao]2] de [shaoshu guojia]3] zhiyi] [Australia] [is] [one of [the [few countries]3 that [have [dipl. rels.","{'title': '1.', 'number': '2'}"
-"]2 with [N. Korea]1]]] The system we describe in this article uses rules like (3), (4), and (5), which we formalize in the next section as rules of a synchronous context-free grammar (CFG).1 Moreover, the system is able to learn them automatically from a parallel text without syntactic annotation.","{'title': '1.', 'number': '2'}"
-"Because our system uses a synchronous CFG, it could be thought of as an example of syntax-based statistical machine translation (MT), joining a line of research (Wu 1997; Alshawi, Bangalore, and Douglas 2000; Yamada and Knight 2001) that has been fruitful but has not previously produced systems that can compete with phrase-based systems in large-scale translation tasks such as the evaluations held by NIST.","{'title': '1.', 'number': '2'}"
-"Our approach differs from early syntax-based statistical translation models in combining the idea of hierarchical structure with key insights from phrase-based MT: Crucially, by incorporating the use of elementary structures with possibly many words, we hope to inherit phrase-based MT’s capacity for memorizing translations from parallel data.","{'title': '1.', 'number': '2'}"
-Other insights borrowed from the current state of the art include minimum-error-rate training of log-linear models (Och and Ney 2002; Och 2003) and use of an m-gram language model.,"{'title': '1.', 'number': '2'}"
-"The conjunction of these various elements presents a considerable challenge for implementation, which we discuss in detail in this article.","{'title': '1.', 'number': '2'}"
-The result is the first system employing a grammar (to our knowledge) to perform better than phrase-based systems in large-scale evaluations.2,"{'title': '1.', 'number': '2'}"
-"Approaches to syntax-based statistical MT have varied in their reliance on syntactic theories, or annotations made according to syntactic theories.","{'title': '2.', 'number': '3'}"
-"At one extreme are those, exemplified by that of Wu (1997), that have no dependence on syntactic theory beyond the idea that natural language is hierarchical.","{'title': '2.', 'number': '3'}"
-"If these methods distinguish between different categories, they typically do not distinguish very many.","{'title': '2.', 'number': '3'}"
-"Our approach, as presented here, falls squarely into this family.","{'title': '2.', 'number': '3'}"
-"By contrast, other approaches, exemplified by that of Yamada and Knight (2001), do make use of parallel data with syntactic annotations, either in the form of phrase-structure trees or dependency trees (Ding and Palmer 2005; Quirk, Menezes, and Cherry 2005).","{'title': '2.', 'number': '3'}"
-"Because syntactically annotated corpora are comparatively small, obtaining parsed parallel text in quantity usually entails running an automatic parser on a parallel corpus to produce noisy annotations.","{'title': '2.', 'number': '3'}"
-"Both of these strands of research have recently begun to explore extraction of larger rules, guided by word alignments.","{'title': '2.', 'number': '3'}"
-"The extraction method we use, which is a straightforward generalization of phrase extraction from word-aligned parallel text, has been independently proposed before in various settings.","{'title': '2.', 'number': '3'}"
-"The method of Block (2000) is the earliest instance we are aware of, though it is restricted to rules with one variable.","{'title': '2.', 'number': '3'}"
-The same method has also been used by Probst et al. (2002) and Xia and McCord (2004) in conjunction with syntactic annotations to extract rules that are used for reordering prior to translation.,"{'title': '2.', 'number': '3'}"
-"Finally, Galley et al. (2004) use the same method to extract a very large grammar from syntactically annotated data.","{'title': '2.', 'number': '3'}"
-"The discontinuous phrases used by Simard et al. (2005) have a similar purpose to synchronous grammar rules; but they have variables that stand for single words rather than subderivations, and they can interleave in non-hierarchical ways.","{'title': '2.', 'number': '3'}"
-"The model is based on a synchronous CFG, elsewhere known as a syntax-directed transduction grammar (Lewis and Stearns 1968).","{'title': '3.', 'number': '4'}"
-We give here an informal definition and then describe in detail how we build a synchronous CFG for our model.,"{'title': '3.', 'number': '4'}"
-"In a synchronous CFG the elementary structures are rewrite rules with aligned pairs of right-hand sides: where X is a nonterminal, γ and α are both strings of terminals and nonterminals, and — is a one-to-one correspondence between nonterminal occurrences in γ and nonterminal occurrences in α.","{'title': '3.', 'number': '4'}"
-"For example, the hierarchical phrase pairs (3), (4), and (5) previously presented could be formalized in a synchronous CFG as: where we have used boxed indices to indicate which nonterminal occurrences are linked by —.","{'title': '3.', 'number': '4'}"
-The conventional phrase pairs would be formalized as: A synchronous CFG derivation begins with a pair of linked start symbols.,"{'title': '3.', 'number': '4'}"
-"At each step, two linked nonterminals are rewritten using the two components of a single rule.","{'title': '3.', 'number': '4'}"
-"When denoting links with boxed indices, we must consistently reindex the newly introduced symbols apart from the symbols already present.","{'title': '3.', 'number': '4'}"
-"For an example using these rules, see Figure 1.","{'title': '3.', 'number': '4'}"
-The bulk of the grammar consists of automatically extracted rules.,"{'title': '3.', 'number': '4'}"
-"The extraction process begins with a word-aligned corpus: a set of triples (f, e, —), where f is a French sentence, e is an English sentence, and — is a (many-to-many) binary relation between positions off and positions of e. The word alignments are obtained by running GIZA++ (Och and Ney 2000) on the corpus in both directions, and forming the union of the two sets of word alignments.","{'title': '3.', 'number': '4'}"
-We then extract from each word-aligned sentence pair a set of rules that are consistent with the word alignments.,"{'title': '3.', 'number': '4'}"
-This can be thought of in two steps.,"{'title': '3.', 'number': '4'}"
-"First, we identify initial phrase pairs using the same criterion as most phrase-based systems (Och and Ney 2004), namely, there must be at least one word inside one phrase aligned to a word inside the other, but no word inside one phrase can be aligned to a word outside the other phrase.","{'title': '3.', 'number': '4'}"
-"For example, suppose our training data contained the fragment Example derivation of a synchronous CFG.","{'title': '3.', 'number': '4'}"
-Numbers above arrows are rules used at each step. with word alignments as shown in Figure 2a.,"{'title': '3.', 'number': '4'}"
-The initial phrases that would be extracted are shown in Figure 2b.,"{'title': '3.', 'number': '4'}"
-"More formally: Definition 1 Given a word-aligned sentence pair ( f, e, —), let fji stand for the substring of f from position i to position j inclusive, and similarly for eji.","{'title': '3.', 'number': '4'}"
-"Then a rule ( fj, ele ) is an initial phrase pair of ( f, e, —) iff: Second, in order to obtain rules from the phrases, we look for phrases that contain other phrases and replace the subphrases with nonterminal symbols.","{'title': '3.', 'number': '4'}"
-"For example, given the initial phrases shown in Figure 2b, we could form the rule where k is an index not used in γ and α, is a rule of (f, e, —).","{'title': '3.', 'number': '4'}"
-"This scheme generates a very large number of rules, which is undesirable not only because it makes training and decoding very slow, but also because it creates spurious ambiguity—a situation where the decoder produces many derivations that are distinct yet have the same model feature vectors and give the same translation.","{'title': '3.', 'number': '4'}"
-"This can result in k-best lists with very few different translations or feature vectors, which is problematic for the minimum-error-rate training algorithm (see Section 4.3).","{'title': '3.', 'number': '4'}"
-"To avoid this, we filter our grammar according to the following constraints, chosen to balance grammar size and performance on our development set: Glue rules.","{'title': '3.', 'number': '4'}"
-"Having extracted rules from the training data, we could let X be the grammar’s start symbol and translate new sentences using only the extracted rules.","{'title': '3.', 'number': '4'}"
-"But for robustness and for continuity with phrase-based translation models, we allow the grammar to divide a French sentence into a sequence of chunks and translate one chunk at a time.","{'title': '3.', 'number': '4'}"
-"We formalize this inside a synchronous CFG using the rules (14) and (15), which we call the glue rules, repeated here: These rules analyze an S (the start symbol) as a sequence of Xs which are translated without reordering.","{'title': '3.', 'number': '4'}"
-"Note that if we restricted our grammar to comprise only the glue rules and conventional phrase pairs (that is, rules without nonterminal symbols on the right-hand side), the model would reduce to a phrase-based model with monotone translation (no phrase reordering).","{'title': '3.', 'number': '4'}"
-Entity rules.,"{'title': '3.', 'number': '4'}"
-"Finally, for each sentence to be translated, we run some specialized translation modules to translate the numbers, dates, numbers, and bylines in the sentence, and insert these translations into the grammar as new rules.3 Such modules are often used by phrase-based systems as well, but here their translations can plug into hierarchical phrases, for example, into the rule allowing it to generalize over numbers of years.","{'title': '3.', 'number': '4'}"
-"Given a French sentence f, a synchronous CFG will have, in general, many derivations that yield f on the French side, and therefore (in general) many possible translations e. We now define a model over derivations D to predict which translations are more likely than others.","{'title': '4.', 'number': '5'}"
-"Following Och and Ney (2002), we depart from the traditional noisy-channel approach and use a more general log-linear model over derivations D: 3 These modules are due to U. Germann and F. J. Och.","{'title': '4.', 'number': '5'}"
-In a previous paper (Chiang et al. 2005) we reported on translation modules for numbers and names.,"{'title': '4.', 'number': '5'}"
-"The present modules are not the same as those, though the mechanism for integrating them is identical.","{'title': '4.', 'number': '5'}"
-"209 Computational Linguistics Volume 33, Number 2 where the φi are features defined on derivations and the λi are feature weights.","{'title': '4.', 'number': '5'}"
-One of the features is an m-gram language model PLM(e); the remainder of the features we will define as products of functions on the rules used in a derivation: The factors other than the language model factor can be put into a particularly convenient form.,"{'title': '4.', 'number': '5'}"
-A weighted synchronous CFG is a synchronous CFG together with a function w that assigns weights to rules.,"{'title': '4.', 'number': '5'}"
-This function induces a weight function over derivations: It is easy to write dynamic-programming algorithms to find the highest-weight translation or k-best translations with a weighted synchronous CFG.,"{'title': '4.', 'number': '5'}"
-"Therefore it is problematic that w(D) does not include the language model, which is extremely important for translation quality.","{'title': '4.', 'number': '5'}"
-We return to this challenge in Section 5.,"{'title': '4.', 'number': '5'}"
-"For our experiments, we use a feature set analogous to the default feature set of Pharaoh (Koehn, Och, and Marcu 2003).","{'title': '4.', 'number': '5'}"
-"The rules extracted from the training bitext have the following features: Finally, for all the rules, there is a word penalty exp(−#T(α)), where #T just counts terminal symbols.","{'title': '4.', 'number': '5'}"
-This allows the model to learn a general preference for shorter or longer outputs.,"{'title': '4.', 'number': '5'}"
-"In order to estimate the parameters of the phrase translation and lexical-weighting features, we need counts for the extracted rules.","{'title': '4.', 'number': '5'}"
-"For each sentence pair in the training data, there is in general more than one derivation of the sentence pair using the rules extracted from it.","{'title': '4.', 'number': '5'}"
-"Because we have observed the sentence pair but have not observed the derivations, we do not know how many times each derivation has been seen, and therefore we do not actually know how many times each rule has been seen.","{'title': '4.', 'number': '5'}"
-"Following Och and others, we use heuristics to hypothesize a distribution of possible rules as though we observed them in the training data, a distribution that does not necessarily maximize the likelihood of the training data.5 Och’s method gives a count of one to each extracted phrase pair occurrence.","{'title': '4.', 'number': '5'}"
-"We likewise give a count of one to each initial phrase pair occurrence, then distribute its weight equally among the rules obtained by subtracting subphrases from it.","{'title': '4.', 'number': '5'}"
-"Treating this distribution as our observed data, we use relative-frequency estimation to obtain P(γ  |α) and P(α  |γ).","{'title': '4.', 'number': '5'}"
-"Finally, the parameters λi of the log-linear model (18) are learned by minimumerror-rate training (Och 2003), which tries to set the parameters so as to maximize the BLEU score (Papineni et al. 2002) of a development set.","{'title': '4.', 'number': '5'}"
-This gives a weighted synchronous CFG according to (22) that is ready to be used by the decoder.,"{'title': '4.', 'number': '5'}"
-"4 This feature uses word alignment information, which is discarded in the final grammar.","{'title': '4.', 'number': '5'}"
-"If a rule occurs in training with more than one possible word alignment, Koehn, Och, and Marcu take the maximum lexical weight; we take a weighted average.","{'title': '4.', 'number': '5'}"
-"5 This approach is similar to that taken by many parsers, such as SPATTER (Magerman 1995) and its successors, which use heuristics to hypothesize an augmented version of the training data, but it is especially reminiscent of the Data Oriented Parsing method (Bod 1992), which hypothesizes a distribution over many possible derivations of each training example from subtrees of varying sizes.","{'title': '4.', 'number': '5'}"
-"In brief, our decoder is a CKY (Cocke-Kasami-Younger) parser with beam search together with a postprocessor for mapping French derivations to English derivations.","{'title': '5.', 'number': '6'}"
-"Given a French sentence f, it finds the English yield of the single best derivation that has French yield f: �eˆ = e arg max P(D) (24) Ds.t.f(D)=f Note that this is not necessarily the highest-probability English string, which would require a more expensive summation over derivations.","{'title': '5.', 'number': '6'}"
-"We now discuss the details of the decoder, focusing attention on efficiently calculating English language-model probabilities for possible translations, which is the primary technical challenge.","{'title': '5.', 'number': '6'}"
-"In the following we present several parsers as deductive proof systems (Shieber, Schabes, and Pereira 1995; Goodman 1999).","{'title': '5.', 'number': '6'}"
-"A parser in this notation defines a space of weighted items, in which some items are designated axioms and some items are designated goals (the items to be proven), and a set of inference rules of the form which means that if all the items Ii (called the antecedents) are provable, with weight wi, then I (called the consequent) is provable, with weight w, provided the side condition φ holds.","{'title': '5.', 'number': '6'}"
-"The parsing process grows a set of provable items: It starts with the axioms, and proceeds by applying inference rules to prove more and more items until a goal is proven.","{'title': '5.', 'number': '6'}"
-"For example, the well-known CKY algorithm for CFGs in Chomsky normal form can be thought of as a deductive proof system whose items can take one of two forms: The axioms would be 6 Treating grammar rules as axioms is not standard practice, but advocated by Goodman (1999).","{'title': '5.', 'number': '6'}"
-"Here, it has the benefit of simplifying the presentation in Section 5.3.4. and the inference rules would be and the goal would be [S, 0, n], where S is the start symbol of the grammar and n is the length of the input string f. Given a synchronous CFG, we could convert its French-side grammar into Chomsky normal form, and then for each sentence, we could find the best parse using CKY.","{'title': '5.', 'number': '6'}"
-"Then it would be a straightforward matter to revert the best parse from Chomsky normal form into the original form and map it into its corresponding English tree, whose yield is the output translation.","{'title': '5.', 'number': '6'}"
-"However, because we have already restricted the number of nonterminal symbols in our rules to two, it is more convenient to use a modified CKY algorithm that operates on our grammar directly, without any conversion to Chomsky normal form.","{'title': '5.', 'number': '6'}"
-"The axioms, inference rules, and goals for the basic decoder are shown in Figure 3.","{'title': '5.', 'number': '6'}"
-"Its time complexity is O(n3), just as CKY’s is.","{'title': '5.', 'number': '6'}"
-"Because this algorithm does not yet incorporate a language model, let us call it the −LM parser.","{'title': '5.', 'number': '6'}"
-The actual search procedure is given by the pseudocode in Figure 4.,"{'title': '5.', 'number': '6'}"
-"It organizes the proved items into an array chart whose cells chart[X, i, j] are sets of items.","{'title': '5.', 'number': '6'}"
-"The cells are ordered such that every item comes after its possible antecedents: smaller spans before larger spans, and X items before S items (because of the unary rule S → �X 1 , X 1 )).","{'title': '5.', 'number': '6'}"
-Then the parser can proceed by visiting the chart cells in order and trying to prove all the items for each cell.,"{'title': '5.', 'number': '6'}"
-"Whenever it proves a new item, it adds the item to the Search procedure for the −LM parser. appropriate chart cell; in order to reconstruct the derivations later, it must also store, with each item, a tuple of back-pointers to the antecedents from which the item was deduced (for axioms, an empty tuple is used).","{'title': '5.', 'number': '6'}"
-"If two items are added to a cell that are equivalent except for their weights or back-pointers, then they are merged (in the MT decoding literature, this is also known as hypothesis recombination), with the merged item taking its weight and back-pointers from the better of the two equivalent items.","{'title': '5.', 'number': '6'}"
-"(However, if we are interested in finding the k-best derivations, the merged item gets the multiset of all the tuples of back-pointers from the equivalent items.","{'title': '5.', 'number': '6'}"
-These backpointers are used below in Section 5.2.),"{'title': '5.', 'number': '6'}"
-"The algorithm in Figure 4 does not completely search the space of proofs, because it has a constraint that prohibits any X from spanning a substring longer than a fixed limit Λ on the French side, corresponding to the maximum length constraint on initial rules during training.","{'title': '5.', 'number': '6'}"
-This gives the decoding algorithm an asymptotic time complexity of O(n).,"{'title': '5.', 'number': '6'}"
-"In principle Λ should match the initial phrase length limit used in training (as it does in our experiments), but in practice it can be adjusted separately to maximize accuracy or speed.","{'title': '5.', 'number': '6'}"
-We often want to find not only the best derivation for a French sentence but a list of the k-best derivations.,"{'title': '5.', 'number': '6'}"
-These are used for minimum-error-rate training and for rescoring with a language model (Section 5.3.1).,"{'title': '5.', 'number': '6'}"
-We describe here how to do this using the lazy algorithm of Huang and Chiang (2005).,"{'title': '5.', 'number': '6'}"
-Part of this method will also be reused in our algorithm for fast parsing with a language model (Section 5.3.4).,"{'title': '5.', 'number': '6'}"
-"If we conceive of lists as functions from indices to values, we may create a virtual list, a function that computes member values on demand instead of storing all the values statically.","{'title': '5.', 'number': '6'}"
-"The heart of the k-best algorithm is a function MERGEPRODUCTS, which takes a set G of tuples of (virtual) lists with an operator ⊗ and returns a virtual list: Example illustrating MERGEPRODUCTS, where L1 = {1, 2,6, 10} and L2 = {1, 4, 7}.","{'title': '5.', 'number': '6'}"
-Numbers are negative log-probabilities.,"{'title': '5.', 'number': '6'}"
-It assumes that the input lists are sorted and returns a sorted list.,"{'title': '5.', 'number': '6'}"
-"A naive implementation of MERGEPRODUCTS would simply calculate all possible products and sort; however, if we are only interested in the top part of the result, we can implement MERGEPRODUCTS so that the output values are computed lazily and the input lists are accessed only as needed.","{'title': '5.', 'number': '6'}"
-"To do this, we must assume that the multiplication operator ® is monotonic in each of its arguments.","{'title': '5.', 'number': '6'}"
-"By way of motivation, consider the simple case G = {(L1,L2)}.","{'title': '5.', 'number': '6'}"
-"The full set of possible products can be arranged in a two-dimensional grid (see Figure 5a), which we could then sort to obtain MERGEPRODUCTS(G).","{'title': '5.', 'number': '6'}"
-"But because of our assumptions, we know that the first element of MERGEPRODUCTS(G) must be L1[1] ® L2[1].","{'title': '5.', 'number': '6'}"
-"Moreover, we know that the second element must be either L1[1] ® L2[2] or L1[2] ® L2[1].","{'title': '5.', 'number': '6'}"
-"In general (see Figure 5b), if some of the cells have been previously enumerated, the next cell must be one of the cells (shaded gray) adjacent to the previously enumerated ones and we need not consider the others (shaded white).","{'title': '5.', 'number': '6'}"
-"In this way, if we only want to compute the first few elements of MERGEPRODUCTS(G), we can do so by performing a small number of products and discarding the rest of the grid.","{'title': '5.', 'number': '6'}"
-"Figure 6 shows the pseudocode for MERGEPRODUCTS.7 In lines 2–5, a priority queue is initialized with the best element from each L E G, where L ranges over tuples of lists, and 1 stands for a vector whose elements all have the value 1 (the dimensionality of the vector should be evident from the context).","{'title': '5.', 'number': '6'}"
-"The rest of the function creates the virtual list: To enumerate the next element of the list, we first insert the elements adjacent to the previously enumerated element, if any (lines 9–13, where bi stands for the vector whose ith element is 1 and is zero elsewhere), and then enumerate the best element in the priority queue, if any (lines 14–18).","{'title': '5.', 'number': '6'}"
-We assume standard implementations of 7 This version corrects the behavior of the previously published version in some boundary conditions.,"{'title': '5.', 'number': '6'}"
-Thanks to D. Smith and J.,"{'title': '5.', 'number': '6'}"
-May for pointing those cases out.,"{'title': '5.', 'number': '6'}"
-"In the actual implementation, an earlier version is used which has the correct behavior but not for cyclic forests (which the parser never produces).","{'title': '5.', 'number': '6'}"
-Function for computing the union of products of sorted lists (Huang and Chiang 2005).,"{'title': '5.', 'number': '6'}"
-"the priority queue subroutines HEAPIFY, INSERT, and EXTRACTBEST (Cormen et al. 2001).","{'title': '5.', 'number': '6'}"
-The k-best list generator is then easy to define (Figure 7).,"{'title': '5.', 'number': '6'}"
-"First, we generate a parse forest; then we simply apply MERGEPRODUCTS recursively to the whole forest, using memoization to ensure that we generate only one k-best list for each item in the forest.","{'title': '5.', 'number': '6'}"
-"The pseudocode in Figure 7 will find only the weights for the k-best derivations; extending it to output the translations as well is a matter of modifying line 5 to package the English sides of rules together with the weights w, and replacing the real multiplication operator × in line 9 with one that not only multiplies weights but also builds partial translations out of subtranslations.","{'title': '5.', 'number': '6'}"
-"We now turn to the problem of incorporating the language model (LM), describing three methods: first, using the −LM parser to obtain a k-best list of translations and rescoring it with the LM; second, incorporating the LM directly into the grammar in a construction reminiscent of the intersection of a CFG with a finite-state automaton; third, a hybrid method which we call cube pruning.","{'title': '5.', 'number': '6'}"
-5.3.1 Rescoring.,"{'title': '5.', 'number': '6'}"
-"One easy way to incorporate the LM into the model would be to decode first using the −LM parser to produce a k-best list of translations, then to rescore the k-best list using the LM.","{'title': '5.', 'number': '6'}"
-"This method has the potential to be very fast: linear in k. However, because the number of possible translations is exponential in n, we may have to set k extremely high in order to find the true best translation (taking the LM into account) or something acceptably close to it.","{'title': '5.', 'number': '6'}"
-5.3.2 Intersection.,"{'title': '5.', 'number': '6'}"
-A more principled solution would be to calculate the LM probabilities online.,"{'title': '5.', 'number': '6'}"
-"To do this, we view an m-gram LM as a weighted finite state machine M in which each state corresponds to a sequence of (m − 1) English terminal symbols.","{'title': '5.', 'number': '6'}"
-We can then intersect the English side of our weighted CFG G with this finite-state machine to produce a new weighted CFG that incorporates M. Thus PLM would be part of the rule weights (22) just like the other features.,"{'title': '5.', 'number': '6'}"
-"(For notational consistency, however, we write the LM probabilities separately from the rule weights.)","{'title': '5.', 'number': '6'}"
-"In principle this method should admit no search errors, though in practice the blow-up in the effective size of the grammar necessitates pruning of the search space, which can cause search errors.","{'title': '5.', 'number': '6'}"
-"The classic construction for intersecting a (non-synchronous) CFG with a finitestate machine is due to Bar-Hillel, Perles, and Shamir (1964), but we use a slightly different construction proposed by Wu (1996) for inversion transduction grammar and bigram LMs.","{'title': '5.', 'number': '6'}"
-We present an adaptation of his algorithm to synchronous CFGs with two nonterminals per right-hand side and general m-gram LMs.,"{'title': '5.', 'number': '6'}"
-"First, assume that the LM expects a whole sentence to be preceded by (m − 1) start-of-sentence symbols (s) and followed by a single end-of-sentence symbol (/s).","{'title': '5.', 'number': '6'}"
-The grammar can be made to do this simply by adding a rule and making S’ the new start symbol.,"{'title': '5.', 'number': '6'}"
-"First, we define two functions p and q which operate on strings over T U {*}, where T is the English terminal alphabet, and * is a special placeholder symbol that stands for an elided part of an English string.","{'title': '5.', 'number': '6'}"
-Values of p and q in the “cgisf” example.,"{'title': '5.', 'number': '6'}"
-The function p calculates LM probabilities for all the complete m-grams in a string; the function q elides symbols when all their m-grams have been accounted for.,"{'title': '5.', 'number': '6'}"
-These functions let us correctly calculate the LM score of a sentence piecemeal.,"{'title': '5.', 'number': '6'}"
-"For example, let m = 3 and “c g i s f” stand for “colorless green ideas sleep furiously.” Then Table 1 shows some values of p and q.","{'title': '5.', 'number': '6'}"
-Then we may extend the −LM parser as shown in Figure 8 to use p and q to calculate LM probabilities.,"{'title': '5.', 'number': '6'}"
-We call this parser the +LM parser.,"{'title': '5.', 'number': '6'}"
-"The items are of the form [X, i, j; e], signifying that a subtree rooted in X has been recognized spanning from i to j on the French side, and its English translation (possibly with parts elided) is e. The theoretical running time of this algorithm is O(n3|T|4(m−1)), because a deduction can combine up to two starred strings, which each have up to 2(m − 1) terminal symbols.","{'title': '5.', 'number': '6'}"
-"This is far too slow to use in practice, so we must use beam-search to prune the search space down to a reasonable size.","{'title': '5.', 'number': '6'}"
-5.3.3 Pruning.,"{'title': '5.', 'number': '6'}"
-"The chart is organized into cells, each of which contains all the items standing for X spanning fji+1.","{'title': '5.', 'number': '6'}"
-"The rule items are also organized into cells, each of which contains all the rules with the same French side and left-hand side.","{'title': '5.', 'number': '6'}"
-"From here on, let us Inference rules for the +LM parser.","{'title': '5.', 'number': '6'}"
-Here w[x/X] means the string w with the string x substituted for the symbol X.,"{'title': '5.', 'number': '6'}"
-"The function q is defined in the text. consider the item scores as costs, that is, negative log (base-10) probabilities.","{'title': '5.', 'number': '6'}"
-"Then, for each cell, we throw out any item that has a score worse than: In the +LM parser, the score of an item [X, i, j; e] in the chart does not reflect the LM probability of generating the first (m − 1) words of e. Thus two items [X, i, j; e] and [X, i, j; e'] are not directly comparable.","{'title': '5.', 'number': '6'}"
-"To enable more meaningful comparisons, we define a heuristic When comparing items for pruning (and only for pruning), we add this heuristic function to the score of each item.","{'title': '5.', 'number': '6'}"
-5.3.4 Cube Pruning.,"{'title': '5.', 'number': '6'}"
-Now we can develop a compromise between the rescoring and intersection methods.,"{'title': '5.', 'number': '6'}"
-Consider Figure 9a.,"{'title': '5.', 'number': '6'}"
-"To the left of the grid we have four rules with the same French side, and above we have three items with the same category and span, that is, they belong to the same chart cell.","{'title': '5.', 'number': '6'}"
-"Any of the twelve combinations of these rules and items can be used to deduce a new item (whose scores are shown in the grid), and all these new items will go into the same chart cell (partially listed on the right).","{'title': '5.', 'number': '6'}"
-"The intersection method would compute all twelve items and add them to the new chart cell, where most of them will likely be pruned away.","{'title': '5.', 'number': '6'}"
-"In actuality, the grid may be a cube (one dimension for rules and two dimensions for two nonterminals) with up to b3 elements, whereas the target chart cell can hold at most b items (where b is the limit on the size of the cell imposed during pruning).","{'title': '5.', 'number': '6'}"
-Thus the vast majority of computed items are pruned.,"{'title': '5.', 'number': '6'}"
-"But it is possible to compute only a small corner of the cube and preemptively prune the rest of the items without computing them, a method we refer to as cube pruning.","{'title': '5.', 'number': '6'}"
-The situation pictured in Figure 9a is very similar to k-best list generation.,"{'title': '5.', 'number': '6'}"
-"The four rules to the left of the grid can be thought of like a 4-best list for a single −LM rule item (X --� cong X); the three items above the grid, like a 3-best list for the single −LM item [X, 6,8]; and the new items to be deduced, like a k-best list for [X, 5, 8], except that we don’t know what k is in advance.","{'title': '5.', 'number': '6'}"
-"If we could use MERGEPRODUCTS to enumerate the new items best-first, then we could enumerate them until one of them was pruned from the new cell; then the rest of items, which would have a worse score than the pruned item, could be preemptively pruned.","{'title': '5.', 'number': '6'}"
-"MERGEPRODUCTS expects its input lists to be sorted best-first, and the ® operator to be monotonic in each of its arguments.","{'title': '5.', 'number': '6'}"
-"For cube pruning, we sort items (both in the inputs to MERGEPRODUCTS and in the priority queue inside MERGEPRODUCTS) according to their +LM score, including the heuristic function h. The ® operator we use takes one or more antecedent items and forms their consequent item according to Example illustrating hybrid method for incorporating the LM.","{'title': '5.', 'number': '6'}"
-Numbers are negative the +LM parser.,"{'title': '5.', 'number': '6'}"
-Note that the LM makes this ⊗ only approximately monotonic.,"{'title': '5.', 'number': '6'}"
-This means that the enumeration of new items will not necessarily be best-first.,"{'title': '5.', 'number': '6'}"
-"To alleviate this problem, we stop the enumeration not as soon as an item falls outside the beam, but as soon as an item falls outside the beam by a margin of e. This quantity e expresses our guess as to how much the scores of the enumerated items can fluctuate because of the LM.","{'title': '5.', 'number': '6'}"
-"A simpler approach, and probably better in practice, would be simply to set e = 0, that is, to ignore any fluctuation, but increase R and b to compensate.","{'title': '5.', 'number': '6'}"
-See Figure 9b for an example of cube pruning.,"{'title': '5.', 'number': '6'}"
-"The upper-left grid cell is enumerated first, as in the k-best example in Section 5.2, but the choice of the second is different, because of the added LM costs.","{'title': '5.', 'number': '6'}"
-"Then, the third item is enumerated and merged with the first (unlike in the k-best algorithm).","{'title': '5.', 'number': '6'}"
-"Supposing a threshold beam of R = 5 and a margin of e = 0.5, we quit upon considering the next item, because, with a score of 7.7, it falls outside the beam by more than e. The rest of the grid is then discarded.","{'title': '5.', 'number': '6'}"
-The pseudocode is given in Figure 10.,"{'title': '5.', 'number': '6'}"
-The function INFER+LM is used as the ® operator; it takes a tuple of antecedent +LM items and returns a consequent +LM item according to the inference rules in Figure 8.,"{'title': '5.', 'number': '6'}"
-The procedure REPARSE+LM takes a −LM chart chart as input and produces a +LM chart chart'.,"{'title': '5.', 'number': '6'}"
-"The variables u, v stand for items in −LM and u', v', for items in +LM, and the relation v �i v' is defined as follows: For each cell in the input chart, it takes the single item from the cell and constructs the virtual list L of all of its +LM counterparts (lines 9–15).","{'title': '5.', 'number': '6'}"
-"Then, it adds the top items of L to the target cell until the cell is judged to be full (lines 16–20).","{'title': '5.', 'number': '6'}"
-"The implementation of our system, named Hiero, is in Python, a bytecode-interpreted language, and optimized using Psyco, a just-in-time compiler (Rigo 2004), and Pyrex, a Python-like compiled language, with C++ code from the SRI Language Modeling Toolkit (Stolcke 2002).","{'title': '6.', 'number': '7'}"
-In this section we report on experiments with Mandarin-toEnglish translation.,"{'title': '6.', 'number': '7'}"
-"Our evaluation metric is case-insensitive BLEU-4 (Papineni et al. 2002), as defined by NIST, that is, using the shortest (as opposed to closest) reference sentence length for the brevity penalty.","{'title': '6.', 'number': '7'}"
-"We ran the grammar extractor of Section 3.2 on the parallel corpora listed in Table 2 with the exception of the United Nations data, for a total of 28 million words (English side).8 We then filtered this grammar for our development set, which was the 2002 NIST MT evaluation dry-run data, and our test sets, which were the data from the 2003–2005 NIST MT evaluations.","{'title': '6.', 'number': '7'}"
-"Some example rules are shown in Table 3, and the sizes of the filtered grammars are shown in Table 4.","{'title': '6.', 'number': '7'}"
-"We also used the SRI Language Modeling Toolkit to train two trigram language models with modified Kneser–Ney smoothing (Kneser and Ney 1995; Chen and Goodman 1998): one on 2.8 billion words from the English Gigaword corpus, and the other on the English side of the parallel text (28 million words).","{'title': '6.', 'number': '7'}"
-"Table 5 shows the average decoding time on part of the development set for the three LM-incorporation methods described in Section 5.3, on a single processor of a dual 3 GHz Xeon machine.","{'title': '6.', 'number': '7'}"
-"For these experiments, only the Gigaword language model was used.","{'title': '6.', 'number': '7'}"
-"We set b = 30, R = 1 for X cells, b = 15, R = 1 for S cells, and b = 100 for rules except where noted in Table 5.","{'title': '6.', 'number': '7'}"
-"Note that values for R and e are only meaningful relative to the scale of the feature weights; here, the language model weight was 0.06.","{'title': '6.', 'number': '7'}"
-The feature weights were obtained by minimum-error-rate training using the cube-pruning (e = 0.1) decoder.,"{'title': '6.', 'number': '7'}"
-"For the LM rescoring decoder, parsing and k-best list generation used feature weights optimized for the −LM model, but rescoring used the same weights as the other experiments.","{'title': '6.', 'number': '7'}"
-"We tested the rescoring method (k = 103 and 104), the intersection method, and the cube-pruning method (e = 0, 0.1, and 0.2).","{'title': '6.', 'number': '7'}"
-The LM rescoring decoder (k = 104) is the fastest but has the poorest BLEU score.,"{'title': '6.', 'number': '7'}"
-"Identifying and rescoring the k-best derivations is very quick; the execution time is dominated by reconstructing the output strings for the k-best derivations, so it is possible that further optimization could reduce these times.","{'title': '6.', 'number': '7'}"
-The intersecting decoder has the best score but runs very slowly.,"{'title': '6.', 'number': '7'}"
-"Finally, the cubepruning decoder runs almost as fast as the rescoring decoder and translates almost as well as the intersecting decoder.","{'title': '6.', 'number': '7'}"
-"Among these tests, e = 0.1 gives the best results, but in general the optimal setting will depend on the other beam settings and the scale of the feature weights.","{'title': '6.', 'number': '7'}"
-We compared Hiero against two baselines: the state-of-the-art phrase-based system ATS (Och et al. 2004; Thayer et al.,"{'title': '6.', 'number': '7'}"
-"2004), and Hiero itself run as a conventional phrase-based system with monotone translation (no phrase reordering).","{'title': '6.', 'number': '7'}"
-"The ATS baseline was trained on all the parallel data listed in Table 1, for a total of 159 million words (English side).","{'title': '6.', 'number': '7'}"
-The second language model was also trained on the English side of the whole bitext.,"{'title': '6.', 'number': '7'}"
-"Phrases of up to 10 in length on the French side were extracted from the parallel text, and minimum-error-rate training (Och 2003) was performed on the development set for 17 features, the same as used in the NIST 2004 and 2005 evaluations.9 These features are similar to the features used for our system, but also include features for phrase-reordering (which are not applicable to our system), IBM Model 1 in both directions, a missing word penalty, and a feature that controls a fallback lexicon.","{'title': '6.', 'number': '7'}"
-"The other baseline, which we call Hiero Monotone, is the same as Hiero except with the limitation that extracted rules cannot have any nonterminal symbols on their righthand sides.","{'title': '6.', 'number': '7'}"
-"In other words, only conventional phrases can be extracted, of length up to 5.","{'title': '6.', 'number': '7'}"
-"These phrases are combined using the glue rules only, which makes the grammar equivalent to a conventional phrase-based model with monotone translation.","{'title': '6.', 'number': '7'}"
-"Thus this system represents the nearest phrase-based equivalent to our model, to provide a controlled test of the effect of hierarchical phrases.","{'title': '6.', 'number': '7'}"
-We performed minimum-error-rate training separately on Hiero and Hiero Monotone to maximize their BLEU scores on the development set; the feature weights for Hiero are shown in Table 6.,"{'title': '6.', 'number': '7'}"
-"The beam settings used for both decoders were R = 30, b = 30 for X cells, R = 30, b = 15 for S cells, b = 100 for rules, and e = 3.","{'title': '6.', 'number': '7'}"
-"On the test set, we found that Hiero improves over both baselines in all three tests (see Table 7).","{'title': '6.', 'number': '7'}"
-"All improvements are statistically significant (p < 0.01) using the sign test as described by Collins, Koehn, and Kuˇcerov´a (2005).","{'title': '6.', 'number': '7'}"
-Syntax-based statistical machine translation is a twofold challenge.,"{'title': '7.', 'number': '8'}"
-"It is a modeling challenge, in part because of the difficulty of coordinating syntactic structures with potentially messy parallel corpora; it is an implementation challenge, because of the added complexity introduced by hierarchical structures.","{'title': '7.', 'number': '8'}"
-"Here we have addressed the modeling challenge by taking only the fundamental idea from syntax, that language is hierarchically structured, and integrating it conservatively into a phrase-based model typical of the current state of the art.","{'title': '7.', 'number': '8'}"
-"This fusion does no violence to the latter; indeed, we have presented our approach as a logical outgrowth of the phrase-based approach.","{'title': '7.', 'number': '8'}"
-"Moreover, hierarchical structure improves translation accuracy significantly.","{'title': '7.', 'number': '8'}"
-"Feature weights obtained by minimum-error-rate training. language model (large) 1.00 language model (bitext) 1.03 The choice to use hierarchical structures that are more complex than flat structures, as well as rules that contain multiple lexical items instead of one, an m-gram model whose structure cuts across the structure of context-free derivations, and large amounts of training data for meaningful comparison with modern systems—these all threaten to make training a synchronous grammar and translating with it intractable.","{'title': '7.', 'number': '8'}"
-"We have shown how, through training with simple methods inspired by phrase-based models, and translating using a modified CKY with cube pruning, this challenge can be met.","{'title': '7.', 'number': '8'}"
-"Clearly, however, we have only scratched the surface of the modeling challenge.","{'title': '7.', 'number': '8'}"
-The fact that moving from flat structures to hierarchical structures significantly improves translation quality suggests that more specific ideas from syntax may be valuable as well.,"{'title': '7.', 'number': '8'}"
-There are many possibilities for enriching the simple framework that the present model provides.,"{'title': '7.', 'number': '8'}"
-"But the course taken here is one of organic development of an approach known to work well at large-scale tasks, and we plan to stay this course in future work towards more syntactically informed statistical machine translation.","{'title': '7.', 'number': '8'}"
-"I would like to thank Liang Huang, Philipp Koehn, Adam Lopez, Nitin Madnani, Daniel Marcu, Christof Monz, Dragos Munteanu, Philip Resnik, Michael Subotin, Wei Wang, and the anonymous reviewers.","{'title': 'Acknowledgments', 'number': '9'}"
-"This work was partially supported by ONR MURI contract FCPO.810548265, by Department of Defense contract RD-02-5700, and under the GALE program of the Defense Advanced Research Projects Agency, contract HR 0011-06-C-0022.","{'title': 'Acknowledgments', 'number': '9'}"
-S. D. G.,"{'title': 'Acknowledgments', 'number': '9'}"
+present a statistical machine translation model that uses that contain subphrases.,Introduction
+The model is formally a synchronous context-free grammar but is learned from a parallel text without any syntactic annotations.,Introduction
+Thus it can be seen as combining fundamental ideas from both syntax-based translation and phrase-based translation.,Introduction
+"We describe our system’s training and decoding methods in detail, and evaluate it for translation speed and translation accuracy.",Introduction
+"Using BLEU as a metric of translation accuracy, we find that our system performs significantly better than the Alignment Template System, a state-of-the-art phrasebased system.",Introduction
+We present a statistical machine translation model that uses hierarchical phrases—phrases that contain subphrases.,Experiment/Discussion
+The model is formally a synchronous context-free grammar but is learned from a parallel text without any syntactic annotations.,Experiment/Discussion
+Thus it can be seen as combining fundamental ideas from both syntax-based translation and phrase-based translation.,Experiment/Discussion
+"We describe our system’s training and decoding methods in detail, and evaluate it for translation speed and translation accuracy.",Experiment/Discussion
+"Using BLEU as a metric of translation accuracy, we find that our system performs significantly better than the Alignment Template System, a state-of-the-art phrasebased system.",Experiment/Discussion
+"The alignment template translation model (Och and Ney 2004) and related phrase-based models advanced the state of the art in machine translation by expanding the basic unit of translation from words to phrases, that is, substrings of potentially unlimited size (but not necessarily phrases in any syntactic theory).",Experiment/Discussion
+"These phrases allow a model to learn local reorderings, translations of multiword expressions, or insertions and deletions that are sensitive to local context.",Experiment/Discussion
+This makes them a simple and powerful mechanism for translation.,Experiment/Discussion
+The basic phrase-based model is an instance of the noisy-channel approach (Brown et al. 1993).,Experiment/Discussion
+"Following convention, we call the source language “French” and the target language “English”; the translation of a French sentence f into an English sentence e is modeled as: The phrase-based translation model P( f  |e) “encodes” e into f by the following steps: Other phrase-based models model the joint distribution P(e,f ) (Marcu and Wong 2002) or make P(e) and P(f I e) into features of a log-linear model (Och and Ney 2002).",Experiment/Discussion
+"But the basic architecture of phrase segmentation (or generation), phrase reordering, and phrase translation remains the same.",Experiment/Discussion
+Phrase-based models can robustly perform translations that are localized to substrings that are common enough to have been observed in training.,Experiment/Discussion
+"But Koehn, Och, and Marcu (2003) find that phrases longer than three words improve performance little for training corpora of up to 20 million words, suggesting that the data may be too sparse to learn longer phrases.",Experiment/Discussion
+"Above the phrase level, some models perform no reordering (Zens and Ney 2004; Kumar, Deng, and Byrne 2006), some have a simple distortion model that reorders phrases independently of their content (Koehn, Och, and Marcu 2003; Och and Ney 2004), and some, for example, the Alignment Template System (Och et al. 2004; Thayer et al.",Experiment/Discussion
+"2004), hereafter ATS, and the IBM phrase-based system (Tillmann 2004; Tillmann and Zhang 2005), have phrase-reordering models that add some lexical sensitivity.",Experiment/Discussion
+"But, as an illustration of the limitations of phrase reordering, consider the following Mandarin example and its English translation: M1)11'1 � Æ JLF01 P �� n �� 0* �Aozhou shi yu Beihan you bangjiao de shaoshu guojia zhiyi Australia is with North Korea have dipl. rels. that few countries one of .",Experiment/Discussion
+.,Experiment/Discussion
+Australia is one of the few countries that have diplomatic relations with North Korea.,Experiment/Discussion
+"If we count zhiyi (literally, ‘of-one’) as a single token, then translating this sentence correctly into English requires identifying a sequence of five word groups that need to be reversed.",Experiment/Discussion
+"When we run a phrase-based system, ATS, on this sentence (using the experimental setup described herein), we get the following phrases with translations: [Aozhou] [shi]1 [yu Beihan]2 [you] [bangjiao] [de shaoshu guojia zhiyi] [.]",Experiment/Discussion
+[Australia] [has] [dipl. rels.],Experiment/Discussion
+[with North Korea]2 [is]1 [one of the few countries] [.] where we have used subscripts to indicate the reordering of phrases.,Experiment/Discussion
+"The phrase-based model is able to order “has diplomatic relations with North Korea” correctly (using phrase reordering) and “is one of the few countries” correctly (using a combination of phrase translation and phrase reordering), but does not invert these two groups as it should.",Experiment/Discussion
+"We propose a solution to these problems that does not interfere with the strengths of the phrase-based approach, but rather capitalizes on them: Because phrases are good for learning reorderings of words, we can use them to learn reorderings of phrases as well.",Experiment/Discussion
+In order to do this we need hierarchical phrases that can contain other phrases.,Experiment/Discussion
+"For example, a hierarchical phrase pair that might help with the above example is (yu 1 you 2 , have 2 with 1 ) (3) where 1 and 2 are placeholders for subphrases (Chiang 2005).",Experiment/Discussion
+"This would capture the fact that Chinese prepositional phrases almost always modify verb phrases on the left, whereas English prepositional phrases usually modify verb phrases on the right.",Experiment/Discussion
+"Because it generalizes over possible prepositional objects and direct objects, it acts both as a discontinuous phrase pair and as a phrase-reordering rule.",Experiment/Discussion
+Thus it is considerably more powerful than a conventional phrase pair.,Experiment/Discussion
+"Similarly, the hierarchical phrase pair ( 1 de 2 , the 2 that 1 ) (4) would capture the fact that Chinese relative clauses modify NPs on the left, whereas English relative clauses modify on the right; and the pair ( 1 zhiyi, one of 1 ) (5) would render the construction zhiyi in English word order.",Experiment/Discussion
+"These three rules, along with some conventional phrase pairs, suffice to translate the sentence correctly: [Aozhou] [shi] [[[yu [Beihan]1 you [bangjiao]2] de [shaoshu guojia]3] zhiyi] [Australia] [is] [one of [the [few countries]3 that [have [dipl. rels.",Experiment/Discussion
+"]2 with [N. Korea]1]]] The system we describe in this article uses rules like (3), (4), and (5), which we formalize in the next section as rules of a synchronous context-free grammar (CFG).1 Moreover, the system is able to learn them automatically from a parallel text without syntactic annotation.",Experiment/Discussion
+"Because our system uses a synchronous CFG, it could be thought of as an example of syntax-based statistical machine translation (MT), joining a line of research (Wu 1997; Alshawi, Bangalore, and Douglas 2000; Yamada and Knight 2001) that has been fruitful but has not previously produced systems that can compete with phrase-based systems in large-scale translation tasks such as the evaluations held by NIST.",Experiment/Discussion
+"Our approach differs from early syntax-based statistical translation models in combining the idea of hierarchical structure with key insights from phrase-based MT: Crucially, by incorporating the use of elementary structures with possibly many words, we hope to inherit phrase-based MT’s capacity for memorizing translations from parallel data.",Experiment/Discussion
+Other insights borrowed from the current state of the art include minimum-error-rate training of log-linear models (Och and Ney 2002; Och 2003) and use of an m-gram language model.,Experiment/Discussion
+"The conjunction of these various elements presents a considerable challenge for implementation, which we discuss in detail in this article.",Experiment/Discussion
+The result is the first system employing a grammar (to our knowledge) to perform better than phrase-based systems in large-scale evaluations.2,Experiment/Discussion
+"Approaches to syntax-based statistical MT have varied in their reliance on syntactic theories, or annotations made according to syntactic theories.",Experiment/Discussion
+"At one extreme are those, exemplified by that of Wu (1997), that have no dependence on syntactic theory beyond the idea that natural language is hierarchical.",Experiment/Discussion
+"If these methods distinguish between different categories, they typically do not distinguish very many.",Experiment/Discussion
+"Our approach, as presented here, falls squarely into this family.",Experiment/Discussion
+"By contrast, other approaches, exemplified by that of Yamada and Knight (2001), do make use of parallel data with syntactic annotations, either in the form of phrase-structure trees or dependency trees (Ding and Palmer 2005; Quirk, Menezes, and Cherry 2005).",Experiment/Discussion
+"Because syntactically annotated corpora are comparatively small, obtaining parsed parallel text in quantity usually entails running an automatic parser on a parallel corpus to produce noisy annotations.",Experiment/Discussion
+"Both of these strands of research have recently begun to explore extraction of larger rules, guided by word alignments.",Experiment/Discussion
+"The extraction method we use, which is a straightforward generalization of phrase extraction from word-aligned parallel text, has been independently proposed before in various settings.",Experiment/Discussion
+"The method of Block (2000) is the earliest instance we are aware of, though it is restricted to rules with one variable.",Experiment/Discussion
+The same method has also been used by Probst et al. (2002) and Xia and McCord (2004) in conjunction with syntactic annotations to extract rules that are used for reordering prior to translation.,Experiment/Discussion
+"Finally, Galley et al. (2004) use the same method to extract a very large grammar from syntactically annotated data.",Experiment/Discussion
+"The discontinuous phrases used by Simard et al. (2005) have a similar purpose to synchronous grammar rules; but they have variables that stand for single words rather than subderivations, and they can interleave in non-hierarchical ways.",Experiment/Discussion
+"The model is based on a synchronous CFG, elsewhere known as a syntax-directed transduction grammar (Lewis and Stearns 1968).",Experiment/Discussion
+We give here an informal definition and then describe in detail how we build a synchronous CFG for our model.,Experiment/Discussion
+"In a synchronous CFG the elementary structures are rewrite rules with aligned pairs of right-hand sides: where X is a nonterminal, γ and α are both strings of terminals and nonterminals, and — is a one-to-one correspondence between nonterminal occurrences in γ and nonterminal occurrences in α.",Experiment/Discussion
+"For example, the hierarchical phrase pairs (3), (4), and (5) previously presented could be formalized in a synchronous CFG as: where we have used boxed indices to indicate which nonterminal occurrences are linked by —.",Experiment/Discussion
+The conventional phrase pairs would be formalized as: A synchronous CFG derivation begins with a pair of linked start symbols.,Experiment/Discussion
+"At each step, two linked nonterminals are rewritten using the two components of a single rule.",Experiment/Discussion
+"When denoting links with boxed indices, we must consistently reindex the newly introduced symbols apart from the symbols already present.",Experiment/Discussion
+"For an example using these rules, see Figure 1.",Experiment/Discussion
+The bulk of the grammar consists of automatically extracted rules.,Experiment/Discussion
+"The extraction process begins with a word-aligned corpus: a set of triples (f, e, —), where f is a French sentence, e is an English sentence, and — is a (many-to-many) binary relation between positions off and positions of e. The word alignments are obtained by running GIZA++ (Och and Ney 2000) on the corpus in both directions, and forming the union of the two sets of word alignments.",Experiment/Discussion
+We then extract from each word-aligned sentence pair a set of rules that are consistent with the word alignments.,Experiment/Discussion
+This can be thought of in two steps.,Experiment/Discussion
+"First, we identify initial phrase pairs using the same criterion as most phrase-based systems (Och and Ney 2004), namely, there must be at least one word inside one phrase aligned to a word inside the other, but no word inside one phrase can be aligned to a word outside the other phrase.",Experiment/Discussion
+"For example, suppose our training data contained the fragment Example derivation of a synchronous CFG.",Experiment/Discussion
+Numbers above arrows are rules used at each step. with word alignments as shown in Figure 2a.,Experiment/Discussion
+The initial phrases that would be extracted are shown in Figure 2b.,Experiment/Discussion
+"More formally: Definition 1 Given a word-aligned sentence pair ( f, e, —), let fji stand for the substring of f from position i to position j inclusive, and similarly for eji.",Experiment/Discussion
+"Then a rule ( fj, ele ) is an initial phrase pair of ( f, e, —) iff: Second, in order to obtain rules from the phrases, we look for phrases that contain other phrases and replace the subphrases with nonterminal symbols.",Experiment/Discussion
+"For example, given the initial phrases shown in Figure 2b, we could form the rule where k is an index not used in γ and α, is a rule of (f, e, —).",Experiment/Discussion
+"This scheme generates a very large number of rules, which is undesirable not only because it makes training and decoding very slow, but also because it creates spurious ambiguity—a situation where the decoder produces many derivations that are distinct yet have the same model feature vectors and give the same translation.",Experiment/Discussion
+"This can result in k-best lists with very few different translations or feature vectors, which is problematic for the minimum-error-rate training algorithm (see Section 4.3).",Experiment/Discussion
+"To avoid this, we filter our grammar according to the following constraints, chosen to balance grammar size and performance on our development set: Glue rules.",Experiment/Discussion
+"Having extracted rules from the training data, we could let X be the grammar’s start symbol and translate new sentences using only the extracted rules.",Experiment/Discussion
+"But for robustness and for continuity with phrase-based translation models, we allow the grammar to divide a French sentence into a sequence of chunks and translate one chunk at a time.",Experiment/Discussion
+"We formalize this inside a synchronous CFG using the rules (14) and (15), which we call the glue rules, repeated here: These rules analyze an S (the start symbol) as a sequence of Xs which are translated without reordering.",Experiment/Discussion
+"Note that if we restricted our grammar to comprise only the glue rules and conventional phrase pairs (that is, rules without nonterminal symbols on the right-hand side), the model would reduce to a phrase-based model with monotone translation (no phrase reordering).",Experiment/Discussion
+Entity rules.,Experiment/Discussion
+"Finally, for each sentence to be translated, we run some specialized translation modules to translate the numbers, dates, numbers, and bylines in the sentence, and insert these translations into the grammar as new rules.3 Such modules are often used by phrase-based systems as well, but here their translations can plug into hierarchical phrases, for example, into the rule allowing it to generalize over numbers of years.",Experiment/Discussion
+"Given a French sentence f, a synchronous CFG will have, in general, many derivations that yield f on the French side, and therefore (in general) many possible translations e. We now define a model over derivations D to predict which translations are more likely than others.",Experiment/Discussion
+"Following Och and Ney (2002), we depart from the traditional noisy-channel approach and use a more general log-linear model over derivations D: 3 These modules are due to U. Germann and F. J. Och.",Experiment/Discussion
+In a previous paper (Chiang et al. 2005) we reported on translation modules for numbers and names.,Experiment/Discussion
+"The present modules are not the same as those, though the mechanism for integrating them is identical.",Experiment/Discussion
+"209 Computational Linguistics Volume 33, Number 2 where the φi are features defined on derivations and the λi are feature weights.",Experiment/Discussion
+One of the features is an m-gram language model PLM(e); the remainder of the features we will define as products of functions on the rules used in a derivation: The factors other than the language model factor can be put into a particularly convenient form.,Experiment/Discussion
+A weighted synchronous CFG is a synchronous CFG together with a function w that assigns weights to rules.,Experiment/Discussion
+This function induces a weight function over derivations: It is easy to write dynamic-programming algorithms to find the highest-weight translation or k-best translations with a weighted synchronous CFG.,Experiment/Discussion
+"Therefore it is problematic that w(D) does not include the language model, which is extremely important for translation quality.",Experiment/Discussion
+We return to this challenge in Section 5.,Experiment/Discussion
+"For our experiments, we use a feature set analogous to the default feature set of Pharaoh (Koehn, Och, and Marcu 2003).",Experiment/Discussion
+"The rules extracted from the training bitext have the following features: Finally, for all the rules, there is a word penalty exp(−#T(α)), where #T just counts terminal symbols.",Experiment/Discussion
+This allows the model to learn a general preference for shorter or longer outputs.,Experiment/Discussion
+"In order to estimate the parameters of the phrase translation and lexical-weighting features, we need counts for the extracted rules.",Experiment/Discussion
+"For each sentence pair in the training data, there is in general more than one derivation of the sentence pair using the rules extracted from it.",Experiment/Discussion
+"Because we have observed the sentence pair but have not observed the derivations, we do not know how many times each derivation has been seen, and therefore we do not actually know how many times each rule has been seen.",Experiment/Discussion
+"Following Och and others, we use heuristics to hypothesize a distribution of possible rules as though we observed them in the training data, a distribution that does not necessarily maximize the likelihood of the training data.5 Och’s method gives a count of one to each extracted phrase pair occurrence.",Experiment/Discussion
+"We likewise give a count of one to each initial phrase pair occurrence, then distribute its weight equally among the rules obtained by subtracting subphrases from it.",Experiment/Discussion
+"Treating this distribution as our observed data, we use relative-frequency estimation to obtain P(γ  |α) and P(α  |γ).",Experiment/Discussion
+"Finally, the parameters λi of the log-linear model (18) are learned by minimumerror-rate training (Och 2003), which tries to set the parameters so as to maximize the BLEU score (Papineni et al. 2002) of a development set.",Experiment/Discussion
+This gives a weighted synchronous CFG according to (22) that is ready to be used by the decoder.,Experiment/Discussion
+"4 This feature uses word alignment information, which is discarded in the final grammar.",Experiment/Discussion
+"If a rule occurs in training with more than one possible word alignment, Koehn, Och, and Marcu take the maximum lexical weight; we take a weighted average.",Experiment/Discussion
+"5 This approach is similar to that taken by many parsers, such as SPATTER (Magerman 1995) and its successors, which use heuristics to hypothesize an augmented version of the training data, but it is especially reminiscent of the Data Oriented Parsing method (Bod 1992), which hypothesizes a distribution over many possible derivations of each training example from subtrees of varying sizes.",Experiment/Discussion
+"In brief, our decoder is a CKY (Cocke-Kasami-Younger) parser with beam search together with a postprocessor for mapping French derivations to English derivations.",Experiment/Discussion
+"Given a French sentence f, it finds the English yield of the single best derivation that has French yield f: �eˆ = e arg max P(D) (24) Ds.t.f(D)=f Note that this is not necessarily the highest-probability English string, which would require a more expensive summation over derivations.",Experiment/Discussion
+"We now discuss the details of the decoder, focusing attention on efficiently calculating English language-model probabilities for possible translations, which is the primary technical challenge.",Experiment/Discussion
+"In the following we present several parsers as deductive proof systems (Shieber, Schabes, and Pereira 1995; Goodman 1999).",Experiment/Discussion
+"A parser in this notation defines a space of weighted items, in which some items are designated axioms and some items are designated goals (the items to be proven), and a set of inference rules of the form which means that if all the items Ii (called the antecedents) are provable, with weight wi, then I (called the consequent) is provable, with weight w, provided the side condition φ holds.",Experiment/Discussion
+"The parsing process grows a set of provable items: It starts with the axioms, and proceeds by applying inference rules to prove more and more items until a goal is proven.",Experiment/Discussion
+"For example, the well-known CKY algorithm for CFGs in Chomsky normal form can be thought of as a deductive proof system whose items can take one of two forms: The axioms would be 6 Treating grammar rules as axioms is not standard practice, but advocated by Goodman (1999).",Experiment/Discussion
+"Here, it has the benefit of simplifying the presentation in Section 5.3.4. and the inference rules would be and the goal would be [S, 0, n], where S is the start symbol of the grammar and n is the length of the input string f. Given a synchronous CFG, we could convert its French-side grammar into Chomsky normal form, and then for each sentence, we could find the best parse using CKY.",Experiment/Discussion
+"Then it would be a straightforward matter to revert the best parse from Chomsky normal form into the original form and map it into its corresponding English tree, whose yield is the output translation.",Experiment/Discussion
+"However, because we have already restricted the number of nonterminal symbols in our rules to two, it is more convenient to use a modified CKY algorithm that operates on our grammar directly, without any conversion to Chomsky normal form.",Experiment/Discussion
+"The axioms, inference rules, and goals for the basic decoder are shown in Figure 3.",Experiment/Discussion
+"Its time complexity is O(n3), just as CKY’s is.",Experiment/Discussion
+"Because this algorithm does not yet incorporate a language model, let us call it the −LM parser.",Experiment/Discussion
+The actual search procedure is given by the pseudocode in Figure 4.,Experiment/Discussion
+"It organizes the proved items into an array chart whose cells chart[X, i, j] are sets of items.",Experiment/Discussion
+"The cells are ordered such that every item comes after its possible antecedents: smaller spans before larger spans, and X items before S items (because of the unary rule S → �X 1 , X 1 )).",Experiment/Discussion
+Then the parser can proceed by visiting the chart cells in order and trying to prove all the items for each cell.,Experiment/Discussion
+"Whenever it proves a new item, it adds the item to the Search procedure for the −LM parser. appropriate chart cell; in order to reconstruct the derivations later, it must also store, with each item, a tuple of back-pointers to the antecedents from which the item was deduced (for axioms, an empty tuple is used).",Experiment/Discussion
+"If two items are added to a cell that are equivalent except for their weights or back-pointers, then they are merged (in the MT decoding literature, this is also known as hypothesis recombination), with the merged item taking its weight and back-pointers from the better of the two equivalent items.",Experiment/Discussion
+"(However, if we are interested in finding the k-best derivations, the merged item gets the multiset of all the tuples of back-pointers from the equivalent items.",Experiment/Discussion
+These backpointers are used below in Section 5.2.),Experiment/Discussion
+"The algorithm in Figure 4 does not completely search the space of proofs, because it has a constraint that prohibits any X from spanning a substring longer than a fixed limit Λ on the French side, corresponding to the maximum length constraint on initial rules during training.",Experiment/Discussion
+This gives the decoding algorithm an asymptotic time complexity of O(n).,Experiment/Discussion
+"In principle Λ should match the initial phrase length limit used in training (as it does in our experiments), but in practice it can be adjusted separately to maximize accuracy or speed.",Experiment/Discussion
+We often want to find not only the best derivation for a French sentence but a list of the k-best derivations.,Experiment/Discussion
+These are used for minimum-error-rate training and for rescoring with a language model (Section 5.3.1).,Experiment/Discussion
+We describe here how to do this using the lazy algorithm of Huang and Chiang (2005).,Experiment/Discussion
+Part of this method will also be reused in our algorithm for fast parsing with a language model (Section 5.3.4).,Experiment/Discussion
+"If we conceive of lists as functions from indices to values, we may create a virtual list, a function that computes member values on demand instead of storing all the values statically.",Experiment/Discussion
+"The heart of the k-best algorithm is a function MERGEPRODUCTS, which takes a set G of tuples of (virtual) lists with an operator ⊗ and returns a virtual list: Example illustrating MERGEPRODUCTS, where L1 = {1, 2,6, 10} and L2 = {1, 4, 7}.",Experiment/Discussion
+Numbers are negative log-probabilities.,Experiment/Discussion
+It assumes that the input lists are sorted and returns a sorted list.,Experiment/Discussion
+"A naive implementation of MERGEPRODUCTS would simply calculate all possible products and sort; however, if we are only interested in the top part of the result, we can implement MERGEPRODUCTS so that the output values are computed lazily and the input lists are accessed only as needed.",Experiment/Discussion
+"To do this, we must assume that the multiplication operator ® is monotonic in each of its arguments.",Experiment/Discussion
+"By way of motivation, consider the simple case G = {(L1,L2)}.",Experiment/Discussion
+"The full set of possible products can be arranged in a two-dimensional grid (see Figure 5a), which we could then sort to obtain MERGEPRODUCTS(G).",Experiment/Discussion
+"But because of our assumptions, we know that the first element of MERGEPRODUCTS(G) must be L1[1] ® L2[1].",Experiment/Discussion
+"Moreover, we know that the second element must be either L1[1] ® L2[2] or L1[2] ® L2[1].",Experiment/Discussion
+"In general (see Figure 5b), if some of the cells have been previously enumerated, the next cell must be one of the cells (shaded gray) adjacent to the previously enumerated ones and we need not consider the others (shaded white).",Experiment/Discussion
+"In this way, if we only want to compute the first few elements of MERGEPRODUCTS(G), we can do so by performing a small number of products and discarding the rest of the grid.",Experiment/Discussion
+"Figure 6 shows the pseudocode for MERGEPRODUCTS.7 In lines 2–5, a priority queue is initialized with the best element from each L E G, where L ranges over tuples of lists, and 1 stands for a vector whose elements all have the value 1 (the dimensionality of the vector should be evident from the context).",Experiment/Discussion
+"The rest of the function creates the virtual list: To enumerate the next element of the list, we first insert the elements adjacent to the previously enumerated element, if any (lines 9–13, where bi stands for the vector whose ith element is 1 and is zero elsewhere), and then enumerate the best element in the priority queue, if any (lines 14–18).",Experiment/Discussion
+We assume standard implementations of 7 This version corrects the behavior of the previously published version in some boundary conditions.,Experiment/Discussion
+Thanks to D. Smith and J.,Experiment/Discussion
+May for pointing those cases out.,Experiment/Discussion
+"In the actual implementation, an earlier version is used which has the correct behavior but not for cyclic forests (which the parser never produces).",Experiment/Discussion
+Function for computing the union of products of sorted lists (Huang and Chiang 2005).,Experiment/Discussion
+"the priority queue subroutines HEAPIFY, INSERT, and EXTRACTBEST (Cormen et al. 2001).",Experiment/Discussion
+The k-best list generator is then easy to define (Figure 7).,Experiment/Discussion
+"First, we generate a parse forest; then we simply apply MERGEPRODUCTS recursively to the whole forest, using memoization to ensure that we generate only one k-best list for each item in the forest.",Experiment/Discussion
+"The pseudocode in Figure 7 will find only the weights for the k-best derivations; extending it to output the translations as well is a matter of modifying line 5 to package the English sides of rules together with the weights w, and replacing the real multiplication operator × in line 9 with one that not only multiplies weights but also builds partial translations out of subtranslations.",Experiment/Discussion
+"We now turn to the problem of incorporating the language model (LM), describing three methods: first, using the −LM parser to obtain a k-best list of translations and rescoring it with the LM; second, incorporating the LM directly into the grammar in a construction reminiscent of the intersection of a CFG with a finite-state automaton; third, a hybrid method which we call cube pruning.",Experiment/Discussion
+5.3.1 Rescoring.,Experiment/Discussion
+"One easy way to incorporate the LM into the model would be to decode first using the −LM parser to produce a k-best list of translations, then to rescore the k-best list using the LM.",Experiment/Discussion
+"This method has the potential to be very fast: linear in k. However, because the number of possible translations is exponential in n, we may have to set k extremely high in order to find the true best translation (taking the LM into account) or something acceptably close to it.",Experiment/Discussion
+5.3.2 Intersection.,Experiment/Discussion
+A more principled solution would be to calculate the LM probabilities online.,Experiment/Discussion
+"To do this, we view an m-gram LM as a weighted finite state machine M in which each state corresponds to a sequence of (m − 1) English terminal symbols.",Experiment/Discussion
+We can then intersect the English side of our weighted CFG G with this finite-state machine to produce a new weighted CFG that incorporates M. Thus PLM would be part of the rule weights (22) just like the other features.,Experiment/Discussion
+"(For notational consistency, however, we write the LM probabilities separately from the rule weights.)",Experiment/Discussion
+"In principle this method should admit no search errors, though in practice the blow-up in the effective size of the grammar necessitates pruning of the search space, which can cause search errors.",Experiment/Discussion
+"The classic construction for intersecting a (non-synchronous) CFG with a finitestate machine is due to Bar-Hillel, Perles, and Shamir (1964), but we use a slightly different construction proposed by Wu (1996) for inversion transduction grammar and bigram LMs.",Experiment/Discussion
+We present an adaptation of his algorithm to synchronous CFGs with two nonterminals per right-hand side and general m-gram LMs.,Experiment/Discussion
+"First, assume that the LM expects a whole sentence to be preceded by (m − 1) start-of-sentence symbols (s) and followed by a single end-of-sentence symbol (/s).",Experiment/Discussion
+The grammar can be made to do this simply by adding a rule and making S’ the new start symbol.,Experiment/Discussion
+"First, we define two functions p and q which operate on strings over T U {*}, where T is the English terminal alphabet, and * is a special placeholder symbol that stands for an elided part of an English string.",Experiment/Discussion
+Values of p and q in the “cgisf” example.,Experiment/Discussion
+The function p calculates LM probabilities for all the complete m-grams in a string; the function q elides symbols when all their m-grams have been accounted for.,Experiment/Discussion
+These functions let us correctly calculate the LM score of a sentence piecemeal.,Experiment/Discussion
+"For example, let m = 3 and “c g i s f” stand for “colorless green ideas sleep furiously.” Then Table 1 shows some values of p and q.",Experiment/Discussion
+Then we may extend the −LM parser as shown in Figure 8 to use p and q to calculate LM probabilities.,Experiment/Discussion
+We call this parser the +LM parser.,Experiment/Discussion
+"The items are of the form [X, i, j; e], signifying that a subtree rooted in X has been recognized spanning from i to j on the French side, and its English translation (possibly with parts elided) is e. The theoretical running time of this algorithm is O(n3|T|4(m−1)), because a deduction can combine up to two starred strings, which each have up to 2(m − 1) terminal symbols.",Experiment/Discussion
+"This is far too slow to use in practice, so we must use beam-search to prune the search space down to a reasonable size.",Experiment/Discussion
+5.3.3 Pruning.,Experiment/Discussion
+"The chart is organized into cells, each of which contains all the items standing for X spanning fji+1.",Experiment/Discussion
+"The rule items are also organized into cells, each of which contains all the rules with the same French side and left-hand side.",Experiment/Discussion
+"From here on, let us Inference rules for the +LM parser.",Experiment/Discussion
+Here w[x/X] means the string w with the string x substituted for the symbol X.,Experiment/Discussion
+"The function q is defined in the text. consider the item scores as costs, that is, negative log (base-10) probabilities.",Experiment/Discussion
+"Then, for each cell, we throw out any item that has a score worse than: In the +LM parser, the score of an item [X, i, j; e] in the chart does not reflect the LM probability of generating the first (m − 1) words of e. Thus two items [X, i, j; e] and [X, i, j; e'] are not directly comparable.",Experiment/Discussion
+"To enable more meaningful comparisons, we define a heuristic When comparing items for pruning (and only for pruning), we add this heuristic function to the score of each item.",Experiment/Discussion
+5.3.4 Cube Pruning.,Experiment/Discussion
+Now we can develop a compromise between the rescoring and intersection methods.,Experiment/Discussion
+Consider Figure 9a.,Experiment/Discussion
+"To the left of the grid we have four rules with the same French side, and above we have three items with the same category and span, that is, they belong to the same chart cell.",Experiment/Discussion
+"Any of the twelve combinations of these rules and items can be used to deduce a new item (whose scores are shown in the grid), and all these new items will go into the same chart cell (partially listed on the right).",Experiment/Discussion
+"The intersection method would compute all twelve items and add them to the new chart cell, where most of them will likely be pruned away.",Experiment/Discussion
+"In actuality, the grid may be a cube (one dimension for rules and two dimensions for two nonterminals) with up to b3 elements, whereas the target chart cell can hold at most b items (where b is the limit on the size of the cell imposed during pruning).",Experiment/Discussion
+Thus the vast majority of computed items are pruned.,Experiment/Discussion
+"But it is possible to compute only a small corner of the cube and preemptively prune the rest of the items without computing them, a method we refer to as cube pruning.",Experiment/Discussion
+The situation pictured in Figure 9a is very similar to k-best list generation.,Experiment/Discussion
+"The four rules to the left of the grid can be thought of like a 4-best list for a single −LM rule item (X --� cong X); the three items above the grid, like a 3-best list for the single −LM item [X, 6,8]; and the new items to be deduced, like a k-best list for [X, 5, 8], except that we don’t know what k is in advance.",Experiment/Discussion
+"If we could use MERGEPRODUCTS to enumerate the new items best-first, then we could enumerate them until one of them was pruned from the new cell; then the rest of items, which would have a worse score than the pruned item, could be preemptively pruned.",Experiment/Discussion
+"MERGEPRODUCTS expects its input lists to be sorted best-first, and the ® operator to be monotonic in each of its arguments.",Experiment/Discussion
+"For cube pruning, we sort items (both in the inputs to MERGEPRODUCTS and in the priority queue inside MERGEPRODUCTS) according to their +LM score, including the heuristic function h. The ® operator we use takes one or more antecedent items and forms their consequent item according to Example illustrating hybrid method for incorporating the LM.",Experiment/Discussion
+Numbers are negative the +LM parser.,Experiment/Discussion
+Note that the LM makes this ⊗ only approximately monotonic.,Experiment/Discussion
+This means that the enumeration of new items will not necessarily be best-first.,Experiment/Discussion
+"To alleviate this problem, we stop the enumeration not as soon as an item falls outside the beam, but as soon as an item falls outside the beam by a margin of e. This quantity e expresses our guess as to how much the scores of the enumerated items can fluctuate because of the LM.",Experiment/Discussion
+"A simpler approach, and probably better in practice, would be simply to set e = 0, that is, to ignore any fluctuation, but increase R and b to compensate.",Experiment/Discussion
+See Figure 9b for an example of cube pruning.,Experiment/Discussion
+"The upper-left grid cell is enumerated first, as in the k-best example in Section 5.2, but the choice of the second is different, because of the added LM costs.",Experiment/Discussion
+"Then, the third item is enumerated and merged with the first (unlike in the k-best algorithm).",Experiment/Discussion
+"Supposing a threshold beam of R = 5 and a margin of e = 0.5, we quit upon considering the next item, because, with a score of 7.7, it falls outside the beam by more than e. The rest of the grid is then discarded.",Experiment/Discussion
+The pseudocode is given in Figure 10.,Experiment/Discussion
+The function INFER+LM is used as the ® operator; it takes a tuple of antecedent +LM items and returns a consequent +LM item according to the inference rules in Figure 8.,Experiment/Discussion
+The procedure REPARSE+LM takes a −LM chart chart as input and produces a +LM chart chart'.,Experiment/Discussion
+"The variables u, v stand for items in −LM and u', v', for items in +LM, and the relation v �i v' is defined as follows: For each cell in the input chart, it takes the single item from the cell and constructs the virtual list L of all of its +LM counterparts (lines 9–15).",Experiment/Discussion
+"Then, it adds the top items of L to the target cell until the cell is judged to be full (lines 16–20).",Experiment/Discussion
+"The implementation of our system, named Hiero, is in Python, a bytecode-interpreted language, and optimized using Psyco, a just-in-time compiler (Rigo 2004), and Pyrex, a Python-like compiled language, with C++ code from the SRI Language Modeling Toolkit (Stolcke 2002).",Experiment/Discussion
+In this section we report on experiments with Mandarin-toEnglish translation.,Experiment/Discussion
+"Our evaluation metric is case-insensitive BLEU-4 (Papineni et al. 2002), as defined by NIST, that is, using the shortest (as opposed to closest) reference sentence length for the brevity penalty.",Experiment/Discussion
+"We ran the grammar extractor of Section 3.2 on the parallel corpora listed in Table 2 with the exception of the United Nations data, for a total of 28 million words (English side).8 We then filtered this grammar for our development set, which was the 2002 NIST MT evaluation dry-run data, and our test sets, which were the data from the 2003–2005 NIST MT evaluations.",Experiment/Discussion
+"Some example rules are shown in Table 3, and the sizes of the filtered grammars are shown in Table 4.",Experiment/Discussion
+"We also used the SRI Language Modeling Toolkit to train two trigram language models with modified Kneser–Ney smoothing (Kneser and Ney 1995; Chen and Goodman 1998): one on 2.8 billion words from the English Gigaword corpus, and the other on the English side of the parallel text (28 million words).",Experiment/Discussion
+"Table 5 shows the average decoding time on part of the development set for the three LM-incorporation methods described in Section 5.3, on a single processor of a dual 3 GHz Xeon machine.",Experiment/Discussion
+"For these experiments, only the Gigaword language model was used.",Experiment/Discussion
+"We set b = 30, R = 1 for X cells, b = 15, R = 1 for S cells, and b = 100 for rules except where noted in Table 5.",Experiment/Discussion
+"Note that values for R and e are only meaningful relative to the scale of the feature weights; here, the language model weight was 0.06.",Experiment/Discussion
+The feature weights were obtained by minimum-error-rate training using the cube-pruning (e = 0.1) decoder.,Experiment/Discussion
+"For the LM rescoring decoder, parsing and k-best list generation used feature weights optimized for the −LM model, but rescoring used the same weights as the other experiments.",Experiment/Discussion
+"We tested the rescoring method (k = 103 and 104), the intersection method, and the cube-pruning method (e = 0, 0.1, and 0.2).",Experiment/Discussion
+The LM rescoring decoder (k = 104) is the fastest but has the poorest BLEU score.,Experiment/Discussion
+"Identifying and rescoring the k-best derivations is very quick; the execution time is dominated by reconstructing the output strings for the k-best derivations, so it is possible that further optimization could reduce these times.",Experiment/Discussion
+The intersecting decoder has the best score but runs very slowly.,Experiment/Discussion
+"Finally, the cubepruning decoder runs almost as fast as the rescoring decoder and translates almost as well as the intersecting decoder.",Experiment/Discussion
+"Among these tests, e = 0.1 gives the best results, but in general the optimal setting will depend on the other beam settings and the scale of the feature weights.",Experiment/Discussion
+We compared Hiero against two baselines: the state-of-the-art phrase-based system ATS (Och et al. 2004; Thayer et al.,Experiment/Discussion
+"2004), and Hiero itself run as a conventional phrase-based system with monotone translation (no phrase reordering).",Experiment/Discussion
+"The ATS baseline was trained on all the parallel data listed in Table 1, for a total of 159 million words (English side).",Experiment/Discussion
+The second language model was also trained on the English side of the whole bitext.,Experiment/Discussion
+"Phrases of up to 10 in length on the French side were extracted from the parallel text, and minimum-error-rate training (Och 2003) was performed on the development set for 17 features, the same as used in the NIST 2004 and 2005 evaluations.9 These features are similar to the features used for our system, but also include features for phrase-reordering (which are not applicable to our system), IBM Model 1 in both directions, a missing word penalty, and a feature that controls a fallback lexicon.",Experiment/Discussion
+"The other baseline, which we call Hiero Monotone, is the same as Hiero except with the limitation that extracted rules cannot have any nonterminal symbols on their righthand sides.",Experiment/Discussion
+"In other words, only conventional phrases can be extracted, of length up to 5.",Experiment/Discussion
+"These phrases are combined using the glue rules only, which makes the grammar equivalent to a conventional phrase-based model with monotone translation.",Experiment/Discussion
+"Thus this system represents the nearest phrase-based equivalent to our model, to provide a controlled test of the effect of hierarchical phrases.",Experiment/Discussion
+We performed minimum-error-rate training separately on Hiero and Hiero Monotone to maximize their BLEU scores on the development set; the feature weights for Hiero are shown in Table 6.,Experiment/Discussion
+"The beam settings used for both decoders were R = 30, b = 30 for X cells, R = 30, b = 15 for S cells, b = 100 for rules, and e = 3.",Experiment/Discussion
+"On the test set, we found that Hiero improves over both baselines in all three tests (see Table 7).",Experiment/Discussion
+"All improvements are statistically significant (p < 0.01) using the sign test as described by Collins, Koehn, and Kuˇcerov´a (2005).",Experiment/Discussion
+Syntax-based statistical machine translation is a twofold challenge.,Results/Conclusion
+"It is a modeling challenge, in part because of the difficulty of coordinating syntactic structures with potentially messy parallel corpora; it is an implementation challenge, because of the added complexity introduced by hierarchical structures.",Results/Conclusion
+"Here we have addressed the modeling challenge by taking only the fundamental idea from syntax, that language is hierarchically structured, and integrating it conservatively into a phrase-based model typical of the current state of the art.",Results/Conclusion
+"This fusion does no violence to the latter; indeed, we have presented our approach as a logical outgrowth of the phrase-based approach.",Results/Conclusion
+"Moreover, hierarchical structure improves translation accuracy significantly.",Results/Conclusion
+"Feature weights obtained by minimum-error-rate training. language model (large) 1.00 language model (bitext) 1.03 The choice to use hierarchical structures that are more complex than flat structures, as well as rules that contain multiple lexical items instead of one, an m-gram model whose structure cuts across the structure of context-free derivations, and large amounts of training data for meaningful comparison with modern systems—these all threaten to make training a synchronous grammar and translating with it intractable.",Results/Conclusion
+"We have shown how, through training with simple methods inspired by phrase-based models, and translating using a modified CKY with cube pruning, this challenge can be met.",Results/Conclusion
+"Clearly, however, we have only scratched the surface of the modeling challenge.",Results/Conclusion
+The fact that moving from flat structures to hierarchical structures significantly improves translation quality suggests that more specific ideas from syntax may be valuable as well.,Results/Conclusion
+There are many possibilities for enriching the simple framework that the present model provides.,Results/Conclusion
+"But the course taken here is one of organic development of an approach known to work well at large-scale tasks, and we plan to stay this course in future work towards more syntactically informed statistical machine translation.",Results/Conclusion
+"I would like to thank Liang Huang, Philipp Koehn, Adam Lopez, Nitin Madnani, Daniel Marcu, Christof Monz, Dragos Munteanu, Philip Resnik, Michael Subotin, Wei Wang, and the anonymous reviewers.",Results/Conclusion
+"This work was partially supported by ONR MURI contract FCPO.810548265, by Department of Defense contract RD-02-5700, and under the GALE program of the Defense Advanced Research Projects Agency, contract HR 0011-06-C-0022.",Results/Conclusion
+S. D. G.,Results/Conclusion

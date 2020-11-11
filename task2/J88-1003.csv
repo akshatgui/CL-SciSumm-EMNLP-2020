@@ -1,505 +1,505 @@
 col1,col2
-three previous efforts directed specifically to this problem.,{}
-"The first published effort is that of Klein and Simmons (1963), a simple system using suffix lists and limited frame rules.",{}
-"The second approach to lexical disambiguation is and Rubin (1971)), a system of several thousand context-frame rules.",{}
-This algorithm was used to assign initial tags to the Brown Corpus.,{}
-"Third is the CLAWS system develto tag the (or LOB) Coris a corpus of British written English, parallel to the Brown Corpus.",{}
-"Parsing systems always encounter the problem of category ambiguity; but usually the focus of such systems is at other levels, making their responses less relevant for our purposes here.",{}
-1.1 KLEIN AND SIMMONS Klein and Simmons (1963) describe a method directed primarily towards the task of initial categorial tagging rather than disambiguation.,{}
-Its primary goal is avoiding &quot;the labor of constructing a very large dictionary&quot; (p. 335); a consideration of greater import then than now.,{}
-"The Klein and Simmons algorithm uses a palette of 30 categories, and claims an accuracy of 90% in tagging.",{}
-"The algorithm first seeks each word in dictionaries of about 400 function words, and of about 1500 words which &quot;are exceptions to the computational rules used&quot; (p. 339).",{}
-"The program then checks for suffixes and special characters as clues. of all, frame tests applied.",{}
-"These work on scopes bounded by unambiguous words, as do later algorithms.",{}
-"However, Klein and Simmons impose an explicit limit of three ambiguous words in a row.",{}
-"For such ambiguous words, the pair of unambiguous categories bounding it is mapped into a list.",{}
-The list includes all known sequences of tags occurring between the particular bounding tags; all such sequences of the correct length become candidates.,{}
-The program then matches the candidate sequences against the ambiguities remaining from earlier steps of the algorithm.,{}
-"When only one sequence is possible, disambiguation is successful.",{}
-The samples used for calibration and testing were limited.,{}
-"First, Klein and Simmons (1963) performed &quot;hand analysis of a sample [size unspecified] of Golden Grammatical Category Disambiguation by Statistical Optimization Book Encyclopedia text&quot; (p. 342).",{}
-"Later, &quot;[w]hen it was run on several pages from that encyclopedia, it correctly and unambiguously tagged slightly over 90% of the words&quot; (p. 344).",{}
-Further tests were run on small from the Americana from Scientific American.,{}
-Klein and Simmons (1963) assert that &quot;[o]riginal fears that sequences of four or more unidentified parts of speech would occur with great frequency were not substantiated in fact&quot; (p. 3).,{}
-"This felicity, however, is an artifact.",{}
-"First, the relatively small set of categories reduces ambiguity.",{}
-"Second, a larger sample would reveal both (a) low-frequency ambiguities and (b) many long spans, as discussed below.",{}
-1.2 GREENE AND RUBIN (TAGGIT) Greene and Rubin (1971) developed TAGGIT for tagging the Brown Corpus.,{}
-"The palette of 86 tags that TAGGIT uses has, with some modifications, also been used in both CLAWS and VOLSUNGA.",{}
-The rationale underlying the choice of tags is described on pages 3-21 of Greene and Rubin (1971).,{}
-Francis and Kucera (1982) report that this algorithm correctly tagged approxithe million words in the Brown Corpus (the tagging was then completed by human post-editors).,{}
-"Although this accuracy is substantially lower than that reported by Klein and Simmons, it should be remembered that Greene and Rubin were the first to attempt so large and varied a sample.",{}
-"TAGGIT divides the task of category assignment into initial (potentially ambiguous) tagging, and disambiguation.",{}
-"Tagging is carried out as follows: first, the program consults an exception dictionary of about 3,000 words.",{}
-"Among other items, this contains all known closed-class words.",{}
-"It then handles various special cases, such as words with initial &quot;$&quot;, contractions, special symbols, and capitalized words.",{}
-The word's ending is then checked against a suffix list of about 450 strings.,{}
-The lists were derived from lexicostatistics of the Brown Corpus.,{}
-"If TAGGIT has not assigned some tag(s) after these several steps, &quot;the word is tagged NN, VB, or JJ [that is, as being three-ways ambiguous], in order that the disambiguation routine may have something to work with&quot; (Greene and Rubin (1971), p. 25).",{}
-"After tagging, TAGGIT applies a set of 3300 context frame rules.",{}
-"Each rule, when its context is satisfied, has the effect of deleting one or more candidates from the list of possible tags for one word.",{}
-"If the number of candidates is reduced to one, disambiguation is considered successful subject to human post-editing.",{}
-Each rule can include a scope of up to two unambiguous words on each side of the ambiguous word to which the rule is being applied.,{}
-"This constraint was determined as follows: In order to create the original inventory of Context Frame Tests, a 900-sentence subset of the Brown University Corpus was tagged.",{}
-.,{}
-". and its ambiguities were resolved manually; then a program was run 32 Computational Linguistics, Volume 14, Number 1, Winter 1988 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization which produced and sorted all possible Context Frame Rules which would have been necessary to perform this disambiguation automatically.",{}
-The rules generated were able to handle up to three consecutive ambiguous words preceded and followed by two non-ambiguous words [a constraint similar to Klein and Simmons'].,{}
-"However, upon examination of these rules, it was found that a sequence of two or three ambiguities rarely occurred more than once in a given context.",{}
-"Consequently, a decision was made to examine only one ambiguity at a time with up to two unambiguously tagged words on either side.",{}
-"The first rules created were the results of informed intuition (Greene and Rubin (1972), p. 32).",{}
-"1.3 CLAWS Marshall (1983, p. 139) describes the LOB Corpus tagging algorithm, later named CLAWS (Booth (1985)), as &quot;similar to those employed in the TAGGIT program&quot;.",{}
-"The tag set used is very similar, but somewhat larger, at about 130 tags.",{}
-"The dictionary used is derived from the tagged Brown Corpus, rather than from the untagged.",{}
-"It contains 7000 rather than 3000 entries, and 700 rather than 450 suffixes.",{}
-"CLAWS treats plural, possessive, and hyphenated words as special cases for purposes of initial tagging.",{}
-The LOB researchers began by using TAGGIT on parts of the LOB Corpus.,{}
-They noticed that While less than 25% of TAGGIT's context frame rules are concerned with only the immediately preceding or succeeding word.,{}
-.,{}
-. these rules were applied in about 80% of all attempts to apply rules.,{}
-"This relative overuse of minimally specified contexts indicated that exploitation of the relationship between successive tags, coupled with a mechanism that would be applied throughout a sequence of ambiguous words, would produce a more accurate and effective method of word disambiguation (Marshall (1983), p. 141).",{}
-"The main innovation of CLAWS is the use of a matrix probabilities, the relative likelihood of co-occurrence of all ordered pairs of tags.",{}
-This matrix can be mechanically derived from any pre-tagged corpus.,{}
-"CLAWS used &quot;[a] large proportion of the Brown Corpus&quot;, 200,000 words (Marshall (1983), pp.",{}
-"141, 150).",{}
-The ambiguities contained within a span of ambiguous words define a precise number of complete sets of mappings from words to individual tags.,{}
-"Each such of tags is called a path is composed of a number of tag collocations, and each such collocation has a probability which may be obtained from the collocation matrix.",{}
-One may thus approximate each path's probability by the product of the probabilities of all its collocations.,{}
-"Each path corresponds to a unique assignment of tags to all words within a span. paths constitute a network, the path of maximal probability may be taken to contain the &quot;best&quot; tags.",{}
-"(1983) states that CLAWS the most probable sequence of tags, and in the majority of cases the correct tag for each individual word corresponds to the associated tag in the most probable sequence of tags&quot; (p. 142).",{}
-But a more detailed examination of the Pascal code for CLAWS revealed that CLAWS has a more complex definition of &quot;most probable sequence&quot; than one might expect.,{}
-A probability called &quot;SUMSUCCPROBS&quot; is predicated of each word.,{}
-"SUMSUCCPROBS is calculated by looping through all tags for the words immediately preceding, at, and following a word; for each tag triple, an increment is added, defined by: DownGrade(GetSucc(Tag2, Tag3), TagMark) * Get3SeqFactor(Tag1, Tag2, Tag3) the collocational probability of a tag either 1, or a special value the tag-triple list described below. the value of accordance with RTPs as described below.",{}
-The CLAWS documentation describes SUMSUCC- PROBS as &quot;the total value of all relationships between the tags associated with this word and the tags associated with the next word.,{}
-.,{}
-.,{}
-[found by] simulating all accesses to SUCCESSORS and ORDER2VALS which will be made.,{}
-.,{}
-.,{}
-".&quot; The probability of each node of the span network (or rather, tree) is then calculated in the following way as a tree representing all paths through which the span network is built: = currenttag), TagMark) * Get3SeqFactor(.",{}
-.,{}
-.)),{}
-= PROB * (predecessor's It appears that the goal is to make each tag's probabe the summed probability of passing through it.,{}
-"At the final word of a span, pointers are followed back up the chosen path, and tags are chosen en route.",{}
-"We will see below that a simpler definition of optimal path is possible; nevertheless, there are several advantages of this general approach over previous ones.",{}
-"First, spans of unlimited length can be handled (subject to machine resources).",{}
-"Although earlier researchers (Klein and Simmons, Greene and Rubin) have suggested that spans of length over 5 are rare enough to be of little concern, this is not the case.",{}
-The number of spans of a given length is a function of that length and the corpus size; so long spans may be obtained merely by examining more text.,{}
-"The total numbers of spans in the Brown Corpus, for each length from 3 to 19, are: 397111, 143447, 60224, 26515, 11409,5128, 2161, 903, 382, 161, 58, 29, 14, 6, 1, 0, 1.",{}
-"Graphing the logarithms Computational Linguistics, Volume 14, Number 1, Winter 1988 33 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization of these quantities versus the span length for each, produces a near-perfect straight line.",{}
-"Second, a precise mathematical definition is possible for the fundamental idea of CLAWS.",{}
-"Whereas earlier efforts were based primarily on ad hoc or subjectively determined sets of rules and descriptions, and employed substantial exception dictionaries, this algorithm requires no human intervention for set-up; it is a systematic process.",{}
-"Third, the algorithm is quantitative and analog, rather than artificially discrete.",{}
-The various tests and employed by earlier algorithms enforced absolute constraints on particular tags or collocations of tags.,{}
-"Here relative probabilities are weighed, and a series of very likely assignments can make possible a particular, a priori unlikely assignment with which they are associated.",{}
-"In addition to collocational probabilities, CLAWS also takes into account one other empirical quantity: Tags associated with words.",{}
-.,{}
-". can be with a marker @ or %; @ indicates that the tag is infrequently the correct tag for the associated word(s) (less than 1 in 10 occasions), % indicates is highly improbable.",{}
-.,{}
-.,{}
-(less than 1 in 100 oc- .,{}
-.,{}
-.,{}
-"The word disambiguation program currently uses these markers top devalue values when retrieving a value from the matrix, @ results in the value being halved, % in the value being divided by eight (Marshall (1983), p. 149).",{}
-"Thus, the independent probability of each possible tag for a given word influences the choice of an optimal Such probabilities will be referred to as Probabilities, Other features have been added to the basic algorithm.",{}
-"For example, a good deal of suffix analysis is used in initial tagging.",{}
-"Also, the program filters its output, considering itself to have failed if the optimal tag assignment for a span is not &quot;more than 90% probable&quot;. cases it reorders tags rather than actually disambiguating.",{}
-On long spans this criterion is effectively more stringent than on short spans.,{}
-A more significant addition to the algorithm is that a number of tag triples associated with a have been introduced which may either upgrade or downgrade values in the tree computed from the one-step matrix.,{}
-"For example, the triple [1] [2] adverb [3] past-tense-verb has been assigned a factor which downgrades a sequence containing this triple compared with a competing of [1] 'be' [2] adverb [3]-past-participle/adjective, on the basis that after a form of 'be', past participles and adjectives are more likely than a past tense verb (Marshall (1983), p. 146).",{}
-"A similar move was used near conjunctions, for which the words on either side, though separated, are more closely correlated to each other than either is to the conjunction itself (Marshall (1983), pp.",{}
-146-147).,{}
-"For example, a verb/noun ambiguity conjoined to a verb should probably be taken as a verb.",{}
-"Leech, Garside, and Atwell (1983, p. 23) describe &quot;IDIOMTAG&quot;, which is applied after initial tag assignment and before disambiguation.",{}
-It was developed as a means of dealing with sequences which would otherwise cause diffifor the automatic tagging.,{}
-.,{}
-.,{}
-". for example, that tagged as a single conjunction.",{}
-.,{}
-.,{}
-.,{}
-Tagging Program.,{}
-.,{}
-". can look at any combination of words and tags, with or without intervening words.",{}
-"It can delete tags, add tags, or change the probability of tags.",{}
-Although this program might to be an hoc it is worth bearing in that any fully automatic language analysis syshas to come to with problems of lexical idiosyncrasy.,{}
-"IDIOMTAG also accounts for the fact that the probability of a verb being a past participle, and not simply past, is greater when the following word is &quot;by&quot;, as opposed to other prepositions.",{}
-Certain cases of this sort may be soluble by making the collocational matrix distinguish classes of ambiguities—this question is being pursued.,{}
-"Approximately 1% of running text is tagged by IDIOMTAG (letter, G. N. Leech to Henry Kucera, June 7, 1985; letter, E. S. Atwell to Henry Kucera, June 20, 1985).",{}
-Marshall notes the possibility of consulting a complete three-dimensional matrix of collocational probabilities.,{}
-Such a matrix would map ordered triples of tags into the relative probability of occurrence of each such triple.,{}
-Marshall points out that such a table would be too large for its probable usefulness.,{}
-The author has proa table based upon more 85% of the Brown Corpus; it occupies about 2 megabytes (uncompressed).,{}
-"Also, the mean number of examples per triple is very low, thus decreasing accuracy.",{}
-"CLAWS has been applied to the entire LOB Corpus with an accuracy of &quot;between 96% and 97%&quot; (Booth (1985), p. 29).",{}
-"Without the idiom list, the algorithm was 94% accurate on a sample of 15,000 words (Marshall (1983)).",{}
-"Thus, the pre-processor tagging of 1% of all tokens resulted in a 3% change in accuracy; those particular assignments must therefore have had a substantial effect upon their context, resulting in changes of two other words for every one explicitly tagged.",{}
-"But CLAWS is timeand storage-inefficient in the extreme, and in some cases a fallback algorithm is employed to prevent running out of memory, as was discovered by examining the Pascal program code.",{}
-"How often the fallback is employed is not known, nor is it known what effect its use has on overall accuracy.",{}
-"Since CLAWS calculates the probability of every path, it operates in time and space proportional to the product of all the degrees of ambiguity of the words in the span.",{}
-"Thus, the time is exponential (and hence Non-Polynomial) in the span length.",{}
-"For the longest span in the Brown Corpus, of length 18, the number of paths examined would be 1,492,992.",{}
-"34 Computational Linguistics, Volume 14, Number 1, Winter 1988 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization LINEAR-TIME ALGORITHM The algorithm described here depends on a similar empirically-derived transitional probability matrix to that of CLAWS, and has a similar definition of &quot;optimal path&quot;.",{}
-"The tagset is larger than TAGGIT's, though smaller than CLAWS', containing 97 tags.",{}
-The ultimate assignments of tags are much like those of CLAWS.,{}
-"However, it embodies several substantive changes.",{}
-Those features that can be algorithmically defined have been used to the fullest extent.,{}
-Other add-ons have been minimized.,{}
-The major differences are outlined below.,{}
-"First, the optimal path is defined to be the one whose component collocations multiply out to the highest probability.",{}
-"The more complex definition applied by using the sum of all paths at of the network, is not used.",{}
-"Second, VOLSUNGA overcomes the Non-Polynomial complexity of CLAWS.",{}
-"Because of this change, it is never necessary to resort to a fallback algorithm, and the program is far smaller.",{}
-"Furthermore, testing the algorithm on extensive texts is not prohibitively costly.",{}
-"Third, VOLSUNGA implements Relative Tag Probabilities (RTPs) in a more quantitative manner, based upon counts from the Brown Corpus.",{}
-"Where CLAWS scales probabilities by 1/2 for RTP < 0.1 (i.e., where less than 10% of the tokens for an ambiguous word are in the category in question), and by 1/8 for p < 0.01, VOLSUNGA uses the RTP value itself as a factor in the equation which defines probability.",{}
-"Fourth, VOLSUNGA uses no tag triples and no idioms.",{}
-"Because of this, manually constructing specialcase lists is not necessary.",{}
-"These methods are useful in certain cases, as the accuracy figures for CLAWS show; but the goal here was to measure the accuracy of a wholly algorithmic tagger on a standard corpus.",{}
-"Brown University and the Summer Institute of Linguistics, 7500 W. Camp Wisdom Road, Dallas, TX 75236 Several algorithms have been developed in the past that attempt to resolve categorial ambiguities in natural language text without recourse to syntactic or semantic level information.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-An innovative method (called &quot;CLAWS&quot;) was recently developed by those working with the Lancaster —Oslo/Bergen Corpus of British English.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-This algorithm uses a systematic calculation based upon the probabilities of co-occurrence of particular tags.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Its accuracy is high, but it is very slow, and it has been manually augmented in a number of ways.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-The effects upon accuracy of this manual augmentation are not individually known.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"The current paper presents an algorithm for disambiguation that is similar to CLAWS but that operates in linear rather than in exponential time and space, and which minimizes the unsystematic augments.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-Tests of the algorithm using the million words of the Brown Standard Corpus of English are reported; the overall accuracy is 96%.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-This algorithm can provide a fast and accurate front end to any parsing or natural language processing system for English.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Every computer system that accepts natural language input must, if it is to derive adequate representations, decide upon the grammatical category of each input word.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"In English and many other languages, tokens are frequently ambiguous.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"They may represent lexical items of different categories, depending upon their syntactic and semantic context.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-Several algorithms have been developed that examine a prose text and decide upon one of the several possible categories for a given word.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Our focus will be on algorithms which specifically address this task of disambiguation, and particularly on a new algorithm called VOLSUNGA, which avoids syntactic-level analysis, yields about 96% accuracy, and runs in far less time and space than previous attempts.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"The most recent previous algorithm runs in NP (Non-Polynomial) time, while VOLSUNGA runs in linear time.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-This is provably optimal; no improvements in the order of its execution time and space are possible.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-VOLSUNGA is also robust in cases of ungrammaticality.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Improvements to this accuracy may be made, perhaps the most potentially significant being to include some higher-level information.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"With such additions, the accuracy of statistically-based algorithms will approach 100%; and the few remaining cases may be largely those with which humans also find difficulty.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-In subsequent sections we examine several disambiguation algorithms.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Their techniques, accuracies, and efficiencies are analyzed.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"After presenting the research carried out to date, a discussion of VOLSUNGA' s application to the Brown Corpus will follow.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"The Brown Corpus, described in Kucera and Francis (1967), is a collection of 500 carefully distributed samples of English text, totalling just over one million words.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-It has been used as a standard sample in many studies of English.,"{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"Generous advice, encouragement, and assistance from Henry Kucera and W. Nelson Francis in this research is gratefully acknowledged.","{'title': 'GRAMMATICAL CATEGORY DISAMBIGUATION BY STATISTICAL OPTIMIZATION Steven J. DeRose', 'number': '1'}"
-"The problem of lexical category ambiguity has been little examined in the literature of computational linguistics and artificial intelligence, though it pervades English to an astonishing degree.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"About 11.5% of types (vocabulary), and over 40% of tokens (running words) in English prose are categorically ambiguous (as measured via the Brown Corpus).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The vocabulary breaks down as shown in Table 1 (derived from Francis and Kucera (1982)).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-A search of the relevant literature has revealed only three previous efforts directed specifically to this problem.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The first published effort is that of Klein and Simmons (1963), a simple system using suffix lists and limited frame rules.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The second approach to lexical category disambiguation is TAGGIT (Greene and Rubin (1971)), a system of several thousand context-frame rules.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-This algorithm was used to assign initial tags to the Brown Corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Third is the CLAWS system developed to tag the Lancaster —Oslo/Bergen (or LOB) Corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"This is a corpus of British written English, parallel to the Brown Corpus.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Parsing systems always encounter the problem of category ambiguity; but usually the focus of such systems is at other levels, making their responses less relevant for our purposes here.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Klein and Simmons (1963) describe a method directed primarily towards the task of initial categorial tagging rather than disambiguation.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Its primary goal is avoiding &quot;the labor of constructing a very large dictionary&quot; (p. 335); a consideration of greater import then than now.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The Klein and Simmons algorithm uses a palette of 30 categories, and claims an accuracy of 90% in tagging.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The algorithm first seeks each word in dictionaries of about 400 function words, and of about 1500 words which &quot;are exceptions to the computational rules used&quot; (p. 339).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The program then checks for suffixes and special characters as clues.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Last of all, context frame tests are applied.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"These work on scopes bounded by unambiguous words, as do later algorithms.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"However, Klein and Simmons impose an explicit limit of three ambiguous words in a row.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"For each such span of ambiguous words, the pair of unambiguous categories bounding it is mapped into a list.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The list includes all known sequences of tags occurring between the particular bounding tags; all such sequences of the correct length become candidates.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The program then matches the candidate sequences against the ambiguities remaining from earlier steps of the algorithm.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"When only one sequence is possible, disambiguation is successful.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The samples used for calibration and testing were limited.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"First, Klein and Simmons (1963) performed &quot;hand analysis of a sample [size unspecified] of Golden Book Encyclopedia text&quot; (p. 342).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Later, &quot;[w]hen it was run on several pages from that encyclopedia, it correctly and unambiguously tagged slightly over 90% of the words&quot; (p. 344).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Further tests were run on small samples from the Encyclopedia Americana and from Scientific American.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Klein and Simmons (1963) assert that &quot;[o]riginal fears that sequences of four or more unidentified parts of speech would occur with great frequency were not substantiated in fact&quot; (p. 3).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"This felicity, however, is an artifact.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"First, the relatively small set of categories reduces ambiguity.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Second, a larger sample would reveal both (a) low-frequency ambiguities and (b) many long spans, as discussed below.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Greene and Rubin (1971) developed TAGGIT for tagging the Brown Corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The palette of 86 tags that TAGGIT uses has, with some modifications, also been used in both CLAWS and VOLSUNGA.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The rationale underlying the choice of tags is described on pages 3-21 of Greene and Rubin (1971).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Francis and Kucera (1982) report that this algorithm correctly tagged approximately 77% of the million words in the Brown Corpus (the tagging was then completed by human post-editors).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Although this accuracy is substantially lower than that reported by Klein and Simmons, it should be remembered that Greene and Rubin were the first to attempt so large and varied a sample.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"TAGGIT divides the task of category assignment into initial (potentially ambiguous) tagging, and disambiguation.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Tagging is carried out as follows: first, the program consults an exception dictionary of about 3,000 words.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Among other items, this contains all known closed-class words.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"It then handles various special cases, such as words with initial &quot;$&quot;, contractions, special symbols, and capitalized words.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The word's ending is then checked against a suffix list of about 450 strings.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The lists were derived from lexicostatistics of the Brown Corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"If TAGGIT has not assigned some tag(s) after these several steps, &quot;the word is tagged NN, VB, or JJ [that is, as being three-ways ambiguous], in order that the disambiguation routine may have something to work with&quot; (Greene and Rubin (1971), p. 25).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"After tagging, TAGGIT applies a set of 3300 context frame rules.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Each rule, when its context is satisfied, has the effect of deleting one or more candidates from the list of possible tags for one word.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"If the number of candidates is reduced to one, disambiguation is considered successful subject to human post-editing.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Each rule can include a scope of up to two unambiguous words on each side of the ambiguous word to which the rule is being applied.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"This constraint was determined as follows: In order to create the original inventory of Context Frame Tests, a 900-sentence subset of the Brown University Corpus was tagged.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-. and its ambiguities were resolved manually; then a program was run which produced and sorted all possible Context Frame Rules which would have been necessary to perform this disambiguation automatically.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The rules generated were able to handle up to three consecutive ambiguous words preceded and followed by two non-ambiguous words [a constraint similar to Klein and Simmons'].,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"However, upon examination of these rules, it was found that a sequence of two or three ambiguities rarely occurred more than once in a given context.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Consequently, a decision was made to examine only one ambiguity at a time with up to two unambiguously tagged words on either side.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The first rules created were the results of informed intuition (Greene and Rubin (1972), p. 32).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Marshall (1983, p. 139) describes the LOB Corpus tagging algorithm, later named CLAWS (Booth (1985)), as &quot;similar to those employed in the TAGGIT program&quot;.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The tag set used is very similar, but somewhat larger, at about 130 tags.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The dictionary used is derived from the tagged Brown Corpus, rather than from the untagged.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"It contains 7000 rather than 3000 entries, and 700 rather than 450 suffixes.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"CLAWS treats plural, possessive, and hyphenated words as special cases for purposes of initial tagging.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The LOB researchers began by using TAGGIT on parts of the LOB Corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-They noticed that While less than 25% of TAGGIT's context frame rules are concerned with only the immediately preceding or succeeding word.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-. these rules were applied in about 80% of all attempts to apply rules.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"This relative overuse of minimally specified contexts indicated that exploitation of the relationship between successive tags, coupled with a mechanism that would be applied throughout a sequence of ambiguous words, would produce a more accurate and effective method of word disambiguation (Marshall (1983), p. 141).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The main innovation of CLAWS is the use of a matrix of collocational probabilities, indicating the relative likelihood of co-occurrence of all ordered pairs of tags.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-This matrix can be mechanically derived from any pre-tagged corpus.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"CLAWS used &quot;[a] large proportion of the Brown Corpus&quot;, 200,000 words (Marshall (1983), pp.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"141, 150).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The ambiguities contained within a span of ambiguous words define a precise number of complete sets of mappings from words to individual tags.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Each such assignment of tags is called a path.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Each path is composed of a number of tag collocations, and each such collocation has a probability which may be obtained from the collocation matrix.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-One may thus approximate each path's probability by the product of the probabilities of all its collocations.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Each path corresponds to a unique assignment of tags to all words within a span.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The paths constitute a span network, and the path of maximal probability may be taken to contain the &quot;best&quot; tags.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Marshall (1983) states that CLAWS -calculates the most probable sequence of tags, and in the majority of cases the correct tag for each individual word corresponds to the associated tag in the most probable sequence of tags&quot; (p. 142).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-But a more detailed examination of the Pascal code for CLAWS revealed that CLAWS has a more complex definition of &quot;most probable sequence&quot; than one might expect.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-A probability called &quot;SUMSUCCPROBS&quot; is predicated of each word.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"SUMSUCCPROBS is calculated by looping through all tags for the words immediately preceding, at, and following a word; for each tag triple, an increment is added, defined by: GetSucc returns the collocational probability of a tag pair; Get3SeqFactor returns either 1, or a special value from the tag-triple list described below.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-DownGrade modifies the value of GetSucc in accordance with RTPs as described below.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The CLAWS documentation describes SUMSUCCPROBS as &quot;the total value of all relationships between the tags associated with this word and the tags associated with the next word.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-[found by] simulating all accesses to SUCCESSORS and ORDER2VALS which will be made.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-".&quot; The probability of each node of the span network (or rather, tree) is then calculated in the following way as a tree representing all paths through which the span network is built: It appears that the goal is to make each tag's probability be the summed probability of all paths passing through it.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"At the final word of a span, pointers are followed back up the chosen path, and tags are chosen en route.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"We will see below that a simpler definition of optimal path is possible; nevertheless, there are several advantages of this general approach over previous ones.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"First, spans of unlimited length can be handled (subject to machine resources).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Although earlier researchers (Klein and Simmons, Greene and Rubin) have suggested that spans of length over 5 are rare enough to be of little concern, this is not the case.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The number of spans of a given length is a function of that length and the corpus size; so long spans may be obtained merely by examining more text.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The total numbers of spans in the Brown Corpus, for each length from 3 to 19, are: 397111, 143447, 60224, 26515, 11409,5128, 2161, 903, 382, 161, 58, 29, 14, 6, 1, 0, 1.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Graphing the logarithms Computational Linguistics, Volume 14, Number 1, Winter 1988 33 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization of these quantities versus the span length for each, produces a near-perfect straight line.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Second, a precise mathematical definition is possible for the fundamental idea of CLAWS.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Whereas earlier efforts were based primarily on ad hoc or subjectively determined sets of rules and descriptions, and employed substantial exception dictionaries, this algorithm requires no human intervention for set-up; it is a systematic process.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Third, the algorithm is quantitative and analog, rather than artificially discrete.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The various tests and frames employed by earlier algorithms enforced absolute constraints on particular tags or collocations of tags.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Here relative probabilities are weighed, and a series of very likely assignments can make possible a particular, a priori unlikely assignment with which they are associated.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"In addition to collocational probabilities, CLAWS also takes into account one other empirical quantity: Tags associated with words.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-". can be associated with a marker @ or %; @ indicates that the tag is infrequently the correct tag for the associated word(s) (less than 1 in 10 occasions), % indicates that it is highly improbable.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-(less than 1 in 100 occasions).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The word disambiguation program currently uses these markers top devalue transition matrix values when retrieving a value from the matrix, @ results in the value being halved, % in the value being divided by eight (Marshall (1983), p. 149).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Thus, the independent probability of each possible tag for a given word influences the choice of an optimal path.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Such probabilities will be referred to as Relative Tag Probabilities, or RTPs.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Other features have been added to the basic algorithm.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"For example, a good deal of suffix analysis is used in initial tagging.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Also, the program filters its output, considering itself to have failed if the optimal tag assignment for a span is not &quot;more than 90% probable&quot;.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-In such cases it reorders tags rather than actually disambiguating.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-On long spans this criterion is effectively more stringent than on short spans.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-A more significant addition to the algorithm is that a number of tag triples associated with a scaling factor have been introduced which may either upgrade or downgrade values in the tree computed from the one-step matrix.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"For example, the triple [1] 'be' [2] adverb [3] past-tense-verb has been assigned a scaling factor which downgrades a sequence containing this triple compared with a competing sequence of [1] 'be' [2] adverb [3]-past-participle/adjective, on the basis that after a form of 'be', past participles and adjectives are more likely than a past tense verb (Marshall (1983), p. 146).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"A similar move was used near conjunctions, for which the words on either side, though separated, are more closely correlated to each other than either is to the conjunction itself (Marshall (1983), pp.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-146-147).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"For example, a verb/noun ambiguity conjoined to a verb should probably be taken as a verb.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Leech, Garside, and Atwell (1983, p. 23) describe &quot;IDIOMTAG&quot;, which is applied after initial tag assignment and before disambiguation.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-It was developed as a means of dealing with idiosyncratic word sequences which would otherwise cause difficulty for the automatic tagging.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-". for example, in order that is tagged as a single conjunction.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The Idiom Tagging Program.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-". can look at any combination of words and tags, with or without intervening words.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"It can delete tags, add tags, or change the probability of tags.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Although this program might seem to be an ad hoc device, it is worth bearing in mind that any fully automatic language analysis system has to come to terms with problems of lexical idiosyncrasy.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"IDIOMTAG also accounts for the fact that the probability of a verb being a past participle, and not simply past, is greater when the following word is &quot;by&quot;, as opposed to other prepositions.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Certain cases of this sort may be soluble by making the collocational matrix distinguish classes of ambiguities—this question is being pursued.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Approximately 1% of running text is tagged by IDIOMTAG (letter, G. N. Leech to Henry Kucera, June 7, 1985; letter, E. S. Atwell to Henry Kucera, June 20, 1985).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Marshall notes the possibility of consulting a complete three-dimensional matrix of collocational probabilities.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Such a matrix would map ordered triples of tags into the relative probability of occurrence of each such triple.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-Marshall points out that such a table would be too large for its probable usefulness.,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-The author has produced a table based upon more than 85% of the Brown Corpus; it occupies about 2 megabytes (uncompressed).,"{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Also, the mean number of examples per triple is very low, thus decreasing accuracy.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"CLAWS has been applied to the entire LOB Corpus with an accuracy of &quot;between 96% and 97%&quot; (Booth (1985), p. 29).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Without the idiom list, the algorithm was 94% accurate on a sample of 15,000 words (Marshall (1983)).","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Thus, the pre-processor tagging of 1% of all tokens resulted in a 3% change in accuracy; those particular assignments must therefore have had a substantial effect upon their context, resulting in changes of two other words for every one explicitly tagged.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"But CLAWS is time- and storage-inefficient in the extreme, and in some cases a fallback algorithm is employed to prevent running out of memory, as was discovered by examining the Pascal program code.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"How often the fallback is employed is not known, nor is it known what effect its use has on overall accuracy.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Since CLAWS calculates the probability of every path, it operates in time and space proportional to the product of all the degrees of ambiguity of the words in the span.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"Thus, the time is exponential (and hence Non-Polynomial) in the span length.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"For the longest span in the Brown Corpus, of length 18, the number of paths examined would be 1,492,992.","{'title': '1 PREVIOUS DISAMBIGUATION ALGORITHMS', 'number': '2'}"
-"The algorithm described here depends on a similar empirically-derived transitional probability matrix to that of CLAWS, and has a similar definition of &quot;optimal path&quot;.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The tagset is larger than TAGGIT's, though smaller than CLAWS', containing 97 tags.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The ultimate assignments of tags are much like those of CLAWS.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"However, it embodies several substantive changes.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Those features that can be algorithmically defined have been used to the fullest extent.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Other add-ons have been minimized.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The major differences are outlined below.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"First, the optimal path is defined to be the one whose component collocations multiply out to the highest probability.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The more complex definition applied by CLAWS, using the sum of all paths at each node of the network, is not used.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Second, VOLSUNGA overcomes the Non-Polynomial complexity of CLAWS.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Because of this change, it is never necessary to resort to a fallback algorithm, and the program is far smaller.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Furthermore, testing the algorithm on extensive texts is not prohibitively costly.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Third, VOLSUNGA implements Relative Tag Probabilities (RTPs) in a more quantitative manner, based upon counts from the Brown Corpus.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Where CLAWS scales probabilities by 1/2 for RTP < 0.1 (i.e., where less than 10% of the tokens for an ambiguous word are in the category in question), and by 1/8 for p < 0.01, VOLSUNGA uses the RTP value itself as a factor in the equation which defines probability.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Fourth, VOLSUNGA uses no tag triples and no idioms.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Because of this, manually constructing specialcase lists is not necessary.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"These methods are useful in certain cases, as the accuracy figures for CLAWS show; but the goal here was to measure the accuracy of a wholly algorithmic tagger on a standard corpus.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Interestingly, if the introduction of idiom tagging were to make as much difference for VOLSUNGA as for CLAWS, we would have an accuracy of 99%.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-This would be an interesting extension.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"I believe that the reasons for VOLSUNGA's 96% accuracy without idiom tagging are (a) the change in definition of &quot;optimal path&quot;, and (b) the increased precision of RTPs.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The difference in tag-set size may also be a factor; but most of the difficult cases are major class differences, such as noun versus verb, rather than the fine distinction which the CLAWS tag-set adds, such as several subtypes of proper noun.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Ongoing research with VOLSUNGA may shed more light on the interaction of these factors.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Last, the current version of VOLSUNGA is designed for use with a complete dictionary (as is the case when working with a known corpus).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Thus, unknown words are handled in a rudimentary fashion.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"This problem has been repeatedly solved via affix analysis, as mentioned above, and is not of substantial interest here.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Since the number of paths over a span is an exponential function of the span length, it may not be obvious how one can guarantee finding the best path, without examining an exponential number of paths (namely all of them).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The insight making fast discovery of the optimal path possible is the use of a Dynamic Programming solution (Dano (1975), Dreyfus and Law (1977)).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The two key ideas of Dynamic Programming have been characterized as &quot;first, the recognition that a given 'whole problem' can be solved if the values of the best solutions of certain subproblems can be determined.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"; and secondly, the realization that if one starts at or near the end of the 'whole problem,' the subproblems are so simple as to have trivial solutions&quot; (Dreyfus and Law (1977), p. 5).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Dynamic Programming is closely related to the study of Graph Theory and of Network Optimization, and can lead to rapid solutions for otherwise intractable problems, given that those problems obey certain structural constraints.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"In this case, the constraints are indeed obeyed, and a linear-time solution is available.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Consider a span of length n = 5, with the words in the path denoted by v, w, x, y, z.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Assume that v and z are the unambiguous bounding words, and that the other three words are each three ways ambiguous.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Subscripts will index the various tags for each word: w1 will denote the first tag in the set of possible tags for word w. Every path must contain v1 and z1, since v and z are unambiguous.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Now consider the partial spans beginning at v, and ending (respectively) at each of the four remaining words.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The partial span network ending at w contains exactly three paths.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-One of these must be a portion of the optimal path for the entire span.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"So we save all three: one path to each tag under w. The probability of each path is the value found in the collocation matrix entry for its tag-pair, namely p(v,wi) for i ranging from one to three.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Next, consider the three tags under word x.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-One of these tags must lie on the optimal path.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Assume it is xl.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Under this assumption, we have a complete span of length 3, for x is unambiguous.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Only one of the paths to xi can be optimal.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Therefore we can disambiguate v. .,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-. w. .,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-". xi under this assumption, namely, as MAX (p(v,wir p(wi,x I)) for all wi.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Now, of course, the assumption that x1 is on the optimal path is unacceptable.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"However, the key to VOLSUNGA is to notice that by making three such independent assumptions, namely for xl, x2, and x3, we exhaust all possible optimal paths.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Only a path which optimally leads to one of x's tags can be part of the optimal path.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Thus, when examining the partial span network ending at word y, we need only consider three possibly optimal paths, namely those leading to x1, x2, and x3, and how those three combine with the tags of y.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"At most one of those three paths can lie along the optimal path to each tag of y; so we have 32, or 9, comparisons.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"But only three paths will survive, namely, the optimal path to each of the three tags under y.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Each of those three is then considered as a potential path to z, and one is chosen.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-This reduces the algorithm from exponential complexity to linear.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The number of paths retained at any stage is the same as the degree of ambiguity at that stage; and this value is bounded by a very small value established by independent facts about the English lexicon.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-No faster order of speed is possible if each word is to be considered at all.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"As an example, we will consider the process by which VOLSUNGA would tag &quot;The man still saw her&quot;.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"We will omit a few ambiguities, reducing the number of paths to 24 for ease of exposition.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The tags for each word are shown in Table 2.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The notation is fairly mnemonic, but it is worth clarifying that PPO indicates an objective personal pronoun, and PP$ the possessive thereof, while VBD is a past-tense verb.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Examples of the various collocational probabilities are illustrated in Table 3 (VOLSUNGA does not actually consider any collocation truly impossible, so zeros are raised to a minimal non-zero value when loaded).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The product of 1*2*3*2*2*1 ambiguities gives 24 paths through this span.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"In this case, a simple process of choosing the best successor for each word in order would produce the correct tagging (AT NN RB VBD PPO).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-But of course this is often not the case.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Using VOLSUNGA's method we would first stack &quot;the&quot;, with certainty for the tag AT (we will denote this by &quot;p(the-AT) = CERTAIN)&quot;).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Next we stack &quot;man&quot;, and look up the collocational probabilities of all tag pairs between the two words at the top of the stack.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"In this case they will be p(AT, NN) = 186, and p(AT, VB) = 1.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-We save the best (in this case only) path to each of man-NN and man-VB.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"It is sufficient to save a pointer to the tag of &quot;the&quot; which ends each of these paths, making backward-linked lists (which, in this case, converge).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Now we stack &quot;still&quot;.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"For each of its tags (NN, VB, and RB), we choose either the NN or the VB tag of &quot;man&quot; as better. p(still-NN) is the best of: p(man-NN) *p(NN,NN) = 186 *40 = 744 p(man-VB) *p(VB,NN) = 1 *22 = 22 Thus, the best path to still-NN is AT NN NN.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Similarly, we find that the best path to still-RB is AT NN RB, and the best path to still-VB is AT NN RB.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-This shows the (realistically) overwhelming effect of an article on disambiguating an immediately following noun/verb ambiguity.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"At this point, only the optimal path to each of the tags for &quot;still&quot; is saved.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"We then go on to match each of those paths with each of the tags for &quot;saw&quot;, discovering the optimal paths to saw-NN and to saw-VB.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The next iteration reveals the optimal paths to her-PPO and her-PP$, and the final one picks the optimal path to the period, which this example treats as unambiguous.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Now we have the best path between two certain tags (AT and .,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"), and can merely pop the stack, following pointers to optimal predecessors to disambiguate the sequence.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The period becomes the start of the next span.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Initial testing of the algorithm used only transitional probability information.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-RTPs had no effect upon choosing an optimal path.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"For example, in deciding whether to consider the word &quot;time&quot; to be a noun or a verb, environments such as a preceding article or proper noun, or a following verb or pronoun, were the sole criteria.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The fact that &quot;time&quot; is almost always a noun (1901 instances in the Brown Corpus) rather than a verb (16 instances) was not considered.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Accuracy averaged 92-93%, with a peak of 93.7%.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-There are clear examples for which the use of RTPs is important.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-One such case which arises in the Brown Corpus is &quot;so that&quot;.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"&quot;So&quot; occurs 932 times as a qualifier (QL), 479 times as a subordinating conjunction (CS), and once as an interjection (UH).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The standard tagging for &quot;so that&quot; is &quot;CS CS&quot;, but this is an extremely low-frequency collocation, lower than the alternative &quot;UH CS&quot; (which is mainly limited to fiction).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Barring strong contextual counter-evidence, &quot;UH CS&quot; is the preferred assignment if RTP information is not used.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"By weighing the RTPs for &quot;so&quot;, however, the &quot;UH&quot; assignment can be avoided.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The LOB Corpus would (via idiom tagging) use &quot;CS CS&quot; in this case, employing a special &quot;ditto tag&quot; to indicate that two separate orthographic words constitute (at least for tagging purposes) a single syntactic word.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Another example would be &quot;so as to&quot;, tagged 'TO TO TO&quot;.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Blackwell comments that &quot;it was difficult to know where to draw the line in defining what constituted an idiom, and some such decisions seemed to have been influenced by semantic factors.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Nonetheless, IDIOMTAG had played a significant part in increasing the accuracy of the Tagging Suite [i.e., CLAWS].","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-".&quot; (Blackwell (1985), p. 7).","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-It may be better to treat this class of &quot;idioms&quot; as lexical items which happen to contain blanks; but RTPs permit correct tagging in some of these cases.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The main difficulty in using RTPs is determining how heavily to weigh them relative to collocational information.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"At first, VOLSUNGA multiplied raw relative frequencies into the path probability calculations; but the ratios were so high in some cases as to totally swamp collocational data.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Thus, normalization is required.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The present solution is a simple one; all ratios over a fixed limit are truncated to that limit.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Implementing RTPs increased accuracy by approximately 4%, to the range 95-97%, with a peak of 97.5% on one small sample.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Thus, about half of the residual errors were eliminated.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-It is likely that tuning the normalization would improve this figure slightly more.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"VOLSUNGA was not designed with psychological reality as a goal, though it has some plausible characteristics.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-We will consider a few of these briefly.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-This section should not be interpreted as more than suggestive.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"First, consider dictionary learning; the program currently assumes that a full dictionary is available.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"This assumption is nearly true for mature language users, but humans have little trouble even with novel lexical items, and generally speak of &quot;context&quot; when asked to describe how they figure out such words.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"As Ryder and Walker (1982) note, the use of structural analysis based on contextual clues allows speakers to compute syntactic structures even for a text such as Jabberwocky, where lexical information is clearly insufficient.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The immediate syntactic context severely restricts the likely choices for the grammatical category of each neologism.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"VOLSUNGA can perform much the same task via a minor modification, even if a suffix analysis fails.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The most obvious solution is simply to assign all tags to the unknown word and find the optimal path through the containing span as usual.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Since the algorithm is fast, this is not prohibitive.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Better, one can assign only those tags with a non-minimal probability of being adjacent to the possible tags of neighboring words.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Precisely calculating the mean number of tags remaining under this approach is left as a question for further research, but the number is certainly very low.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-About 3900 of the 9409 theoretically possible tag pairs occur in the Brown Corpus.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Also, all tags marking closed classes (about two-thirds of all tags) may be eliminated from consideration.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Also, since VOLSUNGA operates from left to right, it can always decide upon an optimum partial result, and can predict a set of probable successors.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"For these reasons, it is largely robust against ungrammaticality.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Shannon (1951) performed experiments of a similar sort, asking human subjects to predict the next character of a partially presented sentence.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The accuracy of their predictions increased with the length of the sentence fragment presented.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"The fact that VOLSUNGA requires a great deal of persistent memory for its dictionary, yet very little temporary space for processing, is appropriate.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"By contrast, the space requirements of CLAWS would overtax the short-term memory of any language user.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Another advantage of VOLSUNGA is that it requires little inherent linguistic knowledge.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-Probabilities may be acquired simply through counting instances of collocation.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-The results will increase in accuracy as more input text is seen.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Previous algorithms, on the other hand, have included extensive manually generated lists of rules or exceptions.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-An obvious difference between VOLSUNGA and humans is that VOLSUNGA makes no use whatsoever of semantic information.,"{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"No account is taken of the high probability that in a text about carpentry, &quot;saw&quot; is more likely a noun than in other types of text.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"There may also be genre and topic-dependent influences upon the frequencies of various syntactic, and hence categorial, structures.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-"Before such factors can be incorporated into VOLSUNGA, however, more complete dictionaries, including semantic information of at least a rudimentary kind, must be available.","{'title': '2 THE LINEAR-TIME ALGORITHM (VOLSUNGA)', 'number': '3'}"
-VOLSUNGA requires a tagged corpus upon which to base its tables of probabilities.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-The calculation of transitional probabilities is described by Marshall (1983).,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-The entire Brown Corpus (modified by the expansion of contracted forms) was analyzed in order to produce the tables used in VOLSUNGA.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-A complete dictionary was therefore available when running the program on that same corpus.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"Since the statistics comprising the dictionary and probability matrix used by the program were derived from the same corpus analyzed, the results may be considered optimal.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"On the other hand, the Corpus is comprehensive enough so that use of other input text is unlikely to introduce statistically significant changes in the program's performance.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"This is especially true because many of the unknown words would be (a) capitalized proper names, for which tag assignment is trivial modulo a small percentage at sentence boundaries, or (b) regular formations from existing words, which are readily identified by suffixes.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-Greene and Rubin (1971) note that their suffix list &quot;consists mainly of Romance endings which are the source of continuing additions to the language&quot; (p. 41).,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"A natural relationship exists between the size of a dictionary, and the percentage of words in an average text which it accounts for.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-A complete table showing the relationship appears in Kucera and Francis (1967) pp.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-300-307.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-A few representative entries are shown in Table 4.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-The &quot;#Types&quot; column indicates how many vocabulary items occur at least &quot;Freq Limit&quot; times in the Corpus.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"The &quot;#Tokens&quot; column shows how many tokens are accounted for by those types, and the &quot;%Tokens&quot; column converts this number to a percentage.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-(See also pp.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-358-362 in the same volume for several related graphs.),"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-Table 5 lists the accuracy for each genre from the Brown Corpus.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"The total token count differs from Table 4 due to inclusion of non-lexical tokens, such as punctuation.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"The figure shown deducts from the error count those particular instances in which the Corpus tag indicates by an affix that the word is part of a headline, title, etc.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"Since the syntax of such structures is often deviant, such errors are less significant.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-"The difference this makes ranges from 0.09% (Genre L), up to 0.64% (Genre A), with an unweighted mean of 0.31%.","{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-Detailed breakdowns of the particular errors made for each genre exist in machine-readable form.,"{'title': '3 ACCURACY ANALYSIS:', 'number': '4'}"
-The high degree of lexical category ambiguity in languages such as English poses problems for parsing.,"{'title': '4 CONCLUSION', 'number': '5'}"
-"Specifically, until the categories of individual words have been established, it is difficult to construct a unique and accurate syntactic structure.","{'title': '4 CONCLUSION', 'number': '5'}"
-"Therefore, a method for locally disambiguating lexical items has been developed.","{'title': '4 CONCLUSION', 'number': '5'}"
-Early efforts to solve this problem relied upon large libraries of manually chosen context frame rules.,"{'title': '4 CONCLUSION', 'number': '5'}"
-"More recently, however, work on the LOB Corpus of British English led to a more systematic algorithm based upon combinatorial statistics.","{'title': '4 CONCLUSION', 'number': '5'}"
-"This algorithm operates entirely from left to right, and has no inherent limit upon the number of consecutive ambiguities which may be processed.","{'title': '4 CONCLUSION', 'number': '5'}"
-Its authors report an accuracy of 96-97%.,"{'title': '4 CONCLUSION', 'number': '5'}"
-"However, CLAWS falls prey to other problems.","{'title': '4 CONCLUSION', 'number': '5'}"
-"First, the probabilistic system has been augmented in several ways, such as by pre-tagging of categorially troublesome &quot;idioms&quot; (this feature contributes 3% towards the total accuracy).","{'title': '4 CONCLUSION', 'number': '5'}"
-"Second, it was not based upon the most complete statistics available.","{'title': '4 CONCLUSION', 'number': '5'}"
-"Third, and perhaps most significant, it requires non-polynomially large time and space.","{'title': '4 CONCLUSION', 'number': '5'}"
-"The algorithm developed here, called VOLSUNGA, addresses these problems.","{'title': '4 CONCLUSION', 'number': '5'}"
-"First, the various additions to CLAWS (i.e., beyond the use of two-place probabilities and RTPs) have been deleted.","{'title': '4 CONCLUSION', 'number': '5'}"
-"Second, the program has been calibrated by reference to 100% instead of 20% of the Brown Corpus, and has been applied to the entire Corpus for testing.","{'title': '4 CONCLUSION', 'number': '5'}"
-This is a particularly important test because the Brown Corpus provides a long-established standard against which accuracy can be measured.,"{'title': '4 CONCLUSION', 'number': '5'}"
-"Third, the algorithm has been completely redesigned so that it establishes the optimal tag assignments in linear time, as opposed to exponential.","{'title': '4 CONCLUSION', 'number': '5'}"
-"Tests on the one million words of the Brown Corpus show an overall accuracy of approximately 96%, despite the non-use of auxiliary algorithms.","{'title': '4 CONCLUSION', 'number': '5'}"
-Suggestions have been given for several possible modifications which might yield even higher accuracies.,"{'title': '4 CONCLUSION', 'number': '5'}"
-The accuracy and speed of VOLSUNGA make it suitable for use in pre-processing natural language input to parsers and other language understanding systems.,"{'title': '4 CONCLUSION', 'number': '5'}"
-Its systematicity makes it suitable also for work in computational studies of language learning.,"{'title': '4 CONCLUSION', 'number': '5'}"
+three previous efforts directed specifically to this problem.,Introduction
+"The first published effort is that of Klein and Simmons (1963), a simple system using suffix lists and limited frame rules.",Introduction
+"The second approach to lexical disambiguation is and Rubin (1971)), a system of several thousand context-frame rules.",Introduction
+This algorithm was used to assign initial tags to the Brown Corpus.,Introduction
+"Third is the CLAWS system develto tag the (or LOB) Coris a corpus of British written English, parallel to the Brown Corpus.",Introduction
+"Parsing systems always encounter the problem of category ambiguity; but usually the focus of such systems is at other levels, making their responses less relevant for our purposes here.",Introduction
+1.1 KLEIN AND SIMMONS Klein and Simmons (1963) describe a method directed primarily towards the task of initial categorial tagging rather than disambiguation.,Introduction
+Its primary goal is avoiding &quot;the labor of constructing a very large dictionary&quot; (p. 335); a consideration of greater import then than now.,Introduction
+"The Klein and Simmons algorithm uses a palette of 30 categories, and claims an accuracy of 90% in tagging.",Introduction
+"The algorithm first seeks each word in dictionaries of about 400 function words, and of about 1500 words which &quot;are exceptions to the computational rules used&quot; (p. 339).",Introduction
+"The program then checks for suffixes and special characters as clues. of all, frame tests applied.",Introduction
+"These work on scopes bounded by unambiguous words, as do later algorithms.",Introduction
+"However, Klein and Simmons impose an explicit limit of three ambiguous words in a row.",Introduction
+"For such ambiguous words, the pair of unambiguous categories bounding it is mapped into a list.",Introduction
+The list includes all known sequences of tags occurring between the particular bounding tags; all such sequences of the correct length become candidates.,Introduction
+The program then matches the candidate sequences against the ambiguities remaining from earlier steps of the algorithm.,Introduction
+"When only one sequence is possible, disambiguation is successful.",Introduction
+The samples used for calibration and testing were limited.,Introduction
+"First, Klein and Simmons (1963) performed &quot;hand analysis of a sample [size unspecified] of Golden Grammatical Category Disambiguation by Statistical Optimization Book Encyclopedia text&quot; (p. 342).",Introduction
+"Later, &quot;[w]hen it was run on several pages from that encyclopedia, it correctly and unambiguously tagged slightly over 90% of the words&quot; (p. 344).",Introduction
+Further tests were run on small from the Americana from Scientific American.,Introduction
+Klein and Simmons (1963) assert that &quot;[o]riginal fears that sequences of four or more unidentified parts of speech would occur with great frequency were not substantiated in fact&quot; (p. 3).,Introduction
+"This felicity, however, is an artifact.",Introduction
+"First, the relatively small set of categories reduces ambiguity.",Introduction
+"Second, a larger sample would reveal both (a) low-frequency ambiguities and (b) many long spans, as discussed below.",Introduction
+1.2 GREENE AND RUBIN (TAGGIT) Greene and Rubin (1971) developed TAGGIT for tagging the Brown Corpus.,Introduction
+"The palette of 86 tags that TAGGIT uses has, with some modifications, also been used in both CLAWS and VOLSUNGA.",Introduction
+The rationale underlying the choice of tags is described on pages 3-21 of Greene and Rubin (1971).,Introduction
+Francis and Kucera (1982) report that this algorithm correctly tagged approxithe million words in the Brown Corpus (the tagging was then completed by human post-editors).,Introduction
+"Although this accuracy is substantially lower than that reported by Klein and Simmons, it should be remembered that Greene and Rubin were the first to attempt so large and varied a sample.",Introduction
+"TAGGIT divides the task of category assignment into initial (potentially ambiguous) tagging, and disambiguation.",Introduction
+"Tagging is carried out as follows: first, the program consults an exception dictionary of about 3,000 words.",Introduction
+"Among other items, this contains all known closed-class words.",Introduction
+"It then handles various special cases, such as words with initial &quot;$&quot;, contractions, special symbols, and capitalized words.",Introduction
+The word's ending is then checked against a suffix list of about 450 strings.,Introduction
+The lists were derived from lexicostatistics of the Brown Corpus.,Introduction
+"If TAGGIT has not assigned some tag(s) after these several steps, &quot;the word is tagged NN, VB, or JJ [that is, as being three-ways ambiguous], in order that the disambiguation routine may have something to work with&quot; (Greene and Rubin (1971), p. 25).",Introduction
+"After tagging, TAGGIT applies a set of 3300 context frame rules.",Introduction
+"Each rule, when its context is satisfied, has the effect of deleting one or more candidates from the list of possible tags for one word.",Introduction
+"If the number of candidates is reduced to one, disambiguation is considered successful subject to human post-editing.",Introduction
+Each rule can include a scope of up to two unambiguous words on each side of the ambiguous word to which the rule is being applied.,Introduction
+"This constraint was determined as follows: In order to create the original inventory of Context Frame Tests, a 900-sentence subset of the Brown University Corpus was tagged.",Introduction
+.,Introduction
+". and its ambiguities were resolved manually; then a program was run 32 Computational Linguistics, Volume 14, Number 1, Winter 1988 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization which produced and sorted all possible Context Frame Rules which would have been necessary to perform this disambiguation automatically.",Introduction
+The rules generated were able to handle up to three consecutive ambiguous words preceded and followed by two non-ambiguous words [a constraint similar to Klein and Simmons'].,Introduction
+"However, upon examination of these rules, it was found that a sequence of two or three ambiguities rarely occurred more than once in a given context.",Introduction
+"Consequently, a decision was made to examine only one ambiguity at a time with up to two unambiguously tagged words on either side.",Introduction
+"The first rules created were the results of informed intuition (Greene and Rubin (1972), p. 32).",Introduction
+"1.3 CLAWS Marshall (1983, p. 139) describes the LOB Corpus tagging algorithm, later named CLAWS (Booth (1985)), as &quot;similar to those employed in the TAGGIT program&quot;.",Introduction
+"The tag set used is very similar, but somewhat larger, at about 130 tags.",Introduction
+"The dictionary used is derived from the tagged Brown Corpus, rather than from the untagged.",Introduction
+"It contains 7000 rather than 3000 entries, and 700 rather than 450 suffixes.",Introduction
+"CLAWS treats plural, possessive, and hyphenated words as special cases for purposes of initial tagging.",Introduction
+The LOB researchers began by using TAGGIT on parts of the LOB Corpus.,Introduction
+They noticed that While less than 25% of TAGGIT's context frame rules are concerned with only the immediately preceding or succeeding word.,Introduction
+.,Introduction
+. these rules were applied in about 80% of all attempts to apply rules.,Introduction
+"This relative overuse of minimally specified contexts indicated that exploitation of the relationship between successive tags, coupled with a mechanism that would be applied throughout a sequence of ambiguous words, would produce a more accurate and effective method of word disambiguation (Marshall (1983), p. 141).",Introduction
+"The main innovation of CLAWS is the use of a matrix probabilities, the relative likelihood of co-occurrence of all ordered pairs of tags.",Introduction
+This matrix can be mechanically derived from any pre-tagged corpus.,Introduction
+"CLAWS used &quot;[a] large proportion of the Brown Corpus&quot;, 200,000 words (Marshall (1983), pp.",Introduction
+"141, 150).",Introduction
+The ambiguities contained within a span of ambiguous words define a precise number of complete sets of mappings from words to individual tags.,Introduction
+"Each such of tags is called a path is composed of a number of tag collocations, and each such collocation has a probability which may be obtained from the collocation matrix.",Introduction
+One may thus approximate each path's probability by the product of the probabilities of all its collocations.,Introduction
+"Each path corresponds to a unique assignment of tags to all words within a span. paths constitute a network, the path of maximal probability may be taken to contain the &quot;best&quot; tags.",Introduction
+"(1983) states that CLAWS the most probable sequence of tags, and in the majority of cases the correct tag for each individual word corresponds to the associated tag in the most probable sequence of tags&quot; (p. 142).",Introduction
+But a more detailed examination of the Pascal code for CLAWS revealed that CLAWS has a more complex definition of &quot;most probable sequence&quot; than one might expect.,Introduction
+A probability called &quot;SUMSUCCPROBS&quot; is predicated of each word.,Introduction
+"SUMSUCCPROBS is calculated by looping through all tags for the words immediately preceding, at, and following a word; for each tag triple, an increment is added, defined by: DownGrade(GetSucc(Tag2, Tag3), TagMark) * Get3SeqFactor(Tag1, Tag2, Tag3) the collocational probability of a tag either 1, or a special value the tag-triple list described below. the value of accordance with RTPs as described below.",Introduction
+The CLAWS documentation describes SUMSUCC- PROBS as &quot;the total value of all relationships between the tags associated with this word and the tags associated with the next word.,Introduction
+.,Introduction
+.,Introduction
+[found by] simulating all accesses to SUCCESSORS and ORDER2VALS which will be made.,Introduction
+.,Introduction
+.,Introduction
+".&quot; The probability of each node of the span network (or rather, tree) is then calculated in the following way as a tree representing all paths through which the span network is built: = currenttag), TagMark) * Get3SeqFactor(.",Introduction
+.,Introduction
+.)),Introduction
+= PROB * (predecessor's It appears that the goal is to make each tag's probabe the summed probability of passing through it.,Introduction
+"At the final word of a span, pointers are followed back up the chosen path, and tags are chosen en route.",Introduction
+"We will see below that a simpler definition of optimal path is possible; nevertheless, there are several advantages of this general approach over previous ones.",Introduction
+"First, spans of unlimited length can be handled (subject to machine resources).",Introduction
+"Although earlier researchers (Klein and Simmons, Greene and Rubin) have suggested that spans of length over 5 are rare enough to be of little concern, this is not the case.",Introduction
+The number of spans of a given length is a function of that length and the corpus size; so long spans may be obtained merely by examining more text.,Introduction
+"The total numbers of spans in the Brown Corpus, for each length from 3 to 19, are: 397111, 143447, 60224, 26515, 11409,5128, 2161, 903, 382, 161, 58, 29, 14, 6, 1, 0, 1.",Introduction
+"Graphing the logarithms Computational Linguistics, Volume 14, Number 1, Winter 1988 33 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization of these quantities versus the span length for each, produces a near-perfect straight line.",Introduction
+"Second, a precise mathematical definition is possible for the fundamental idea of CLAWS.",Introduction
+"Whereas earlier efforts were based primarily on ad hoc or subjectively determined sets of rules and descriptions, and employed substantial exception dictionaries, this algorithm requires no human intervention for set-up; it is a systematic process.",Introduction
+"Third, the algorithm is quantitative and analog, rather than artificially discrete.",Introduction
+The various tests and employed by earlier algorithms enforced absolute constraints on particular tags or collocations of tags.,Introduction
+"Here relative probabilities are weighed, and a series of very likely assignments can make possible a particular, a priori unlikely assignment with which they are associated.",Introduction
+"In addition to collocational probabilities, CLAWS also takes into account one other empirical quantity: Tags associated with words.",Introduction
+.,Introduction
+". can be with a marker @ or %; @ indicates that the tag is infrequently the correct tag for the associated word(s) (less than 1 in 10 occasions), % indicates is highly improbable.",Introduction
+.,Introduction
+.,Introduction
+(less than 1 in 100 oc- .,Introduction
+.,Introduction
+.,Introduction
+"The word disambiguation program currently uses these markers top devalue values when retrieving a value from the matrix, @ results in the value being halved, % in the value being divided by eight (Marshall (1983), p. 149).",Introduction
+"Thus, the independent probability of each possible tag for a given word influences the choice of an optimal Such probabilities will be referred to as Probabilities, Other features have been added to the basic algorithm.",Introduction
+"For example, a good deal of suffix analysis is used in initial tagging.",Introduction
+"Also, the program filters its output, considering itself to have failed if the optimal tag assignment for a span is not &quot;more than 90% probable&quot;. cases it reorders tags rather than actually disambiguating.",Introduction
+On long spans this criterion is effectively more stringent than on short spans.,Introduction
+A more significant addition to the algorithm is that a number of tag triples associated with a have been introduced which may either upgrade or downgrade values in the tree computed from the one-step matrix.,Introduction
+"For example, the triple [1] [2] adverb [3] past-tense-verb has been assigned a factor which downgrades a sequence containing this triple compared with a competing of [1] 'be' [2] adverb [3]-past-participle/adjective, on the basis that after a form of 'be', past participles and adjectives are more likely than a past tense verb (Marshall (1983), p. 146).",Introduction
+"A similar move was used near conjunctions, for which the words on either side, though separated, are more closely correlated to each other than either is to the conjunction itself (Marshall (1983), pp.",Introduction
+146-147).,Introduction
+"For example, a verb/noun ambiguity conjoined to a verb should probably be taken as a verb.",Introduction
+"Leech, Garside, and Atwell (1983, p. 23) describe &quot;IDIOMTAG&quot;, which is applied after initial tag assignment and before disambiguation.",Introduction
+It was developed as a means of dealing with sequences which would otherwise cause diffifor the automatic tagging.,Introduction
+.,Introduction
+.,Introduction
+". for example, that tagged as a single conjunction.",Introduction
+.,Introduction
+.,Introduction
+.,Introduction
+Tagging Program.,Introduction
+.,Introduction
+". can look at any combination of words and tags, with or without intervening words.",Introduction
+"It can delete tags, add tags, or change the probability of tags.",Introduction
+Although this program might to be an hoc it is worth bearing in that any fully automatic language analysis syshas to come to with problems of lexical idiosyncrasy.,Introduction
+"IDIOMTAG also accounts for the fact that the probability of a verb being a past participle, and not simply past, is greater when the following word is &quot;by&quot;, as opposed to other prepositions.",Introduction
+Certain cases of this sort may be soluble by making the collocational matrix distinguish classes of ambiguities—this question is being pursued.,Introduction
+"Approximately 1% of running text is tagged by IDIOMTAG (letter, G. N. Leech to Henry Kucera, June 7, 1985; letter, E. S. Atwell to Henry Kucera, June 20, 1985).",Introduction
+Marshall notes the possibility of consulting a complete three-dimensional matrix of collocational probabilities.,Introduction
+Such a matrix would map ordered triples of tags into the relative probability of occurrence of each such triple.,Introduction
+Marshall points out that such a table would be too large for its probable usefulness.,Introduction
+The author has proa table based upon more 85% of the Brown Corpus; it occupies about 2 megabytes (uncompressed).,Introduction
+"Also, the mean number of examples per triple is very low, thus decreasing accuracy.",Introduction
+"CLAWS has been applied to the entire LOB Corpus with an accuracy of &quot;between 96% and 97%&quot; (Booth (1985), p. 29).",Introduction
+"Without the idiom list, the algorithm was 94% accurate on a sample of 15,000 words (Marshall (1983)).",Introduction
+"Thus, the pre-processor tagging of 1% of all tokens resulted in a 3% change in accuracy; those particular assignments must therefore have had a substantial effect upon their context, resulting in changes of two other words for every one explicitly tagged.",Introduction
+"But CLAWS is timeand storage-inefficient in the extreme, and in some cases a fallback algorithm is employed to prevent running out of memory, as was discovered by examining the Pascal program code.",Introduction
+"How often the fallback is employed is not known, nor is it known what effect its use has on overall accuracy.",Introduction
+"Since CLAWS calculates the probability of every path, it operates in time and space proportional to the product of all the degrees of ambiguity of the words in the span.",Introduction
+"Thus, the time is exponential (and hence Non-Polynomial) in the span length.",Introduction
+"For the longest span in the Brown Corpus, of length 18, the number of paths examined would be 1,492,992.",Introduction
+"34 Computational Linguistics, Volume 14, Number 1, Winter 1988 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization LINEAR-TIME ALGORITHM The algorithm described here depends on a similar empirically-derived transitional probability matrix to that of CLAWS, and has a similar definition of &quot;optimal path&quot;.",Introduction
+"The tagset is larger than TAGGIT's, though smaller than CLAWS', containing 97 tags.",Introduction
+The ultimate assignments of tags are much like those of CLAWS.,Introduction
+"However, it embodies several substantive changes.",Introduction
+Those features that can be algorithmically defined have been used to the fullest extent.,Introduction
+Other add-ons have been minimized.,Introduction
+The major differences are outlined below.,Introduction
+"First, the optimal path is defined to be the one whose component collocations multiply out to the highest probability.",Introduction
+"The more complex definition applied by using the sum of all paths at of the network, is not used.",Introduction
+"Second, VOLSUNGA overcomes the Non-Polynomial complexity of CLAWS.",Introduction
+"Because of this change, it is never necessary to resort to a fallback algorithm, and the program is far smaller.",Introduction
+"Furthermore, testing the algorithm on extensive texts is not prohibitively costly.",Introduction
+"Third, VOLSUNGA implements Relative Tag Probabilities (RTPs) in a more quantitative manner, based upon counts from the Brown Corpus.",Introduction
+"Where CLAWS scales probabilities by 1/2 for RTP < 0.1 (i.e., where less than 10% of the tokens for an ambiguous word are in the category in question), and by 1/8 for p < 0.01, VOLSUNGA uses the RTP value itself as a factor in the equation which defines probability.",Introduction
+"Fourth, VOLSUNGA uses no tag triples and no idioms.",Introduction
+"Because of this, manually constructing specialcase lists is not necessary.",Introduction
+"These methods are useful in certain cases, as the accuracy figures for CLAWS show; but the goal here was to measure the accuracy of a wholly algorithmic tagger on a standard corpus.",Introduction
+"Brown University and the Summer Institute of Linguistics, 7500 W. Camp Wisdom Road, Dallas, TX 75236 Several algorithms have been developed in the past that attempt to resolve categorial ambiguities in natural language text without recourse to syntactic or semantic level information.",Experiment/Discussion
+An innovative method (called &quot;CLAWS&quot;) was recently developed by those working with the Lancaster —Oslo/Bergen Corpus of British English.,Experiment/Discussion
+This algorithm uses a systematic calculation based upon the probabilities of co-occurrence of particular tags.,Experiment/Discussion
+"Its accuracy is high, but it is very slow, and it has been manually augmented in a number of ways.",Experiment/Discussion
+The effects upon accuracy of this manual augmentation are not individually known.,Experiment/Discussion
+"The current paper presents an algorithm for disambiguation that is similar to CLAWS but that operates in linear rather than in exponential time and space, and which minimizes the unsystematic augments.",Experiment/Discussion
+Tests of the algorithm using the million words of the Brown Standard Corpus of English are reported; the overall accuracy is 96%.,Experiment/Discussion
+This algorithm can provide a fast and accurate front end to any parsing or natural language processing system for English.,Experiment/Discussion
+"Every computer system that accepts natural language input must, if it is to derive adequate representations, decide upon the grammatical category of each input word.",Experiment/Discussion
+"In English and many other languages, tokens are frequently ambiguous.",Experiment/Discussion
+"They may represent lexical items of different categories, depending upon their syntactic and semantic context.",Experiment/Discussion
+Several algorithms have been developed that examine a prose text and decide upon one of the several possible categories for a given word.,Experiment/Discussion
+"Our focus will be on algorithms which specifically address this task of disambiguation, and particularly on a new algorithm called VOLSUNGA, which avoids syntactic-level analysis, yields about 96% accuracy, and runs in far less time and space than previous attempts.",Experiment/Discussion
+"The most recent previous algorithm runs in NP (Non-Polynomial) time, while VOLSUNGA runs in linear time.",Experiment/Discussion
+This is provably optimal; no improvements in the order of its execution time and space are possible.,Experiment/Discussion
+VOLSUNGA is also robust in cases of ungrammaticality.,Experiment/Discussion
+"Improvements to this accuracy may be made, perhaps the most potentially significant being to include some higher-level information.",Experiment/Discussion
+"With such additions, the accuracy of statistically-based algorithms will approach 100%; and the few remaining cases may be largely those with which humans also find difficulty.",Experiment/Discussion
+In subsequent sections we examine several disambiguation algorithms.,Experiment/Discussion
+"Their techniques, accuracies, and efficiencies are analyzed.",Experiment/Discussion
+"After presenting the research carried out to date, a discussion of VOLSUNGA' s application to the Brown Corpus will follow.",Experiment/Discussion
+"The Brown Corpus, described in Kucera and Francis (1967), is a collection of 500 carefully distributed samples of English text, totalling just over one million words.",Experiment/Discussion
+It has been used as a standard sample in many studies of English.,Experiment/Discussion
+"Generous advice, encouragement, and assistance from Henry Kucera and W. Nelson Francis in this research is gratefully acknowledged.",Experiment/Discussion
+"The problem of lexical category ambiguity has been little examined in the literature of computational linguistics and artificial intelligence, though it pervades English to an astonishing degree.",Experiment/Discussion
+"About 11.5% of types (vocabulary), and over 40% of tokens (running words) in English prose are categorically ambiguous (as measured via the Brown Corpus).",Experiment/Discussion
+The vocabulary breaks down as shown in Table 1 (derived from Francis and Kucera (1982)).,Experiment/Discussion
+A search of the relevant literature has revealed only three previous efforts directed specifically to this problem.,Experiment/Discussion
+"The first published effort is that of Klein and Simmons (1963), a simple system using suffix lists and limited frame rules.",Experiment/Discussion
+"The second approach to lexical category disambiguation is TAGGIT (Greene and Rubin (1971)), a system of several thousand context-frame rules.",Experiment/Discussion
+This algorithm was used to assign initial tags to the Brown Corpus.,Experiment/Discussion
+Third is the CLAWS system developed to tag the Lancaster —Oslo/Bergen (or LOB) Corpus.,Experiment/Discussion
+"This is a corpus of British written English, parallel to the Brown Corpus.",Experiment/Discussion
+"Parsing systems always encounter the problem of category ambiguity; but usually the focus of such systems is at other levels, making their responses less relevant for our purposes here.",Experiment/Discussion
+Klein and Simmons (1963) describe a method directed primarily towards the task of initial categorial tagging rather than disambiguation.,Experiment/Discussion
+Its primary goal is avoiding &quot;the labor of constructing a very large dictionary&quot; (p. 335); a consideration of greater import then than now.,Experiment/Discussion
+"The Klein and Simmons algorithm uses a palette of 30 categories, and claims an accuracy of 90% in tagging.",Experiment/Discussion
+"The algorithm first seeks each word in dictionaries of about 400 function words, and of about 1500 words which &quot;are exceptions to the computational rules used&quot; (p. 339).",Experiment/Discussion
+The program then checks for suffixes and special characters as clues.,Experiment/Discussion
+"Last of all, context frame tests are applied.",Experiment/Discussion
+"These work on scopes bounded by unambiguous words, as do later algorithms.",Experiment/Discussion
+"However, Klein and Simmons impose an explicit limit of three ambiguous words in a row.",Experiment/Discussion
+"For each such span of ambiguous words, the pair of unambiguous categories bounding it is mapped into a list.",Experiment/Discussion
+The list includes all known sequences of tags occurring between the particular bounding tags; all such sequences of the correct length become candidates.,Experiment/Discussion
+The program then matches the candidate sequences against the ambiguities remaining from earlier steps of the algorithm.,Experiment/Discussion
+"When only one sequence is possible, disambiguation is successful.",Experiment/Discussion
+The samples used for calibration and testing were limited.,Experiment/Discussion
+"First, Klein and Simmons (1963) performed &quot;hand analysis of a sample [size unspecified] of Golden Book Encyclopedia text&quot; (p. 342).",Experiment/Discussion
+"Later, &quot;[w]hen it was run on several pages from that encyclopedia, it correctly and unambiguously tagged slightly over 90% of the words&quot; (p. 344).",Experiment/Discussion
+Further tests were run on small samples from the Encyclopedia Americana and from Scientific American.,Experiment/Discussion
+Klein and Simmons (1963) assert that &quot;[o]riginal fears that sequences of four or more unidentified parts of speech would occur with great frequency were not substantiated in fact&quot; (p. 3).,Experiment/Discussion
+"This felicity, however, is an artifact.",Experiment/Discussion
+"First, the relatively small set of categories reduces ambiguity.",Experiment/Discussion
+"Second, a larger sample would reveal both (a) low-frequency ambiguities and (b) many long spans, as discussed below.",Experiment/Discussion
+Greene and Rubin (1971) developed TAGGIT for tagging the Brown Corpus.,Experiment/Discussion
+"The palette of 86 tags that TAGGIT uses has, with some modifications, also been used in both CLAWS and VOLSUNGA.",Experiment/Discussion
+The rationale underlying the choice of tags is described on pages 3-21 of Greene and Rubin (1971).,Experiment/Discussion
+Francis and Kucera (1982) report that this algorithm correctly tagged approximately 77% of the million words in the Brown Corpus (the tagging was then completed by human post-editors).,Experiment/Discussion
+"Although this accuracy is substantially lower than that reported by Klein and Simmons, it should be remembered that Greene and Rubin were the first to attempt so large and varied a sample.",Experiment/Discussion
+"TAGGIT divides the task of category assignment into initial (potentially ambiguous) tagging, and disambiguation.",Experiment/Discussion
+"Tagging is carried out as follows: first, the program consults an exception dictionary of about 3,000 words.",Experiment/Discussion
+"Among other items, this contains all known closed-class words.",Experiment/Discussion
+"It then handles various special cases, such as words with initial &quot;$&quot;, contractions, special symbols, and capitalized words.",Experiment/Discussion
+The word's ending is then checked against a suffix list of about 450 strings.,Experiment/Discussion
+The lists were derived from lexicostatistics of the Brown Corpus.,Experiment/Discussion
+"If TAGGIT has not assigned some tag(s) after these several steps, &quot;the word is tagged NN, VB, or JJ [that is, as being three-ways ambiguous], in order that the disambiguation routine may have something to work with&quot; (Greene and Rubin (1971), p. 25).",Experiment/Discussion
+"After tagging, TAGGIT applies a set of 3300 context frame rules.",Experiment/Discussion
+"Each rule, when its context is satisfied, has the effect of deleting one or more candidates from the list of possible tags for one word.",Experiment/Discussion
+"If the number of candidates is reduced to one, disambiguation is considered successful subject to human post-editing.",Experiment/Discussion
+Each rule can include a scope of up to two unambiguous words on each side of the ambiguous word to which the rule is being applied.,Experiment/Discussion
+"This constraint was determined as follows: In order to create the original inventory of Context Frame Tests, a 900-sentence subset of the Brown University Corpus was tagged.",Experiment/Discussion
+.,Experiment/Discussion
+. and its ambiguities were resolved manually; then a program was run which produced and sorted all possible Context Frame Rules which would have been necessary to perform this disambiguation automatically.,Experiment/Discussion
+The rules generated were able to handle up to three consecutive ambiguous words preceded and followed by two non-ambiguous words [a constraint similar to Klein and Simmons'].,Experiment/Discussion
+"However, upon examination of these rules, it was found that a sequence of two or three ambiguities rarely occurred more than once in a given context.",Experiment/Discussion
+"Consequently, a decision was made to examine only one ambiguity at a time with up to two unambiguously tagged words on either side.",Experiment/Discussion
+"The first rules created were the results of informed intuition (Greene and Rubin (1972), p. 32).",Experiment/Discussion
+"Marshall (1983, p. 139) describes the LOB Corpus tagging algorithm, later named CLAWS (Booth (1985)), as &quot;similar to those employed in the TAGGIT program&quot;.",Experiment/Discussion
+"The tag set used is very similar, but somewhat larger, at about 130 tags.",Experiment/Discussion
+"The dictionary used is derived from the tagged Brown Corpus, rather than from the untagged.",Experiment/Discussion
+"It contains 7000 rather than 3000 entries, and 700 rather than 450 suffixes.",Experiment/Discussion
+"CLAWS treats plural, possessive, and hyphenated words as special cases for purposes of initial tagging.",Experiment/Discussion
+The LOB researchers began by using TAGGIT on parts of the LOB Corpus.,Experiment/Discussion
+They noticed that While less than 25% of TAGGIT's context frame rules are concerned with only the immediately preceding or succeeding word.,Experiment/Discussion
+.,Experiment/Discussion
+. these rules were applied in about 80% of all attempts to apply rules.,Experiment/Discussion
+"This relative overuse of minimally specified contexts indicated that exploitation of the relationship between successive tags, coupled with a mechanism that would be applied throughout a sequence of ambiguous words, would produce a more accurate and effective method of word disambiguation (Marshall (1983), p. 141).",Experiment/Discussion
+"The main innovation of CLAWS is the use of a matrix of collocational probabilities, indicating the relative likelihood of co-occurrence of all ordered pairs of tags.",Experiment/Discussion
+This matrix can be mechanically derived from any pre-tagged corpus.,Experiment/Discussion
+"CLAWS used &quot;[a] large proportion of the Brown Corpus&quot;, 200,000 words (Marshall (1983), pp.",Experiment/Discussion
+"141, 150).",Experiment/Discussion
+The ambiguities contained within a span of ambiguous words define a precise number of complete sets of mappings from words to individual tags.,Experiment/Discussion
+Each such assignment of tags is called a path.,Experiment/Discussion
+"Each path is composed of a number of tag collocations, and each such collocation has a probability which may be obtained from the collocation matrix.",Experiment/Discussion
+One may thus approximate each path's probability by the product of the probabilities of all its collocations.,Experiment/Discussion
+Each path corresponds to a unique assignment of tags to all words within a span.,Experiment/Discussion
+"The paths constitute a span network, and the path of maximal probability may be taken to contain the &quot;best&quot; tags.",Experiment/Discussion
+"Marshall (1983) states that CLAWS -calculates the most probable sequence of tags, and in the majority of cases the correct tag for each individual word corresponds to the associated tag in the most probable sequence of tags&quot; (p. 142).",Experiment/Discussion
+But a more detailed examination of the Pascal code for CLAWS revealed that CLAWS has a more complex definition of &quot;most probable sequence&quot; than one might expect.,Experiment/Discussion
+A probability called &quot;SUMSUCCPROBS&quot; is predicated of each word.,Experiment/Discussion
+"SUMSUCCPROBS is calculated by looping through all tags for the words immediately preceding, at, and following a word; for each tag triple, an increment is added, defined by: GetSucc returns the collocational probability of a tag pair; Get3SeqFactor returns either 1, or a special value from the tag-triple list described below.",Experiment/Discussion
+DownGrade modifies the value of GetSucc in accordance with RTPs as described below.,Experiment/Discussion
+The CLAWS documentation describes SUMSUCCPROBS as &quot;the total value of all relationships between the tags associated with this word and the tags associated with the next word.,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+[found by] simulating all accesses to SUCCESSORS and ORDER2VALS which will be made.,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+".&quot; The probability of each node of the span network (or rather, tree) is then calculated in the following way as a tree representing all paths through which the span network is built: It appears that the goal is to make each tag's probability be the summed probability of all paths passing through it.",Experiment/Discussion
+"At the final word of a span, pointers are followed back up the chosen path, and tags are chosen en route.",Experiment/Discussion
+"We will see below that a simpler definition of optimal path is possible; nevertheless, there are several advantages of this general approach over previous ones.",Experiment/Discussion
+"First, spans of unlimited length can be handled (subject to machine resources).",Experiment/Discussion
+"Although earlier researchers (Klein and Simmons, Greene and Rubin) have suggested that spans of length over 5 are rare enough to be of little concern, this is not the case.",Experiment/Discussion
+The number of spans of a given length is a function of that length and the corpus size; so long spans may be obtained merely by examining more text.,Experiment/Discussion
+"The total numbers of spans in the Brown Corpus, for each length from 3 to 19, are: 397111, 143447, 60224, 26515, 11409,5128, 2161, 903, 382, 161, 58, 29, 14, 6, 1, 0, 1.",Experiment/Discussion
+"Graphing the logarithms Computational Linguistics, Volume 14, Number 1, Winter 1988 33 Steven J. DeRose Grammatical Category Disambiguation by Statistical Optimization of these quantities versus the span length for each, produces a near-perfect straight line.",Experiment/Discussion
+"Second, a precise mathematical definition is possible for the fundamental idea of CLAWS.",Experiment/Discussion
+"Whereas earlier efforts were based primarily on ad hoc or subjectively determined sets of rules and descriptions, and employed substantial exception dictionaries, this algorithm requires no human intervention for set-up; it is a systematic process.",Experiment/Discussion
+"Third, the algorithm is quantitative and analog, rather than artificially discrete.",Experiment/Discussion
+The various tests and frames employed by earlier algorithms enforced absolute constraints on particular tags or collocations of tags.,Experiment/Discussion
+"Here relative probabilities are weighed, and a series of very likely assignments can make possible a particular, a priori unlikely assignment with which they are associated.",Experiment/Discussion
+"In addition to collocational probabilities, CLAWS also takes into account one other empirical quantity: Tags associated with words.",Experiment/Discussion
+.,Experiment/Discussion
+". can be associated with a marker @ or %; @ indicates that the tag is infrequently the correct tag for the associated word(s) (less than 1 in 10 occasions), % indicates that it is highly improbable.",Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+(less than 1 in 100 occasions).,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+"The word disambiguation program currently uses these markers top devalue transition matrix values when retrieving a value from the matrix, @ results in the value being halved, % in the value being divided by eight (Marshall (1983), p. 149).",Experiment/Discussion
+"Thus, the independent probability of each possible tag for a given word influences the choice of an optimal path.",Experiment/Discussion
+"Such probabilities will be referred to as Relative Tag Probabilities, or RTPs.",Experiment/Discussion
+Other features have been added to the basic algorithm.,Experiment/Discussion
+"For example, a good deal of suffix analysis is used in initial tagging.",Experiment/Discussion
+"Also, the program filters its output, considering itself to have failed if the optimal tag assignment for a span is not &quot;more than 90% probable&quot;.",Experiment/Discussion
+In such cases it reorders tags rather than actually disambiguating.,Experiment/Discussion
+On long spans this criterion is effectively more stringent than on short spans.,Experiment/Discussion
+A more significant addition to the algorithm is that a number of tag triples associated with a scaling factor have been introduced which may either upgrade or downgrade values in the tree computed from the one-step matrix.,Experiment/Discussion
+"For example, the triple [1] 'be' [2] adverb [3] past-tense-verb has been assigned a scaling factor which downgrades a sequence containing this triple compared with a competing sequence of [1] 'be' [2] adverb [3]-past-participle/adjective, on the basis that after a form of 'be', past participles and adjectives are more likely than a past tense verb (Marshall (1983), p. 146).",Experiment/Discussion
+"A similar move was used near conjunctions, for which the words on either side, though separated, are more closely correlated to each other than either is to the conjunction itself (Marshall (1983), pp.",Experiment/Discussion
+146-147).,Experiment/Discussion
+"For example, a verb/noun ambiguity conjoined to a verb should probably be taken as a verb.",Experiment/Discussion
+"Leech, Garside, and Atwell (1983, p. 23) describe &quot;IDIOMTAG&quot;, which is applied after initial tag assignment and before disambiguation.",Experiment/Discussion
+It was developed as a means of dealing with idiosyncratic word sequences which would otherwise cause difficulty for the automatic tagging.,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+". for example, in order that is tagged as a single conjunction.",Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+The Idiom Tagging Program.,Experiment/Discussion
+.,Experiment/Discussion
+". can look at any combination of words and tags, with or without intervening words.",Experiment/Discussion
+"It can delete tags, add tags, or change the probability of tags.",Experiment/Discussion
+"Although this program might seem to be an ad hoc device, it is worth bearing in mind that any fully automatic language analysis system has to come to terms with problems of lexical idiosyncrasy.",Experiment/Discussion
+"IDIOMTAG also accounts for the fact that the probability of a verb being a past participle, and not simply past, is greater when the following word is &quot;by&quot;, as opposed to other prepositions.",Experiment/Discussion
+Certain cases of this sort may be soluble by making the collocational matrix distinguish classes of ambiguities—this question is being pursued.,Experiment/Discussion
+"Approximately 1% of running text is tagged by IDIOMTAG (letter, G. N. Leech to Henry Kucera, June 7, 1985; letter, E. S. Atwell to Henry Kucera, June 20, 1985).",Experiment/Discussion
+Marshall notes the possibility of consulting a complete three-dimensional matrix of collocational probabilities.,Experiment/Discussion
+Such a matrix would map ordered triples of tags into the relative probability of occurrence of each such triple.,Experiment/Discussion
+Marshall points out that such a table would be too large for its probable usefulness.,Experiment/Discussion
+The author has produced a table based upon more than 85% of the Brown Corpus; it occupies about 2 megabytes (uncompressed).,Experiment/Discussion
+"Also, the mean number of examples per triple is very low, thus decreasing accuracy.",Experiment/Discussion
+"CLAWS has been applied to the entire LOB Corpus with an accuracy of &quot;between 96% and 97%&quot; (Booth (1985), p. 29).",Experiment/Discussion
+"Without the idiom list, the algorithm was 94% accurate on a sample of 15,000 words (Marshall (1983)).",Experiment/Discussion
+"Thus, the pre-processor tagging of 1% of all tokens resulted in a 3% change in accuracy; those particular assignments must therefore have had a substantial effect upon their context, resulting in changes of two other words for every one explicitly tagged.",Experiment/Discussion
+"But CLAWS is time- and storage-inefficient in the extreme, and in some cases a fallback algorithm is employed to prevent running out of memory, as was discovered by examining the Pascal program code.",Experiment/Discussion
+"How often the fallback is employed is not known, nor is it known what effect its use has on overall accuracy.",Experiment/Discussion
+"Since CLAWS calculates the probability of every path, it operates in time and space proportional to the product of all the degrees of ambiguity of the words in the span.",Experiment/Discussion
+"Thus, the time is exponential (and hence Non-Polynomial) in the span length.",Experiment/Discussion
+"For the longest span in the Brown Corpus, of length 18, the number of paths examined would be 1,492,992.",Experiment/Discussion
+"The algorithm described here depends on a similar empirically-derived transitional probability matrix to that of CLAWS, and has a similar definition of &quot;optimal path&quot;.",Experiment/Discussion
+"The tagset is larger than TAGGIT's, though smaller than CLAWS', containing 97 tags.",Experiment/Discussion
+The ultimate assignments of tags are much like those of CLAWS.,Experiment/Discussion
+"However, it embodies several substantive changes.",Experiment/Discussion
+Those features that can be algorithmically defined have been used to the fullest extent.,Experiment/Discussion
+Other add-ons have been minimized.,Experiment/Discussion
+The major differences are outlined below.,Experiment/Discussion
+"First, the optimal path is defined to be the one whose component collocations multiply out to the highest probability.",Experiment/Discussion
+"The more complex definition applied by CLAWS, using the sum of all paths at each node of the network, is not used.",Experiment/Discussion
+"Second, VOLSUNGA overcomes the Non-Polynomial complexity of CLAWS.",Experiment/Discussion
+"Because of this change, it is never necessary to resort to a fallback algorithm, and the program is far smaller.",Experiment/Discussion
+"Furthermore, testing the algorithm on extensive texts is not prohibitively costly.",Experiment/Discussion
+"Third, VOLSUNGA implements Relative Tag Probabilities (RTPs) in a more quantitative manner, based upon counts from the Brown Corpus.",Experiment/Discussion
+"Where CLAWS scales probabilities by 1/2 for RTP < 0.1 (i.e., where less than 10% of the tokens for an ambiguous word are in the category in question), and by 1/8 for p < 0.01, VOLSUNGA uses the RTP value itself as a factor in the equation which defines probability.",Experiment/Discussion
+"Fourth, VOLSUNGA uses no tag triples and no idioms.",Experiment/Discussion
+"Because of this, manually constructing specialcase lists is not necessary.",Experiment/Discussion
+"These methods are useful in certain cases, as the accuracy figures for CLAWS show; but the goal here was to measure the accuracy of a wholly algorithmic tagger on a standard corpus.",Experiment/Discussion
+"Interestingly, if the introduction of idiom tagging were to make as much difference for VOLSUNGA as for CLAWS, we would have an accuracy of 99%.",Experiment/Discussion
+This would be an interesting extension.,Experiment/Discussion
+"I believe that the reasons for VOLSUNGA's 96% accuracy without idiom tagging are (a) the change in definition of &quot;optimal path&quot;, and (b) the increased precision of RTPs.",Experiment/Discussion
+"The difference in tag-set size may also be a factor; but most of the difficult cases are major class differences, such as noun versus verb, rather than the fine distinction which the CLAWS tag-set adds, such as several subtypes of proper noun.",Experiment/Discussion
+Ongoing research with VOLSUNGA may shed more light on the interaction of these factors.,Experiment/Discussion
+"Last, the current version of VOLSUNGA is designed for use with a complete dictionary (as is the case when working with a known corpus).",Experiment/Discussion
+"Thus, unknown words are handled in a rudimentary fashion.",Experiment/Discussion
+"This problem has been repeatedly solved via affix analysis, as mentioned above, and is not of substantial interest here.",Experiment/Discussion
+"Since the number of paths over a span is an exponential function of the span length, it may not be obvious how one can guarantee finding the best path, without examining an exponential number of paths (namely all of them).",Experiment/Discussion
+"The insight making fast discovery of the optimal path possible is the use of a Dynamic Programming solution (Dano (1975), Dreyfus and Law (1977)).",Experiment/Discussion
+"The two key ideas of Dynamic Programming have been characterized as &quot;first, the recognition that a given 'whole problem' can be solved if the values of the best solutions of certain subproblems can be determined.",Experiment/Discussion
+.,Experiment/Discussion
+.,Experiment/Discussion
+"; and secondly, the realization that if one starts at or near the end of the 'whole problem,' the subproblems are so simple as to have trivial solutions&quot; (Dreyfus and Law (1977), p. 5).",Experiment/Discussion
+"Dynamic Programming is closely related to the study of Graph Theory and of Network Optimization, and can lead to rapid solutions for otherwise intractable problems, given that those problems obey certain structural constraints.",Experiment/Discussion
+"In this case, the constraints are indeed obeyed, and a linear-time solution is available.",Experiment/Discussion
+"Consider a span of length n = 5, with the words in the path denoted by v, w, x, y, z.",Experiment/Discussion
+"Assume that v and z are the unambiguous bounding words, and that the other three words are each three ways ambiguous.",Experiment/Discussion
+"Subscripts will index the various tags for each word: w1 will denote the first tag in the set of possible tags for word w. Every path must contain v1 and z1, since v and z are unambiguous.",Experiment/Discussion
+"Now consider the partial spans beginning at v, and ending (respectively) at each of the four remaining words.",Experiment/Discussion
+The partial span network ending at w contains exactly three paths.,Experiment/Discussion
+One of these must be a portion of the optimal path for the entire span.,Experiment/Discussion
+"So we save all three: one path to each tag under w. The probability of each path is the value found in the collocation matrix entry for its tag-pair, namely p(v,wi) for i ranging from one to three.",Experiment/Discussion
+"Next, consider the three tags under word x.",Experiment/Discussion
+One of these tags must lie on the optimal path.,Experiment/Discussion
+Assume it is xl.,Experiment/Discussion
+"Under this assumption, we have a complete span of length 3, for x is unambiguous.",Experiment/Discussion
+Only one of the paths to xi can be optimal.,Experiment/Discussion
+Therefore we can disambiguate v. .,Experiment/Discussion
+. w. .,Experiment/Discussion
+". xi under this assumption, namely, as MAX (p(v,wir p(wi,x I)) for all wi.",Experiment/Discussion
+"Now, of course, the assumption that x1 is on the optimal path is unacceptable.",Experiment/Discussion
+"However, the key to VOLSUNGA is to notice that by making three such independent assumptions, namely for xl, x2, and x3, we exhaust all possible optimal paths.",Experiment/Discussion
+Only a path which optimally leads to one of x's tags can be part of the optimal path.,Experiment/Discussion
+"Thus, when examining the partial span network ending at word y, we need only consider three possibly optimal paths, namely those leading to x1, x2, and x3, and how those three combine with the tags of y.",Experiment/Discussion
+"At most one of those three paths can lie along the optimal path to each tag of y; so we have 32, or 9, comparisons.",Experiment/Discussion
+"But only three paths will survive, namely, the optimal path to each of the three tags under y.",Experiment/Discussion
+"Each of those three is then considered as a potential path to z, and one is chosen.",Experiment/Discussion
+This reduces the algorithm from exponential complexity to linear.,Experiment/Discussion
+The number of paths retained at any stage is the same as the degree of ambiguity at that stage; and this value is bounded by a very small value established by independent facts about the English lexicon.,Experiment/Discussion
+No faster order of speed is possible if each word is to be considered at all.,Experiment/Discussion
+"As an example, we will consider the process by which VOLSUNGA would tag &quot;The man still saw her&quot;.",Experiment/Discussion
+"We will omit a few ambiguities, reducing the number of paths to 24 for ease of exposition.",Experiment/Discussion
+The tags for each word are shown in Table 2.,Experiment/Discussion
+"The notation is fairly mnemonic, but it is worth clarifying that PPO indicates an objective personal pronoun, and PP$ the possessive thereof, while VBD is a past-tense verb.",Experiment/Discussion
+"Examples of the various collocational probabilities are illustrated in Table 3 (VOLSUNGA does not actually consider any collocation truly impossible, so zeros are raised to a minimal non-zero value when loaded).",Experiment/Discussion
+The product of 1*2*3*2*2*1 ambiguities gives 24 paths through this span.,Experiment/Discussion
+"In this case, a simple process of choosing the best successor for each word in order would produce the correct tagging (AT NN RB VBD PPO).",Experiment/Discussion
+But of course this is often not the case.,Experiment/Discussion
+"Using VOLSUNGA's method we would first stack &quot;the&quot;, with certainty for the tag AT (we will denote this by &quot;p(the-AT) = CERTAIN)&quot;).",Experiment/Discussion
+"Next we stack &quot;man&quot;, and look up the collocational probabilities of all tag pairs between the two words at the top of the stack.",Experiment/Discussion
+"In this case they will be p(AT, NN) = 186, and p(AT, VB) = 1.",Experiment/Discussion
+We save the best (in this case only) path to each of man-NN and man-VB.,Experiment/Discussion
+"It is sufficient to save a pointer to the tag of &quot;the&quot; which ends each of these paths, making backward-linked lists (which, in this case, converge).",Experiment/Discussion
+Now we stack &quot;still&quot;.,Experiment/Discussion
+"For each of its tags (NN, VB, and RB), we choose either the NN or the VB tag of &quot;man&quot; as better. p(still-NN) is the best of: p(man-NN) *p(NN,NN) = 186 *40 = 744 p(man-VB) *p(VB,NN) = 1 *22 = 22 Thus, the best path to still-NN is AT NN NN.",Experiment/Discussion
+"Similarly, we find that the best path to still-RB is AT NN RB, and the best path to still-VB is AT NN RB.",Experiment/Discussion
+This shows the (realistically) overwhelming effect of an article on disambiguating an immediately following noun/verb ambiguity.,Experiment/Discussion
+"At this point, only the optimal path to each of the tags for &quot;still&quot; is saved.",Experiment/Discussion
+"We then go on to match each of those paths with each of the tags for &quot;saw&quot;, discovering the optimal paths to saw-NN and to saw-VB.",Experiment/Discussion
+"The next iteration reveals the optimal paths to her-PPO and her-PP$, and the final one picks the optimal path to the period, which this example treats as unambiguous.",Experiment/Discussion
+Now we have the best path between two certain tags (AT and .,Experiment/Discussion
+"), and can merely pop the stack, following pointers to optimal predecessors to disambiguate the sequence.",Experiment/Discussion
+The period becomes the start of the next span.,Experiment/Discussion
+Initial testing of the algorithm used only transitional probability information.,Experiment/Discussion
+RTPs had no effect upon choosing an optimal path.,Experiment/Discussion
+"For example, in deciding whether to consider the word &quot;time&quot; to be a noun or a verb, environments such as a preceding article or proper noun, or a following verb or pronoun, were the sole criteria.",Experiment/Discussion
+The fact that &quot;time&quot; is almost always a noun (1901 instances in the Brown Corpus) rather than a verb (16 instances) was not considered.,Experiment/Discussion
+"Accuracy averaged 92-93%, with a peak of 93.7%.",Experiment/Discussion
+There are clear examples for which the use of RTPs is important.,Experiment/Discussion
+One such case which arises in the Brown Corpus is &quot;so that&quot;.,Experiment/Discussion
+"&quot;So&quot; occurs 932 times as a qualifier (QL), 479 times as a subordinating conjunction (CS), and once as an interjection (UH).",Experiment/Discussion
+"The standard tagging for &quot;so that&quot; is &quot;CS CS&quot;, but this is an extremely low-frequency collocation, lower than the alternative &quot;UH CS&quot; (which is mainly limited to fiction).",Experiment/Discussion
+"Barring strong contextual counter-evidence, &quot;UH CS&quot; is the preferred assignment if RTP information is not used.",Experiment/Discussion
+"By weighing the RTPs for &quot;so&quot;, however, the &quot;UH&quot; assignment can be avoided.",Experiment/Discussion
+"The LOB Corpus would (via idiom tagging) use &quot;CS CS&quot; in this case, employing a special &quot;ditto tag&quot; to indicate that two separate orthographic words constitute (at least for tagging purposes) a single syntactic word.",Experiment/Discussion
+"Another example would be &quot;so as to&quot;, tagged 'TO TO TO&quot;.",Experiment/Discussion
+"Blackwell comments that &quot;it was difficult to know where to draw the line in defining what constituted an idiom, and some such decisions seemed to have been influenced by semantic factors.",Experiment/Discussion
+"Nonetheless, IDIOMTAG had played a significant part in increasing the accuracy of the Tagging Suite [i.e., CLAWS].",Experiment/Discussion
+.,Experiment/Discussion
+".&quot; (Blackwell (1985), p. 7).",Experiment/Discussion
+It may be better to treat this class of &quot;idioms&quot; as lexical items which happen to contain blanks; but RTPs permit correct tagging in some of these cases.,Experiment/Discussion
+The main difficulty in using RTPs is determining how heavily to weigh them relative to collocational information.,Experiment/Discussion
+"At first, VOLSUNGA multiplied raw relative frequencies into the path probability calculations; but the ratios were so high in some cases as to totally swamp collocational data.",Experiment/Discussion
+"Thus, normalization is required.",Experiment/Discussion
+The present solution is a simple one; all ratios over a fixed limit are truncated to that limit.,Experiment/Discussion
+"Implementing RTPs increased accuracy by approximately 4%, to the range 95-97%, with a peak of 97.5% on one small sample.",Experiment/Discussion
+"Thus, about half of the residual errors were eliminated.",Experiment/Discussion
+It is likely that tuning the normalization would improve this figure slightly more.,Experiment/Discussion
+"VOLSUNGA was not designed with psychological reality as a goal, though it has some plausible characteristics.",Experiment/Discussion
+We will consider a few of these briefly.,Experiment/Discussion
+This section should not be interpreted as more than suggestive.,Experiment/Discussion
+"First, consider dictionary learning; the program currently assumes that a full dictionary is available.",Experiment/Discussion
+"This assumption is nearly true for mature language users, but humans have little trouble even with novel lexical items, and generally speak of &quot;context&quot; when asked to describe how they figure out such words.",Experiment/Discussion
+"As Ryder and Walker (1982) note, the use of structural analysis based on contextual clues allows speakers to compute syntactic structures even for a text such as Jabberwocky, where lexical information is clearly insufficient.",Experiment/Discussion
+The immediate syntactic context severely restricts the likely choices for the grammatical category of each neologism.,Experiment/Discussion
+"VOLSUNGA can perform much the same task via a minor modification, even if a suffix analysis fails.",Experiment/Discussion
+The most obvious solution is simply to assign all tags to the unknown word and find the optimal path through the containing span as usual.,Experiment/Discussion
+"Since the algorithm is fast, this is not prohibitive.",Experiment/Discussion
+"Better, one can assign only those tags with a non-minimal probability of being adjacent to the possible tags of neighboring words.",Experiment/Discussion
+"Precisely calculating the mean number of tags remaining under this approach is left as a question for further research, but the number is certainly very low.",Experiment/Discussion
+About 3900 of the 9409 theoretically possible tag pairs occur in the Brown Corpus.,Experiment/Discussion
+"Also, all tags marking closed classes (about two-thirds of all tags) may be eliminated from consideration.",Experiment/Discussion
+"Also, since VOLSUNGA operates from left to right, it can always decide upon an optimum partial result, and can predict a set of probable successors.",Experiment/Discussion
+"For these reasons, it is largely robust against ungrammaticality.",Experiment/Discussion
+"Shannon (1951) performed experiments of a similar sort, asking human subjects to predict the next character of a partially presented sentence.",Experiment/Discussion
+The accuracy of their predictions increased with the length of the sentence fragment presented.,Experiment/Discussion
+"The fact that VOLSUNGA requires a great deal of persistent memory for its dictionary, yet very little temporary space for processing, is appropriate.",Experiment/Discussion
+"By contrast, the space requirements of CLAWS would overtax the short-term memory of any language user.",Experiment/Discussion
+Another advantage of VOLSUNGA is that it requires little inherent linguistic knowledge.,Experiment/Discussion
+Probabilities may be acquired simply through counting instances of collocation.,Experiment/Discussion
+The results will increase in accuracy as more input text is seen.,Experiment/Discussion
+"Previous algorithms, on the other hand, have included extensive manually generated lists of rules or exceptions.",Experiment/Discussion
+An obvious difference between VOLSUNGA and humans is that VOLSUNGA makes no use whatsoever of semantic information.,Experiment/Discussion
+"No account is taken of the high probability that in a text about carpentry, &quot;saw&quot; is more likely a noun than in other types of text.",Experiment/Discussion
+"There may also be genre and topic-dependent influences upon the frequencies of various syntactic, and hence categorial, structures.",Experiment/Discussion
+"Before such factors can be incorporated into VOLSUNGA, however, more complete dictionaries, including semantic information of at least a rudimentary kind, must be available.",Experiment/Discussion
+VOLSUNGA requires a tagged corpus upon which to base its tables of probabilities.,Results/Conclusion
+The calculation of transitional probabilities is described by Marshall (1983).,Results/Conclusion
+The entire Brown Corpus (modified by the expansion of contracted forms) was analyzed in order to produce the tables used in VOLSUNGA.,Results/Conclusion
+A complete dictionary was therefore available when running the program on that same corpus.,Results/Conclusion
+"Since the statistics comprising the dictionary and probability matrix used by the program were derived from the same corpus analyzed, the results may be considered optimal.",Results/Conclusion
+"On the other hand, the Corpus is comprehensive enough so that use of other input text is unlikely to introduce statistically significant changes in the program's performance.",Results/Conclusion
+"This is especially true because many of the unknown words would be (a) capitalized proper names, for which tag assignment is trivial modulo a small percentage at sentence boundaries, or (b) regular formations from existing words, which are readily identified by suffixes.",Results/Conclusion
+Greene and Rubin (1971) note that their suffix list &quot;consists mainly of Romance endings which are the source of continuing additions to the language&quot; (p. 41).,Results/Conclusion
+"A natural relationship exists between the size of a dictionary, and the percentage of words in an average text which it accounts for.",Results/Conclusion
+A complete table showing the relationship appears in Kucera and Francis (1967) pp.,Results/Conclusion
+300-307.,Results/Conclusion
+A few representative entries are shown in Table 4.,Results/Conclusion
+The &quot;#Types&quot; column indicates how many vocabulary items occur at least &quot;Freq Limit&quot; times in the Corpus.,Results/Conclusion
+"The &quot;#Tokens&quot; column shows how many tokens are accounted for by those types, and the &quot;%Tokens&quot; column converts this number to a percentage.",Results/Conclusion
+(See also pp.,Results/Conclusion
+358-362 in the same volume for several related graphs.),Results/Conclusion
+Table 5 lists the accuracy for each genre from the Brown Corpus.,Results/Conclusion
+"The total token count differs from Table 4 due to inclusion of non-lexical tokens, such as punctuation.",Results/Conclusion
+"The figure shown deducts from the error count those particular instances in which the Corpus tag indicates by an affix that the word is part of a headline, title, etc.",Results/Conclusion
+"Since the syntax of such structures is often deviant, such errors are less significant.",Results/Conclusion
+"The difference this makes ranges from 0.09% (Genre L), up to 0.64% (Genre A), with an unweighted mean of 0.31%.",Results/Conclusion
+Detailed breakdowns of the particular errors made for each genre exist in machine-readable form.,Results/Conclusion
+The high degree of lexical category ambiguity in languages such as English poses problems for parsing.,Results/Conclusion
+"Specifically, until the categories of individual words have been established, it is difficult to construct a unique and accurate syntactic structure.",Results/Conclusion
+"Therefore, a method for locally disambiguating lexical items has been developed.",Results/Conclusion
+Early efforts to solve this problem relied upon large libraries of manually chosen context frame rules.,Results/Conclusion
+"More recently, however, work on the LOB Corpus of British English led to a more systematic algorithm based upon combinatorial statistics.",Results/Conclusion
+"This algorithm operates entirely from left to right, and has no inherent limit upon the number of consecutive ambiguities which may be processed.",Results/Conclusion
+Its authors report an accuracy of 96-97%.,Results/Conclusion
+"However, CLAWS falls prey to other problems.",Results/Conclusion
+"First, the probabilistic system has been augmented in several ways, such as by pre-tagging of categorially troublesome &quot;idioms&quot; (this feature contributes 3% towards the total accuracy).",Results/Conclusion
+"Second, it was not based upon the most complete statistics available.",Results/Conclusion
+"Third, and perhaps most significant, it requires non-polynomially large time and space.",Results/Conclusion
+"The algorithm developed here, called VOLSUNGA, addresses these problems.",Results/Conclusion
+"First, the various additions to CLAWS (i.e., beyond the use of two-place probabilities and RTPs) have been deleted.",Results/Conclusion
+"Second, the program has been calibrated by reference to 100% instead of 20% of the Brown Corpus, and has been applied to the entire Corpus for testing.",Results/Conclusion
+This is a particularly important test because the Brown Corpus provides a long-established standard against which accuracy can be measured.,Results/Conclusion
+"Third, the algorithm has been completely redesigned so that it establishes the optimal tag assignments in linear time, as opposed to exponential.",Results/Conclusion
+"Tests on the one million words of the Brown Corpus show an overall accuracy of approximately 96%, despite the non-use of auxiliary algorithms.",Results/Conclusion
+Suggestions have been given for several possible modifications which might yield even higher accuracies.,Results/Conclusion
+The accuracy and speed of VOLSUNGA make it suitable for use in pre-processing natural language input to parsers and other language understanding systems.,Results/Conclusion
+Its systematicity makes it suitable also for work in computational studies of language learning.,Results/Conclusion

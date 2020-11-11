@@ -1,149 +1,149 @@
 col1,col2
-We show that jointly parsing a bitext can substantially improve parse quality on both sides.,{}
-"In a maximum entropy bitext parsing model, we define a distribution over source trees, target trees, and node-to-node alignments between them.",{}
-Features include monolingual parse scores and various measures of syntactic divergence.,{}
-"Using the translated portion of the Chinese treebank, our model is trained iteratively to maximize the marginal likelihood of training tree pairs, with alignments treated as latent variables.",{}
-The resulting bitext parser outperforms state-of-the-art monoparser baselines by 2.5 predicting side trees and 1.8 predicting Chinese side trees (the highest published numbers on these corpora).,{}
-"Moreover, these improved trees yield a 2.4 BLEU increase when used in a downstream MT evaluation.",{}
-"Methods for machine translation (MT) have increasingly leveraged not only the formal machinery of syntax (Wu, 1997; Chiang, 2007; Zhang et al., 2008), but also linguistic tree structures of either the source side (Huang et al., 2006; Marton and Resnik, 2008; Quirk et al., 2005), the target side (Yamada and Knight, 2001; Galley et al., 2004; Zollmann et al., 2006; Shen et al., 2008), or both (Och et al., 2003; Aue et al., 2004; Ding and Palmer, 2005).","{'title': '1 Introduction', 'number': '1'}"
-These methods all rely on automatic parsing of one or both sides of input bitexts and are therefore impacted by parser quality.,"{'title': '1 Introduction', 'number': '1'}"
-"Unfortunately, parsing general bitexts well can be a challenge for newswiretrained treebank parsers for many reasons, including out-of-domain input and tokenization issues.","{'title': '1 Introduction', 'number': '1'}"
-"On the other hand, the presence of translation pairs offers a new source of information: bilingual constraints.","{'title': '1 Introduction', 'number': '1'}"
-"For example, Figure 1 shows a case where a state-of-the-art English parser (Petrov and Klein, 2007) has chosen an incorrect structure which is incompatible with the (correctly chosen) output of a comparable Chinese parser.","{'title': '1 Introduction', 'number': '1'}"
-Smith and Smith (2004) previously showed that such bilingual constraints can be leveraged to transfer parse quality from a resource-rich language to a resourceimpoverished one.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we show that bilingual constraints and reinforcement can be leveraged to substantially improve parses on both sides of a bitext, even for two resource-rich languages.","{'title': '1 Introduction', 'number': '1'}"
-"Formally, we present a log-linear model over triples of source trees, target trees, and node-tonode tree alignments between them.","{'title': '1 Introduction', 'number': '1'}"
-We consider a set of core features which capture the scores of monolingual parsers as well as measures of syntactic alignment.,"{'title': '1 Introduction', 'number': '1'}"
-"Our model conditions on the input sentence pair and so features can and do reference input characteristics such as posterior distributions from a word-level aligner (Liang et al., 2006; DeNero and Klein, 2007).","{'title': '1 Introduction', 'number': '1'}"
-"Our training data is the translated section of the Chinese treebank (Xue et al., 2002; Bies et al., 2007), so at training time correct trees are observed on both the source and target side.","{'title': '1 Introduction', 'number': '1'}"
-Gold tree alignments are not present and so are induced as latent variables using an iterative training procedure.,"{'title': '1 Introduction', 'number': '1'}"
-"To make the process efficient and modular to existing monolingual parsers, we introduce several approximations: use of k-best lists in candidate generation, an adaptive bound to avoid considering all k2 combinations, and Viterbi approximations to alignment posteriors.","{'title': '1 Introduction', 'number': '1'}"
-We evaluate our system primarily as a parser and secondarily as a component in a machine translation pipeline.,"{'title': '1 Introduction', 'number': '1'}"
-"For both English and Chinese, we begin with the state-of-the-art parsers presented in Petrov and Klein (2007) as a baseline.","{'title': '1 Introduction', 'number': '1'}"
-Joint parse selection improves the English trees by 2.5 F1 and the Chinese trees by 1.8 F1.,"{'title': '1 Introduction', 'number': '1'}"
-"While other Chinese treebank parsers do not have access to English side translations, this Chinese figure does outperform all published monolingual Chinese treebank results on an equivalent split of the data.","{'title': '1 Introduction', 'number': '1'}"
-"As MT motivates this work, another valuable evaluation is the effect of joint selection on downstream MT quality.","{'title': '1 Introduction', 'number': '1'}"
-"In an experiment using a syntactic MT system, we find that rules extracted from joint parses results in an increase of 2.4 BLEU points over rules extracted from independent parses.1 In sum, jointly parsing bitexts improves parses substantially, and does so in a way that that carries all the way through the MT pipeline.","{'title': '1 Introduction', 'number': '1'}"
-"In our model, we consider pairs of sentences (s, s'), where we use the convention that unprimed variables are source domain and primed variables are target domain.","{'title': '2 Model', 'number': '2'}"
-These sentences have parse trees t (respectively t') taken from candidate sets T (T').,"{'title': '2 Model', 'number': '2'}"
-Non-terminal nodes in trees will be denoted by n (n') and we abuse notation by equating trees with their node sets.,"{'title': '2 Model', 'number': '2'}"
-Alignments a are simply at-mostone-to-one matchings between a pair of trees t and t' (see Figure 2a for an example).,"{'title': '2 Model', 'number': '2'}"
-Note that we will also mention word alignments in feature definitions; a and the unqualified term alignment will always refer to node alignments.,"{'title': '2 Model', 'number': '2'}"
-Words in a sentence are denoted by v (v').,"{'title': '2 Model', 'number': '2'}"
-"Our model is a general log-linear (maximum entropy) distribution over triples (t, a, t') for sentence pairs (s, s'): Features are thus defined over (t, a, t') triples; we discuss specific features below.","{'title': '2 Model', 'number': '2'}"
-"To use our model, we need features of a triple (t, a, t') which encode both the monolingual quality of the trees as well as the quality of the alignment between them.","{'title': '3 Features', 'number': '3'}"
-We introduce a variety of features in the next sections.,"{'title': '3 Features', 'number': '3'}"
-"To capture basic monolingual parse quality, we begin with a single source and a single target feature whose values are the log likelihood of the source tree t and the target tree t', respectively, as given by our baseline monolingual parsers.","{'title': '3 Features', 'number': '3'}"
-These two features are called SOURCELL and TARGETLL respectively.,"{'title': '3 Features', 'number': '3'}"
-"It is certainly possible to augment these simple features with what would amount to monolingual reranking features, but we do not explore that option here.","{'title': '3 Features', 'number': '3'}"
-"Note that with only these two features, little can be learned: all positive weights w cause the jointly optimal parse pair (t, t') to comprise the two top-1 monolingual outputs (the baseline).","{'title': '3 Features', 'number': '3'}"
-"All other features in our model reference the entire triple (t, a, t').","{'title': '3 Features', 'number': '3'}"
-"In this work, such features are defined over aligned node pairs for efficiency, but generalizations are certainly possible.","{'title': '3 Features', 'number': '3'}"
-"Bias: The first feature is simply a bias feature which has value 1 on each aligned node pair (n, n').","{'title': '3 Features', 'number': '3'}"
-This bias allows the model to learn a general preference for denser alignments.,"{'title': '3 Features', 'number': '3'}"
-"Alignment features: Of course, some alignments are better than others.","{'title': '3 Features', 'number': '3'}"
-One indicator of a good nodeto-node alignment between n and n' is that a good word alignment model thinks that there are many word-to-word alignments in their bispan.,"{'title': '3 Features', 'number': '3'}"
-"Similarly, there should be few alignments that violate that bispan.","{'title': '3 Features', 'number': '3'}"
-"To compute such features, we define a(v, v') to be the posterior probability assigned to the word alignment between v and v' by an independent word aligner.2 Before defining alignment features, we need to define some additional variables.","{'title': '3 Features', 'number': '3'}"
-"For any node n E t (n' E t'), the inside span i(n) (i(n')) comprises the input tokens of s (s') dominated by that node.","{'title': '3 Features', 'number': '3'}"
-"Similarly, the complement, the outside span, will be denoted o(n) (o(n')), and comprises the tokens not dominated by that node.","{'title': '3 Features', 'number': '3'}"
-"See Figure 2b,c for examples of the resulting regions.","{'title': '3 Features', 'number': '3'}"
-"Hard alignment features: We also define the hard versions of these features, which take counts from the word aligner’s hard top-1 alignment output S: Scaled alignment features: Finally, undesirable larger bispans can be relatively sparse at the word alignment level, yet still contain many good word alignments simply by virtue of being large.","{'title': '3 Features', 'number': '3'}"
-We therefore define a scaled count which measures density rather than totals.,"{'title': '3 Features', 'number': '3'}"
-The geometric mean of span lengths was a superior measure of bispan “area” than the true area because word-level alignments tend to be broadly one-to-one in our word alignment model.,"{'title': '3 Features', 'number': '3'}"
-"Head word alignment features: When considering a node pair (n, n'), especially one which dominates a large area, the above measures treat all spanned words as equally important.","{'title': '3 Features', 'number': '3'}"
-"However, lexical heads are generally more representative than other spanned words.","{'title': '3 Features', 'number': '3'}"
-"Let h select the headword of a node according to standard head percolation rules (Collins, 2003; Bikel and Chiang, 2000).","{'title': '3 Features', 'number': '3'}"
-We also consider features that measure correspondences between the tree structures themselves.,"{'title': '3 Features', 'number': '3'}"
-"Span difference: We expect that, in general, aligned nodes should dominate spans of roughly the same length, and so we allow the model to learn to penalize node pairs whose inside span lengths differ greatly.","{'title': '3 Features', 'number': '3'}"
-Number of children: We also expect that there will be correspondences between the rules of the CFGs that generate the trees in each language.,"{'title': '3 Features', 'number': '3'}"
-"To encode some of this information, we compute indicators of the number of children c that the nodes have in t and t'.","{'title': '3 Features', 'number': '3'}"
-"NUMCHILDREN(|c(n)|, |c(n')|) = 1 For each feature above (except monolingual features), we create label-specific versions by conjoining the label pair (`(n), `(n')).","{'title': '3 Features', 'number': '3'}"
-We use both the typed and untyped variants of all features.,"{'title': '3 Features', 'number': '3'}"
-"Recall that our data condition supplies sentence pairs (s, s') along with gold parse pairs (g, g').","{'title': '4 Training', 'number': '4'}"
-We do not observe the alignments a which link these parses.,"{'title': '4 Training', 'number': '4'}"
-"In principle, we want to find weights which maximize the marginal log likelihood of what we do observe given our sentence pairs:3 Child labels: In addition, we also encode whether w∗ = arg max EP(g,a,g0|s,s0,w) (1) certain label pairs occur as children of matched w a nodes.","{'title': '4 Training', 'number': '4'}"
-"Let c(n, `) select the children of n with la- = arg max Ea exp(w>φ(g, a, g0)) bel `. w � �a exp(w>φ(t, a, t0)) (2) (t,t') CHILDLABEL(`, `') = |c(n, `) |· |c(n', `')| Note that the corresponding “self labels” feature is not listed because it arises in the next section as a typed variant of the bias feature.","{'title': '4 Training', 'number': '4'}"
-There are several challenges.,"{'title': '4 Training', 'number': '4'}"
-"First, the space of symmetric at-most-one-to-one matchings is #P-hard to sum over exactly (Valiant, 1979).","{'title': '4 Training', 'number': '4'}"
-"Second, even without matchings to worry about, standard methods for maximizing the above formulation would require summation over pairs of trees, and we want to assume a fairly generic interface to independent monolingual parsers (though deeper joint modeling and/or training is of course a potential extension).","{'title': '4 Training', 'number': '4'}"
-"As we have chosen to operate in a reranking mode over monolingual k-best lists, we have another issue: our k-best outputs on the data which trains our model may not include the gold tree pair.","{'title': '4 Training', 'number': '4'}"
-"We therefore make several approximations and modifications, which we discuss in turn.","{'title': '4 Training', 'number': '4'}"
-"Because summing over alignments a is intractable, we cannot evaluate (2) or its derivatives.","{'title': '4 Training', 'number': '4'}"
-"However, if we restrict the space of possible alignments, then we can make this optimization more feasible.","{'title': '4 Training', 'number': '4'}"
-"One way to do this is to stipulate in advance that for each tree pair, there is a canonical alignment a0(t, t0).","{'title': '4 Training', 'number': '4'}"
-"Of course, we want a0 to reflect actual correspondences between t and t0, so we want a reasonable definition that ensures the alignments are of reasonable quality.","{'title': '4 Training', 'number': '4'}"
-"Fortunately, it turns out that we can efficiently optimize a given a fixed tree pair and weight vector: This optimization requires only that we search for an optimal alignment.","{'title': '4 Training', 'number': '4'}"
-"Because all our features can be factored to individual node pairs, this can be done with the Hungarian algorithm in cubic time.4 Note that we do not enforce any kind of domination consistency in the matching: for example, the optimal alignment might in principle have the source root aligning to a target non-root and vice versa.","{'title': '4 Training', 'number': '4'}"
-"We then define a0(t, t0) as the alignment that maximizes w>0 O(t, a, t0), where w0 is a fixed initial weight vector with a weight of 1 for INSIDEBOTH, -1 for INSRCOUTTRG and INTRGOUTSRC, and 0 for all other features.","{'title': '4 Training', 'number': '4'}"
-"Then, we simplify (2) by fixing the alignments a0: This optimization has no latent variables and is therefore convex and straightforward.","{'title': '4 Training', 'number': '4'}"
-"However, while we did use this as a rapid training procedure during development, fixing the alignments a priori is both unsatisfying and also less effective than a procedure which allows the alignments a to adapt during training.","{'title': '4 Training', 'number': '4'}"
-"Again, for fixed alignments a, optimizing w is easy.","{'title': '4 Training', 'number': '4'}"
-"Similarly, with a fixed w, finding the optimal a for any particular tree pair is also easy.","{'title': '4 Training', 'number': '4'}"
-"Another option is therefore to use an iterative procedure that alternates between choosing optimal alignments for a fixed w, and then reoptimizing w for those fixed alignments according to (3).","{'title': '4 Training', 'number': '4'}"
-"By iterating, we perform the following optimization: Note that (4) is just (2) with summation replaced by maximization.","{'title': '4 Training', 'number': '4'}"
-"Though we do not know of any guarantees for this EM-like algorithm, in practice it converges after a few iterations given sufficient training data.","{'title': '4 Training', 'number': '4'}"
-We initialize the procedure by setting w0 as defined above.,"{'title': '4 Training', 'number': '4'}"
-"When training our model, we approximate the sets of all trees with k-best lists, T and T0, produced by monolingual parsers.","{'title': '4 Training', 'number': '4'}"
-"Since these sets are not guaranteed to contain the gold trees g and g0, our next approximation is to define a set of pseudo-gold trees, following previous work in monolingual parse reranking (Charniak and Johnson, 2005).","{'title': '4 Training', 'number': '4'}"
-We define Tˆ ( Tˆ0) as the F1-optimal subset of T (T0).,"{'title': '4 Training', 'number': '4'}"
-"We then modify (4) to reflect the fact that we are seeking to maximize the likelihood of trees in this subset: To reduce the time and space requirements for training, we do not always use the full k-best lists.","{'title': '4 Training', 'number': '4'}"
-"To prune the set T, we rank all the trees in T from 1 to k, according to their log likelihood under the baseline parsing model, and find the rank of the least likely pseudo-gold tree: Finally, we restrict T based on rank: To prune the list of tree pairs, first we rank them according to the metric: where E is a free parameter of the pruning procedure.","{'title': '4 Training', 'number': '4'}"
-The restricted set T0pruned is constructed in the same way.,"{'title': '4 Training', 'number': '4'}"
-"When training, we replace the sum over all tree pairs in (T, T0) in the denominator of (6) with a sum over all tree pairs in (Tpruned, T0pruned).","{'title': '4 Training', 'number': '4'}"
-"The parameter E can be set to any value from 0 to k, with lower values resulting in more efficient training, and higher values resulting in better performance.","{'title': '4 Training', 'number': '4'}"
-We set E by empirically determining a good speed/performance tradeoff (see §6.2).,"{'title': '4 Training', 'number': '4'}"
-"At test time, we have a weight vector w and so selecting optimal trees for the sentence pair (s, s0) from a pair of k best lists, (T, T0) is straightforward.","{'title': '5 Joint Selection', 'number': '5'}"
-"We just find: Note that with no additional cost, we can also find the optimal alignment between t∗ and t0∗: Because the size of (T, T0) grows as O(k�), the time spent iterating through all these tree pairs can grow unreasonably long, particularly when reranking a set of sentence pairs the size of a typical MT corpus.","{'title': '5 Joint Selection', 'number': '5'}"
-"To combat this, we use a simple pruning technique to limit the number of tree pairs under consideration.","{'title': '5 Joint Selection', 'number': '5'}"
-"Then, we simply remove all tree pairs whose ranking falls below some empirically determined cutoff.","{'title': '5 Joint Selection', 'number': '5'}"
-"As we show in §6.3, by using this technique we are able to speed up reranking by a factor of almost 20 without an appreciable loss of performance.","{'title': '5 Joint Selection', 'number': '5'}"
-"All the data used to train the joint parsing model and to evaluate parsing performance were taken from articles 1-325 of the Chinese treebank, which all have English translations with gold-standard parse trees.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"The articles were split into training, development, and test sets according to the standard breakdown for Chinese parsing evaluations.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Not all sentence pairs could be included for various reasons, including one-to-many Chinese-English sentence alignments, sentences omitted from the English translations, and low-fidelity translations.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-Additional sentence pairs were dropped from the training data because they had unambiguous parses in at least one of the two languages.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-Table 1 shows how many sentences were included in each dataset.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-We had two training setups: rapid and full.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"In the rapid training setup, only 1000 sentence pairs from the training set were used, and we used fixed alignments for each tree pair rather than iterating (see §4.1).","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-The full training setup used the iterative training procedure on all 2298 training sentence pairs.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-We used the English and Chinese parsers in Petrov and Klein (2007)5 to generate all k-best lists and as our evaluation baseline.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Because our bilingual data is from the Chinese treebank, and the data typically used to train a Chinese parser contains the Chinese side of our bilingual training data, we had to train a new Chinese grammar using only articles 400-1151 (omitting articles 1-270).","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-This modified grammar was used to generate the k-best lists that we trained our model on.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"However, as we tested on the same set of articles used for monolingual Chinese parser evaluation, there was no need to use a modified grammar to generate k-best lists at test time, and so we used a regularly trained Chinese parser for this purpose.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"We also note that since all parsing evaluations were performed on Chinese treebank data, the Chinese test sentences were in-domain, whereas the English sentences were very far out-of-domain for the Penn Treebank-trained baseline English parser.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Hence, in these evaluations, Chinese scores tend to be higher than English ones.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Posterior word alignment probabilities were obtained from the word aligner of Liang et al. (2006) and DeNero and Klein (2007)6, trained on approximately 1.7 million sentence pairs.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"For our alignment model we used an HMM in each direction, trained to agree (Liang et al., 2006), and we combined the posteriors using DeNero and Klein’s (2007) soft union method.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Unless otherwise specified, the maximum value of k was set to 100 for both training and testing, and all experiments used a value of 25 as the c parameter for training set pruning and a cutoff rank of 500 for test set pruning.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"To verify that all our features were contributing to the model’s performance, we did an ablation study, removing one group of features at a time.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Table 2 shows the F1 scores on the bilingual development data resulting from training with each group of features removed.7 Note that though head word features seemed to be detrimental in our rapid training setup, earlier testing had shown a positive effect, so we reran the comparison using our full training setup, where we again saw an improvement when including these features.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"To find a good value of the c parameter for training set pruning we tried several different values, using our rapid training setup and testing on the dev set.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-The results are shown in Table 3.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"We selected 25 as it showed the best performance/speed tradeoff, on average performing as well as if we had done no pruning at all, while requiring only a quarter the memory and CPU time.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"We also tried several different values of the rank cutoff for test set pruning, using the full training setup and testing on the dev set.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-The results are in Table 4.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"For F1 evaluation, which is on a very small set of sentences, we selected 500 as the value with the best speed/performance tradeoff.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"However, when reranking our entire MT corpus, we used a value of 200, sacrificing a tiny bit of performance for an extra factor of 2 in speed.8 Since our bitext parser currently operates as a reranker, the quality of the trees is limited by the quality of the k-best lists produced by the baseline parsers.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"To test this limitation, we evaluated performance on the dev set using baseline k-best lists of varying length.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-Training parameters were fixed (full training setup with k = 100) and test set pruning was disabled for these experiments.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-The results are in Table 5.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"The relatively modest gains with increasing k, even as the oracle scores continue to improve, indicate that performance is limited more by the model’s reliance on the baseline parsers than by search errors that result from the reranking approach.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-Our final evaluation was done using the full training setup.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Here, we report F1 scores on two sets of data.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"First, as before, we only include the sentence pairs from our bilingual corpus to fully demonstrate the gains made by joint parsing.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-We also report scores on the full test set to allow easier comparison with past work on Chinese parsing.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"For the latter evaluation, sentences that were not in the bilingual corpus were simply parsed with the baseline parsers.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-The results are in Table 6.,"{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"Joint parsing improves F1 by 2.5 points on out-of-domain English sentences and by 1.8 points on in-domain Chinese sentences; this represents the best published Chinese treebank parsing performance, even after sentences that lack a translation are taken into account.","{'title': '6 Statistical Parsing Experiments', 'number': '6'}"
-"To test the impact of joint parsing on syntactic MT systems, we compared the results of training an MT system with two different sets of trees: those produced by the baseline parsers, and those produced by our joint parser.","{'title': '7 Machine Translation', 'number': '7'}"
-"For this evaluation, we used a syntactic system based on Galley et al. (2004) and Galley et al.","{'title': '7 Machine Translation', 'number': '7'}"
-"(2006), which extracts tree-to-string transducer rules based on target-side trees.","{'title': '7 Machine Translation', 'number': '7'}"
-"We trained the system on 150,000 Chinese-English sentence pairs from the training corpus of Wang et al. (2007), and used a large (close to 5 billion tokens) 4-gram lanwith trees output from either baseline monolingual parsers or our joint parser.","{'title': '7 Machine Translation', 'number': '7'}"
-"To facilitate relative comparison, the Moses (Koehn et al., 2007) number listed reflects the default Moses configuration, including its full distortion model, and standard training pipeline. guage model for decoding.","{'title': '7 Machine Translation', 'number': '7'}"
-"We tuned and evaluated BLEU (Papineni et al., 2001) on separate held-out sets of sentences of up to length 40 from the same corpus.","{'title': '7 Machine Translation', 'number': '7'}"
-"The results are in Table 7, showing that joint parsing yields a BLEU increase of 2.4.9","{'title': '7 Machine Translation', 'number': '7'}"
-"By jointly parsing (and aligning) sentences in a translation pair, it is possible to exploit mutual constraints that improve the quality of syntactic analyses over independent monolingual parsing.","{'title': '8 Conclusions', 'number': '8'}"
-"We presented a joint log-linear model over source trees, target trees, and node-to-node alignments between them, which is used to select an optimal tree pair from a k-best list.","{'title': '8 Conclusions', 'number': '8'}"
-"On Chinese treebank data, this procedure improves F1 by 1.8 on Chinese sentences and by 2.5 on out-of-domain English sentences.","{'title': '8 Conclusions', 'number': '8'}"
-"Furthermore, by using this joint parsing technique to preprocess the input to a syntactic MT system, we obtain a 2.4 BLEU improvement.","{'title': '8 Conclusions', 'number': '8'}"
-We would like to thank the anonymous reviewers for helpful comments on an earlier draft of this paper and Adam Pauls and Jing Zheng for help in running our MT experiments.,"{'title': 'Acknowledgements', 'number': '9'}"
+We show that jointly parsing a bitext can substantially improve parse quality on both sides.,Introduction
+"In a maximum entropy bitext parsing model, we define a distribution over source trees, target trees, and node-to-node alignments between them.",Introduction
+Features include monolingual parse scores and various measures of syntactic divergence.,Introduction
+"Using the translated portion of the Chinese treebank, our model is trained iteratively to maximize the marginal likelihood of training tree pairs, with alignments treated as latent variables.",Introduction
+The resulting bitext parser outperforms state-of-the-art monoparser baselines by 2.5 predicting side trees and 1.8 predicting Chinese side trees (the highest published numbers on these corpora).,Introduction
+"Moreover, these improved trees yield a 2.4 BLEU increase when used in a downstream MT evaluation.",Introduction
+"Methods for machine translation (MT) have increasingly leveraged not only the formal machinery of syntax (Wu, 1997; Chiang, 2007; Zhang et al., 2008), but also linguistic tree structures of either the source side (Huang et al., 2006; Marton and Resnik, 2008; Quirk et al., 2005), the target side (Yamada and Knight, 2001; Galley et al., 2004; Zollmann et al., 2006; Shen et al., 2008), or both (Och et al., 2003; Aue et al., 2004; Ding and Palmer, 2005).",Experiment/Discussion
+These methods all rely on automatic parsing of one or both sides of input bitexts and are therefore impacted by parser quality.,Experiment/Discussion
+"Unfortunately, parsing general bitexts well can be a challenge for newswiretrained treebank parsers for many reasons, including out-of-domain input and tokenization issues.",Experiment/Discussion
+"On the other hand, the presence of translation pairs offers a new source of information: bilingual constraints.",Experiment/Discussion
+"For example, Figure 1 shows a case where a state-of-the-art English parser (Petrov and Klein, 2007) has chosen an incorrect structure which is incompatible with the (correctly chosen) output of a comparable Chinese parser.",Experiment/Discussion
+Smith and Smith (2004) previously showed that such bilingual constraints can be leveraged to transfer parse quality from a resource-rich language to a resourceimpoverished one.,Experiment/Discussion
+"In this paper, we show that bilingual constraints and reinforcement can be leveraged to substantially improve parses on both sides of a bitext, even for two resource-rich languages.",Experiment/Discussion
+"Formally, we present a log-linear model over triples of source trees, target trees, and node-tonode tree alignments between them.",Experiment/Discussion
+We consider a set of core features which capture the scores of monolingual parsers as well as measures of syntactic alignment.,Experiment/Discussion
+"Our model conditions on the input sentence pair and so features can and do reference input characteristics such as posterior distributions from a word-level aligner (Liang et al., 2006; DeNero and Klein, 2007).",Experiment/Discussion
+"Our training data is the translated section of the Chinese treebank (Xue et al., 2002; Bies et al., 2007), so at training time correct trees are observed on both the source and target side.",Experiment/Discussion
+Gold tree alignments are not present and so are induced as latent variables using an iterative training procedure.,Experiment/Discussion
+"To make the process efficient and modular to existing monolingual parsers, we introduce several approximations: use of k-best lists in candidate generation, an adaptive bound to avoid considering all k2 combinations, and Viterbi approximations to alignment posteriors.",Experiment/Discussion
+We evaluate our system primarily as a parser and secondarily as a component in a machine translation pipeline.,Experiment/Discussion
+"For both English and Chinese, we begin with the state-of-the-art parsers presented in Petrov and Klein (2007) as a baseline.",Experiment/Discussion
+Joint parse selection improves the English trees by 2.5 F1 and the Chinese trees by 1.8 F1.,Experiment/Discussion
+"While other Chinese treebank parsers do not have access to English side translations, this Chinese figure does outperform all published monolingual Chinese treebank results on an equivalent split of the data.",Experiment/Discussion
+"As MT motivates this work, another valuable evaluation is the effect of joint selection on downstream MT quality.",Experiment/Discussion
+"In an experiment using a syntactic MT system, we find that rules extracted from joint parses results in an increase of 2.4 BLEU points over rules extracted from independent parses.1 In sum, jointly parsing bitexts improves parses substantially, and does so in a way that that carries all the way through the MT pipeline.",Experiment/Discussion
+"In our model, we consider pairs of sentences (s, s'), where we use the convention that unprimed variables are source domain and primed variables are target domain.",Experiment/Discussion
+These sentences have parse trees t (respectively t') taken from candidate sets T (T').,Experiment/Discussion
+Non-terminal nodes in trees will be denoted by n (n') and we abuse notation by equating trees with their node sets.,Experiment/Discussion
+Alignments a are simply at-mostone-to-one matchings between a pair of trees t and t' (see Figure 2a for an example).,Experiment/Discussion
+Note that we will also mention word alignments in feature definitions; a and the unqualified term alignment will always refer to node alignments.,Experiment/Discussion
+Words in a sentence are denoted by v (v').,Experiment/Discussion
+"Our model is a general log-linear (maximum entropy) distribution over triples (t, a, t') for sentence pairs (s, s'): Features are thus defined over (t, a, t') triples; we discuss specific features below.",Experiment/Discussion
+"To use our model, we need features of a triple (t, a, t') which encode both the monolingual quality of the trees as well as the quality of the alignment between them.",Experiment/Discussion
+We introduce a variety of features in the next sections.,Experiment/Discussion
+"To capture basic monolingual parse quality, we begin with a single source and a single target feature whose values are the log likelihood of the source tree t and the target tree t', respectively, as given by our baseline monolingual parsers.",Experiment/Discussion
+These two features are called SOURCELL and TARGETLL respectively.,Experiment/Discussion
+"It is certainly possible to augment these simple features with what would amount to monolingual reranking features, but we do not explore that option here.",Experiment/Discussion
+"Note that with only these two features, little can be learned: all positive weights w cause the jointly optimal parse pair (t, t') to comprise the two top-1 monolingual outputs (the baseline).",Experiment/Discussion
+"All other features in our model reference the entire triple (t, a, t').",Experiment/Discussion
+"In this work, such features are defined over aligned node pairs for efficiency, but generalizations are certainly possible.",Experiment/Discussion
+"Bias: The first feature is simply a bias feature which has value 1 on each aligned node pair (n, n').",Experiment/Discussion
+This bias allows the model to learn a general preference for denser alignments.,Experiment/Discussion
+"Alignment features: Of course, some alignments are better than others.",Experiment/Discussion
+One indicator of a good nodeto-node alignment between n and n' is that a good word alignment model thinks that there are many word-to-word alignments in their bispan.,Experiment/Discussion
+"Similarly, there should be few alignments that violate that bispan.",Experiment/Discussion
+"To compute such features, we define a(v, v') to be the posterior probability assigned to the word alignment between v and v' by an independent word aligner.2 Before defining alignment features, we need to define some additional variables.",Experiment/Discussion
+"For any node n E t (n' E t'), the inside span i(n) (i(n')) comprises the input tokens of s (s') dominated by that node.",Experiment/Discussion
+"Similarly, the complement, the outside span, will be denoted o(n) (o(n')), and comprises the tokens not dominated by that node.",Experiment/Discussion
+"See Figure 2b,c for examples of the resulting regions.",Experiment/Discussion
+"Hard alignment features: We also define the hard versions of these features, which take counts from the word aligner’s hard top-1 alignment output S: Scaled alignment features: Finally, undesirable larger bispans can be relatively sparse at the word alignment level, yet still contain many good word alignments simply by virtue of being large.",Experiment/Discussion
+We therefore define a scaled count which measures density rather than totals.,Experiment/Discussion
+The geometric mean of span lengths was a superior measure of bispan “area” than the true area because word-level alignments tend to be broadly one-to-one in our word alignment model.,Experiment/Discussion
+"Head word alignment features: When considering a node pair (n, n'), especially one which dominates a large area, the above measures treat all spanned words as equally important.",Experiment/Discussion
+"However, lexical heads are generally more representative than other spanned words.",Experiment/Discussion
+"Let h select the headword of a node according to standard head percolation rules (Collins, 2003; Bikel and Chiang, 2000).",Experiment/Discussion
+We also consider features that measure correspondences between the tree structures themselves.,Experiment/Discussion
+"Span difference: We expect that, in general, aligned nodes should dominate spans of roughly the same length, and so we allow the model to learn to penalize node pairs whose inside span lengths differ greatly.",Experiment/Discussion
+Number of children: We also expect that there will be correspondences between the rules of the CFGs that generate the trees in each language.,Experiment/Discussion
+"To encode some of this information, we compute indicators of the number of children c that the nodes have in t and t'.",Experiment/Discussion
+"NUMCHILDREN(|c(n)|, |c(n')|) = 1 For each feature above (except monolingual features), we create label-specific versions by conjoining the label pair (`(n), `(n')).",Experiment/Discussion
+We use both the typed and untyped variants of all features.,Experiment/Discussion
+"Recall that our data condition supplies sentence pairs (s, s') along with gold parse pairs (g, g').",Experiment/Discussion
+We do not observe the alignments a which link these parses.,Experiment/Discussion
+"In principle, we want to find weights which maximize the marginal log likelihood of what we do observe given our sentence pairs:3 Child labels: In addition, we also encode whether w∗ = arg max EP(g,a,g0|s,s0,w) (1) certain label pairs occur as children of matched w a nodes.",Experiment/Discussion
+"Let c(n, `) select the children of n with la- = arg max Ea exp(w>φ(g, a, g0)) bel `. w � �a exp(w>φ(t, a, t0)) (2) (t,t') CHILDLABEL(`, `') = |c(n, `) |· |c(n', `')| Note that the corresponding “self labels” feature is not listed because it arises in the next section as a typed variant of the bias feature.",Experiment/Discussion
+There are several challenges.,Experiment/Discussion
+"First, the space of symmetric at-most-one-to-one matchings is #P-hard to sum over exactly (Valiant, 1979).",Experiment/Discussion
+"Second, even without matchings to worry about, standard methods for maximizing the above formulation would require summation over pairs of trees, and we want to assume a fairly generic interface to independent monolingual parsers (though deeper joint modeling and/or training is of course a potential extension).",Experiment/Discussion
+"As we have chosen to operate in a reranking mode over monolingual k-best lists, we have another issue: our k-best outputs on the data which trains our model may not include the gold tree pair.",Experiment/Discussion
+"We therefore make several approximations and modifications, which we discuss in turn.",Experiment/Discussion
+"Because summing over alignments a is intractable, we cannot evaluate (2) or its derivatives.",Experiment/Discussion
+"However, if we restrict the space of possible alignments, then we can make this optimization more feasible.",Experiment/Discussion
+"One way to do this is to stipulate in advance that for each tree pair, there is a canonical alignment a0(t, t0).",Experiment/Discussion
+"Of course, we want a0 to reflect actual correspondences between t and t0, so we want a reasonable definition that ensures the alignments are of reasonable quality.",Experiment/Discussion
+"Fortunately, it turns out that we can efficiently optimize a given a fixed tree pair and weight vector: This optimization requires only that we search for an optimal alignment.",Experiment/Discussion
+"Because all our features can be factored to individual node pairs, this can be done with the Hungarian algorithm in cubic time.4 Note that we do not enforce any kind of domination consistency in the matching: for example, the optimal alignment might in principle have the source root aligning to a target non-root and vice versa.",Experiment/Discussion
+"We then define a0(t, t0) as the alignment that maximizes w>0 O(t, a, t0), where w0 is a fixed initial weight vector with a weight of 1 for INSIDEBOTH, -1 for INSRCOUTTRG and INTRGOUTSRC, and 0 for all other features.",Experiment/Discussion
+"Then, we simplify (2) by fixing the alignments a0: This optimization has no latent variables and is therefore convex and straightforward.",Experiment/Discussion
+"However, while we did use this as a rapid training procedure during development, fixing the alignments a priori is both unsatisfying and also less effective than a procedure which allows the alignments a to adapt during training.",Experiment/Discussion
+"Again, for fixed alignments a, optimizing w is easy.",Experiment/Discussion
+"Similarly, with a fixed w, finding the optimal a for any particular tree pair is also easy.",Experiment/Discussion
+"Another option is therefore to use an iterative procedure that alternates between choosing optimal alignments for a fixed w, and then reoptimizing w for those fixed alignments according to (3).",Experiment/Discussion
+"By iterating, we perform the following optimization: Note that (4) is just (2) with summation replaced by maximization.",Experiment/Discussion
+"Though we do not know of any guarantees for this EM-like algorithm, in practice it converges after a few iterations given sufficient training data.",Experiment/Discussion
+We initialize the procedure by setting w0 as defined above.,Experiment/Discussion
+"When training our model, we approximate the sets of all trees with k-best lists, T and T0, produced by monolingual parsers.",Experiment/Discussion
+"Since these sets are not guaranteed to contain the gold trees g and g0, our next approximation is to define a set of pseudo-gold trees, following previous work in monolingual parse reranking (Charniak and Johnson, 2005).",Experiment/Discussion
+We define Tˆ ( Tˆ0) as the F1-optimal subset of T (T0).,Experiment/Discussion
+"We then modify (4) to reflect the fact that we are seeking to maximize the likelihood of trees in this subset: To reduce the time and space requirements for training, we do not always use the full k-best lists.",Experiment/Discussion
+"To prune the set T, we rank all the trees in T from 1 to k, according to their log likelihood under the baseline parsing model, and find the rank of the least likely pseudo-gold tree: Finally, we restrict T based on rank: To prune the list of tree pairs, first we rank them according to the metric: where E is a free parameter of the pruning procedure.",Experiment/Discussion
+The restricted set T0pruned is constructed in the same way.,Experiment/Discussion
+"When training, we replace the sum over all tree pairs in (T, T0) in the denominator of (6) with a sum over all tree pairs in (Tpruned, T0pruned).",Experiment/Discussion
+"The parameter E can be set to any value from 0 to k, with lower values resulting in more efficient training, and higher values resulting in better performance.",Experiment/Discussion
+We set E by empirically determining a good speed/performance tradeoff (see §6.2).,Experiment/Discussion
+"At test time, we have a weight vector w and so selecting optimal trees for the sentence pair (s, s0) from a pair of k best lists, (T, T0) is straightforward.",Experiment/Discussion
+"We just find: Note that with no additional cost, we can also find the optimal alignment between t∗ and t0∗: Because the size of (T, T0) grows as O(k�), the time spent iterating through all these tree pairs can grow unreasonably long, particularly when reranking a set of sentence pairs the size of a typical MT corpus.",Experiment/Discussion
+"To combat this, we use a simple pruning technique to limit the number of tree pairs under consideration.",Experiment/Discussion
+"Then, we simply remove all tree pairs whose ranking falls below some empirically determined cutoff.",Experiment/Discussion
+"As we show in §6.3, by using this technique we are able to speed up reranking by a factor of almost 20 without an appreciable loss of performance.",Experiment/Discussion
+"All the data used to train the joint parsing model and to evaluate parsing performance were taken from articles 1-325 of the Chinese treebank, which all have English translations with gold-standard parse trees.",Experiment/Discussion
+"The articles were split into training, development, and test sets according to the standard breakdown for Chinese parsing evaluations.",Experiment/Discussion
+"Not all sentence pairs could be included for various reasons, including one-to-many Chinese-English sentence alignments, sentences omitted from the English translations, and low-fidelity translations.",Experiment/Discussion
+Additional sentence pairs were dropped from the training data because they had unambiguous parses in at least one of the two languages.,Experiment/Discussion
+Table 1 shows how many sentences were included in each dataset.,Experiment/Discussion
+We had two training setups: rapid and full.,Experiment/Discussion
+"In the rapid training setup, only 1000 sentence pairs from the training set were used, and we used fixed alignments for each tree pair rather than iterating (see §4.1).",Experiment/Discussion
+The full training setup used the iterative training procedure on all 2298 training sentence pairs.,Experiment/Discussion
+We used the English and Chinese parsers in Petrov and Klein (2007)5 to generate all k-best lists and as our evaluation baseline.,Experiment/Discussion
+"Because our bilingual data is from the Chinese treebank, and the data typically used to train a Chinese parser contains the Chinese side of our bilingual training data, we had to train a new Chinese grammar using only articles 400-1151 (omitting articles 1-270).",Experiment/Discussion
+This modified grammar was used to generate the k-best lists that we trained our model on.,Experiment/Discussion
+"However, as we tested on the same set of articles used for monolingual Chinese parser evaluation, there was no need to use a modified grammar to generate k-best lists at test time, and so we used a regularly trained Chinese parser for this purpose.",Experiment/Discussion
+"We also note that since all parsing evaluations were performed on Chinese treebank data, the Chinese test sentences were in-domain, whereas the English sentences were very far out-of-domain for the Penn Treebank-trained baseline English parser.",Experiment/Discussion
+"Hence, in these evaluations, Chinese scores tend to be higher than English ones.",Experiment/Discussion
+"Posterior word alignment probabilities were obtained from the word aligner of Liang et al. (2006) and DeNero and Klein (2007)6, trained on approximately 1.7 million sentence pairs.",Experiment/Discussion
+"For our alignment model we used an HMM in each direction, trained to agree (Liang et al., 2006), and we combined the posteriors using DeNero and Klein’s (2007) soft union method.",Experiment/Discussion
+"Unless otherwise specified, the maximum value of k was set to 100 for both training and testing, and all experiments used a value of 25 as the c parameter for training set pruning and a cutoff rank of 500 for test set pruning.",Experiment/Discussion
+"To verify that all our features were contributing to the model’s performance, we did an ablation study, removing one group of features at a time.",Experiment/Discussion
+"Table 2 shows the F1 scores on the bilingual development data resulting from training with each group of features removed.7 Note that though head word features seemed to be detrimental in our rapid training setup, earlier testing had shown a positive effect, so we reran the comparison using our full training setup, where we again saw an improvement when including these features.",Experiment/Discussion
+"To find a good value of the c parameter for training set pruning we tried several different values, using our rapid training setup and testing on the dev set.",Experiment/Discussion
+The results are shown in Table 3.,Experiment/Discussion
+"We selected 25 as it showed the best performance/speed tradeoff, on average performing as well as if we had done no pruning at all, while requiring only a quarter the memory and CPU time.",Experiment/Discussion
+"We also tried several different values of the rank cutoff for test set pruning, using the full training setup and testing on the dev set.",Experiment/Discussion
+The results are in Table 4.,Experiment/Discussion
+"For F1 evaluation, which is on a very small set of sentences, we selected 500 as the value with the best speed/performance tradeoff.",Experiment/Discussion
+"However, when reranking our entire MT corpus, we used a value of 200, sacrificing a tiny bit of performance for an extra factor of 2 in speed.8 Since our bitext parser currently operates as a reranker, the quality of the trees is limited by the quality of the k-best lists produced by the baseline parsers.",Experiment/Discussion
+"To test this limitation, we evaluated performance on the dev set using baseline k-best lists of varying length.",Experiment/Discussion
+Training parameters were fixed (full training setup with k = 100) and test set pruning was disabled for these experiments.,Experiment/Discussion
+The results are in Table 5.,Experiment/Discussion
+"The relatively modest gains with increasing k, even as the oracle scores continue to improve, indicate that performance is limited more by the model’s reliance on the baseline parsers than by search errors that result from the reranking approach.",Experiment/Discussion
+Our final evaluation was done using the full training setup.,Experiment/Discussion
+"Here, we report F1 scores on two sets of data.",Experiment/Discussion
+"First, as before, we only include the sentence pairs from our bilingual corpus to fully demonstrate the gains made by joint parsing.",Experiment/Discussion
+We also report scores on the full test set to allow easier comparison with past work on Chinese parsing.,Experiment/Discussion
+"For the latter evaluation, sentences that were not in the bilingual corpus were simply parsed with the baseline parsers.",Experiment/Discussion
+The results are in Table 6.,Experiment/Discussion
+"Joint parsing improves F1 by 2.5 points on out-of-domain English sentences and by 1.8 points on in-domain Chinese sentences; this represents the best published Chinese treebank parsing performance, even after sentences that lack a translation are taken into account.",Experiment/Discussion
+"To test the impact of joint parsing on syntactic MT systems, we compared the results of training an MT system with two different sets of trees: those produced by the baseline parsers, and those produced by our joint parser.",Experiment/Discussion
+"For this evaluation, we used a syntactic system based on Galley et al. (2004) and Galley et al.",Experiment/Discussion
+"(2006), which extracts tree-to-string transducer rules based on target-side trees.",Experiment/Discussion
+"We trained the system on 150,000 Chinese-English sentence pairs from the training corpus of Wang et al. (2007), and used a large (close to 5 billion tokens) 4-gram lanwith trees output from either baseline monolingual parsers or our joint parser.",Experiment/Discussion
+"To facilitate relative comparison, the Moses (Koehn et al., 2007) number listed reflects the default Moses configuration, including its full distortion model, and standard training pipeline. guage model for decoding.",Experiment/Discussion
+"We tuned and evaluated BLEU (Papineni et al., 2001) on separate held-out sets of sentences of up to length 40 from the same corpus.",Experiment/Discussion
+"The results are in Table 7, showing that joint parsing yields a BLEU increase of 2.4.9",Experiment/Discussion
+"By jointly parsing (and aligning) sentences in a translation pair, it is possible to exploit mutual constraints that improve the quality of syntactic analyses over independent monolingual parsing.",Results/Conclusion
+"We presented a joint log-linear model over source trees, target trees, and node-to-node alignments between them, which is used to select an optimal tree pair from a k-best list.",Results/Conclusion
+"On Chinese treebank data, this procedure improves F1 by 1.8 on Chinese sentences and by 2.5 on out-of-domain English sentences.",Results/Conclusion
+"Furthermore, by using this joint parsing technique to preprocess the input to a syntactic MT system, we obtain a 2.4 BLEU improvement.",Results/Conclusion
+We would like to thank the anonymous reviewers for helpful comments on an earlier draft of this paper and Adam Pauls and Jing Zheng for help in running our MT experiments.,Results/Conclusion

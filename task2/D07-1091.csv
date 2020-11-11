@@ -1,191 +1,191 @@
 col1,col2
-We present an extension of phrase-based statistical machine translation models that enables the straight-forward integration of additional annotation at the word-level ?may it be linguistic markup or automatically generated word classes.,{}
-"In a num ber of experiments we show that factoredtranslation models lead to better translation performance, both in terms of auto matic scores, as well as more grammatical coherence.",{}
-"The current state-of-the-art approach to statistical machine translation, so-called phrase-based models,is limited to the mapping of small text chunks with out any explicit use of linguistic information, may it be morphological, syntactic, or semantic.","{'title': 'Introduction', 'number': '1'}"
-"Such additional information has been demonstrated to bevaluable by integrating it in pre-processing or post processing steps.However, a tighter integration of linguistic infor mation into the translation model is desirable for two reasons:?","{'title': 'Introduction', 'number': '1'}"
-"Translation models that operate on more gen eral representations, such as lemmas instead of surface forms of words, can draw on richer statistics and overcome the data sparseness problems caused by limited training data.?","{'title': 'Introduction', 'number': '1'}"
-"Many aspects of translation can be best explained on a morphological, syntactic, or semantic level.","{'title': 'Introduction', 'number': '1'}"
-Having such information avail able to the translation model allows the directmodeling of these aspects.,"{'title': 'Introduction', 'number': '1'}"
-For instance: re ordering at the sentence level is mostly driven word word part-of-speech OutputInput morphology part-of-speech morphology word class lemma word class lemma ......Figure 1: Factored representations of input and out put words incorporate additional annotation into the statistical translation model.,"{'title': 'Introduction', 'number': '1'}"
-"by general syntactic principles, local agreement constraints show up in morphology, etc.Therefore, we extended the phrase-based ap proach to statistical translation to tightly integrate additional information.","{'title': 'Introduction', 'number': '1'}"
-The new approach allows additional annotation at the word level.,"{'title': 'Introduction', 'number': '1'}"
-"A word in our framework is not only a token, but a vector of factors that represent different levels of annotation (see Figure 1).","{'title': 'Introduction', 'number': '1'}"
-"We report on experiments with factors such assurface form, lemma, part-of-speech, morphological features such as gender, count and case, automatic word classes, true case forms of words, shallow syntactic tags, as well as dedicated factors to en sure agreement between syntactically related items.","{'title': 'Introduction', 'number': '1'}"
-"This paper describes the motivation, the modeling aspects and the computationally efficient decoding methods of factored translation models.","{'title': 'Introduction', 'number': '1'}"
-We presentbriefly results for a number of language pairs.,"{'title': 'Introduction', 'number': '1'}"
-"How ever, the focus of this paper is the description of theapproach.","{'title': 'Introduction', 'number': '1'}"
-Detailed experimental results will be de scribed in forthcoming papers.,"{'title': 'Introduction', 'number': '1'}"
-868,"{'title': 'Introduction', 'number': '1'}"
-"Many attempts have been made to add richer in formation to statistical machine translation models.Most of these focus on the pre-processing of the in put to the statistical system, or the post-processing of its output.","{'title': 'Related Work. ', 'number': '2'}"
-"Our framework is more general and goes beyond recent work on models that back off to representations with richer statistics (Nie?en and Ney, 2001; Yang and Kirchhoff, 2006; Talbot andOsborne, 2006) by keeping a more complex repre sentation throughout the translation process.Rich morphology often poses a challenge to sta tistical machine translation, since a multitude of word forms derived from the same lemma fragmentthe data and lead to sparse data problems.","{'title': 'Related Work. ', 'number': '2'}"
-"If the input language is morphologically richer than the out put language, it helps to stem or segment the input in a pre-processing step, before passing it on to the translation system (Lee, 2004; Sadat and Habash, 2006).","{'title': 'Related Work. ', 'number': '2'}"
-"Structural problems have also been addressed bypre-processing: Collins et al (2005) reorder the in put to a statistical system to closer match the word order of the output language.On the other end of the translation pipeline, addi tional information has been used in post-processing.","{'title': 'Related Work. ', 'number': '2'}"
-"Och et al (2004) report minor improvements with linguistic features on a Chinese-English task, Koehn and Knight (2003) show some success in re-rankingnoun phrases for German-English.","{'title': 'Related Work. ', 'number': '2'}"
-"In their approaches, first, an n-best list with the best transla tions is generated for each input sentence.","{'title': 'Related Work. ', 'number': '2'}"
-"Then, the n-best list is enriched with additional features, for instance by syntactically parsing each candidate translation and adding a parse score.","{'title': 'Related Work. ', 'number': '2'}"
-"The additional features are used to rescore the n-best list, resulting possibly in a better best translation for the sentence.","{'title': 'Related Work. ', 'number': '2'}"
-"The goal of integrating syntactic informationinto the translation model has prompted many re searchers to pursue tree-based transfer models (Wu, 1997; Alshawi et al, 1998; Yamada and Knight, 2001; Melamed, 2004; Menezes and Quirk, 2005; Galley et al, 2006), with increasingly encouraging results.","{'title': 'Related Work. ', 'number': '2'}"
-"Our goal is complementary to these efforts:we are less interested in recursive syntactic struc ture, but in richer annotation at the word level.","{'title': 'Related Work. ', 'number': '2'}"
-"In future work, these approaches may be combined.","{'title': 'Related Work. ', 'number': '2'}"
-"lemma lemma part-of-speech OutputInput morphology part-of-speech word word morphologyFigure 2: Example factored model: morphologi cal analysis and generation, decomposed into three mapping steps (translation of lemmas, translation ofpart-of-speech and morphological information, gen eration of surface forms).","{'title': 'Related Work. ', 'number': '2'}"
-One example to illustrate the short-comings of thetraditional surface word approach in statistical machine translation is the poor handling of morphology.,"{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-Each word form is treated as a token in it self.,"{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"This means that the translation model treats, say, the word house completely independent of the word houses.","{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-Any instance of house in the training data does not add any knowledge to the translation of houses.,"{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"In the extreme case, while the translation of house may be known to the model, the word housesmay be unknown and the system will not be able to translate it.","{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"While this problem does not show up as stronglyin English ? due to the very limited morphological inflection in English ? it does constitute a sig nificant problem for morphologically rich languages such as Arabic, German, Czech, etc. Thus, it may be preferably to model translation between morphologically rich languages on the levelof lemmas, and thus pooling the evidence for differ ent word forms that derive from a common lemma.","{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"In such a model, we would want to translate lemmaand morphological information separately, and com bine this information on the output side to ultimately generate the output surface words.","{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-Such a model can be defined straight-forward as a factored translation model.,"{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-See Figure 2 for an illustration of this model in our framework.,"{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"Note that while we illustrate the use of factored translation models on such a linguistically motivated 869 example, our framework also applies to models that incorporate statistically defined word classes, or any other annotation.","{'title': 'Motivating Example: Morphology. ', 'number': '3'}"
-"The translation of factored representations of input words into the factored representations of out put words is broken up into a sequence of mapping steps that either translate input factors into output factors, or generate additional output factors from existing output factors.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Recall the example of a factored model motivated by morphological analysis and generation.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-In this model the translation process is broken up into the following three mapping steps: 1.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translate input lemmas into output lemmas.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-2.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translate morphological and POS factors.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-3.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Generate surface forms given the lemma and.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"linguistic factorsFactored translation models build on the phrase based approach (Koehn et al, 2003) that breaks up the translation of a sentence into the translation of small text chunks (so-called phrases).","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-This approach implicitly defines a segmentation of the input and output sentences into phrases.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"See an example in Figure 3.Our current implementation of factored translation models follows strictly the phrase-based ap proach, with the additional decomposition of phrasetranslation into a sequence of mapping steps.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Trans lation steps map factors in input phrases to factors in output phrases.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Generation steps map outputfactors within individual output words.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"To reiter ate: all translation steps operate on the phrase level, while all generation steps operate on the word level.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"Since all mapping steps operate on the same phrase segmentation of the input and output sentence into phrase pairs, we call these synchronous factored models.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"Let us now take a closer look at one example, thetranslation of the one-word phrase ha?user into En glish.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-The representation of ha?user in German is: surface-form ha?user | lemma haus | part-of-speech NN | count plural | case nominative | gender neutral.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-neue h?user werden gebaut new houses are builtFigure 3: Example sentence translation by a standard phrase model.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Factored models extend this ap proach.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-The three mapping steps in our morphologicalanalysis and generation model may provide the fol lowing applicable mappings: 1.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translation: Mapping lemmas.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"haus ? house, home, building, shell 2.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translation: Mapping morphology.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"NN|plural-nominative-neutral ? NN|plural, NN|singular 3.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Generation: Generating surface forms.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-house|NN|plural ? houses ? house|NN|singular ? house ? home|NN|plural ? homes ? ...,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-We call the application of these mapping stepsto an input phrase expansion.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"Given the multiple choices for each step (reflecting the ambiguity in translation), each input phrase may be ex panded into a list of translation options.","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-The German ha?user|haus|NN|plural-nominative-neutral may be expanded as follows: 1.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translation: Mapping lemmas.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"{ ?|house|?|?, ?|home|?|?, ?|building|?|?, ?|shell|?|?","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-} 2.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Translation: Mapping morphology.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"{ ?|house|NN|plural, ?|home|NN|plural, ?|building|NN|plural, ?|shell|NN|plural, ?|house|NN|singular, ...","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-} 3.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-Generation: Generating surface forms.,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"{ houses|house|NN|plural, homes|home|NN|plural, buildings|building|NN|plural, shells|shell|NN|plural, house|house|NN|singular, ...","{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-} 870,"{'title': 'Decomposition of Factored Translation. ', 'number': '4'}"
-"Factored translation models follow closely the sta tistical modeling approach of phrase-based models (in fact, phrase-based models are a special case of factored models).","{'title': 'Statistical Model. ', 'number': '5'}"
-The main difference lies in thepreparation of the training data and the type of mod els learned from the data.,"{'title': 'Statistical Model. ', 'number': '5'}"
-5.1 Training.,"{'title': 'Statistical Model. ', 'number': '5'}"
-The training data (a parallel corpus) has to be anno tated with the additional factors.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"For instance, if we want to add part-of-speech information on the input and output side, we need to obtain part-of-speech tagged training data.","{'title': 'Statistical Model. ', 'number': '5'}"
-"Typically this involves runningautomatic tools on the corpus, since manually anno tated corpora are rare and expensive to produce.","{'title': 'Statistical Model. ', 'number': '5'}"
-"Next, we need to establish a word-alignmentfor all the sentences in the parallel training cor pus.","{'title': 'Statistical Model. ', 'number': '5'}"
-"Here, we use the same methodology as in phrase-based models (typically symmetrized GIZA++ alignments).","{'title': 'Statistical Model. ', 'number': '5'}"
-"The word alignment methods may operate on the surface forms of words, or on anyof the other factors.","{'title': 'Statistical Model. ', 'number': '5'}"
-"In fact, some preliminary ex periments have shown that word alignment based on lemmas or stems yields improved alignment quality.","{'title': 'Statistical Model. ', 'number': '5'}"
-Each mapping step forms a component of the overall model.,"{'title': 'Statistical Model. ', 'number': '5'}"
-From a training point of view thismeans that we need to learn translation and gener ation tables from the word-aligned parallel corpus and define scoring methods that help us to choose between ambiguous mappings.,"{'title': 'Statistical Model. ', 'number': '5'}"
-Phrase-based translation models are acquired from a word-aligned parallel corpus by extracting allphrase-pairs that are consistent with the word align ment.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"Given the set of extracted phrase pairs with counts, various scoring functions are estimated, such as conditional phrase translation probabilities based on relative frequency estimation or lexical translation probabilities based on the words in the phrases.","{'title': 'Statistical Model. ', 'number': '5'}"
-"In our approach, the models for the translationsteps are acquired in the same manner from a word aligned parallel corpus.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For the specified factors in the input and output, phrase mappings are extracted.The set of phrase mappings (now over factored rep resentations) is scored based on relative counts and word-based translation probabilities.","{'title': 'Statistical Model. ', 'number': '5'}"
-The generation distributions are estimated on the output side only.,"{'title': 'Statistical Model. ', 'number': '5'}"
-The word alignment plays no role here.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"In fact, additional monolingual data may be used.","{'title': 'Statistical Model. ', 'number': '5'}"
-The generation model is learned on aword-for-word basis.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"For instance, for a genera tion step that maps surface forms to part-of-speech, a table with entries such as (fish,NN) is constructed.","{'title': 'Statistical Model. ', 'number': '5'}"
-"One or more scoring functions may be defined overthis table, in our experiments we used both condi tional probability distributions, e.g., p(fish|NN) andp(NN|fish), obtained by maximum likelihood esti mation.","{'title': 'Statistical Model. ', 'number': '5'}"
-"An important component of statistical machinetranslation is the language model, typically an n gram model over surface forms of words.","{'title': 'Statistical Model. ', 'number': '5'}"
-"In theframework of factored translation models, such se quence models may be defined over any factor, or any set of factors.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For factors such as part-of-speech tags, building and using higher order n-gram models (7-gram, 9-gram) is straight-forward.","{'title': 'Statistical Model. ', 'number': '5'}"
-5.2 Combination of Components.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"As in phrase-based models, factored translation models can be seen as the combination of several components (language model, reordering model,translation steps, generation steps).","{'title': 'Statistical Model. ', 'number': '5'}"
-These compo nents define one or more feature functions that are combined in a log-linear model: p(e|f) = 1 Z exp n?,"{'title': 'Statistical Model. ', 'number': '5'}"
-"i=1 ?ihi(e, f) (1) Z is a normalization constant that is ignored in practice.","{'title': 'Statistical Model. ', 'number': '5'}"
-"To compute the probability of a translation e given an input sentence f, we have to evaluate eachfeature function hi.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For instance, the feature func tion for a bigram language model component is (m is the number of words ei in the sentence e): hLM(e, f) = pLM(e) = p(e1) p(e2|e1)..p(em|em?1) (2)Let us now consider the feature functions introduced by the translation and generation steps of fac tored translation models.","{'title': 'Statistical Model. ', 'number': '5'}"
-"The translation of the input sentence f into the output sentence e breaks down to a set of phrase translations {(f?j , e?j)}.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For a translation step component, each feature function hT is defined over the phrase pairs (f?j , e?j) 871 given a scoring function ? : hT(e, f) = ? j ?(f?j , e?j) (3) For a generation step component, each feature function hG given a scoring function ? is defined over the output words ek only: hG(e, f) = ? k ?(ek) (4) The feature functions follow from the scoring functions (?","{'title': 'Statistical Model. ', 'number': '5'}"
-", ?) acquired during the training oftranslation and generation tables.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For instance, re call our earlier example: a scoring function for a generation model component that is a conditional probability distribution between input and output factors, e.g., ?(fish,NN,singular) = p(NN|fish).","{'title': 'Statistical Model. ', 'number': '5'}"
-"The feature weights ?i in the log-linear model are determined using a minimum error rate training method, typically Powell?s method (Och, 2003).","{'title': 'Statistical Model. ', 'number': '5'}"
-5.3 Efficient Decoding.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"Compared to phrase-based models, the decomposi tion of phrase translation into several mapping stepscreates additional computational complexity.","{'title': 'Statistical Model. ', 'number': '5'}"
-"In stead of a simple table look-up to obtain the possible translations for an input phrase, now multiple tables have to be consulted and their content combined.","{'title': 'Statistical Model. ', 'number': '5'}"
-In phrase-based models it is easy to identify the entries in the phrase table that may be used for a specific input sentence.,"{'title': 'Statistical Model. ', 'number': '5'}"
-These are called translation options.,"{'title': 'Statistical Model. ', 'number': '5'}"
-We usually limit ourselves to the top 20 translation options for each input phrase.,"{'title': 'Statistical Model. ', 'number': '5'}"
-The beam search decoding algorithm starts withan empty hypothesis.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"Then new hypotheses are gen erated by using all applicable translation options.These hypotheses are used to generate further hypotheses in the same manner, and so on, until hypotheses are created that cover the full input sentence.","{'title': 'Statistical Model. ', 'number': '5'}"
-The highest scoring complete hypothesis in dicates the best translation according to the model.,"{'title': 'Statistical Model. ', 'number': '5'}"
-How do we adapt this algorithm for factored translation models?,"{'title': 'Statistical Model. ', 'number': '5'}"
-"Since all mapping steps operate on the same phrase segmentation, the expansions of these mapping steps can be efficiently pre-computed prior to the heuristic beam search, and stored astranslation options.","{'title': 'Statistical Model. ', 'number': '5'}"
-"For a given input phrase, all pos sible translation options are thus computed before word word part-of-speech OutputInput 3 g r a m 7 g r a mFigure 4: Syntactically enriched output: By gener ating additional linguistic factors on the output side,high-order sequence models over these factors sup port syntactical coherence of the output.","{'title': 'Statistical Model. ', 'number': '5'}"
-"decoding (recall the example in Section 4, where we carried out the expansion for one input phrase).","{'title': 'Statistical Model. ', 'number': '5'}"
-"This means that the fundamental search algorithm does not change.However, we need to be careful about combina torial explosion of the number of translation options given a sequence of mapping steps.","{'title': 'Statistical Model. ', 'number': '5'}"
-"In other words,the expansion may create too many translation op tions to handle.","{'title': 'Statistical Model. ', 'number': '5'}"
-"If one or many mapping steps result in a vast increase of (intermediate) expansions, thismay be become unmanageable.","{'title': 'Statistical Model. ', 'number': '5'}"
-"We currently ad dress this problem by early pruning of expansions, and limiting the number of translation options per input phrase to a maximum number, by default 50.This is, however, not a perfect solution.","{'title': 'Statistical Model. ', 'number': '5'}"
-We are cur rently working on a more efficient search for the top50 translation options to replace the current brute force approach.,"{'title': 'Statistical Model. ', 'number': '5'}"
-"We carried out a number of experiments using the factored translation model framework, incorporatingboth linguistic information and automatically gener ated word classes.","{'title': 'Experiments. ', 'number': '6'}"
-"This work is implemented as part of the open source Moses1 system (Koehn et al, 2007).","{'title': 'Experiments. ', 'number': '6'}"
-We used the default settings for this system.,"{'title': 'Experiments. ', 'number': '6'}"
-6.1 Syntactically Enriched Output.,"{'title': 'Experiments. ', 'number': '6'}"
-"In the first set of experiments, we translate surfaceforms of words and generate additional output fac tors from them (see Figure 4 for an illustration).","{'title': 'Experiments. ', 'number': '6'}"
-"Byadding morphological and shallow syntactic infor 1available at http://www.statmt.org/moses/ 872 English?German Model BLEU best published result 18.15% baseline (surface) 18.04% surface + POS 18.15% surface + POS + morph 18.22% English?Spanish Model BLEU baseline (surface) 23.41% surface + morph 24.66% surface + POS + morph 24.25% English?Czech Model BLEU baseline (surface) 25.82% surface + all morph 27.04% surface + case/number/gender 27.45% surface + CNG/verb/prepositions 27.62%Table 1: Experimental results with syntactically en riched output (part of speech, morphology)mation, we are able to use high-order sequence mod els (just like n-gram language models over words) in order to support syntactic coherence of the output.","{'title': 'Experiments. ', 'number': '6'}"
-Table 1 summarizes the experimental results.,"{'title': 'Experiments. ', 'number': '6'}"
-"The English?German systems were trained on the full 751,088 sentence Europarl corpus and evaluated on the WMT 2006 test set (Koehn and Monz, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-Adding part-of-speech and morphological factors on the output side and exploiting them with 7-gram sequence models results in minor improvements in BLEU.,"{'title': 'Experiments. ', 'number': '6'}"
-The model that incorporates both POS and morphology (18.22% BLEU vs. baseline 18.04% BLEU) ensures better local grammatical coherence.,"{'title': 'Experiments. ', 'number': '6'}"
-"The baseline system produces often phrases such as zur(to) zwischenstaatlichen(inter-governmental) methoden(methods), with a mismatch between the determiner (singular) and the noun (plural), while the adjective is ambiguous.","{'title': 'Experiments. ', 'number': '6'}"
-In a manual evaluation of intra-NP agreement we found that the factored model reduced the disagreement error within noun phrases of length ? 3 from 15% to 4%.,"{'title': 'Experiments. ', 'number': '6'}"
-"English?Spanish systems were trained on a 40,000 sentence subset of the Europarl corpus.","{'title': 'Experiments. ', 'number': '6'}"
-"Here,we also used morphological and part-of-speech fac tors on the output side with an 7-gram sequence model, resulting in absolute improvements of 1.25%(only morph) and 0.84% (morph+POS).","{'title': 'Experiments. ', 'number': '6'}"
-Improve ments on the full Europarl corpus are smaller.,"{'title': 'Experiments. ', 'number': '6'}"
-"English-Czech systems were trained on a 20,000sentence Wall Street Journal corpus.","{'title': 'Experiments. ', 'number': '6'}"
-Morphologi cal features were exploited with a 7-gram languagemodel.,"{'title': 'Experiments. ', 'number': '6'}"
-Experimentation suggests that it is beneficial to carefully consider which morphological fea tures to be used.,"{'title': 'Experiments. ', 'number': '6'}"
-"Adding all features results inlower performance (27.04% BLEU), than consider ing only case, number and gender (27.45% BLEU) or additionally verbial (person, tense, and aspect) and prepositional (lemma and case) morphology (27.62% BLEU).","{'title': 'Experiments. ', 'number': '6'}"
-All these models score well above the baseline of 25.82% BLEU.,"{'title': 'Experiments. ', 'number': '6'}"
-"An extended description of these experiments is in the JHU workshop report (Koehn et al, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-6.2 Morphological Analysis and Generation.,"{'title': 'Experiments. ', 'number': '6'}"
-The next model is the one described in our motivat ing example in Section 4 (see also Figure 2).,"{'title': 'Experiments. ', 'number': '6'}"
-"Instead of translating surface forms of words, we translateword lemma and morphology separately, and gener ate the surface form of the word on the output side.","{'title': 'Experiments. ', 'number': '6'}"
-"We carried out experiments for the language pair German?English, using the 52,185 sentence NewsCommentary corpus2.","{'title': 'Experiments. ', 'number': '6'}"
-"We report results on the de velopment test set, which is also the out-of-domain test set of the WMT06 workshop shared task (Koehn and Monz, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-"German morphological analysis and POS tagging was done using LoPar Schmidt and Schulte im Walde (2000), English POS tagging was done with Brill?s tagger (Brill, 1995), followed by a simple lemmatizer based on tagging results.","{'title': 'Experiments. ', 'number': '6'}"
-Experimental results are summarized in Table 2.,"{'title': 'Experiments. ', 'number': '6'}"
-"For this data set, we also see an improvement when using a part-of-speech language model ? the BLEUscore increases from 18.19% to 19.05% ? consis tent with the results reported in the previous section.","{'title': 'Experiments. ', 'number': '6'}"
-"However, moving from a surface word translation mapping to a lemma/morphology mapping leads to a deterioration of performance to a BLEU score of 14.46%.Note that this model completely ignores the sur face forms of input words and only relies on the 2Made available for the WMT07 workshop shared task http://www.statmt.org/wmt07/ 873 German?English Model BLEU baseline (surface) 18.19% + POS LM 19.05% pure lemma/morph model 14.46% backoff lemma/morph model 19.47% Table 2: Experimental results with morphological analysis and generation model (Figure 2), using News Commentary corpus more general lemma and morphology information.","{'title': 'Experiments. ', 'number': '6'}"
-"While this allows the translation of word forms withknown lemma and unknown surface form, on balance it seems to be disadvantage to throw away sur face form information.To overcome this problem, we introduce an al ternative path model: Translation options in this model may come either from the surface form modelor from the lemma/morphology model we just de scribed.","{'title': 'Experiments. ', 'number': '6'}"
-"For surface forms with rich evidence in the training data, we prefer surface form mappings, and for surface forms with poor or no evidence in the training data we decompose surface forms into lemma and morphology information and map theseseparately.","{'title': 'Experiments. ', 'number': '6'}"
-"The different translation tables form dif ferent components in the log-linear model, whose weights are set using standard minimum error rate training methods.The alternative path model outperforms the sur face form model with POS LM, with an BLEU scoreof 19.47% vs. 19.05%.","{'title': 'Experiments. ', 'number': '6'}"
-"The test set has 3276 un known word forms vs 2589 unknown lemmas (out of 26,898 words).","{'title': 'Experiments. ', 'number': '6'}"
-"Hence, the lemma/morph model is able to translate 687 additional words.","{'title': 'Experiments. ', 'number': '6'}"
-6.3 Use of Automatic Word Classes.,"{'title': 'Experiments. ', 'number': '6'}"
-"Finally, we went beyond linguistically motivatedfactors and carried out experiments with automatically trained word classes.","{'title': 'Experiments. ', 'number': '6'}"
-"By clustering words to gether by their contextual similarity, we are able to find statistically similarities that may lead to more generalized and robust models.","{'title': 'Experiments. ', 'number': '6'}"
-"We trained models on the IWSLT 2006 task (39,953 sentences).","{'title': 'Experiments. ', 'number': '6'}"
-"Compared to a baseline English?Chinese system, adding word classes on theoutput side as additional factors (in a model as pre English?Chinese Model BLEU baseline (surface) 19.54% surface + word class 21.10% Table 3: Experimental result with automatic word classes obtained by word clustering Chinese?English Recase Method BLEU Standard two-pass: SMT + recase 20.65% Integrated factored model (optimized) 21.08% OutputInput mixed-cased lower-cased lower-casedTable 4: Experimental result with integrated recas ing (IWSLT 2006 task) viously illustrated in Figure 4) to be exploited by a 7-gram sequence model, we observe a gain 1.5% BLEU absolute.","{'title': 'Experiments. ', 'number': '6'}"
-"For more on this experiment, see (Shen et al, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-6.4 Integrated Recasing.,"{'title': 'Experiments. ', 'number': '6'}"
-"To demonstrate the versatility of the factored translation model approach, consider the task of recas ing (Lita et al, 2003; Wang et al, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-"Typically in statistical machine translation, the training data islowercased to generalize over differently cased surface forms ? say, the, The, THE ? which neces sitates a post-processing step to restore case in the output.","{'title': 'Experiments. ', 'number': '6'}"
-"With factored translation models, it is possible to integrate this step into the model, by adding a generation step.","{'title': 'Experiments. ', 'number': '6'}"
-See Table 4 for an illustration of this model and experimental results on the IWSLT2006 task (Chinese-English).,"{'title': 'Experiments. ', 'number': '6'}"
-The integrated recas ing model outperform the standard approach with an BLEU score of 21.08% to 20.65%.,"{'title': 'Experiments. ', 'number': '6'}"
-"For more on this experiment, see (Shen et al, 2006).","{'title': 'Experiments. ', 'number': '6'}"
-874 6.5 Additional Experiments.,"{'title': 'Experiments. ', 'number': '6'}"
-"Factored translation models have also been used for the integration of CCG supertags (Birch et al, 2007), domain adaptation (Koehn and Schroeder, 2007) and for the improvement of English-Czech translation (Bojar, 2007).","{'title': 'Experiments. ', 'number': '6'}"
-"We presented an extension of the state-of-the-artphrase-based approach to statistical machine trans lation that allows the straight-forward integration of additional information, may it come from linguistic tools or automatically acquired word classes.","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-"We reported on experiments that showed gains over standard phrase-based models, both in terms of automatic scores (gains of up to 2% BLEU), as well as a measure of grammatical coherence.","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-These experiments demonstrate that within the frameworkof factored translation models additional informa tion can be successfully exploited to overcome someshort-comings of the currently dominant phrase based statistical approach.,"{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-The framework of factored translation models is very general.,"{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-Many more models that incorporatedifferent factors can be quickly built using the ex isting implementation.,"{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-"We are currently exploringthese possibilities, for instance use of syntactic in formation in reordering and models with augmented input information.We have not addressed all computational problems of factored translation models.","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-"In fact, compu tational problems hold back experiments with morecomplex factored models that are theoretically pos sible but too computationally expensive to carry out.Our current focus is to develop a more efficient im plementation that will enable these experiments.","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-"Moreover, we expect to overcome the constraints of the currently implemented synchronous factored models by developing a more general asynchronous framework, where multiple translation steps mayoperate on different phrase segmentations (for instance a part-of-speech model for large scale re ordering).","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
-"Acknowledgments This work was supported in part under the GALE program of the Defense Advanced Research Projects Agency, Contract No NR0011-06-C-0022 and inpart under the EuroMatrix project funded by the Eu ropean Commission (6th Framework Programme).We also benefited greatly from a 2006 summer workshop hosted by the Johns Hopkins Uni versity and would like thank the other workshop participants for their support and insights, namelyNicola Bertoldi, Ondrej Bojar, Chris Callison Burch, Alexandra Constantin, Brooke Cowan, Chris Dyer, Marcello Federico, Evan Herbst Christine Moran, Wade Shen, and Richard Zens.","{'title': 'Conclusion and Future Work. ', 'number': '7'}"
+We present an extension of phrase-based statistical machine translation models that enables the straight-forward integration of additional annotation at the word-level ?may it be linguistic markup or automatically generated word classes.,Introduction
+"In a num ber of experiments we show that factoredtranslation models lead to better translation performance, both in terms of auto matic scores, as well as more grammatical coherence.",Introduction
+"The current state-of-the-art approach to statistical machine translation, so-called phrase-based models,is limited to the mapping of small text chunks with out any explicit use of linguistic information, may it be morphological, syntactic, or semantic.",Experiment/Discussion
+"Such additional information has been demonstrated to bevaluable by integrating it in pre-processing or post processing steps.However, a tighter integration of linguistic infor mation into the translation model is desirable for two reasons:?",Experiment/Discussion
+"Translation models that operate on more gen eral representations, such as lemmas instead of surface forms of words, can draw on richer statistics and overcome the data sparseness problems caused by limited training data.?",Experiment/Discussion
+"Many aspects of translation can be best explained on a morphological, syntactic, or semantic level.",Experiment/Discussion
+Having such information avail able to the translation model allows the directmodeling of these aspects.,Experiment/Discussion
+For instance: re ordering at the sentence level is mostly driven word word part-of-speech OutputInput morphology part-of-speech morphology word class lemma word class lemma ......Figure 1: Factored representations of input and out put words incorporate additional annotation into the statistical translation model.,Experiment/Discussion
+"by general syntactic principles, local agreement constraints show up in morphology, etc.Therefore, we extended the phrase-based ap proach to statistical translation to tightly integrate additional information.",Experiment/Discussion
+The new approach allows additional annotation at the word level.,Experiment/Discussion
+"A word in our framework is not only a token, but a vector of factors that represent different levels of annotation (see Figure 1).",Experiment/Discussion
+"We report on experiments with factors such assurface form, lemma, part-of-speech, morphological features such as gender, count and case, automatic word classes, true case forms of words, shallow syntactic tags, as well as dedicated factors to en sure agreement between syntactically related items.",Experiment/Discussion
+"This paper describes the motivation, the modeling aspects and the computationally efficient decoding methods of factored translation models.",Experiment/Discussion
+We presentbriefly results for a number of language pairs.,Experiment/Discussion
+"How ever, the focus of this paper is the description of theapproach.",Experiment/Discussion
+Detailed experimental results will be de scribed in forthcoming papers.,Experiment/Discussion
+868,Experiment/Discussion
+"Many attempts have been made to add richer in formation to statistical machine translation models.Most of these focus on the pre-processing of the in put to the statistical system, or the post-processing of its output.",Experiment/Discussion
+"Our framework is more general and goes beyond recent work on models that back off to representations with richer statistics (Nie?en and Ney, 2001; Yang and Kirchhoff, 2006; Talbot andOsborne, 2006) by keeping a more complex repre sentation throughout the translation process.Rich morphology often poses a challenge to sta tistical machine translation, since a multitude of word forms derived from the same lemma fragmentthe data and lead to sparse data problems.",Experiment/Discussion
+"If the input language is morphologically richer than the out put language, it helps to stem or segment the input in a pre-processing step, before passing it on to the translation system (Lee, 2004; Sadat and Habash, 2006).",Experiment/Discussion
+"Structural problems have also been addressed bypre-processing: Collins et al (2005) reorder the in put to a statistical system to closer match the word order of the output language.On the other end of the translation pipeline, addi tional information has been used in post-processing.",Experiment/Discussion
+"Och et al (2004) report minor improvements with linguistic features on a Chinese-English task, Koehn and Knight (2003) show some success in re-rankingnoun phrases for German-English.",Experiment/Discussion
+"In their approaches, first, an n-best list with the best transla tions is generated for each input sentence.",Experiment/Discussion
+"Then, the n-best list is enriched with additional features, for instance by syntactically parsing each candidate translation and adding a parse score.",Experiment/Discussion
+"The additional features are used to rescore the n-best list, resulting possibly in a better best translation for the sentence.",Experiment/Discussion
+"The goal of integrating syntactic informationinto the translation model has prompted many re searchers to pursue tree-based transfer models (Wu, 1997; Alshawi et al, 1998; Yamada and Knight, 2001; Melamed, 2004; Menezes and Quirk, 2005; Galley et al, 2006), with increasingly encouraging results.",Experiment/Discussion
+"Our goal is complementary to these efforts:we are less interested in recursive syntactic struc ture, but in richer annotation at the word level.",Experiment/Discussion
+"In future work, these approaches may be combined.",Experiment/Discussion
+"lemma lemma part-of-speech OutputInput morphology part-of-speech word word morphologyFigure 2: Example factored model: morphologi cal analysis and generation, decomposed into three mapping steps (translation of lemmas, translation ofpart-of-speech and morphological information, gen eration of surface forms).",Experiment/Discussion
+One example to illustrate the short-comings of thetraditional surface word approach in statistical machine translation is the poor handling of morphology.,Experiment/Discussion
+Each word form is treated as a token in it self.,Experiment/Discussion
+"This means that the translation model treats, say, the word house completely independent of the word houses.",Experiment/Discussion
+Any instance of house in the training data does not add any knowledge to the translation of houses.,Experiment/Discussion
+"In the extreme case, while the translation of house may be known to the model, the word housesmay be unknown and the system will not be able to translate it.",Experiment/Discussion
+"While this problem does not show up as stronglyin English ? due to the very limited morphological inflection in English ? it does constitute a sig nificant problem for morphologically rich languages such as Arabic, German, Czech, etc. Thus, it may be preferably to model translation between morphologically rich languages on the levelof lemmas, and thus pooling the evidence for differ ent word forms that derive from a common lemma.",Experiment/Discussion
+"In such a model, we would want to translate lemmaand morphological information separately, and com bine this information on the output side to ultimately generate the output surface words.",Experiment/Discussion
+Such a model can be defined straight-forward as a factored translation model.,Experiment/Discussion
+See Figure 2 for an illustration of this model in our framework.,Experiment/Discussion
+"Note that while we illustrate the use of factored translation models on such a linguistically motivated 869 example, our framework also applies to models that incorporate statistically defined word classes, or any other annotation.",Experiment/Discussion
+"The translation of factored representations of input words into the factored representations of out put words is broken up into a sequence of mapping steps that either translate input factors into output factors, or generate additional output factors from existing output factors.",Experiment/Discussion
+Recall the example of a factored model motivated by morphological analysis and generation.,Experiment/Discussion
+In this model the translation process is broken up into the following three mapping steps: 1.,Experiment/Discussion
+Translate input lemmas into output lemmas.,Experiment/Discussion
+2.,Experiment/Discussion
+Translate morphological and POS factors.,Experiment/Discussion
+3.,Experiment/Discussion
+Generate surface forms given the lemma and.,Experiment/Discussion
+"linguistic factorsFactored translation models build on the phrase based approach (Koehn et al, 2003) that breaks up the translation of a sentence into the translation of small text chunks (so-called phrases).",Experiment/Discussion
+This approach implicitly defines a segmentation of the input and output sentences into phrases.,Experiment/Discussion
+"See an example in Figure 3.Our current implementation of factored translation models follows strictly the phrase-based ap proach, with the additional decomposition of phrasetranslation into a sequence of mapping steps.",Experiment/Discussion
+Trans lation steps map factors in input phrases to factors in output phrases.,Experiment/Discussion
+Generation steps map outputfactors within individual output words.,Experiment/Discussion
+"To reiter ate: all translation steps operate on the phrase level, while all generation steps operate on the word level.",Experiment/Discussion
+"Since all mapping steps operate on the same phrase segmentation of the input and output sentence into phrase pairs, we call these synchronous factored models.",Experiment/Discussion
+"Let us now take a closer look at one example, thetranslation of the one-word phrase ha?user into En glish.",Experiment/Discussion
+The representation of ha?user in German is: surface-form ha?user | lemma haus | part-of-speech NN | count plural | case nominative | gender neutral.,Experiment/Discussion
+neue h?user werden gebaut new houses are builtFigure 3: Example sentence translation by a standard phrase model.,Experiment/Discussion
+Factored models extend this ap proach.,Experiment/Discussion
+The three mapping steps in our morphologicalanalysis and generation model may provide the fol lowing applicable mappings: 1.,Experiment/Discussion
+Translation: Mapping lemmas.,Experiment/Discussion
+"haus ? house, home, building, shell 2.",Experiment/Discussion
+Translation: Mapping morphology.,Experiment/Discussion
+"NN|plural-nominative-neutral ? NN|plural, NN|singular 3.",Experiment/Discussion
+Generation: Generating surface forms.,Experiment/Discussion
+house|NN|plural ? houses ? house|NN|singular ? house ? home|NN|plural ? homes ? ...,Experiment/Discussion
+We call the application of these mapping stepsto an input phrase expansion.,Experiment/Discussion
+"Given the multiple choices for each step (reflecting the ambiguity in translation), each input phrase may be ex panded into a list of translation options.",Experiment/Discussion
+The German ha?user|haus|NN|plural-nominative-neutral may be expanded as follows: 1.,Experiment/Discussion
+Translation: Mapping lemmas.,Experiment/Discussion
+"{ ?|house|?|?, ?|home|?|?, ?|building|?|?, ?|shell|?|?",Experiment/Discussion
+} 2.,Experiment/Discussion
+Translation: Mapping morphology.,Experiment/Discussion
+"{ ?|house|NN|plural, ?|home|NN|plural, ?|building|NN|plural, ?|shell|NN|plural, ?|house|NN|singular, ...",Experiment/Discussion
+} 3.,Experiment/Discussion
+Generation: Generating surface forms.,Experiment/Discussion
+"{ houses|house|NN|plural, homes|home|NN|plural, buildings|building|NN|plural, shells|shell|NN|plural, house|house|NN|singular, ...",Experiment/Discussion
+} 870,Experiment/Discussion
+"Factored translation models follow closely the sta tistical modeling approach of phrase-based models (in fact, phrase-based models are a special case of factored models).",Experiment/Discussion
+The main difference lies in thepreparation of the training data and the type of mod els learned from the data.,Experiment/Discussion
+5.1 Training.,Experiment/Discussion
+The training data (a parallel corpus) has to be anno tated with the additional factors.,Experiment/Discussion
+"For instance, if we want to add part-of-speech information on the input and output side, we need to obtain part-of-speech tagged training data.",Experiment/Discussion
+"Typically this involves runningautomatic tools on the corpus, since manually anno tated corpora are rare and expensive to produce.",Experiment/Discussion
+"Next, we need to establish a word-alignmentfor all the sentences in the parallel training cor pus.",Experiment/Discussion
+"Here, we use the same methodology as in phrase-based models (typically symmetrized GIZA++ alignments).",Experiment/Discussion
+"The word alignment methods may operate on the surface forms of words, or on anyof the other factors.",Experiment/Discussion
+"In fact, some preliminary ex periments have shown that word alignment based on lemmas or stems yields improved alignment quality.",Experiment/Discussion
+Each mapping step forms a component of the overall model.,Experiment/Discussion
+From a training point of view thismeans that we need to learn translation and gener ation tables from the word-aligned parallel corpus and define scoring methods that help us to choose between ambiguous mappings.,Experiment/Discussion
+Phrase-based translation models are acquired from a word-aligned parallel corpus by extracting allphrase-pairs that are consistent with the word align ment.,Experiment/Discussion
+"Given the set of extracted phrase pairs with counts, various scoring functions are estimated, such as conditional phrase translation probabilities based on relative frequency estimation or lexical translation probabilities based on the words in the phrases.",Experiment/Discussion
+"In our approach, the models for the translationsteps are acquired in the same manner from a word aligned parallel corpus.",Experiment/Discussion
+"For the specified factors in the input and output, phrase mappings are extracted.The set of phrase mappings (now over factored rep resentations) is scored based on relative counts and word-based translation probabilities.",Experiment/Discussion
+The generation distributions are estimated on the output side only.,Experiment/Discussion
+The word alignment plays no role here.,Experiment/Discussion
+"In fact, additional monolingual data may be used.",Experiment/Discussion
+The generation model is learned on aword-for-word basis.,Experiment/Discussion
+"For instance, for a genera tion step that maps surface forms to part-of-speech, a table with entries such as (fish,NN) is constructed.",Experiment/Discussion
+"One or more scoring functions may be defined overthis table, in our experiments we used both condi tional probability distributions, e.g., p(fish|NN) andp(NN|fish), obtained by maximum likelihood esti mation.",Experiment/Discussion
+"An important component of statistical machinetranslation is the language model, typically an n gram model over surface forms of words.",Experiment/Discussion
+"In theframework of factored translation models, such se quence models may be defined over any factor, or any set of factors.",Experiment/Discussion
+"For factors such as part-of-speech tags, building and using higher order n-gram models (7-gram, 9-gram) is straight-forward.",Experiment/Discussion
+5.2 Combination of Components.,Experiment/Discussion
+"As in phrase-based models, factored translation models can be seen as the combination of several components (language model, reordering model,translation steps, generation steps).",Experiment/Discussion
+These compo nents define one or more feature functions that are combined in a log-linear model: p(e|f) = 1 Z exp n?,Experiment/Discussion
+"i=1 ?ihi(e, f) (1) Z is a normalization constant that is ignored in practice.",Experiment/Discussion
+"To compute the probability of a translation e given an input sentence f, we have to evaluate eachfeature function hi.",Experiment/Discussion
+"For instance, the feature func tion for a bigram language model component is (m is the number of words ei in the sentence e): hLM(e, f) = pLM(e) = p(e1) p(e2|e1)..p(em|em?1) (2)Let us now consider the feature functions introduced by the translation and generation steps of fac tored translation models.",Experiment/Discussion
+"The translation of the input sentence f into the output sentence e breaks down to a set of phrase translations {(f?j , e?j)}.",Experiment/Discussion
+"For a translation step component, each feature function hT is defined over the phrase pairs (f?j , e?j) 871 given a scoring function ? : hT(e, f) = ? j ?(f?j , e?j) (3) For a generation step component, each feature function hG given a scoring function ? is defined over the output words ek only: hG(e, f) = ? k ?(ek) (4) The feature functions follow from the scoring functions (?",Experiment/Discussion
+", ?) acquired during the training oftranslation and generation tables.",Experiment/Discussion
+"For instance, re call our earlier example: a scoring function for a generation model component that is a conditional probability distribution between input and output factors, e.g., ?(fish,NN,singular) = p(NN|fish).",Experiment/Discussion
+"The feature weights ?i in the log-linear model are determined using a minimum error rate training method, typically Powell?s method (Och, 2003).",Experiment/Discussion
+5.3 Efficient Decoding.,Experiment/Discussion
+"Compared to phrase-based models, the decomposi tion of phrase translation into several mapping stepscreates additional computational complexity.",Experiment/Discussion
+"In stead of a simple table look-up to obtain the possible translations for an input phrase, now multiple tables have to be consulted and their content combined.",Experiment/Discussion
+In phrase-based models it is easy to identify the entries in the phrase table that may be used for a specific input sentence.,Experiment/Discussion
+These are called translation options.,Experiment/Discussion
+We usually limit ourselves to the top 20 translation options for each input phrase.,Experiment/Discussion
+The beam search decoding algorithm starts withan empty hypothesis.,Experiment/Discussion
+"Then new hypotheses are gen erated by using all applicable translation options.These hypotheses are used to generate further hypotheses in the same manner, and so on, until hypotheses are created that cover the full input sentence.",Experiment/Discussion
+The highest scoring complete hypothesis in dicates the best translation according to the model.,Experiment/Discussion
+How do we adapt this algorithm for factored translation models?,Experiment/Discussion
+"Since all mapping steps operate on the same phrase segmentation, the expansions of these mapping steps can be efficiently pre-computed prior to the heuristic beam search, and stored astranslation options.",Experiment/Discussion
+"For a given input phrase, all pos sible translation options are thus computed before word word part-of-speech OutputInput 3 g r a m 7 g r a mFigure 4: Syntactically enriched output: By gener ating additional linguistic factors on the output side,high-order sequence models over these factors sup port syntactical coherence of the output.",Experiment/Discussion
+"decoding (recall the example in Section 4, where we carried out the expansion for one input phrase).",Experiment/Discussion
+"This means that the fundamental search algorithm does not change.However, we need to be careful about combina torial explosion of the number of translation options given a sequence of mapping steps.",Experiment/Discussion
+"In other words,the expansion may create too many translation op tions to handle.",Experiment/Discussion
+"If one or many mapping steps result in a vast increase of (intermediate) expansions, thismay be become unmanageable.",Experiment/Discussion
+"We currently ad dress this problem by early pruning of expansions, and limiting the number of translation options per input phrase to a maximum number, by default 50.This is, however, not a perfect solution.",Experiment/Discussion
+We are cur rently working on a more efficient search for the top50 translation options to replace the current brute force approach.,Experiment/Discussion
+"We carried out a number of experiments using the factored translation model framework, incorporatingboth linguistic information and automatically gener ated word classes.",Results/Conclusion
+"This work is implemented as part of the open source Moses1 system (Koehn et al, 2007).",Results/Conclusion
+We used the default settings for this system.,Results/Conclusion
+6.1 Syntactically Enriched Output.,Results/Conclusion
+"In the first set of experiments, we translate surfaceforms of words and generate additional output fac tors from them (see Figure 4 for an illustration).",Results/Conclusion
+"Byadding morphological and shallow syntactic infor 1available at http://www.statmt.org/moses/ 872 English?German Model BLEU best published result 18.15% baseline (surface) 18.04% surface + POS 18.15% surface + POS + morph 18.22% English?Spanish Model BLEU baseline (surface) 23.41% surface + morph 24.66% surface + POS + morph 24.25% English?Czech Model BLEU baseline (surface) 25.82% surface + all morph 27.04% surface + case/number/gender 27.45% surface + CNG/verb/prepositions 27.62%Table 1: Experimental results with syntactically en riched output (part of speech, morphology)mation, we are able to use high-order sequence mod els (just like n-gram language models over words) in order to support syntactic coherence of the output.",Results/Conclusion
+Table 1 summarizes the experimental results.,Results/Conclusion
+"The English?German systems were trained on the full 751,088 sentence Europarl corpus and evaluated on the WMT 2006 test set (Koehn and Monz, 2006).",Results/Conclusion
+Adding part-of-speech and morphological factors on the output side and exploiting them with 7-gram sequence models results in minor improvements in BLEU.,Results/Conclusion
+The model that incorporates both POS and morphology (18.22% BLEU vs. baseline 18.04% BLEU) ensures better local grammatical coherence.,Results/Conclusion
+"The baseline system produces often phrases such as zur(to) zwischenstaatlichen(inter-governmental) methoden(methods), with a mismatch between the determiner (singular) and the noun (plural), while the adjective is ambiguous.",Results/Conclusion
+In a manual evaluation of intra-NP agreement we found that the factored model reduced the disagreement error within noun phrases of length ? 3 from 15% to 4%.,Results/Conclusion
+"English?Spanish systems were trained on a 40,000 sentence subset of the Europarl corpus.",Results/Conclusion
+"Here,we also used morphological and part-of-speech fac tors on the output side with an 7-gram sequence model, resulting in absolute improvements of 1.25%(only morph) and 0.84% (morph+POS).",Results/Conclusion
+Improve ments on the full Europarl corpus are smaller.,Results/Conclusion
+"English-Czech systems were trained on a 20,000sentence Wall Street Journal corpus.",Results/Conclusion
+Morphologi cal features were exploited with a 7-gram languagemodel.,Results/Conclusion
+Experimentation suggests that it is beneficial to carefully consider which morphological fea tures to be used.,Results/Conclusion
+"Adding all features results inlower performance (27.04% BLEU), than consider ing only case, number and gender (27.45% BLEU) or additionally verbial (person, tense, and aspect) and prepositional (lemma and case) morphology (27.62% BLEU).",Results/Conclusion
+All these models score well above the baseline of 25.82% BLEU.,Results/Conclusion
+"An extended description of these experiments is in the JHU workshop report (Koehn et al, 2006).",Results/Conclusion
+6.2 Morphological Analysis and Generation.,Results/Conclusion
+The next model is the one described in our motivat ing example in Section 4 (see also Figure 2).,Results/Conclusion
+"Instead of translating surface forms of words, we translateword lemma and morphology separately, and gener ate the surface form of the word on the output side.",Results/Conclusion
+"We carried out experiments for the language pair German?English, using the 52,185 sentence NewsCommentary corpus2.",Results/Conclusion
+"We report results on the de velopment test set, which is also the out-of-domain test set of the WMT06 workshop shared task (Koehn and Monz, 2006).",Results/Conclusion
+"German morphological analysis and POS tagging was done using LoPar Schmidt and Schulte im Walde (2000), English POS tagging was done with Brill?s tagger (Brill, 1995), followed by a simple lemmatizer based on tagging results.",Results/Conclusion
+Experimental results are summarized in Table 2.,Results/Conclusion
+"For this data set, we also see an improvement when using a part-of-speech language model ? the BLEUscore increases from 18.19% to 19.05% ? consis tent with the results reported in the previous section.",Results/Conclusion
+"However, moving from a surface word translation mapping to a lemma/morphology mapping leads to a deterioration of performance to a BLEU score of 14.46%.Note that this model completely ignores the sur face forms of input words and only relies on the 2Made available for the WMT07 workshop shared task http://www.statmt.org/wmt07/ 873 German?English Model BLEU baseline (surface) 18.19% + POS LM 19.05% pure lemma/morph model 14.46% backoff lemma/morph model 19.47% Table 2: Experimental results with morphological analysis and generation model (Figure 2), using News Commentary corpus more general lemma and morphology information.",Results/Conclusion
+"While this allows the translation of word forms withknown lemma and unknown surface form, on balance it seems to be disadvantage to throw away sur face form information.To overcome this problem, we introduce an al ternative path model: Translation options in this model may come either from the surface form modelor from the lemma/morphology model we just de scribed.",Results/Conclusion
+"For surface forms with rich evidence in the training data, we prefer surface form mappings, and for surface forms with poor or no evidence in the training data we decompose surface forms into lemma and morphology information and map theseseparately.",Results/Conclusion
+"The different translation tables form dif ferent components in the log-linear model, whose weights are set using standard minimum error rate training methods.The alternative path model outperforms the sur face form model with POS LM, with an BLEU scoreof 19.47% vs. 19.05%.",Results/Conclusion
+"The test set has 3276 un known word forms vs 2589 unknown lemmas (out of 26,898 words).",Results/Conclusion
+"Hence, the lemma/morph model is able to translate 687 additional words.",Results/Conclusion
+6.3 Use of Automatic Word Classes.,Results/Conclusion
+"Finally, we went beyond linguistically motivatedfactors and carried out experiments with automatically trained word classes.",Results/Conclusion
+"By clustering words to gether by their contextual similarity, we are able to find statistically similarities that may lead to more generalized and robust models.",Results/Conclusion
+"We trained models on the IWSLT 2006 task (39,953 sentences).",Results/Conclusion
+"Compared to a baseline English?Chinese system, adding word classes on theoutput side as additional factors (in a model as pre English?Chinese Model BLEU baseline (surface) 19.54% surface + word class 21.10% Table 3: Experimental result with automatic word classes obtained by word clustering Chinese?English Recase Method BLEU Standard two-pass: SMT + recase 20.65% Integrated factored model (optimized) 21.08% OutputInput mixed-cased lower-cased lower-casedTable 4: Experimental result with integrated recas ing (IWSLT 2006 task) viously illustrated in Figure 4) to be exploited by a 7-gram sequence model, we observe a gain 1.5% BLEU absolute.",Results/Conclusion
+"For more on this experiment, see (Shen et al, 2006).",Results/Conclusion
+6.4 Integrated Recasing.,Results/Conclusion
+"To demonstrate the versatility of the factored translation model approach, consider the task of recas ing (Lita et al, 2003; Wang et al, 2006).",Results/Conclusion
+"Typically in statistical machine translation, the training data islowercased to generalize over differently cased surface forms ? say, the, The, THE ? which neces sitates a post-processing step to restore case in the output.",Results/Conclusion
+"With factored translation models, it is possible to integrate this step into the model, by adding a generation step.",Results/Conclusion
+See Table 4 for an illustration of this model and experimental results on the IWSLT2006 task (Chinese-English).,Results/Conclusion
+The integrated recas ing model outperform the standard approach with an BLEU score of 21.08% to 20.65%.,Results/Conclusion
+"For more on this experiment, see (Shen et al, 2006).",Results/Conclusion
+874 6.5 Additional Experiments.,Results/Conclusion
+"Factored translation models have also been used for the integration of CCG supertags (Birch et al, 2007), domain adaptation (Koehn and Schroeder, 2007) and for the improvement of English-Czech translation (Bojar, 2007).",Results/Conclusion
+"We presented an extension of the state-of-the-artphrase-based approach to statistical machine trans lation that allows the straight-forward integration of additional information, may it come from linguistic tools or automatically acquired word classes.",Results/Conclusion
+"We reported on experiments that showed gains over standard phrase-based models, both in terms of automatic scores (gains of up to 2% BLEU), as well as a measure of grammatical coherence.",Results/Conclusion
+These experiments demonstrate that within the frameworkof factored translation models additional informa tion can be successfully exploited to overcome someshort-comings of the currently dominant phrase based statistical approach.,Results/Conclusion
+The framework of factored translation models is very general.,Results/Conclusion
+Many more models that incorporatedifferent factors can be quickly built using the ex isting implementation.,Results/Conclusion
+"We are currently exploringthese possibilities, for instance use of syntactic in formation in reordering and models with augmented input information.We have not addressed all computational problems of factored translation models.",Results/Conclusion
+"In fact, compu tational problems hold back experiments with morecomplex factored models that are theoretically pos sible but too computationally expensive to carry out.Our current focus is to develop a more efficient im plementation that will enable these experiments.",Results/Conclusion
+"Moreover, we expect to overcome the constraints of the currently implemented synchronous factored models by developing a more general asynchronous framework, where multiple translation steps mayoperate on different phrase segmentations (for instance a part-of-speech model for large scale re ordering).",Results/Conclusion
+"Acknowledgments This work was supported in part under the GALE program of the Defense Advanced Research Projects Agency, Contract No NR0011-06-C-0022 and inpart under the EuroMatrix project funded by the Eu ropean Commission (6th Framework Programme).We also benefited greatly from a 2006 summer workshop hosted by the Johns Hopkins Uni versity and would like thank the other workshop participants for their support and insights, namelyNicola Bertoldi, Ondrej Bojar, Chris Callison Burch, Alexandra Constantin, Brooke Cowan, Chris Dyer, Marcello Federico, Evan Herbst Christine Moran, Wade Shen, and Richard Zens.",Results/Conclusion

@@ -1,128 +1,128 @@
 col1,col2
-We describe a procedure for arranging into a time-line the contents of news stories describing the development of some situation.,{}
-We describe the parts of the system that deal with 1. breaking sentences into event-clauses and 2. resolving both explicit and implicit temporal references.,{}
-"Evaluations show a performance of 52%, compared to humans.",{}
-"Linguists who have analyzed news stories (Schokkenbroek,1999; Bell,1997; Ohtsuka and Brewer,1992, etc.) noticed that “narratives1 are about more than one event and these events are temporally ordered.","{'title': '1 Introduction', 'number': '1'}"
-"Though it seems most logical to recapitulate events in the order in which they happened, i.e. in chronological order, the events are often presented in a different sequence”.","{'title': '1 Introduction', 'number': '1'}"
-"The same paper states that “it is important to reconstruct the underlying event order2 for narrative analysis to assign meaning to the sequence in which the events are narrated at the level of discourse structure....If the underlying event structure cannot be reconstructed, it may well be impossible to understand the narrative at all, let alone assign meaning to its structure”.","{'title': '1 Introduction', 'number': '1'}"
-Several psycholinguistic experiments show the influence of event-arrangement in news stories on the ease of comprehension by readers.,"{'title': '1 Introduction', 'number': '1'}"
-Duszak (1991) had readers reconstruct a news story from the randomized sentences.,"{'title': '1 Introduction', 'number': '1'}"
-According to his experiments readers have a default strategy by which—in the absence of cues to the contrary—they re-impose chronological order on events in the discourse.,"{'title': '1 Introduction', 'number': '1'}"
-"The problem of reconstructing the chronological order of events becomes more complicated if we have to deal with separate news stories, written at different times and describing the development of some situation, as is the case for multidocument summarization.","{'title': '1 Introduction', 'number': '1'}"
-"By judicious definition, one can make this problem easy or hard.","{'title': '1 Introduction', 'number': '1'}"
-"Selecting only specific items to assign time-points to, and then measuring correctness on them alone, may give high performance but leave much of the text unassigned.","{'title': '1 Introduction', 'number': '1'}"
-We address the problem of assigning a time-point to every clause in the text.,"{'title': '1 Introduction', 'number': '1'}"
-Our approach is to break the news stories into their constituent events and to assign timestamps—either time-points or time-intervals—to these events.,"{'title': '1 Introduction', 'number': '1'}"
-"When assigning time-stamps we analyze both implicit time references (mainly through the tense system) and explicit ones (temporal adverbials) such as ‘on Monday’, ‘in 1998’, etc.","{'title': '1 Introduction', 'number': '1'}"
-"The result of the work is a prototype program which takes as input set of news stories broken into separate sentences and produces as output a text that combines all the events from all the articles, organized in chronological order.","{'title': '1 Introduction', 'number': '1'}"
-As data we used a set of news stories about an earthquake in Afghanistan that occurred at the end of May in 1998.,"{'title': '2 Data', 'number': '2'}"
-"These news stories were taken from CNN, ABC, and APW websites for the DUC-2000 meeting.","{'title': '2 Data', 'number': '2'}"
-The stories were all written within one week.,"{'title': '2 Data', 'number': '2'}"
-Some of the texts were written on the same day.,"{'title': '2 Data', 'number': '2'}"
-"In addition to a description of the May earthquake, these texts contain references to another earthquake that occurred in the same region in February 1998.","{'title': '2 Data', 'number': '2'}"
-"To divide sentences into event-clauses we use CONTEX (Hermjakob, 1997), a parser that produces a syntactic parse tree augmented with semantic labels.","{'title': '3 Identifying Events', 'number': '3'}"
-CONTEX uses machine learning techniques to induce a grammar from a given treebanks.,"{'title': '3 Identifying Events', 'number': '3'}"
-A sample output of CONTEX is given in Appendix 1.,"{'title': '3 Identifying Events', 'number': '3'}"
-To divide a sentence into event-clauses the parse tree output by CONTEX is analyzed from left to right (root to leaf).,"{'title': '3 Identifying Events', 'number': '3'}"
-The ::CAT field for each node provides the necessary information about whether the node under consideration forms a part of its upper level event or whether it introduces a new event.,"{'title': '3 Identifying Events', 'number': '3'}"
-"::CAT features that indicate new events are: S-CLAUSE, S-SNT, SSUB-CLAUSE, S-PART-CLAUSE, S-RELCLAUSE.","{'title': '3 Identifying Events', 'number': '3'}"
-These features mark clauses which contain both subject (one or several NPs) and predicate (VP containing one or several verbs).,"{'title': '3 Identifying Events', 'number': '3'}"
-The above procedure classifies a clause containing more than one verb as a simple clause.,"{'title': '3 Identifying Events', 'number': '3'}"
-Such clauses are treated as one event and only one time-point will be assigned to them.,"{'title': '3 Identifying Events', 'number': '3'}"
-"This is fine when the second verb is used in the same tense as the first, but may be wrong in some cases, as in He lives in this house now and will stay here for one more year.","{'title': '3 Identifying Events', 'number': '3'}"
-"There are no such clauses in the analyzed data, so we ignore this complication for the present.","{'title': '3 Identifying Events', 'number': '3'}"
-"The parse tree also gives information about the tense of verbs, used later for time assignment.","{'title': '3 Identifying Events', 'number': '3'}"
-"In order to facilitate subsequent processing, we wish to rephrase relative clauses as full independent sentences.","{'title': '3 Identifying Events', 'number': '3'}"
-We therefore have to replace pronouns where it is possible by their antecedents.,"{'title': '3 Identifying Events', 'number': '3'}"
-"Very often the parser gives information about the referential antecedents (in the example below, Russia).","{'title': '3 Identifying Events', 'number': '3'}"
-"Therefore we introduced the rule: if it is possible to identify the referent, put it into the event-clause: Here the antecedent for which is identified as the relief, and gives which <the relief> was costing lives instead of which <poor coordination> was costing lives.","{'title': '3 Identifying Events', 'number': '3'}"
-"Fortunately, in most cases our rule works correctly.","{'title': '3 Identifying Events', 'number': '3'}"
-"Although the event-identifier works reasonably well, breaking text into event-clauses needs further investigation.","{'title': '3 Identifying Events', 'number': '3'}"
-Table 1 shows the performance of the system.,"{'title': '3 Identifying Events', 'number': '3'}"
-"Two kinds of mistakes are made by the event identifier: those caused by CONTEX (it does not identify clauses with omitted predicate, etc.) and those caused by the fact that our clause identifier does too shallow analysis of the parse tree.","{'title': '3 Identifying Events', 'number': '3'}"
-"According to (Bell, 1997) “time is expressed at different levels—in the morphology and syntax of the verb phrase, in time adverbials whether lexical or phrasal, and in the discourse structure of the stories above the sentence”.","{'title': '4 Time-stamper', 'number': '4'}"
-"For the present work we use slightly modified time representations suggested in (Allen, 1991).","{'title': '4 Time-stamper', 'number': '4'}"
-Formats used for time representation: We use two anchoring time points: We require that the first sentence for each article contains time information.,"{'title': '4 Time-stamper', 'number': '4'}"
-For example: The date information is in bold.,"{'title': '4 Time-stamper', 'number': '4'}"
-"We denote by Ti the reference time-point for the article, where i 3 YYYY—year number, DDD—absolute number of the day within the year (1–366), W-—umber of the day in a week (1- Monday, ... 7- Saturday).","{'title': '4 Time-stamper', 'number': '4'}"
-If it is impossible to point out the day of the week then W is assigned 0. means that it is the time point of article i.,"{'title': '4 Time-stamper', 'number': '4'}"
-The symbol Ti is used as a comparative time-point if the time the article was written is unknown.,"{'title': '4 Time-stamper', 'number': '4'}"
-"The information in brackets gives the exact date the article was written, which is the main anchor point for the time-stamper.","{'title': '4 Time-stamper', 'number': '4'}"
-"The information about hours, minutes and seconds is ignored for the present.","{'title': '4 Time-stamper', 'number': '4'}"
-2.,"{'title': '4 Time-stamper', 'number': '4'}"
-Last time point assigned in the same sentence While analyzing different event-clauses within the same sentence we keep track of what time-point was most recently assigned within this sentence.,"{'title': '4 Time-stamper', 'number': '4'}"
-"If needed, we can refer to this time-point.","{'title': '4 Time-stamper', 'number': '4'}"
-In case the most recent time information assigned is not a date but an interval we record information about both time boundaries.,"{'title': '4 Time-stamper', 'number': '4'}"
-"When the program proceeds to the next sentence, the variable for the most recently assigned date becomes undefined.","{'title': '4 Time-stamper', 'number': '4'}"
-"In most cases this assumption works correctly (example 5.2–5.3): The last time interval assigned for sentence 5.2 is {1998:53:0}---{1998:71:0}, which gives an approximate range of days when the previous earthquake happened.","{'title': '4 Time-stamper', 'number': '4'}"
-"But the information in sentence 5.3 is about the recent earthquake and not about the previous one of 3 months earlier, which is why it would be a mistake to point Monday and Tuesday within that range.","{'title': '4 Time-stamper', 'number': '4'}"
-Mani and Wilson (2000) point out “over half of the errors [made by his time-stamper] were due to propagation of spreading of an incorrect event time to neighboring events”.,"{'title': '4 Time-stamper', 'number': '4'}"
-The rule of dropping the most recently assigned date as an anchor point when proceeding to the next sentence very often helps us to avoid this problem.,"{'title': '4 Time-stamper', 'number': '4'}"
-There are however cases where dropping the most recent time as an anchor when proceeding to the next sentence causes errors: It is clear that sentence 4.9 is the continuation of sentence 4.8 and refers to the same time point (February earthquake).,"{'title': '4 Time-stamper', 'number': '4'}"
-In this case our rule assigns the wrong time to 4.9.1.,"{'title': '4 Time-stamper', 'number': '4'}"
-Still we retain this rule because it is more frequently correct than incorrect.,"{'title': '4 Time-stamper', 'number': '4'}"
-"First, the text divided into event-clauses is run through a program that extracts all the date-stamps (made available by Kevin Knight, ISI).","{'title': '4 Time-stamper', 'number': '4'}"
-In most cases this program does not miss any date-stamps and extracts only the correct ones.,"{'title': '4 Time-stamper', 'number': '4'}"
-"The only cases in which it did not work properly for the texts were: Here the modal verb MAY was assumed to be the month, given that it started with a capital letter.","{'title': '4 Time-stamper', 'number': '4'}"
-"Tuberculosis is already common in the area where people live in close quarters and have poor hygiene here the noun quarters, which in this case is used in the sense immediate contact or close range (Merriam-Webster dictionary), was assumed to be used in the sense the fourth part of a measure of time (Merriam-Webster dictionary).","{'title': '4 Time-stamper', 'number': '4'}"
-After extracting all the date-phrases we proceed to time assignment.,"{'title': '4 Time-stamper', 'number': '4'}"
-"When assigning a time to an event, we select the time to be either the most recently assigned date or, if the value of the most recently assigned date is undefined, to the date of the article.","{'title': '4 Time-stamper', 'number': '4'}"
-We use a set of rules to perform this selection.,"{'title': '4 Time-stamper', 'number': '4'}"
-"These rules can be divided into two main categories: those that work for sentences containing explicit date information, and those that work for sentences that do not.","{'title': '4 Time-stamper', 'number': '4'}"
-"If the day-of-the-week used in the eventclause is the same as that of the article (or the most recently assigned date, if it is defined), and there no words before it could signal that the described event happened earlier or will happen later, then the time-point of the article (or the most recently assigned date, if it is defined) is assigned to this event.","{'title': '4 Time-stamper', 'number': '4'}"
-"If before or after a day-ofthe-week there is a word/words signaling that the event happened earlier of will happen later then the time-point is assigned in accordance with this signal-word and the most recently assigned date, if it is defined.","{'title': '4 Time-stamper', 'number': '4'}"
-"If the day-of-the-week used in the eventclause is not the same as that of the article (or the most recently assigned date, if it is defined), then if there are words pointing out that the event happened before the article was written or the tense used in the clause is past, then the time for the event-clause is assigned in accordance with this word (such words we call signal-words), or the most recent day corresponding to the current day-of-the-week is chosen.","{'title': '4 Time-stamper', 'number': '4'}"
-"If the signal-word points out that the event will happen after the article was written or the tense used in the clause is future, then the time for the event-clause is assigned in accordance with the signal word or the closest subsequent day corresponding to the current day-of-the-week. helicopters evacuated 50 of the most seriously injured to emergency medical centers.","{'title': '4 Time-stamper', 'number': '4'}"
-The time for article 5 is (06/06/1998:Tuesday 15:17:00).,"{'title': '4 Time-stamper', 'number': '4'}"
-"So, the time assigned to this eventclause is: 5.3.1 {1998:151:1}, {1998:152:2}.","{'title': '4 Time-stamper', 'number': '4'}"
-"The rules are the same as for a day-of-theweek, but in this case a time-range is assigned to the event-clause.","{'title': '4 Time-stamper', 'number': '4'}"
-"The left boundary of the range is the first day of the month, the right boundary is the last day of the month, and though it is possible to figure out the days of weeks for these boundaries, this aspect is ignored for the present. earthquake in the same region killed 2,300 people and left thousands of people homeless.","{'title': '4 Time-stamper', 'number': '4'}"
-The time for article 4 is (05/30/1998:Saturday 14:41:00).,"{'title': '4 Time-stamper', 'number': '4'}"
-"So, the time assigned to this eventclause is 4.8.1 {1998:32:0}---{1998:60:0}.","{'title': '4 Time-stamper', 'number': '4'}"
-"In the analyzed corpus there is a case where the presence of a name of month leads to a wrong time-stamping: Because of February, a wrong time-interval is assigned to clause 6.3.3, namely {1998:32:0}--{1998:60:0}.","{'title': '4 Time-stamper', 'number': '4'}"
-As this event-clause is a description of the latest news as compared to some figures it should have the time-point of the article.,"{'title': '4 Time-stamper', 'number': '4'}"
-Such cases present a good possibility for the use of machine learning techniques to disambiguate between the cases where we should take into account date-phrase information and where not.,"{'title': '4 Time-stamper', 'number': '4'}"
-"We might have date-stamps where the words weeks, days, months, years are used with modifiers.","{'title': '4 Time-stamper', 'number': '4'}"
-"For example remote mountainous area rocked three months earlier by another massive quake 5.2.4 that <another massive quake> claimed some 2,300 victims.","{'title': '4 Time-stamper', 'number': '4'}"
-In event-clause 5.2.3 the expression three months earlier is used.,"{'title': '4 Time-stamper', 'number': '4'}"
-It is clear that to get the time for the event it is not enough to subtract 3 months from the time of the article because the above expression gives an approximate range within which this event could happen and not a particular date.,"{'title': '4 Time-stamper', 'number': '4'}"
-For such cases we invented the following rule: For event 5.2.3 the time range will be {1998:53:0)---{1998:71:0) (the exact date of the article is {1998:152:2}).,"{'title': '4 Time-stamper', 'number': '4'}"
-"If the modifier used with weeks, days, months or years is several, then the multiplier used in (1) is equal to 2.","{'title': '4 Time-stamper', 'number': '4'}"
-"If an event-clause does not contain any datephrase but contains one of the words ‘when’, ‘since’, ‘after’, ‘before’, etc., it might mean that this clause refers to an event, the time of which can be used as a reference point for the event under analysis.","{'title': '4 Time-stamper', 'number': '4'}"
-In this case we ask the user to insert the time for this reference event manually.,"{'title': '4 Time-stamper', 'number': '4'}"
-"This rule can cause problems in cases where ‘after’ or ‘before’ are used not as temporal connectors but as spatial ones, though in the analyzed texts we did not face this problem.","{'title': '4 Time-stamper', 'number': '4'}"
-"If the current event-clause refers to a timepoint in Present/Past Perfect tense, then an openended time-interval is assigned to this event.","{'title': '4 Time-stamper', 'number': '4'}"
-The starting point is unknown; the end-point is either the most recently assigned date or the time-point of the article.,"{'title': '4 Time-stamper', 'number': '4'}"
-"If the current event-clause contains a verb in future tense (one of the verbs ‘shall’, ‘will’, ‘should’, ‘would’, ‘might’ is present in the clause) then the open-ended time-interval assigned to this event-clause has the starting point at either the most recently assigned date or the date of the article.","{'title': '4 Time-stamper', 'number': '4'}"
-Other tenses that can be identified with the help of CONTEX are Present and Past Indefinite.,"{'title': '4 Time-stamper', 'number': '4'}"
-In the analyzed data all the verbs in Present Indefinite are given the most recently assigned date (or the date of the article).,"{'title': '4 Time-stamper', 'number': '4'}"
-The situation with Past Indefinite is much more complicated and requires further investigation of more data.,"{'title': '4 Time-stamper', 'number': '4'}"
-"News stories usually describe the events that already took place at some time in the past, which is why even if the day when the event happened is not over, past tense is very often used for the description (this is especially noticeable for US news of European, Asian, African and Australian events).","{'title': '4 Time-stamper', 'number': '4'}"
-This means that very often an event-clause containing a verb in Past Indefinite Tense can be assigned the most recently assigned date (or the date of the article).,"{'title': '4 Time-stamper', 'number': '4'}"
-It might prove useful to use machine learned rules for such cases.,"{'title': '4 Time-stamper', 'number': '4'}"
-If there is no verb in the event-clause then the most recently assigned date (or the date of the article) is assigned to the event-clause.,"{'title': '4 Time-stamper', 'number': '4'}"
-We ran the time-stamper program on two types of data: list of event-clauses extracted by the event identifier and list of event-clauses created manually.,"{'title': '4 Time-stamper', 'number': '4'}"
-Tables 2 and 3 show the results.,"{'title': '4 Time-stamper', 'number': '4'}"
-In the former case we analyzed only the correctly identified clauses.,"{'title': '4 Time-stamper', 'number': '4'}"
-One can see that even on manually created data the performance of the time-stamper is not 100%.,"{'title': '4 Time-stamper', 'number': '4'}"
-Why?,"{'title': '4 Time-stamper', 'number': '4'}"
-"Some errors are caused by assigning the time based on the date-phrase present in the eventclause, when this date-phrase is not an adverbial time modifier but an attribute.","{'title': '4 Time-stamper', 'number': '4'}"
-"For example, The third event describes the May 30 earthquake but the time interval given for this event is {1998:32:0}---{1998:60:0} (i.e., the event happened in February).","{'title': '4 Time-stamper', 'number': '4'}"
-It might be possible to use machine learned rules to correct such cases.,"{'title': '4 Time-stamper', 'number': '4'}"
-"One more significant source of errors is the writing style: When the reader sees early this morning he or she tends to assign to this clause the time of the article, but later as seeing looked for two days, realizes that the time of the clause containing early this morning is two days earlier than the time of the article.","{'title': '4 Time-stamper', 'number': '4'}"
-It seems that the errors caused by the writing style can hardly be avoided.,"{'title': '4 Time-stamper', 'number': '4'}"
-"If an event happened at some time-point but according to the information in the sentence we can assign only a time-interval to this event (for example, February Earthquake) then we say that the time-interval is assigned correctly if the necessary time-point is within this time-interval","{'title': '4 Time-stamper', 'number': '4'}"
-"After stamping all the news stories from the analyzed set, we arrange the event-clauses from all the articles into a chronological order.","{'title': '5 Time-line for Several News Stories and its Applications', 'number': '5'}"
-"After doing that we obtain a new set of event-clauses which can easily be divided into two subsets–the first one containing all the references to the February earthquake, the second one containing the list of event-clauses in chronological order, describing what happened in May.","{'title': '5 Time-line for Several News Stories and its Applications', 'number': '5'}"
-"Such a text where all the events are organized in a chronological order might be very helpful in multidocument summarization, where it is important to include into the final summary not only the most important information but also the most recent one.","{'title': '5 Time-line for Several News Stories and its Applications', 'number': '5'}"
-The output of the presented system gives the information about the timeorder of the events described in several documents.,"{'title': '5 Time-line for Several News Stories and its Applications', 'number': '5'}"
-Several linguistic and psycholinguistic studies deal with the problem of time-arrangement of different texts.,"{'title': '6 Related work', 'number': '6'}"
-The research presented in these studies highlights many problems but does not solve them.,"{'title': '6 Related work', 'number': '6'}"
-"As for computational applications of time theories, most work was done on temporal expressions that appear in scheduling dialogues (Busemann et al., 1997; Alexandresson et al., 1997).","{'title': '6 Related work', 'number': '6'}"
-There are many constraints on temporal expressions in this domain.,"{'title': '6 Related work', 'number': '6'}"
-"The most relevant prior work is (Mani and Wilson, 2000), who implemented their system on news stories, introduced rules spreading time-stamps obtained with the help of explicit temporal expressions throughout the whole article, and invented machine learning rules for disambiguating between specific and generic use of temporal expressions (for example, whether Christmas is used to denote the 25th of December or to denote some period of time around the 25th of December).","{'title': '6 Related work', 'number': '6'}"
-"They also mention a problem of disambiguating between temporal expression and proper name, as in ‘USA Today’.","{'title': '6 Related work', 'number': '6'}"
-Bell (1997) notices “more research is needed on the effects of time structure on news comprehension.,"{'title': '7 Conclusion', 'number': '7'}"
-"The hypothesis that the noncanonical news format does adversely affect understanding is a reasonable one on the basis of comprehension research into other narrative genres, but the degree to which familiarity with news models may mitigate these problems is unclear”.","{'title': '7 Conclusion', 'number': '7'}"
-This research can greatly improve the performance of time-stamper and might lead to a list of machine learning rules for time detection.,"{'title': '7 Conclusion', 'number': '7'}"
-"In this paper we made an attempt to not just analyze and decode temporal expressions but to apply this analysis throughout the whole text and assign time-stamps to such type of clauses, which later could be used as separate sentences in various natural language applications, for example in multidocument summarization. text number of manually number of time point percentage of number created event-clauses correctly assigned to correct manually created clauses assignment target 1 7 6 85.71 target 2 27 20 74.07 target 3 5 4 80.00 target 4 28 26 92.85 target 5 33 30 90.91 target 6 58 37 63.79 Total 158 123 77.85","{'title': '7 Conclusion', 'number': '7'}"
+We describe a procedure for arranging into a time-line the contents of news stories describing the development of some situation.,Introduction
+We describe the parts of the system that deal with 1. breaking sentences into event-clauses and 2. resolving both explicit and implicit temporal references.,Introduction
+"Evaluations show a performance of 52%, compared to humans.",Introduction
+"Linguists who have analyzed news stories (Schokkenbroek,1999; Bell,1997; Ohtsuka and Brewer,1992, etc.) noticed that “narratives1 are about more than one event and these events are temporally ordered.",Experiment/Discussion
+"Though it seems most logical to recapitulate events in the order in which they happened, i.e. in chronological order, the events are often presented in a different sequence”.",Experiment/Discussion
+"The same paper states that “it is important to reconstruct the underlying event order2 for narrative analysis to assign meaning to the sequence in which the events are narrated at the level of discourse structure....If the underlying event structure cannot be reconstructed, it may well be impossible to understand the narrative at all, let alone assign meaning to its structure”.",Experiment/Discussion
+Several psycholinguistic experiments show the influence of event-arrangement in news stories on the ease of comprehension by readers.,Experiment/Discussion
+Duszak (1991) had readers reconstruct a news story from the randomized sentences.,Experiment/Discussion
+According to his experiments readers have a default strategy by which—in the absence of cues to the contrary—they re-impose chronological order on events in the discourse.,Experiment/Discussion
+"The problem of reconstructing the chronological order of events becomes more complicated if we have to deal with separate news stories, written at different times and describing the development of some situation, as is the case for multidocument summarization.",Experiment/Discussion
+"By judicious definition, one can make this problem easy or hard.",Experiment/Discussion
+"Selecting only specific items to assign time-points to, and then measuring correctness on them alone, may give high performance but leave much of the text unassigned.",Experiment/Discussion
+We address the problem of assigning a time-point to every clause in the text.,Experiment/Discussion
+Our approach is to break the news stories into their constituent events and to assign timestamps—either time-points or time-intervals—to these events.,Experiment/Discussion
+"When assigning time-stamps we analyze both implicit time references (mainly through the tense system) and explicit ones (temporal adverbials) such as ‘on Monday’, ‘in 1998’, etc.",Experiment/Discussion
+"The result of the work is a prototype program which takes as input set of news stories broken into separate sentences and produces as output a text that combines all the events from all the articles, organized in chronological order.",Experiment/Discussion
+As data we used a set of news stories about an earthquake in Afghanistan that occurred at the end of May in 1998.,Experiment/Discussion
+"These news stories were taken from CNN, ABC, and APW websites for the DUC-2000 meeting.",Experiment/Discussion
+The stories were all written within one week.,Experiment/Discussion
+Some of the texts were written on the same day.,Experiment/Discussion
+"In addition to a description of the May earthquake, these texts contain references to another earthquake that occurred in the same region in February 1998.",Experiment/Discussion
+"To divide sentences into event-clauses we use CONTEX (Hermjakob, 1997), a parser that produces a syntactic parse tree augmented with semantic labels.",Experiment/Discussion
+CONTEX uses machine learning techniques to induce a grammar from a given treebanks.,Experiment/Discussion
+A sample output of CONTEX is given in Appendix 1.,Experiment/Discussion
+To divide a sentence into event-clauses the parse tree output by CONTEX is analyzed from left to right (root to leaf).,Experiment/Discussion
+The ::CAT field for each node provides the necessary information about whether the node under consideration forms a part of its upper level event or whether it introduces a new event.,Experiment/Discussion
+"::CAT features that indicate new events are: S-CLAUSE, S-SNT, SSUB-CLAUSE, S-PART-CLAUSE, S-RELCLAUSE.",Experiment/Discussion
+These features mark clauses which contain both subject (one or several NPs) and predicate (VP containing one or several verbs).,Experiment/Discussion
+The above procedure classifies a clause containing more than one verb as a simple clause.,Experiment/Discussion
+Such clauses are treated as one event and only one time-point will be assigned to them.,Experiment/Discussion
+"This is fine when the second verb is used in the same tense as the first, but may be wrong in some cases, as in He lives in this house now and will stay here for one more year.",Experiment/Discussion
+"There are no such clauses in the analyzed data, so we ignore this complication for the present.",Experiment/Discussion
+"The parse tree also gives information about the tense of verbs, used later for time assignment.",Experiment/Discussion
+"In order to facilitate subsequent processing, we wish to rephrase relative clauses as full independent sentences.",Experiment/Discussion
+We therefore have to replace pronouns where it is possible by their antecedents.,Experiment/Discussion
+"Very often the parser gives information about the referential antecedents (in the example below, Russia).",Experiment/Discussion
+"Therefore we introduced the rule: if it is possible to identify the referent, put it into the event-clause: Here the antecedent for which is identified as the relief, and gives which <the relief> was costing lives instead of which <poor coordination> was costing lives.",Experiment/Discussion
+"Fortunately, in most cases our rule works correctly.",Experiment/Discussion
+"Although the event-identifier works reasonably well, breaking text into event-clauses needs further investigation.",Experiment/Discussion
+Table 1 shows the performance of the system.,Experiment/Discussion
+"Two kinds of mistakes are made by the event identifier: those caused by CONTEX (it does not identify clauses with omitted predicate, etc.) and those caused by the fact that our clause identifier does too shallow analysis of the parse tree.",Experiment/Discussion
+"According to (Bell, 1997) “time is expressed at different levels—in the morphology and syntax of the verb phrase, in time adverbials whether lexical or phrasal, and in the discourse structure of the stories above the sentence”.",Experiment/Discussion
+"For the present work we use slightly modified time representations suggested in (Allen, 1991).",Experiment/Discussion
+Formats used for time representation: We use two anchoring time points: We require that the first sentence for each article contains time information.,Experiment/Discussion
+For example: The date information is in bold.,Experiment/Discussion
+"We denote by Ti the reference time-point for the article, where i 3 YYYY—year number, DDD—absolute number of the day within the year (1–366), W-—umber of the day in a week (1- Monday, ... 7- Saturday).",Experiment/Discussion
+If it is impossible to point out the day of the week then W is assigned 0. means that it is the time point of article i.,Experiment/Discussion
+The symbol Ti is used as a comparative time-point if the time the article was written is unknown.,Experiment/Discussion
+"The information in brackets gives the exact date the article was written, which is the main anchor point for the time-stamper.",Experiment/Discussion
+"The information about hours, minutes and seconds is ignored for the present.",Experiment/Discussion
+2.,Experiment/Discussion
+Last time point assigned in the same sentence While analyzing different event-clauses within the same sentence we keep track of what time-point was most recently assigned within this sentence.,Experiment/Discussion
+"If needed, we can refer to this time-point.",Experiment/Discussion
+In case the most recent time information assigned is not a date but an interval we record information about both time boundaries.,Experiment/Discussion
+"When the program proceeds to the next sentence, the variable for the most recently assigned date becomes undefined.",Experiment/Discussion
+"In most cases this assumption works correctly (example 5.2–5.3): The last time interval assigned for sentence 5.2 is {1998:53:0}---{1998:71:0}, which gives an approximate range of days when the previous earthquake happened.",Experiment/Discussion
+"But the information in sentence 5.3 is about the recent earthquake and not about the previous one of 3 months earlier, which is why it would be a mistake to point Monday and Tuesday within that range.",Experiment/Discussion
+Mani and Wilson (2000) point out “over half of the errors [made by his time-stamper] were due to propagation of spreading of an incorrect event time to neighboring events”.,Experiment/Discussion
+The rule of dropping the most recently assigned date as an anchor point when proceeding to the next sentence very often helps us to avoid this problem.,Experiment/Discussion
+There are however cases where dropping the most recent time as an anchor when proceeding to the next sentence causes errors: It is clear that sentence 4.9 is the continuation of sentence 4.8 and refers to the same time point (February earthquake).,Experiment/Discussion
+In this case our rule assigns the wrong time to 4.9.1.,Experiment/Discussion
+Still we retain this rule because it is more frequently correct than incorrect.,Experiment/Discussion
+"First, the text divided into event-clauses is run through a program that extracts all the date-stamps (made available by Kevin Knight, ISI).",Experiment/Discussion
+In most cases this program does not miss any date-stamps and extracts only the correct ones.,Experiment/Discussion
+"The only cases in which it did not work properly for the texts were: Here the modal verb MAY was assumed to be the month, given that it started with a capital letter.",Experiment/Discussion
+"Tuberculosis is already common in the area where people live in close quarters and have poor hygiene here the noun quarters, which in this case is used in the sense immediate contact or close range (Merriam-Webster dictionary), was assumed to be used in the sense the fourth part of a measure of time (Merriam-Webster dictionary).",Experiment/Discussion
+After extracting all the date-phrases we proceed to time assignment.,Experiment/Discussion
+"When assigning a time to an event, we select the time to be either the most recently assigned date or, if the value of the most recently assigned date is undefined, to the date of the article.",Experiment/Discussion
+We use a set of rules to perform this selection.,Experiment/Discussion
+"These rules can be divided into two main categories: those that work for sentences containing explicit date information, and those that work for sentences that do not.",Experiment/Discussion
+"If the day-of-the-week used in the eventclause is the same as that of the article (or the most recently assigned date, if it is defined), and there no words before it could signal that the described event happened earlier or will happen later, then the time-point of the article (or the most recently assigned date, if it is defined) is assigned to this event.",Experiment/Discussion
+"If before or after a day-ofthe-week there is a word/words signaling that the event happened earlier of will happen later then the time-point is assigned in accordance with this signal-word and the most recently assigned date, if it is defined.",Experiment/Discussion
+"If the day-of-the-week used in the eventclause is not the same as that of the article (or the most recently assigned date, if it is defined), then if there are words pointing out that the event happened before the article was written or the tense used in the clause is past, then the time for the event-clause is assigned in accordance with this word (such words we call signal-words), or the most recent day corresponding to the current day-of-the-week is chosen.",Experiment/Discussion
+"If the signal-word points out that the event will happen after the article was written or the tense used in the clause is future, then the time for the event-clause is assigned in accordance with the signal word or the closest subsequent day corresponding to the current day-of-the-week. helicopters evacuated 50 of the most seriously injured to emergency medical centers.",Experiment/Discussion
+The time for article 5 is (06/06/1998:Tuesday 15:17:00).,Experiment/Discussion
+"So, the time assigned to this eventclause is: 5.3.1 {1998:151:1}, {1998:152:2}.",Experiment/Discussion
+"The rules are the same as for a day-of-theweek, but in this case a time-range is assigned to the event-clause.",Experiment/Discussion
+"The left boundary of the range is the first day of the month, the right boundary is the last day of the month, and though it is possible to figure out the days of weeks for these boundaries, this aspect is ignored for the present. earthquake in the same region killed 2,300 people and left thousands of people homeless.",Experiment/Discussion
+The time for article 4 is (05/30/1998:Saturday 14:41:00).,Experiment/Discussion
+"So, the time assigned to this eventclause is 4.8.1 {1998:32:0}---{1998:60:0}.",Experiment/Discussion
+"In the analyzed corpus there is a case where the presence of a name of month leads to a wrong time-stamping: Because of February, a wrong time-interval is assigned to clause 6.3.3, namely {1998:32:0}--{1998:60:0}.",Experiment/Discussion
+As this event-clause is a description of the latest news as compared to some figures it should have the time-point of the article.,Experiment/Discussion
+Such cases present a good possibility for the use of machine learning techniques to disambiguate between the cases where we should take into account date-phrase information and where not.,Experiment/Discussion
+"We might have date-stamps where the words weeks, days, months, years are used with modifiers.",Experiment/Discussion
+"For example remote mountainous area rocked three months earlier by another massive quake 5.2.4 that <another massive quake> claimed some 2,300 victims.",Experiment/Discussion
+In event-clause 5.2.3 the expression three months earlier is used.,Experiment/Discussion
+It is clear that to get the time for the event it is not enough to subtract 3 months from the time of the article because the above expression gives an approximate range within which this event could happen and not a particular date.,Experiment/Discussion
+For such cases we invented the following rule: For event 5.2.3 the time range will be {1998:53:0)---{1998:71:0) (the exact date of the article is {1998:152:2}).,Experiment/Discussion
+"If the modifier used with weeks, days, months or years is several, then the multiplier used in (1) is equal to 2.",Experiment/Discussion
+"If an event-clause does not contain any datephrase but contains one of the words ‘when’, ‘since’, ‘after’, ‘before’, etc., it might mean that this clause refers to an event, the time of which can be used as a reference point for the event under analysis.",Experiment/Discussion
+In this case we ask the user to insert the time for this reference event manually.,Experiment/Discussion
+"This rule can cause problems in cases where ‘after’ or ‘before’ are used not as temporal connectors but as spatial ones, though in the analyzed texts we did not face this problem.",Experiment/Discussion
+"If the current event-clause refers to a timepoint in Present/Past Perfect tense, then an openended time-interval is assigned to this event.",Experiment/Discussion
+The starting point is unknown; the end-point is either the most recently assigned date or the time-point of the article.,Experiment/Discussion
+"If the current event-clause contains a verb in future tense (one of the verbs ‘shall’, ‘will’, ‘should’, ‘would’, ‘might’ is present in the clause) then the open-ended time-interval assigned to this event-clause has the starting point at either the most recently assigned date or the date of the article.",Experiment/Discussion
+Other tenses that can be identified with the help of CONTEX are Present and Past Indefinite.,Experiment/Discussion
+In the analyzed data all the verbs in Present Indefinite are given the most recently assigned date (or the date of the article).,Experiment/Discussion
+The situation with Past Indefinite is much more complicated and requires further investigation of more data.,Experiment/Discussion
+"News stories usually describe the events that already took place at some time in the past, which is why even if the day when the event happened is not over, past tense is very often used for the description (this is especially noticeable for US news of European, Asian, African and Australian events).",Experiment/Discussion
+This means that very often an event-clause containing a verb in Past Indefinite Tense can be assigned the most recently assigned date (or the date of the article).,Experiment/Discussion
+It might prove useful to use machine learned rules for such cases.,Experiment/Discussion
+If there is no verb in the event-clause then the most recently assigned date (or the date of the article) is assigned to the event-clause.,Experiment/Discussion
+We ran the time-stamper program on two types of data: list of event-clauses extracted by the event identifier and list of event-clauses created manually.,Experiment/Discussion
+Tables 2 and 3 show the results.,Experiment/Discussion
+In the former case we analyzed only the correctly identified clauses.,Experiment/Discussion
+One can see that even on manually created data the performance of the time-stamper is not 100%.,Experiment/Discussion
+Why?,Experiment/Discussion
+"Some errors are caused by assigning the time based on the date-phrase present in the eventclause, when this date-phrase is not an adverbial time modifier but an attribute.",Experiment/Discussion
+"For example, The third event describes the May 30 earthquake but the time interval given for this event is {1998:32:0}---{1998:60:0} (i.e., the event happened in February).",Experiment/Discussion
+It might be possible to use machine learned rules to correct such cases.,Experiment/Discussion
+"One more significant source of errors is the writing style: When the reader sees early this morning he or she tends to assign to this clause the time of the article, but later as seeing looked for two days, realizes that the time of the clause containing early this morning is two days earlier than the time of the article.",Experiment/Discussion
+It seems that the errors caused by the writing style can hardly be avoided.,Experiment/Discussion
+"If an event happened at some time-point but according to the information in the sentence we can assign only a time-interval to this event (for example, February Earthquake) then we say that the time-interval is assigned correctly if the necessary time-point is within this time-interval",Experiment/Discussion
+"After stamping all the news stories from the analyzed set, we arrange the event-clauses from all the articles into a chronological order.",Experiment/Discussion
+"After doing that we obtain a new set of event-clauses which can easily be divided into two subsets–the first one containing all the references to the February earthquake, the second one containing the list of event-clauses in chronological order, describing what happened in May.",Experiment/Discussion
+"Such a text where all the events are organized in a chronological order might be very helpful in multidocument summarization, where it is important to include into the final summary not only the most important information but also the most recent one.",Experiment/Discussion
+The output of the presented system gives the information about the timeorder of the events described in several documents.,Experiment/Discussion
+Several linguistic and psycholinguistic studies deal with the problem of time-arrangement of different texts.,Results/Conclusion
+The research presented in these studies highlights many problems but does not solve them.,Results/Conclusion
+"As for computational applications of time theories, most work was done on temporal expressions that appear in scheduling dialogues (Busemann et al., 1997; Alexandresson et al., 1997).",Results/Conclusion
+There are many constraints on temporal expressions in this domain.,Results/Conclusion
+"The most relevant prior work is (Mani and Wilson, 2000), who implemented their system on news stories, introduced rules spreading time-stamps obtained with the help of explicit temporal expressions throughout the whole article, and invented machine learning rules for disambiguating between specific and generic use of temporal expressions (for example, whether Christmas is used to denote the 25th of December or to denote some period of time around the 25th of December).",Results/Conclusion
+"They also mention a problem of disambiguating between temporal expression and proper name, as in ‘USA Today’.",Results/Conclusion
+Bell (1997) notices “more research is needed on the effects of time structure on news comprehension.,Results/Conclusion
+"The hypothesis that the noncanonical news format does adversely affect understanding is a reasonable one on the basis of comprehension research into other narrative genres, but the degree to which familiarity with news models may mitigate these problems is unclear”.",Results/Conclusion
+This research can greatly improve the performance of time-stamper and might lead to a list of machine learning rules for time detection.,Results/Conclusion
+"In this paper we made an attempt to not just analyze and decode temporal expressions but to apply this analysis throughout the whole text and assign time-stamps to such type of clauses, which later could be used as separate sentences in various natural language applications, for example in multidocument summarization. text number of manually number of time point percentage of number created event-clauses correctly assigned to correct manually created clauses assignment target 1 7 6 85.71 target 2 27 20 74.07 target 3 5 4 80.00 target 4 28 26 92.85 target 5 33 30 90.91 target 6 58 37 63.79 Total 158 123 77.85",Results/Conclusion

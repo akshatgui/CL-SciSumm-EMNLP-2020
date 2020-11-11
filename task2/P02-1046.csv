@@ -1,186 +1,186 @@
 col1,col2
-disambiguation rivaling supervised methods.,{}
-"In Proceedings of the 33rd Annual Meeting of the for Computational pages 189–196. see that view independence does not imply preindepence, consider an example in which always.",{}
-"This is compatible with rule independence, but implies that = 1 and = 0, violating precision independence.",{}
-A,{}
-"The term bootstrapping here refers to a problem setting in which one is given a small set of labeled data and a large set of unlabeled data, and the task is to induce a classifier.","{'title': '1 Overview', 'number': '1'}"
-"The plenitude of unlabeled natural language data, and the paucity of labeled data, have made bootstrapping a topic of interest in computational linguistics.","{'title': '1 Overview', 'number': '1'}"
-"Current work has been spurred by two papers, (Yarowsky, 1995) and (Blum and Mitchell, 1998).","{'title': '1 Overview', 'number': '1'}"
-"Blum and Mitchell propose a conditional independence assumption to account for the efficacy of their algorithm, called co-training, and they give a proof based on that conditional independence assumption.","{'title': '1 Overview', 'number': '1'}"
-"They also give an intuitive explanation of why co-training works, in terms of maximizing agreement on unlabeled data between classifiers based on different “views” of the data.","{'title': '1 Overview', 'number': '1'}"
-"Finally, they suggest that the Yarowsky algorithm is a special case of the co-training algorithm.","{'title': '1 Overview', 'number': '1'}"
-"The Blum and Mitchell paper has been very influential, but it has some shortcomings.","{'title': '1 Overview', 'number': '1'}"
-"The proof they give does not actually apply directly to the co-training algorithm, nor does it directly justify the intuitive account in terms of classifier agreement on unlabeled data, nor, for that matter, does the co-training algorithm directly seek to find classifiers that agree on unlabeled data.","{'title': '1 Overview', 'number': '1'}"
-"Moreover, the suggestion that the Yarowsky algorithm is a special case of co-training is based on an incidental detail of the particular application that Yarowsky considers, not on the properties of the core algorithm.","{'title': '1 Overview', 'number': '1'}"
-"In recent work, (Dasgupta et al., 2001) prove that a classifier has low generalization error if it agrees on unlabeled data with a second classifier based on a different “view” of the data.","{'title': '1 Overview', 'number': '1'}"
-This addresses one of the shortcomings of the original co-training paper: it gives a proof that justifies searching for classifiers that agree on unlabeled data.,"{'title': '1 Overview', 'number': '1'}"
-I extend this work in two ways.,"{'title': '1 Overview', 'number': '1'}"
-"First, (Dasgupta et al., 2001) assume the same conditional independence assumption as proposed by Blum and Mitchell.","{'title': '1 Overview', 'number': '1'}"
-"I show that that independence assumption is remarkably powerful, and violated in the data; however, I show that a weaker assumption suffices.","{'title': '1 Overview', 'number': '1'}"
-"Second, I give an algorithm that finds classifiers that agree on unlabeled data, and I report on an implementation and empirical results.","{'title': '1 Overview', 'number': '1'}"
-"Finally, I consider the question of the relation between the co-training algorithm and the Yarowsky algorithm.","{'title': '1 Overview', 'number': '1'}"
-"I suggest that the Yarowsky algorithm is actually based on a different independence assumption, and I show that, if the independence assumption holds, the Yarowsky algorithm is effective at finding a high-precision classifier.","{'title': '1 Overview', 'number': '1'}"
-"A bootstrapping problem consists of a space of instances X, a set of labels L, a function Y : X -+ G assigning labels to instances, and a space of rules mapping instances to labels.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"Rules may be partial functions; we write F(x) = + if F abstains (that is, makes no prediction) on input x.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-“Classifier” is synonymous with “rule”.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-It is often useful to think of rules and labels as sets of instances.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-A binary rule F can be thought of as the characteristic function of the set of instances {x : F(x) = +}.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-Multi-class rules also define useful sets when a particular target class t is understood.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"For any rule F, we write F` for the set of instances {x : F(x) = �}, or (ambiguously) for that set’s characteristic function.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"We write F` for the complement of F`, either as a set or characteristic function.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-Note that ¯F` contains instances on which F abstains.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-We write F¯` for {x : F(x) =� t n F(x) =� +}.,"{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"When F does not abstain, ¯F` and F¯` are identical.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"Finally, in expressions like Pr[F = +|Y = +] (with square brackets and “Pr”), the functions F(x) and Y (x) are used as random variables.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"By contrast, in the expression P(F|Y ) (with parentheses and “P”), F is the set of instances for which F(x) = +, and Y is the set of instances for which Y (x) = +.","{'title': '2 Problem Setting and Notation', 'number': '2'}"
-"Blum and Mitchell assume that each instance x consists of two “views” x1, x2.","{'title': '3 View Independence', 'number': '3'}"
-We can take this as the assumption of functions X1 and X2 such that X1(x) = x1 and X2(x) = x2.,"{'title': '3 View Independence', 'number': '3'}"
-They propose that views are conditionally independent given the label.,"{'title': '3 View Independence', 'number': '3'}"
-"Definition 1 A pair of views x1, x2 satisfy view independence just in case: There is a related independence assumption that will prove useful.","{'title': '3 View Independence', 'number': '3'}"
-"Let us define W1 to consist of rules that are functions of X1 only, and define W2 to consist of rules that are functions of X2 only.","{'title': '3 View Independence', 'number': '3'}"
-"If instead of generating W1 and W2 from X1 and X2, we assume a set of features F (which can be thought of as binary rules), and take W1 = W2 = F, rule independence reduces to the Naive Bayes independence assumption.","{'title': '3 View Independence', 'number': '3'}"
-The following theorem is not difficult to prove; we omit the proof.,"{'title': '3 View Independence', 'number': '3'}"
-Theorem 1 View independence implies rule independence.,"{'title': '3 View Independence', 'number': '3'}"
-Blum and Mitchell’s paper suggests that rules that agree on unlabelled instances are useful in bootstrapping.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-Note that the agreement rate between rules makes no reference to labels; it can be determined from unlabeled data.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-The algorithm that Blum and Mitchell describe does not explicitly search for rules with good agreement; nor does agreement rate play any direct role in the learnability proof given in the Blum and Mitchell paper.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"The second lack is emended in (Dasgupta et al., 2001).","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"They show that, if view independence is satisfied, then the agreement rate between opposing-view rules F and G upper bounds the error of F (or G).","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-The following statement of the theorem is simplified and assumes non-abstaining binary rules.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"Theorem 2 For all F E W1, G E W2 that satisfy rule independence and are nontrivial predictors in the sense that minu Pr[F = u] > Pr[F =� If F agrees with G on all but E unlabelled instances, then either F or F¯ predicts Y with error no greater than E. A small amount of labelled data suffices to choose between F and F¯.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-I give a geometric proof sketch here; the reader is referred to the original paper for a formal proof.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-Consider figures 1 and 2.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In these diagrams, area represents probability.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"For example, the leftmost box (in either diagram) represents the instances for which Y = +, and the area of its upper left quadrant represents Pr[F = +, G = +, Y = +].","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"Typically, in such a diagram, either the horizontal or vertical line is broken, as in figure 2.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In the special case in which rule independence is satisfied, both horizontal and vertical lines are unbroken, as in figure 1.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-Theorem 2 states that disagreement upper bounds error.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"First let us consider a lemma, to wit: disagreement upper bounds minority probabilities.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-Define the minority value of F given Y = y to be the value u with least probability Pr[F = u|Y = y]; the minority probability is the probability of the minority value.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"(Note that minority probabilities are conditional probabilities, and distinct from the marginal probability mina Pr[F = u] mentioned in the theorem.)","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In figure 1a, the areas of disagreement are the upper right and lower left quadrants of each box, as marked.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-The areas of minority values are marked in figure 1b.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-It should be obvious that the area of disagreement upper bounds the area of minority values.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-The error values of F are the values opposite to the values of Y : the error value is − when Y = + and + when Y = −.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"When minority values are error values, as in figure 1, disagreement upper bounds error, and theorem 2 follows immediately.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"However, three other cases are possible.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-One possibility is that minority values are opposite to error values.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In this case, the minority values of F¯ are error values, and disagreement between F and G upper bounds the error of F¯.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-This case is admitted by theorem 2.,"{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In the final two cases, minority values are the same regardless of the value of Y .","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-"In these cases, however, the predictors do not satisfy the “nontriviality” condition of theorem 2, which requires that mina Pr[F = u] be greater than the disagreement between F and G.","{'title': '4 Rule Independence and Bootstrapping', 'number': '4'}"
-Rule independence is a very strong assumption; one remarkable consequence will show just how strong it is.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-The precision of a rule F is defined to be Pr[Y = +|F = +].,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-(We continue to assume non-abstaining binary rules.),"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"If rule independence holds, knowing the precision of any one rule allows one to exactly compute the precision of every other rule given only unlabeled data and knowledge of the size of the target concept.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-Let F and G be arbitrary rules based on independent views.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-We first derive an expression for the precision of F in terms of G. Note that the second line is derived from the first by rule independence.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"To compute the expression on the righthand side of the last line, we require P(Y |G), P(Y ), P(G|F), and P(G).","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The first value, the precision of G, is assumed known.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The second value, P(Y ), is also assumed known; it can at any rate be estimated from a small amount of labeled data.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The last two values, P(G|F) and P(G), can be computed from unlabeled data.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"Thus, given the precision of an arbitrary rule G, we can compute the precision of any otherview rule F. Then we can compute the precision of rules based on the same view as G by using the precision of some other-view rule F. Hence we can compute the precision of every rule given the precision of any one.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The empirical investigations described here and below use the data set of (Collins and Singer, 1999).","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The task is to classify names in text as person, location, or organization.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"There is an unlabeled training set containing 89,305 instances, and a labeled test set containing 289 persons, 186 locations, 402 organizations, and 123 “other”, for a total of 1,000 instances.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-Instances are represented as lists of features.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"Intrinsic features are the words making up the name, and contextual features are features of the syntactic context in which the name occurs.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"For example, consider Bruce Kaplan, president of Metals Inc.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-This text snippet contains two instances.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The first has intrinsic features N:Bruce-Kaplan, C:Bruce, and C:Kaplan (“N” for the complete name, “C” for “contains”), and contextual feature M:president (“M” for “modified by”).","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The second instance has intrinsic features N:Metals-Inc, C:Metals, C:Inc, and contextual feature X:president-of (“X” for “in the context of”).","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"Let us define Y (x) = + if x is a “location” instance, and Y (x) = − otherwise.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"We can estimate P(Y ) from the test sample; it contains 186/1000 location instances, giving P(Y ) = .186.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-Let us treat each feature F as a rule predicting + when F is present and − otherwise.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-The precision of F is P(Y |F).,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-The internal feature N:New-York has precision 1.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"This permits us to compute the precision of various contextual features, as shown in the “Co-training” column of Table 1.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-We note that the numbers do not even look like probabilities.,"{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"The cause is the failure of view independence to hold in the data, combined with the instability of the estimator.","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"(The “Yarowsky” column uses a seed rule to estimate P(Y |F), as is done in the Yarowsky algorithm, and the “Truth” column shows the true value of P(Y |F).)","{'title': '5 The Unreasonableness of Rule Independence', 'number': '5'}"
-"Nonetheless, the unreasonableness of view independence does not mean we must abandon theorem 2.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"In this section, we introduce a weaker assumption, one that is satisfied by the data, and we show that theorem 2 holds under this weaker assumption.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"There are two ways in which the data can diverge from conditional independence: the rules may either be positively or negatively correlated, given the class value.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Figure 2a illustrates positive correlation, and figure 2b illustrates negative correlation.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"If the rules are negatively correlated, then their disagreement (shaded in figure 2) is larger than if they are conditionally independent, and the conclusion of theorem 2 is maintained a fortiori.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Unfortunately, in the data, they are positively correlated, so the theorem does not apply.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-Let us quantify the amount of deviation from conditional independence.,"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"We define the conditional dependence of F and G given Y = y to If F and G are conditionally independent, then dy = 0.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"This permits us to state a weaker version of rule independence: Definition 4 Rules F and G satisfy weak rule dependence just in case, for y E {+, −}: dy ` p2 2p1q1 where p1 = minu Pr[F = u|Y = y], p2 = minu Pr[G = u|Y = y], and q1 = 1 − p1.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"By definition, p1 and p2 cannot exceed 0.5.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"If p1 = 0.5, then weak rule dependence reduces to independence: if p1 = 0.5 and weak rule dependence is satisfied, then dy must be 0, which is to say, F and G must be conditionally independent.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"However, as p1 decreases, the permissible amount of conditional dependence increases.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"We can now state a generalized version of theorem 2: Theorem 3 For all F E W1, G E W2 that satisfy weak rule dependence and are nontrivial predictors in the sense that minu Pr[F = u] > Pr[F =� G], one of the following inequalities holds: Consider figure 3.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"This illustrates the most relevant case, in which F and G are positively correlated given Y .","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-(Only the case Y = + is shown; the case Y = − is similar.),"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-We assume that the minority values of F are error values; the other cases are handled as in the discussion of theorem 2.,"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-Let u be the minority value of G when Y = +.,"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"In figure 3, a is the probability that G = u when F takes its minority value, and b is the probability that G = u when F takes its majority value.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-The value r = a − b is the difference.,"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-Note that r = 0 if F and G are conditionally independent given Y = +.,"{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"In fact, we can show Hence, in particular, we may write dy = a − b.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Observe further that p2, the minority probability of G when Y = +, is a weighted average of a and b, namely, p2 = p1a+q1b.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Combining this with the equation dy = a−b allows us to express a and b in terms of the remaining variables, to wit: a = p2 + q1dy and b = p2 − p1dy.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"In order to prove theorem 3, we need to show that the area of disagreement (B U C) upper bounds the area of the minority value of F (AU B).","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"This is true just in case C is larger than A, which is to say, if bq1 > ap1.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Substituting our expressions for a and b into this inequality and solving for dy yields: dy ` p2 2p1q1 In short, disagreement upper bounds the minority probability just in case weak rule dependence is satisfied, proving the theorem.","{'title': '7 Relaxing the Assumption', 'number': '6'}"
-"Dasgupta, Littman, and McAllester suggest a possible algorithm at the end of their paper, but they give only the briefest suggestion, and do not implement or evaluate it.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"I give here an algorithm, the Greedy Agreement Algorithm, that constructs paired rules that agree on unlabeled data, and I examine its performance.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-The algorithm is given in figure 4.,"{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"It begins with two seed rules, one for each view.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"At each iteration, each possible extension to one of the rules is considered and scored.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"The best one is kept, and attention shifts to the other rule.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"A complex rule (or classifier) is a list of atomic rules H, each associating a single feature h with a label t. H(x) = t if x has feature h, and H(x) = L otherwise.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-A given atomic rule is permitted to appear multiple times in the list.,"{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"Each atomic rule occurrence gets one vote, and the classifier’s prediction is the label that receives the most votes.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"In case of a tie, there is no prediction.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"The cost of a classifier pair (F, G) is based on a more general version of theorem 2, that admits abstaining rules.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"The following theorem is based on (Dasgupta et al., 2001).","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"Theorem 4 If view independence is satisfied, and if F and G are rules based on different views, then one of the following holds: In other words, for a given binary rule F, a pessimistic estimate of the number of errors made by F is S/(µ − S) times the number of instances labeled by F, plus the number of instances left unlabeled by F. Finally, we note that the cost of F is sensitive to the choice of G, but the cost of F with respect to G is not necessarily the same as the cost of G with respect to F. To get an overall cost, we average the cost of F with respect to G and G with respect to F. Figure 5 shows the performance of the greedy agreement algorithm after each iteration.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"Because not all test instances are labeled (some are neither persons nor locations nor organizations), and because classifiers do not label all instances, we show precision and recall rather than a single error rate.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-The contour lines show levels of the F-measure (the harmonic mean of precision and recall).,"{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"The algorithm is run to convergence, that is, until no atomic rule can be found that decreases cost.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-It is interesting to note that there is no significant overtraining with respect to F-measure.,"{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"The final values are 89.2/80.4/84.5 recall/precision/F-measure, which compare favorably with the performance of the Yarowsky algorithm (83.3/84.6/84.0).","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"(Collins and Singer, 1999) add a special final round to boost recall, yielding 91.2/80.0/85.2 for the Yarowsky algorithm and 91.3/80.1/85.3 for their version of the original co-training algorithm.","{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-All four algorithms essentially perform equally well; the advantage of the greedy agreement algorithm is that we have an explanation for why it performs well.,"{'title': '8 The Greedy Agreement Algorithm', 'number': '7'}"
-"For Yarowsky’s algorithm, a classifier again consists of a list of atomic rules.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-The prediction of the classifier is the prediction of the first rule in the list that applies.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"The algorithm constructs a classifier iteratively, beginning with a seed rule.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"In the variant we consider here, one atomic rule is added at each iteration.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"An atomic rule F` is chosen only if its precision, Pr[G` = +JF` = +] (as measured using the labels assigned by the current classifier G), exceeds a fixed threshold θ.1 Yarowsky does not give an explicit justification for the algorithm.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-I show here that the algorithm can be justified on the basis of two independence assumptions.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"In what follows, F represents an atomic rule under consideration, and G represents the current classifier.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Recall that Y` is the set of instances whose true label is t, and G` is the set of instances {x : G(x) = t}.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"We write G∗ for the set of instances labeled by the current classifier, that is, {x : G(x) =� +}.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-The first assumption is precision independence.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Definition 5 Candidate rule F` and classifier G satisfy precision independence just in case Precision independence is stated here so that it looks like a conditional independence assumption, to emphasize the similarity to the analysis of co-training.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"In fact, it is only “half” an independence assumption—for precision independence, it is not necessary that P(Y`J ¯F`, G∗) = P(Y`J The second assumption is that classifiers make balanced errors.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"That is: P(Y`, G¯`JF`) = P(Y¯`, G`JF`) Let us first consider a concrete (but hypothetical) example.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Suppose the initial classifier correctly labels 100 out of 1000 instances, and makes no mistakes.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Then the initial precision is 1(Yarowsky, 1995), citing (Yarowsky, 1994), actually uses a superficially different score that is, however, a monotone transform of precision, hence equivalent to precision, since it is used only for sorting.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-1 and recall is 0.1.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Suppose further that we add an atomic rule that correctly labels 19 new instances, and incorrectly labels one new instance.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-The rule’s precision is 0.95.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-The precision of the new classifier (the old classifier plus the new atomic rule) is 119/120 = 0.99.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-Note that the new precision lies between the old precision and the precision of the rule.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"We will show that this is always the case, given precision independence and balanced errors.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"We need to consider several quantities: the precision of the current classifier, P(Y`JG`); the precision of the rule under consideration, P(Y`JF`); the precision of the rule on the current labeled set, P(Y`JF`G∗); and the precision of the rule as measured using estimated labels, P(G`JF`G∗).","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"The assumption of balanced errors implies that measured precision equals true precision on labeled instances, as follows.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"(We assume here that all instances have true labels, hence that This, combined with precision independence, implies that the precision of F` as measured on the labeled set is equal to its true precision P(Y`JF`).","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Now consider the precision of the old and new classifiers at predicting t. Of the instances that the old classifier labels t, let A be the number that are correctly labeled and B be the number that are incorrectly labeled.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Defining Nt = A + B, the precision of the old classifier is Qt = A/Nt.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Let ΔA be the number of new instances that the rule under consideration correctly labels, and let ΔB be the number that it incorrectly labels.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Defining n = ΔA + ΔB, the precision of the rule is q = ΔA/n.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"The precision of the new classifier is Qt+1 = (A + ΔA)/Nt+1, which can be written as: That is, the precision of the new classifier is a weighted average of the precision of the old classifier and the precision of the new rule.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"An immediate consequence is that, if we only accept rules whose precision exceeds a given threshold B, then the precision of the new classifier exceeds B.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Since measured precision equals true precision under our previous assumptions, it follows that the true precision of the final classifier exceeds B if the measured precision of every accepted rule exceeds B.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Moreover, observe that recall can be written as: Nt Qt N` where N` is the number of instances whose true label is t. If Qt > B, then recall is bounded below by NtB/N`, which grows as Nt grows.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-Hence we have proven the following theorem.,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"Intuitively, the Yarowsky algorithm increases recall while holding precision above a threshold that represents the desired precision of the final classifier.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"The empirical behavior of the algorithm, as shown in figure 6, is in accordance with this analysis.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"We have seen, then, that the Yarowsky algorithm, like the co-training algorithm, can be justified on the basis of an independence assumption, precision independence.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"It is important to note, however, that the Yarowsky algorithm is not a special case of co-training.","{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-Precision independence and view independence are distinct assumptions; neither implies the other.2,"{'title': '9 The Yarowsky Algorithm', 'number': '8'}"
-"To sum up, we have refined previous work on the analysis of co-training, and given a new cotraining algorithm that is theoretically justified and has good empirical performance.","{'title': '10 Conclusion', 'number': '9'}"
-"We have also given a theoretical analysis of the Yarowsky algorithm for the first time, and shown that it can be justified by an independence assumption that is quite distinct from the independence assumption that co-training is based on.","{'title': '10 Conclusion', 'number': '9'}"
+disambiguation rivaling supervised methods.,Introduction
+"In Proceedings of the 33rd Annual Meeting of the for Computational pages 189–196. see that view independence does not imply preindepence, consider an example in which always.",Introduction
+"This is compatible with rule independence, but implies that = 1 and = 0, violating precision independence.",Introduction
+A,Introduction
+"The term bootstrapping here refers to a problem setting in which one is given a small set of labeled data and a large set of unlabeled data, and the task is to induce a classifier.",Experiment/Discussion
+"The plenitude of unlabeled natural language data, and the paucity of labeled data, have made bootstrapping a topic of interest in computational linguistics.",Experiment/Discussion
+"Current work has been spurred by two papers, (Yarowsky, 1995) and (Blum and Mitchell, 1998).",Experiment/Discussion
+"Blum and Mitchell propose a conditional independence assumption to account for the efficacy of their algorithm, called co-training, and they give a proof based on that conditional independence assumption.",Experiment/Discussion
+"They also give an intuitive explanation of why co-training works, in terms of maximizing agreement on unlabeled data between classifiers based on different “views” of the data.",Experiment/Discussion
+"Finally, they suggest that the Yarowsky algorithm is a special case of the co-training algorithm.",Experiment/Discussion
+"The Blum and Mitchell paper has been very influential, but it has some shortcomings.",Experiment/Discussion
+"The proof they give does not actually apply directly to the co-training algorithm, nor does it directly justify the intuitive account in terms of classifier agreement on unlabeled data, nor, for that matter, does the co-training algorithm directly seek to find classifiers that agree on unlabeled data.",Experiment/Discussion
+"Moreover, the suggestion that the Yarowsky algorithm is a special case of co-training is based on an incidental detail of the particular application that Yarowsky considers, not on the properties of the core algorithm.",Experiment/Discussion
+"In recent work, (Dasgupta et al., 2001) prove that a classifier has low generalization error if it agrees on unlabeled data with a second classifier based on a different “view” of the data.",Experiment/Discussion
+This addresses one of the shortcomings of the original co-training paper: it gives a proof that justifies searching for classifiers that agree on unlabeled data.,Experiment/Discussion
+I extend this work in two ways.,Experiment/Discussion
+"First, (Dasgupta et al., 2001) assume the same conditional independence assumption as proposed by Blum and Mitchell.",Experiment/Discussion
+"I show that that independence assumption is remarkably powerful, and violated in the data; however, I show that a weaker assumption suffices.",Experiment/Discussion
+"Second, I give an algorithm that finds classifiers that agree on unlabeled data, and I report on an implementation and empirical results.",Experiment/Discussion
+"Finally, I consider the question of the relation between the co-training algorithm and the Yarowsky algorithm.",Experiment/Discussion
+"I suggest that the Yarowsky algorithm is actually based on a different independence assumption, and I show that, if the independence assumption holds, the Yarowsky algorithm is effective at finding a high-precision classifier.",Experiment/Discussion
+"A bootstrapping problem consists of a space of instances X, a set of labels L, a function Y : X -+ G assigning labels to instances, and a space of rules mapping instances to labels.",Experiment/Discussion
+"Rules may be partial functions; we write F(x) = + if F abstains (that is, makes no prediction) on input x.",Experiment/Discussion
+“Classifier” is synonymous with “rule”.,Experiment/Discussion
+It is often useful to think of rules and labels as sets of instances.,Experiment/Discussion
+A binary rule F can be thought of as the characteristic function of the set of instances {x : F(x) = +}.,Experiment/Discussion
+Multi-class rules also define useful sets when a particular target class t is understood.,Experiment/Discussion
+"For any rule F, we write F` for the set of instances {x : F(x) = �}, or (ambiguously) for that set’s characteristic function.",Experiment/Discussion
+"We write F` for the complement of F`, either as a set or characteristic function.",Experiment/Discussion
+Note that ¯F` contains instances on which F abstains.,Experiment/Discussion
+We write F¯` for {x : F(x) =� t n F(x) =� +}.,Experiment/Discussion
+"When F does not abstain, ¯F` and F¯` are identical.",Experiment/Discussion
+"Finally, in expressions like Pr[F = +|Y = +] (with square brackets and “Pr”), the functions F(x) and Y (x) are used as random variables.",Experiment/Discussion
+"By contrast, in the expression P(F|Y ) (with parentheses and “P”), F is the set of instances for which F(x) = +, and Y is the set of instances for which Y (x) = +.",Experiment/Discussion
+"Blum and Mitchell assume that each instance x consists of two “views” x1, x2.",Experiment/Discussion
+We can take this as the assumption of functions X1 and X2 such that X1(x) = x1 and X2(x) = x2.,Experiment/Discussion
+They propose that views are conditionally independent given the label.,Experiment/Discussion
+"Definition 1 A pair of views x1, x2 satisfy view independence just in case: There is a related independence assumption that will prove useful.",Experiment/Discussion
+"Let us define W1 to consist of rules that are functions of X1 only, and define W2 to consist of rules that are functions of X2 only.",Experiment/Discussion
+"If instead of generating W1 and W2 from X1 and X2, we assume a set of features F (which can be thought of as binary rules), and take W1 = W2 = F, rule independence reduces to the Naive Bayes independence assumption.",Experiment/Discussion
+The following theorem is not difficult to prove; we omit the proof.,Experiment/Discussion
+Theorem 1 View independence implies rule independence.,Experiment/Discussion
+Blum and Mitchell’s paper suggests that rules that agree on unlabelled instances are useful in bootstrapping.,Experiment/Discussion
+Note that the agreement rate between rules makes no reference to labels; it can be determined from unlabeled data.,Experiment/Discussion
+The algorithm that Blum and Mitchell describe does not explicitly search for rules with good agreement; nor does agreement rate play any direct role in the learnability proof given in the Blum and Mitchell paper.,Experiment/Discussion
+"The second lack is emended in (Dasgupta et al., 2001).",Experiment/Discussion
+"They show that, if view independence is satisfied, then the agreement rate between opposing-view rules F and G upper bounds the error of F (or G).",Experiment/Discussion
+The following statement of the theorem is simplified and assumes non-abstaining binary rules.,Experiment/Discussion
+"Theorem 2 For all F E W1, G E W2 that satisfy rule independence and are nontrivial predictors in the sense that minu Pr[F = u] > Pr[F =� If F agrees with G on all but E unlabelled instances, then either F or F¯ predicts Y with error no greater than E. A small amount of labelled data suffices to choose between F and F¯.",Experiment/Discussion
+I give a geometric proof sketch here; the reader is referred to the original paper for a formal proof.,Experiment/Discussion
+Consider figures 1 and 2.,Experiment/Discussion
+"In these diagrams, area represents probability.",Experiment/Discussion
+"For example, the leftmost box (in either diagram) represents the instances for which Y = +, and the area of its upper left quadrant represents Pr[F = +, G = +, Y = +].",Experiment/Discussion
+"Typically, in such a diagram, either the horizontal or vertical line is broken, as in figure 2.",Experiment/Discussion
+"In the special case in which rule independence is satisfied, both horizontal and vertical lines are unbroken, as in figure 1.",Experiment/Discussion
+Theorem 2 states that disagreement upper bounds error.,Experiment/Discussion
+"First let us consider a lemma, to wit: disagreement upper bounds minority probabilities.",Experiment/Discussion
+Define the minority value of F given Y = y to be the value u with least probability Pr[F = u|Y = y]; the minority probability is the probability of the minority value.,Experiment/Discussion
+"(Note that minority probabilities are conditional probabilities, and distinct from the marginal probability mina Pr[F = u] mentioned in the theorem.)",Experiment/Discussion
+"In figure 1a, the areas of disagreement are the upper right and lower left quadrants of each box, as marked.",Experiment/Discussion
+The areas of minority values are marked in figure 1b.,Experiment/Discussion
+It should be obvious that the area of disagreement upper bounds the area of minority values.,Experiment/Discussion
+The error values of F are the values opposite to the values of Y : the error value is − when Y = + and + when Y = −.,Experiment/Discussion
+"When minority values are error values, as in figure 1, disagreement upper bounds error, and theorem 2 follows immediately.",Experiment/Discussion
+"However, three other cases are possible.",Experiment/Discussion
+One possibility is that minority values are opposite to error values.,Experiment/Discussion
+"In this case, the minority values of F¯ are error values, and disagreement between F and G upper bounds the error of F¯.",Experiment/Discussion
+This case is admitted by theorem 2.,Experiment/Discussion
+"In the final two cases, minority values are the same regardless of the value of Y .",Experiment/Discussion
+"In these cases, however, the predictors do not satisfy the “nontriviality” condition of theorem 2, which requires that mina Pr[F = u] be greater than the disagreement between F and G.",Experiment/Discussion
+Rule independence is a very strong assumption; one remarkable consequence will show just how strong it is.,Experiment/Discussion
+The precision of a rule F is defined to be Pr[Y = +|F = +].,Experiment/Discussion
+(We continue to assume non-abstaining binary rules.),Experiment/Discussion
+"If rule independence holds, knowing the precision of any one rule allows one to exactly compute the precision of every other rule given only unlabeled data and knowledge of the size of the target concept.",Experiment/Discussion
+Let F and G be arbitrary rules based on independent views.,Experiment/Discussion
+We first derive an expression for the precision of F in terms of G. Note that the second line is derived from the first by rule independence.,Experiment/Discussion
+"To compute the expression on the righthand side of the last line, we require P(Y |G), P(Y ), P(G|F), and P(G).",Experiment/Discussion
+"The first value, the precision of G, is assumed known.",Experiment/Discussion
+"The second value, P(Y ), is also assumed known; it can at any rate be estimated from a small amount of labeled data.",Experiment/Discussion
+"The last two values, P(G|F) and P(G), can be computed from unlabeled data.",Experiment/Discussion
+"Thus, given the precision of an arbitrary rule G, we can compute the precision of any otherview rule F. Then we can compute the precision of rules based on the same view as G by using the precision of some other-view rule F. Hence we can compute the precision of every rule given the precision of any one.",Experiment/Discussion
+"The empirical investigations described here and below use the data set of (Collins and Singer, 1999).",Experiment/Discussion
+"The task is to classify names in text as person, location, or organization.",Experiment/Discussion
+"There is an unlabeled training set containing 89,305 instances, and a labeled test set containing 289 persons, 186 locations, 402 organizations, and 123 “other”, for a total of 1,000 instances.",Experiment/Discussion
+Instances are represented as lists of features.,Experiment/Discussion
+"Intrinsic features are the words making up the name, and contextual features are features of the syntactic context in which the name occurs.",Experiment/Discussion
+"For example, consider Bruce Kaplan, president of Metals Inc.",Experiment/Discussion
+This text snippet contains two instances.,Experiment/Discussion
+"The first has intrinsic features N:Bruce-Kaplan, C:Bruce, and C:Kaplan (“N” for the complete name, “C” for “contains”), and contextual feature M:president (“M” for “modified by”).",Experiment/Discussion
+"The second instance has intrinsic features N:Metals-Inc, C:Metals, C:Inc, and contextual feature X:president-of (“X” for “in the context of”).",Experiment/Discussion
+"Let us define Y (x) = + if x is a “location” instance, and Y (x) = − otherwise.",Experiment/Discussion
+"We can estimate P(Y ) from the test sample; it contains 186/1000 location instances, giving P(Y ) = .186.",Experiment/Discussion
+Let us treat each feature F as a rule predicting + when F is present and − otherwise.,Experiment/Discussion
+The precision of F is P(Y |F).,Experiment/Discussion
+The internal feature N:New-York has precision 1.,Experiment/Discussion
+"This permits us to compute the precision of various contextual features, as shown in the “Co-training” column of Table 1.",Experiment/Discussion
+We note that the numbers do not even look like probabilities.,Experiment/Discussion
+"The cause is the failure of view independence to hold in the data, combined with the instability of the estimator.",Experiment/Discussion
+"(The “Yarowsky” column uses a seed rule to estimate P(Y |F), as is done in the Yarowsky algorithm, and the “Truth” column shows the true value of P(Y |F).)",Experiment/Discussion
+"Nonetheless, the unreasonableness of view independence does not mean we must abandon theorem 2.",Experiment/Discussion
+"In this section, we introduce a weaker assumption, one that is satisfied by the data, and we show that theorem 2 holds under this weaker assumption.",Experiment/Discussion
+"There are two ways in which the data can diverge from conditional independence: the rules may either be positively or negatively correlated, given the class value.",Experiment/Discussion
+"Figure 2a illustrates positive correlation, and figure 2b illustrates negative correlation.",Experiment/Discussion
+"If the rules are negatively correlated, then their disagreement (shaded in figure 2) is larger than if they are conditionally independent, and the conclusion of theorem 2 is maintained a fortiori.",Experiment/Discussion
+"Unfortunately, in the data, they are positively correlated, so the theorem does not apply.",Experiment/Discussion
+Let us quantify the amount of deviation from conditional independence.,Experiment/Discussion
+"We define the conditional dependence of F and G given Y = y to If F and G are conditionally independent, then dy = 0.",Experiment/Discussion
+"This permits us to state a weaker version of rule independence: Definition 4 Rules F and G satisfy weak rule dependence just in case, for y E {+, −}: dy ` p2 2p1q1 where p1 = minu Pr[F = u|Y = y], p2 = minu Pr[G = u|Y = y], and q1 = 1 − p1.",Experiment/Discussion
+"By definition, p1 and p2 cannot exceed 0.5.",Experiment/Discussion
+"If p1 = 0.5, then weak rule dependence reduces to independence: if p1 = 0.5 and weak rule dependence is satisfied, then dy must be 0, which is to say, F and G must be conditionally independent.",Experiment/Discussion
+"However, as p1 decreases, the permissible amount of conditional dependence increases.",Experiment/Discussion
+"We can now state a generalized version of theorem 2: Theorem 3 For all F E W1, G E W2 that satisfy weak rule dependence and are nontrivial predictors in the sense that minu Pr[F = u] > Pr[F =� G], one of the following inequalities holds: Consider figure 3.",Experiment/Discussion
+"This illustrates the most relevant case, in which F and G are positively correlated given Y .",Experiment/Discussion
+(Only the case Y = + is shown; the case Y = − is similar.),Experiment/Discussion
+We assume that the minority values of F are error values; the other cases are handled as in the discussion of theorem 2.,Experiment/Discussion
+Let u be the minority value of G when Y = +.,Experiment/Discussion
+"In figure 3, a is the probability that G = u when F takes its minority value, and b is the probability that G = u when F takes its majority value.",Experiment/Discussion
+The value r = a − b is the difference.,Experiment/Discussion
+Note that r = 0 if F and G are conditionally independent given Y = +.,Experiment/Discussion
+"In fact, we can show Hence, in particular, we may write dy = a − b.",Experiment/Discussion
+"Observe further that p2, the minority probability of G when Y = +, is a weighted average of a and b, namely, p2 = p1a+q1b.",Experiment/Discussion
+"Combining this with the equation dy = a−b allows us to express a and b in terms of the remaining variables, to wit: a = p2 + q1dy and b = p2 − p1dy.",Experiment/Discussion
+"In order to prove theorem 3, we need to show that the area of disagreement (B U C) upper bounds the area of the minority value of F (AU B).",Experiment/Discussion
+"This is true just in case C is larger than A, which is to say, if bq1 > ap1.",Experiment/Discussion
+"Substituting our expressions for a and b into this inequality and solving for dy yields: dy ` p2 2p1q1 In short, disagreement upper bounds the minority probability just in case weak rule dependence is satisfied, proving the theorem.",Experiment/Discussion
+"Dasgupta, Littman, and McAllester suggest a possible algorithm at the end of their paper, but they give only the briefest suggestion, and do not implement or evaluate it.",Experiment/Discussion
+"I give here an algorithm, the Greedy Agreement Algorithm, that constructs paired rules that agree on unlabeled data, and I examine its performance.",Experiment/Discussion
+The algorithm is given in figure 4.,Experiment/Discussion
+"It begins with two seed rules, one for each view.",Experiment/Discussion
+"At each iteration, each possible extension to one of the rules is considered and scored.",Experiment/Discussion
+"The best one is kept, and attention shifts to the other rule.",Experiment/Discussion
+"A complex rule (or classifier) is a list of atomic rules H, each associating a single feature h with a label t. H(x) = t if x has feature h, and H(x) = L otherwise.",Experiment/Discussion
+A given atomic rule is permitted to appear multiple times in the list.,Experiment/Discussion
+"Each atomic rule occurrence gets one vote, and the classifier’s prediction is the label that receives the most votes.",Experiment/Discussion
+"In case of a tie, there is no prediction.",Experiment/Discussion
+"The cost of a classifier pair (F, G) is based on a more general version of theorem 2, that admits abstaining rules.",Experiment/Discussion
+"The following theorem is based on (Dasgupta et al., 2001).",Experiment/Discussion
+"Theorem 4 If view independence is satisfied, and if F and G are rules based on different views, then one of the following holds: In other words, for a given binary rule F, a pessimistic estimate of the number of errors made by F is S/(µ − S) times the number of instances labeled by F, plus the number of instances left unlabeled by F. Finally, we note that the cost of F is sensitive to the choice of G, but the cost of F with respect to G is not necessarily the same as the cost of G with respect to F. To get an overall cost, we average the cost of F with respect to G and G with respect to F. Figure 5 shows the performance of the greedy agreement algorithm after each iteration.",Experiment/Discussion
+"Because not all test instances are labeled (some are neither persons nor locations nor organizations), and because classifiers do not label all instances, we show precision and recall rather than a single error rate.",Experiment/Discussion
+The contour lines show levels of the F-measure (the harmonic mean of precision and recall).,Experiment/Discussion
+"The algorithm is run to convergence, that is, until no atomic rule can be found that decreases cost.",Experiment/Discussion
+It is interesting to note that there is no significant overtraining with respect to F-measure.,Experiment/Discussion
+"The final values are 89.2/80.4/84.5 recall/precision/F-measure, which compare favorably with the performance of the Yarowsky algorithm (83.3/84.6/84.0).",Experiment/Discussion
+"(Collins and Singer, 1999) add a special final round to boost recall, yielding 91.2/80.0/85.2 for the Yarowsky algorithm and 91.3/80.1/85.3 for their version of the original co-training algorithm.",Experiment/Discussion
+All four algorithms essentially perform equally well; the advantage of the greedy agreement algorithm is that we have an explanation for why it performs well.,Experiment/Discussion
+"For Yarowsky’s algorithm, a classifier again consists of a list of atomic rules.",Results/Conclusion
+The prediction of the classifier is the prediction of the first rule in the list that applies.,Results/Conclusion
+"The algorithm constructs a classifier iteratively, beginning with a seed rule.",Results/Conclusion
+"In the variant we consider here, one atomic rule is added at each iteration.",Results/Conclusion
+"An atomic rule F` is chosen only if its precision, Pr[G` = +JF` = +] (as measured using the labels assigned by the current classifier G), exceeds a fixed threshold θ.1 Yarowsky does not give an explicit justification for the algorithm.",Results/Conclusion
+I show here that the algorithm can be justified on the basis of two independence assumptions.,Results/Conclusion
+"In what follows, F represents an atomic rule under consideration, and G represents the current classifier.",Results/Conclusion
+"Recall that Y` is the set of instances whose true label is t, and G` is the set of instances {x : G(x) = t}.",Results/Conclusion
+"We write G∗ for the set of instances labeled by the current classifier, that is, {x : G(x) =� +}.",Results/Conclusion
+The first assumption is precision independence.,Results/Conclusion
+"Definition 5 Candidate rule F` and classifier G satisfy precision independence just in case Precision independence is stated here so that it looks like a conditional independence assumption, to emphasize the similarity to the analysis of co-training.",Results/Conclusion
+"In fact, it is only “half” an independence assumption—for precision independence, it is not necessary that P(Y`J ¯F`, G∗) = P(Y`J The second assumption is that classifiers make balanced errors.",Results/Conclusion
+"That is: P(Y`, G¯`JF`) = P(Y¯`, G`JF`) Let us first consider a concrete (but hypothetical) example.",Results/Conclusion
+"Suppose the initial classifier correctly labels 100 out of 1000 instances, and makes no mistakes.",Results/Conclusion
+"Then the initial precision is 1(Yarowsky, 1995), citing (Yarowsky, 1994), actually uses a superficially different score that is, however, a monotone transform of precision, hence equivalent to precision, since it is used only for sorting.",Results/Conclusion
+1 and recall is 0.1.,Results/Conclusion
+"Suppose further that we add an atomic rule that correctly labels 19 new instances, and incorrectly labels one new instance.",Results/Conclusion
+The rule’s precision is 0.95.,Results/Conclusion
+The precision of the new classifier (the old classifier plus the new atomic rule) is 119/120 = 0.99.,Results/Conclusion
+Note that the new precision lies between the old precision and the precision of the rule.,Results/Conclusion
+"We will show that this is always the case, given precision independence and balanced errors.",Results/Conclusion
+"We need to consider several quantities: the precision of the current classifier, P(Y`JG`); the precision of the rule under consideration, P(Y`JF`); the precision of the rule on the current labeled set, P(Y`JF`G∗); and the precision of the rule as measured using estimated labels, P(G`JF`G∗).",Results/Conclusion
+"The assumption of balanced errors implies that measured precision equals true precision on labeled instances, as follows.",Results/Conclusion
+"(We assume here that all instances have true labels, hence that This, combined with precision independence, implies that the precision of F` as measured on the labeled set is equal to its true precision P(Y`JF`).",Results/Conclusion
+"Now consider the precision of the old and new classifiers at predicting t. Of the instances that the old classifier labels t, let A be the number that are correctly labeled and B be the number that are incorrectly labeled.",Results/Conclusion
+"Defining Nt = A + B, the precision of the old classifier is Qt = A/Nt.",Results/Conclusion
+"Let ΔA be the number of new instances that the rule under consideration correctly labels, and let ΔB be the number that it incorrectly labels.",Results/Conclusion
+"Defining n = ΔA + ΔB, the precision of the rule is q = ΔA/n.",Results/Conclusion
+"The precision of the new classifier is Qt+1 = (A + ΔA)/Nt+1, which can be written as: That is, the precision of the new classifier is a weighted average of the precision of the old classifier and the precision of the new rule.",Results/Conclusion
+"An immediate consequence is that, if we only accept rules whose precision exceeds a given threshold B, then the precision of the new classifier exceeds B.",Results/Conclusion
+"Since measured precision equals true precision under our previous assumptions, it follows that the true precision of the final classifier exceeds B if the measured precision of every accepted rule exceeds B.",Results/Conclusion
+"Moreover, observe that recall can be written as: Nt Qt N` where N` is the number of instances whose true label is t. If Qt > B, then recall is bounded below by NtB/N`, which grows as Nt grows.",Results/Conclusion
+Hence we have proven the following theorem.,Results/Conclusion
+"Intuitively, the Yarowsky algorithm increases recall while holding precision above a threshold that represents the desired precision of the final classifier.",Results/Conclusion
+"The empirical behavior of the algorithm, as shown in figure 6, is in accordance with this analysis.",Results/Conclusion
+"We have seen, then, that the Yarowsky algorithm, like the co-training algorithm, can be justified on the basis of an independence assumption, precision independence.",Results/Conclusion
+"It is important to note, however, that the Yarowsky algorithm is not a special case of co-training.",Results/Conclusion
+Precision independence and view independence are distinct assumptions; neither implies the other.2,Results/Conclusion
+"To sum up, we have refined previous work on the analysis of co-training, and given a new cotraining algorithm that is theoretically justified and has good empirical performance.",Results/Conclusion
+"We have also given a theoretical analysis of the Yarowsky algorithm for the first time, and shown that it can be justified by an independence assumption that is quite distinct from the independence assumption that co-training is based on.",Results/Conclusion

@@ -1,198 +1,198 @@
 col1,col2
-We demonstrate how supervised discriminative machine learning techniques can be used to automate the assessment of ‘English as a Second or Other Language’ (ESOL) examination scripts.,{}
-"In particular, we use rank preference learning to explicitly model the grade relationships between scripts.",{}
-A number of different features are extracted and ablation tests are used to investigate their contribution to overall performance.,{}
-A comparison between regression and rank preference models further supports our method.,{}
-"Experimental results on the first publically available dataset show that our system can achieve levels of performance close to the upper bound for the task, as defined by the agreement between human examiners on the same corpus.",{}
-"Finally, using a set of ‘outlier’ texts, we test the validity of our model and identify cases where the model’s scores diverge from that of a human examiner.",{}
-The task of automated assessment of free text focuses on automatically analysing and assessing the quality of writing competence.,"{'title': '1 Introduction', 'number': '1'}"
-Automated assessment systems exploit textual features in order to measure the overall quality and assign a score to a text.,"{'title': '1 Introduction', 'number': '1'}"
-"The earliest systems used superficial features, such as word and sentence length, as proxies for understanding the text.","{'title': '1 Introduction', 'number': '1'}"
-"More recent systems have used more sophisticated automated text processing techniques to measure grammaticality, textual coherence, prespecified errors, and so forth.","{'title': '1 Introduction', 'number': '1'}"
-"Deployment of automated assessment systems gives a number of advantages, such as the reduced workload in marking texts, especially when applied to large-scale assessments.","{'title': '1 Introduction', 'number': '1'}"
-"Additionally, automated systems guarantee the application of the same marking criteria, thus reducing inconsistency, which may arise when more than one human examiner is employed.","{'title': '1 Introduction', 'number': '1'}"
-"Often, implementations include feedback with respect to the writers’ writing abilities, thus facilitating self-assessment and self-tutoring.","{'title': '1 Introduction', 'number': '1'}"
-"Implicitly or explicitly, previous work has mostly treated automated assessment as a supervised text classification task, where training texts are labelled with a grade and unlabelled test texts are fitted to the same grade point scale via a regression step applied to the classifier output (see Section 6 for more details).","{'title': '1 Introduction', 'number': '1'}"
-"Different techniques have been used, including cosine similarity of vectors representing text in various ways (Attali and Burstein, 2006), often combined with dimensionality reduction techniques such as Latent Semantic Analysis (LSA) (Landauer et al., 2003), generative machine learning models (Rudner and Liang, 2002), domain-specific feature extraction (Attali and Burstein, 2006), and/or modified syntactic parsers (Lonsdale and Strong-Krause, 2003).","{'title': '1 Introduction', 'number': '1'}"
-"A recent review identifies twelve different automated free-text scoring systems (Williamson, 2009).","{'title': '1 Introduction', 'number': '1'}"
-"Examples include e-Rater (Attali and Burstein, 2006), Intelligent Essay Assessor (IEA) (Landauer et al., 2003), IntelliMetric (Elliot, 2003; Rudner et al., 2006) and Project Essay Grade (PEG) (Page, 2003).","{'title': '1 Introduction', 'number': '1'}"
-Several of these are now deployed in highstakes assessment of examination scripts.,"{'title': '1 Introduction', 'number': '1'}"
-"Although there are many published analyses of the performance of individual systems, as yet there is no publically available shared dataset for training and testing such systems and comparing their performance.","{'title': '1 Introduction', 'number': '1'}"
-"As it is likely that the deployment of such systems will increase, standardised and independent evaluation methods are important.","{'title': '1 Introduction', 'number': '1'}"
-"We make such a dataset of ESOL examination scripts available1 (see Section 2 for more details), describe our novel approach to the task, and provide results for our system on this dataset.","{'title': '1 Introduction', 'number': '1'}"
-"We address automated assessment as a supervised discriminative machine learning problem and particularly as a rank preference problem (Joachims, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"Our reasons are twofold: Discriminative classification techniques often outperform non-discriminative ones in the context of text classification (Joachims, 1998).","{'title': '1 Introduction', 'number': '1'}"
-"Additionally, rank preference techniques (Joachims, 2002) allow us to explicitly learn an optimal ranking model of text quality.","{'title': '1 Introduction', 'number': '1'}"
-"Learning a ranking directly, rather than fitting a classifier score to a grade point scale after training, is both a more generic approach to the task and one which exploits the labelling information in the training data efficiently and directly.","{'title': '1 Introduction', 'number': '1'}"
-"Techniques such as LSA (Landauer and Foltz, 1998) measure, in addition to writing competence, the semantic relevance of a text written in response to a given prompt.","{'title': '1 Introduction', 'number': '1'}"
-"However, although our corpus of manually-marked texts was produced by learners of English in response to prompts eliciting free-text answers, the marking criteria are primarily based on the accurate use of a range of different linguistic constructions.","{'title': '1 Introduction', 'number': '1'}"
-"For this reason, we believe that an approach which directly measures linguistic competence will be better suited to ESOL text assessment, and will have the additional advantage that it may not require retraining for new prompts or tasks.","{'title': '1 Introduction', 'number': '1'}"
-"As far as we know, this is the first application of a rank preference model to automated assessment (hereafter AA).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we report experiments on rank preference Support Vector Machines (SVMs) trained on a relatively small amount of data, on identification of appropriate feature types derived automatically from generic text processing tools, on comparison with a regression SVM model, and on the robustness of the best model to ‘outlier’ texts.","{'title': '1 Introduction', 'number': '1'}"
-"We report a consistent, comparable and replicable set of results based entirely on the new dataset and on public-domain tools and data, whilst also experimentally motivating some novel feature types for the AA task, thus extending the work described in (Briscoe et al., 2010).","{'title': '1 Introduction', 'number': '1'}"
-"In the following sections we describe in more detail the dataset used for training and testing, the system developed, the evaluation methodology, as well as ablation experiments aimed at studying the contribution of different feature types to the AA task.","{'title': '1 Introduction', 'number': '1'}"
-"We show experimentally that discriminative models with appropriate feature types can achieve performance close to the upper bound, as defined by the agreement between human examiners on the same test corpus.","{'title': '1 Introduction', 'number': '1'}"
-"The Cambridge Learner Corpus2 (CLC), developed as a collaborative project between Cambridge University Press and Cambridge Assessment, is a large collection of texts produced by English language learners from around the world, sitting Cambridge Assessment’s English as a Second or Other Language (ESOL) examinations3.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"For the purpose of this work, we extracted scripts produced by learners taking the First Certificate in English (FCE) exam, which assesses English at an upper-intermediate level.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"The scripts, which are anonymised, are annotated using XML and linked to meta-data about the question prompts, the candidate’s grades, native language and age.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"The FCE writing component consists of two tasks asking learners to write either a letter, a report, an article, a composition or a short story, between 200 and 400 words.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"Answers to each of these tasks are annotated with marks (in the range 1–40), which have been fitted to a RASCH model (Fischer and Molenaar, 1995) to correct for inter-examiner inconsistency and comparability.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"In addition, an overall mark is assigned to both tasks, which is the one we use in our experiments.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"Each script has been also manually tagged with information about the linguistic errors committed, using a taxonomy of approximately 80 error types (Nicholls, 2003).","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"The following is an example errorcoded sentence: In the morning, you are <NS type = “TV”> waken|woken</NS> up by a singing puppy.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"In this sentence, TV denotes an incorrect tense of verb error, where waken can be corrected to woken.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"Our data consists of 1141 scripts from the year 2000 for training written by 1141 distinct learners, and 97 scripts from the year 2001 for testing written by 97 distinct learners.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-The learners’ ages follow a bimodal distribution with peaks at approximately 16–20 and 26–30 years of age.,"{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-The prompts eliciting the free text are provided with the dataset.,"{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"However, in this paper we make no use of prompt information and do not make any attempt to check that the text answer is appropriate to the prompt.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-Our focus is on developing an accurate AA system for ESOL text that does not require prompt-specific or topic-specific training.,"{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-There is no overlap between the prompts used in 2000 and in 2001.,"{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-A typical prompt taken from the 2000 training dataset is shown below: Your teacher has asked you to write a story for the school’s English language magazine.,"{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-"The story must begin with the following words: “Unfortunately, Pat wasn’t very good at keeping secrets”.","{'title': '2 Cambridge Learner Corpus', 'number': '2'}"
-We treat automated assessment of ESOL text (see Section 2) as a rank preference learning problem (see Section 1).,"{'title': '3 Approach', 'number': '3'}"
-"In the experiments reported here we use Support Vector Machines (SVMs) (Vapnik, 1995) through the SVMlight package (Joachims, 1999).","{'title': '3 Approach', 'number': '3'}"
-"Using the dataset described in Section 2, a number of linguistic features are automatically extracted and their contribution to overall performance is investigated.","{'title': '3 Approach', 'number': '3'}"
-"SVMs have been extensively used for learning classification, regression and ranking functions.","{'title': '3 Approach', 'number': '3'}"
-"In its basic form, a binary SVM classifier learns a linear threshold function that discriminates data points of two categories.","{'title': '3 Approach', 'number': '3'}"
-"By using a different loss function, the e-insensitive loss function (Smola, 1996), SVMs can also perform regression.","{'title': '3 Approach', 'number': '3'}"
-SVMs in regression mode estimate a function that outputs a real number based on the training data.,"{'title': '3 Approach', 'number': '3'}"
-"In both cases, the model generalises by computing a hyperplane that has the largest (soft-)margin.","{'title': '3 Approach', 'number': '3'}"
-"In rank preference SVMs, the goal is to learn a ranking function which outputs a score for each data point, from which a global ordering of the data is constructed.","{'title': '3 Approach', 'number': '3'}"
-"This procedure requires a set R consisting of training samples xn and their target rankings rn: such that xi >-R xj when ri < rj, where 1 5 i,j 5 n and i =� j.","{'title': '3 Approach', 'number': '3'}"
-A rank preference model is not trained directly on this set of data objects and their labels; rather a set of pair-wise difference vectors is created.,"{'title': '3 Approach', 'number': '3'}"
-"The goal of a linear ranking model is to compute a weight vector w that maximises the number of correctly ranked pairs: This is equivalent to solving the following optimisation problem: The factor C allows a trade-off between the training error and the margin size, while �ij are nonnegative slack variables that measure the degree of misclassification.","{'title': '3 Approach', 'number': '3'}"
-The optimisation problem is equivalent to that for the classification model on pair-wise difference vectors.,"{'title': '3 Approach', 'number': '3'}"
-"In this case, generalisation is achieved by maximising the differences between closely-ranked data pairs.","{'title': '3 Approach', 'number': '3'}"
-The principal advantage of applying rank preference learning to the AA task is that we explicitly model the grade relationships between scripts and do not need to apply a further regression step to fit the classifier output to the scoring scheme.,"{'title': '3 Approach', 'number': '3'}"
-The results reported in this paper are obtained by learning a linear classification function.,"{'title': '3 Approach', 'number': '3'}"
-"We parsed the training and test data (see Section 2) using the Robust Accurate Statistical Parsing (RASP) system with the standard tokenisation and sentence boundary detection modules (Briscoe et al., 2006) in order to broaden the space of candidate features suitable for the task.","{'title': '3 Approach', 'number': '3'}"
-The features used in our experiments are mainly motivated by the fact that lexical and grammatical features should be highly discriminative for the AA task.,"{'title': '3 Approach', 'number': '3'}"
-Our full feature set is as follows: Word unigrams and bigrams are lower-cased and used in their inflected forms.,"{'title': '3 Approach', 'number': '3'}"
-"PoS unigrams, bigrams and trigrams are extracted using the RASP tagger, which uses the CLAWS4 tagset.","{'title': '3 Approach', 'number': '3'}"
-"The most probable posterior tag per word is used to construct PoS ngram features, but we use the RASP parser’s option to analyse words assigned multiple tags when the posterior probability of the highest ranked tag is less than 0.9, and the next n tags have probability greater than 150 of it.","{'title': '3 Approach', 'number': '3'}"
-"Based on the most likely parse for each identified sentence, we extract the rule names from the phrase structure (PS) tree.","{'title': '3 Approach', 'number': '3'}"
-RASP’s rule names are semiautomatically generated and encode detailed information about the grammatical constructions found (e.g.,"{'title': '3 Approach', 'number': '3'}"
-"V1/modal bse/+-, ‘a VP consisting of a modal auxiliary head followed by an (optional) adverbial phrase, followed by a VP headed by a verb with base inflection’).","{'title': '3 Approach', 'number': '3'}"
-"Moreover, rule names explicitly represent information about peripheral or rare constructions (e.g.","{'title': '3 Approach', 'number': '3'}"
-"S/pp-ap s-r, ‘a S with preposed PP with adjectival complement, e.g. for better or worse, he left’), as well as about fragmentary and likely extragrammatical sequences (e.g.","{'title': '3 Approach', 'number': '3'}"
-"T/txt-frag, ‘a text unit consisting of 2 or more subanalyses that cannot be combined using any rule in the grammar’).","{'title': '3 Approach', 'number': '3'}"
-"Therefore, we believe that many (longer-distance) grammatical constructions and errors found in texts can be (implicitly) captured by this feature type.","{'title': '3 Approach', 'number': '3'}"
-"In developing our AA system, a number of different grammatical complexity measures were extracted from parses, and their impact on the accuracy of the system was explored.","{'title': '3 Approach', 'number': '3'}"
-"For the experiments reported here, we use complexity measures representing the sum of the longest distance in word tokens between a head and dependent in a grammatical relation (GR) from the RASP GR output, calculated for each GR graph from the top 10 parses per sentence.","{'title': '3 Approach', 'number': '3'}"
-"In particular, we extract the mean and median values of these distances per sentence and use the maximum values per script.","{'title': '3 Approach', 'number': '3'}"
-"Intuitively, this feature captures information about the grammatical sophistication of the writer.","{'title': '3 Approach', 'number': '3'}"
-"However, it may also be confounded in cases where sentence boundaries are not identified through, for example, poor punctuation.","{'title': '3 Approach', 'number': '3'}"
-"Although the CLC contains information about the linguistic errors committed (see Section 2), we try to extract an error-rate in a way that doesn’t require manually tagged data.","{'title': '3 Approach', 'number': '3'}"
-"However, we also use an error-rate calculated from the CLC error tags to obtain an upper bound for the performance of an automated error estimator (true CLC error-rate).","{'title': '3 Approach', 'number': '3'}"
-"In order to estimate the error-rate, we build a trigram language model (LM) using ukWaC (ukWaC LM) (Ferraresi et al., 2008), a large corpus of English containing more than 2 billion tokens.","{'title': '3 Approach', 'number': '3'}"
-"Next, we extend our language model with trigrams extracted from a subset of the texts contained in the CLC (CLC LM).","{'title': '3 Approach', 'number': '3'}"
-"As the CLC contains texts produced by second language learners, we only extract frequently occurring trigrams from highly ranked scripts to avoid introducing erroneous ones to our language model.","{'title': '3 Approach', 'number': '3'}"
-A word trigram in test data is counted as an error if it is not found in the language model.,"{'title': '3 Approach', 'number': '3'}"
-"We compute presence/absence efficiently using a Bloom filter encoding of the language models (Bloom, 1970).","{'title': '3 Approach', 'number': '3'}"
-Feature instances of types i and ii are weighted using the tf*idf scheme and normalised by the L2 norm.,"{'title': '3 Approach', 'number': '3'}"
-"Feature type iii is weighted using frequency counts, while iii and iv are scaled so that their final value has approximately the same order of magnitude as i and ii.","{'title': '3 Approach', 'number': '3'}"
-The script length is based on the number of words and is mainly added to balance the effect the length of a script has on other features.,"{'title': '3 Approach', 'number': '3'}"
-"Finally, features whose overall frequency is lower than four are discarded from the model.","{'title': '3 Approach', 'number': '3'}"
-"In order to evaluate our AA system, we use two correlation measures, Pearson’s product-moment correlation coefficient and Spearman’s rank correlation coefficient (hereafter Pearson’s and Spearman’s correlation respectively).","{'title': '4 Evaluation', 'number': '4'}"
-Pearson’s correlation determines the degree to which two linearly dependent variables are related.,"{'title': '4 Evaluation', 'number': '4'}"
-"As Pearson’s correlation is sensitive to the distribution of data and, due to outliers, its value can be misleading, we also report Spearman’s correlation.","{'title': '4 Evaluation', 'number': '4'}"
-The latter is a nonparametric robust measure of association which is sensitive only to the ordinal arrangement of values.,"{'title': '4 Evaluation', 'number': '4'}"
-"As our data contains some tied values, we calculate Spearman’s correlation by using Pearson’s correlation on the ranks.","{'title': '4 Evaluation', 'number': '4'}"
-"Table 1 presents the Pearson’s and Spearman’s correlation between the CLC scores and the AA system predicted values, when incrementally adding to the model the feature types described in Section 3.2.","{'title': '4 Evaluation', 'number': '4'}"
-Each feature type improves the model’s performance.,"{'title': '4 Evaluation', 'number': '4'}"
-Extending our language model with frequent trigrams extracted from the CLC improves Pearson’s and Spearman’s correlation by 0.006 and 0.015 respectively.,"{'title': '4 Evaluation', 'number': '4'}"
-The addition of the error-rate obtained from the manually annotated CLC error tags on top of all the features further improves performance by 0.01 and 0.016.,"{'title': '4 Evaluation', 'number': '4'}"
-An evaluation of our best error detection method shows a Pearson correlation of 0.611 between the estimated and the true CLC error counts.,"{'title': '4 Evaluation', 'number': '4'}"
-This suggests that there is room for improvement in the language models we developed to estimate the error-rate.,"{'title': '4 Evaluation', 'number': '4'}"
-"In the experiments reported hereafter, we use the ukWaC+CLC LM to calculate the error-rate.","{'title': '4 Evaluation', 'number': '4'}"
-"In order to assess the independent as opposed to the order-dependent additive contribution of each feature type to the overall performance of the system, we run a number of ablation tests.","{'title': '4 Evaluation', 'number': '4'}"
-An ablation test consists of removing one feature of the system at a time and re-evaluating the model on the test set.,"{'title': '4 Evaluation', 'number': '4'}"
-"Table 2 presents Pearson’s and Spearman’s correlation between the CLC and our system, when removing one feature at a time.","{'title': '4 Evaluation', 'number': '4'}"
-"All features have a positive effect on performance, while the error-rate has a big impact, as its absence is responsible for a 0.061 decrease of Spearman’s correlation.","{'title': '4 Evaluation', 'number': '4'}"
-"In addition, the removal of either the word ngrams, the PS rules, or the error-rate estimate contributes to a large decrease in Pearson’s correlation.","{'title': '4 Evaluation', 'number': '4'}"
-"In order to test the significance of the improved correlations, we ran one-tailed t-tests with a = 0.05 for the difference between dependent correlations (Williams, 1959; Steiger, 1980).","{'title': '4 Evaluation', 'number': '4'}"
-"The results showed that PoS ngrams, PS rules, the complexity measures, and the estimated error-rate contribute significantly to the improvement of Spearman’s correlation, while PS rules also contribute significantly to the improvement of Pearson’s correlation.","{'title': '4 Evaluation', 'number': '4'}"
-"One of the main approaches adopted by previous systems involves the identification of features that measure writing skill, and then the application of linear or stepwise regression to find optimal feature weights so that the correlation with manually assigned scores is maximised.","{'title': '4 Evaluation', 'number': '4'}"
-We trained a SVM regression model with our full set of feature types and compared it to the SVM rank preference model.,"{'title': '4 Evaluation', 'number': '4'}"
-The results are given in Table 3.,"{'title': '4 Evaluation', 'number': '4'}"
-"The rank preference model improves Pearson’s and Spearman’s correlation by 0.044 and 0.067 respectively, and these differences are significant, suggesting that rank preference is a more appropriate model for the AA task.","{'title': '4 Evaluation', 'number': '4'}"
-"Four senior and experienced ESOL examiners remarked the 97 FCE test scripts drawn from 2001 exams, using the marking scheme from that year (see Section 2).","{'title': '4 Evaluation', 'number': '4'}"
-"In order to obtain a ceiling for the performance of our system, we calculate the average correlation between the CLC and the examiners’ scores, and find an upper bound of 0.796 and 0.792 Pearson’s and Spearman’s correlation respectively.","{'title': '4 Evaluation', 'number': '4'}"
-"In order to evaluate the overall performance of our system, we calculate its correlation with the four senior examiners in addition to the RASCH-adjusted CLC scores.","{'title': '4 Evaluation', 'number': '4'}"
-Tables 4 and 5 present the results obtained.,"{'title': '4 Evaluation', 'number': '4'}"
-"The average correlation of the AA system with the CLC and the examiner scores shows that it is close dicted values with the CLC and the examiners’ scores, where E1 refers to the first examiner, E2 to the second etc. to the upper bound for the task.","{'title': '4 Evaluation', 'number': '4'}"
-"Human–machine agreement is comparable to that of human–human agreement, with the exception of Pearson’s correlation with examiner E4 and Spearman’s correlation with examiners E1 and E4, where the discrepancies are higher.","{'title': '4 Evaluation', 'number': '4'}"
-It is likely that a larger training set and/or more consistent grading of the existing training data would help to close this gap.,"{'title': '4 Evaluation', 'number': '4'}"
-"However, our system is not measuring some properties of the scripts, such as discourse cohesion or relevance to the prompt eliciting the text, that examiners will take into account.","{'title': '4 Evaluation', 'number': '4'}"
-The practical utility of an AA system will depend strongly on its robustness to subversion by writers who understand something of its workings and attempt to exploit this to maximise their scores (independently of their underlying ability).,"{'title': '5 Validity tests', 'number': '5'}"
-"Surprisingly, there is very little published data on the robustness of existing systems.","{'title': '5 Validity tests', 'number': '5'}"
-"However, Powers et al. (2002) invited writing experts to trick the scoring capabilities of an earlier version of e-Rater (Burstein et al., 1998). e-Rater (see Section 6 for more details) assigns a score to a text based on linguistic feature types extracted using relatively domain-specific techniques.","{'title': '5 Validity tests', 'number': '5'}"
-Participants were given a description of these techniques as well as of the cue words that the system uses.,"{'title': '5 Validity tests', 'number': '5'}"
-The results showed that it was easier to fool the system into assigning higher than lower scores.,"{'title': '5 Validity tests', 'number': '5'}"
-"Our goal here is to determine the extent to which knowledge of the feature types deployed poses a threat to the validity of our system, where certain text generation strategies may give rise to large positive discrepancies.","{'title': '5 Validity tests', 'number': '5'}"
-"As mentioned in Section 2, the marking criteria for FCE scripts are primarily based on the accurate use of a range of different grammatical constructions relevant to specific communicative goals, but our system assesses this indirectly.","{'title': '5 Validity tests', 'number': '5'}"
-We extracted 6 high-scoring FCE scripts from the CLC that do not overlap with our training and test data.,"{'title': '5 Validity tests', 'number': '5'}"
-"Based on the features used by our system and without bias towards any modification, we modified each script in one of the following ways: ii.","{'title': '5 Validity tests', 'number': '5'}"
-"Swap words that have the same PoS within a sentence Although the above modifications do not exhaust the potential challenges a deployed AA system might face, they represent a threat to the validity of our system since we are using a highly related feature set.","{'title': '5 Validity tests', 'number': '5'}"
-"In total, we create 30 such ‘outlier’ texts, which were given to an ESOL examiner for marking.","{'title': '5 Validity tests', 'number': '5'}"
-"Using the ‘outlier’ scripts as well as their original/unmodified versions, we ran our system on each modification separately and calculated the correlation between the predicted values and the examiner’s scores.","{'title': '5 Validity tests', 'number': '5'}"
-Table 6 presents the results.,"{'title': '5 Validity tests', 'number': '5'}"
-"The predicted values of the system have a high correlation with the examiner’s scores when tested on ‘outlier’ texts of modification types i(a), i(b) and i(c).","{'title': '5 Validity tests', 'number': '5'}"
-"However, as i(c) has a lower correlation compared to i(a) and i(b), it is likely that a random ordering of ngrams with N > 3 will further decrease performance.","{'title': '5 Validity tests', 'number': '5'}"
-"A modification of type ii, where words with the same PoS within a sentence are swapped, results in a Pearson and Spearman correlation of 0.634 and 0.761 respectively.","{'title': '5 Validity tests', 'number': '5'}"
-Analysis of the results showed that our system predicted higher scores than the ones assigned by the examiner.,"{'title': '5 Validity tests', 'number': '5'}"
-This can be explained by the fact that texts produced using modification type ii contain a small portion of correct sentences.,"{'title': '5 Validity tests', 'number': '5'}"
-"However, the marking criteria are based on the overall writing quality.","{'title': '5 Validity tests', 'number': '5'}"
-"The final case, where correct sentences are randomly ordered, receives the lowest correlation.","{'title': '5 Validity tests', 'number': '5'}"
-"As our system is not measuring discourse cohesion, discrepancies are much higher; the system’s predicted scores are high whilst the ones assigned by the examiner are very low.","{'title': '5 Validity tests', 'number': '5'}"
-"However, for a writer to be able to generate text of this type already requires significant linguistic competence, whilst a number of generic methods for assessing text and/or discourse cohesion have been developed and could be deployed in an extended version of our system.","{'title': '5 Validity tests', 'number': '5'}"
-It is also likely that highly creative ‘outlier’ essays may give rise to large negative discrepancies.,"{'title': '5 Validity tests', 'number': '5'}"
-"Recent comments in the British media have focussed on this issue, reporting that, for example, one deployed essay marking system assigned Winston Churchill’s speech ‘We Shall Fight on the Beaches’ a low score because of excessive repetition5.","{'title': '5 Validity tests', 'number': '5'}"
-"Our model predicted a high passing mark for this text, but not the highest one possible, that some journalists clearly feel it deserves.","{'title': '5 Validity tests', 'number': '5'}"
-In this section we briefly discuss a number of the more influential and/or better described approaches.,"{'title': '6 Previous work', 'number': '6'}"
-"P´erez-Marin et al. (2009), Williamson (2009), Dikli (2006) and Valenti et al.","{'title': '6 Previous work', 'number': '6'}"
-(2003) provide a more detailed overview of existing AA systems.,"{'title': '6 Previous work', 'number': '6'}"
-"Project Essay Grade (PEG) (Page, 2003), one of the earliest systems, uses a number of manuallyidentified mostly shallow textual features, which are considered to be proxies for intrinsic qualities of writing competence.","{'title': '6 Previous work', 'number': '6'}"
-Linear regression is used to assign optimal feature weights that maximise the correlation with the examiner’s scores.,"{'title': '6 Previous work', 'number': '6'}"
-"The main issue with this system is that features such as word length and script length are easy to manipulate independently of genuine writing ability, potentially undermining the validity of the system.","{'title': '6 Previous work', 'number': '6'}"
-"In e-Rater (Attali and Burstein, 2006), texts are represented using vectors of weighted features.","{'title': '6 Previous work', 'number': '6'}"
-"Each feature corresponds to a different property of texts, such as an aspect of grammar, style, discourse and topic similarity.","{'title': '6 Previous work', 'number': '6'}"
-"Additional features, representing stereotypical grammatical errors for example, are extracted using manually-coded task-specific detectors based, in part, on typical marking criteria.","{'title': '6 Previous work', 'number': '6'}"
-An unmarked text is scored based on the cosine similarity between its weighted vector and the ones in the training set.,"{'title': '6 Previous work', 'number': '6'}"
-Feature weights and/or scores can be fitted to a marking scheme by stepwise or linear regression.,"{'title': '6 Previous work', 'number': '6'}"
-"Unlike our approach, e-Rater models discourse structure, semantic coherence and relevance to the prompt.","{'title': '6 Previous work', 'number': '6'}"
-"However, the system contains manually developed task-specific components and requires retraining or tuning for each new prompt and assessment task.","{'title': '6 Previous work', 'number': '6'}"
-"Intelligent Essay Assessor (IEA) (Landauer et al., 2003) uses Latent Semantic Analysis (LSA) (Landauer and Foltz, 1998) to compute the semantic similarity between texts, at a specific grade point, and a test text.","{'title': '6 Previous work', 'number': '6'}"
-"In LSA, text is represented by a matrix, where rows correspond to words and columns to context (texts).","{'title': '6 Previous work', 'number': '6'}"
-Singular Value Decomposition (SVD) is used to obtain a reduced dimension matrix clustering words and contexts.,"{'title': '6 Previous work', 'number': '6'}"
-The system is trained on topic and/or prompt specific texts while test texts are assigned a score based on the ones in the training set that are most similar.,"{'title': '6 Previous work', 'number': '6'}"
-"The overall score, which is calculated using regression techniques, is based on the content score as well as on other properties of texts, such as style, grammar, and so forth, though the methods used to assess these are not described in any detail in published work.","{'title': '6 Previous work', 'number': '6'}"
-"Again, the system requires retraining or tuning for new prompts and assessment tasks.","{'title': '6 Previous work', 'number': '6'}"
-Lonsdale and Strong-Krause (2003) use a modified syntactic parser to analyse and score texts.,"{'title': '6 Previous work', 'number': '6'}"
-"Their method is based on a modified version of the Link Grammar parser (Sleator and Templerley, 1995) where the overall score of a text is calculated as the average of the scores assigned to each sentence.","{'title': '6 Previous work', 'number': '6'}"
-"Sentences are scored on a five-point scale based on the parser’s cost vector, which roughly measures the complexity and deviation of a sentence from the parser’s grammatical model.","{'title': '6 Previous work', 'number': '6'}"
-"This approach bears some similarities to our use of grammatical complexity and extragrammaticality features, but grammatical features represent only one component of our overall system, and of the task.","{'title': '6 Previous work', 'number': '6'}"
-"The Bayesian Essay Test Scoring sYstem (BETSY) (Rudner and Liang, 2002) uses multinomial or Bernoulli Naive Bayes models to classify texts into different classes (e.g. pass/fail, grades A– F) based on content and style features such as word unigrams and bigrams, sentence length, number of verbs, noun–verb pairs etc.","{'title': '6 Previous work', 'number': '6'}"
-"Classification is based on the conditional probability of a class given a set of features, which is calculated using the assumption that each feature is independent of the other.","{'title': '6 Previous work', 'number': '6'}"
-"This system shows that treating AA as a text classification problem is viable, but the feature types are all fairly shallow, and the approach doesn’t make efficient use of the training data as a separate classifier is trained for each grade point.","{'title': '6 Previous work', 'number': '6'}"
-"Recently, Chen et al. (2010) has proposed an unsupervised approach to AA of texts addressing the same topic, based on a voting algorithm.","{'title': '6 Previous work', 'number': '6'}"
-Texts are clustered according to their grade and given an initial Z-score.,"{'title': '6 Previous work', 'number': '6'}"
-A model is trained where the initial score of a text changes iteratively based on its similarity with the rest of the texts as well as their Zscores.,"{'title': '6 Previous work', 'number': '6'}"
-The approach might be better described as weakly supervised as the distribution of text grades in the training data is used to fit the final Z-scores to grades.,"{'title': '6 Previous work', 'number': '6'}"
-"The system uses a bag-of-words representation of text, so would be easy to subvert.","{'title': '6 Previous work', 'number': '6'}"
-"Nevertheless, exploration of the trade-offs between degree of supervision required in training and grading accuracy is an important area for future research.","{'title': '6 Previous work', 'number': '6'}"
-"Finally, we hope that the release of the training and test dataset described here will facilitate further research on the AA task for ESOL free text and, in particular, precise comparison of different systems, feature types, and grade fitting methods.","{'title': '7 Conclusions and future work', 'number': '7'}"
-"Though many of the systems described in Section 6 have been shown to correlate well with examiners’ marks on test data in many experimental contexts, no cross-system comparisons are available because of the lack of a shared training and test dataset.","{'title': '7 Conclusions and future work', 'number': '7'}"
-"Furthermore, none of the published work of which we are aware has systematically compared the contribution of different feature types to the AA task, and only one (Powers et al., 2002) assesses the ease with which the system can be subverted given some knowledge of the features deployed.","{'title': '7 Conclusions and future work', 'number': '7'}"
-We have shown experimentally how rank preference models can be effectively deployed for automated assessment of ESOL free-text answers.,"{'title': '7 Conclusions and future work', 'number': '7'}"
-"Based on a range of feature types automatically extracted using generic text processing techniques, our system achieves performance close to the upper bound for the task.","{'title': '7 Conclusions and future work', 'number': '7'}"
-"Ablation tests highlight the contribution of each feature type to the overall performance, while significance of the resulting improvements in correlation with human scores has been calculated.","{'title': '7 Conclusions and future work', 'number': '7'}"
-A comparison between regression and rank preference models further supports our approach.,"{'title': '7 Conclusions and future work', 'number': '7'}"
-Preliminary experiments based on a set of ‘outlier’ texts have shown the types of texts for which the system’s scoring capability can be undermined.,"{'title': '7 Conclusions and future work', 'number': '7'}"
-"We plan to experiment with better error detection techniques, since the overall error-rate of a script is one of the most discriminant features.","{'title': '7 Conclusions and future work', 'number': '7'}"
-Briscoe et al. (2010) describe an approach to automatic offprompt detection which does not require retraining for each new question prompt and which we plan to integrate with our system.,"{'title': '7 Conclusions and future work', 'number': '7'}"
-"It is clear from the ‘outlier’ experiments reported here that our system would benefit from features assessing discourse coherence, and to a lesser extent from features assessing semantic (selectional) coherence over longer bounds than those captured by ngrams.","{'title': '7 Conclusions and future work', 'number': '7'}"
-"The addition of an incoherence metric to the feature set of an AA system has been shown to improve performance significantly (Miltsakaki and Kukich, 2000; Miltsakaki and Kukich, 2004).","{'title': '7 Conclusions and future work', 'number': '7'}"
-"We would like to thank Cambridge ESOL, a division of Cambridge Assessment, for permission to use and distribute the examination scripts.","{'title': 'Acknowledgements', 'number': '8'}"
-We are also grateful to Cambridge Assessment for arranging for the test scripts to be remarked by four of their senior examiners.,"{'title': 'Acknowledgements', 'number': '8'}"
-"Finally, we would like to thank Marek Rei, Øistein Andersen and the anonymous reviewers for their useful comments.","{'title': 'Acknowledgements', 'number': '8'}"
+We demonstrate how supervised discriminative machine learning techniques can be used to automate the assessment of ‘English as a Second or Other Language’ (ESOL) examination scripts.,Introduction
+"In particular, we use rank preference learning to explicitly model the grade relationships between scripts.",Introduction
+A number of different features are extracted and ablation tests are used to investigate their contribution to overall performance.,Introduction
+A comparison between regression and rank preference models further supports our method.,Introduction
+"Experimental results on the first publically available dataset show that our system can achieve levels of performance close to the upper bound for the task, as defined by the agreement between human examiners on the same corpus.",Introduction
+"Finally, using a set of ‘outlier’ texts, we test the validity of our model and identify cases where the model’s scores diverge from that of a human examiner.",Introduction
+The task of automated assessment of free text focuses on automatically analysing and assessing the quality of writing competence.,Experiment/Discussion
+Automated assessment systems exploit textual features in order to measure the overall quality and assign a score to a text.,Experiment/Discussion
+"The earliest systems used superficial features, such as word and sentence length, as proxies for understanding the text.",Experiment/Discussion
+"More recent systems have used more sophisticated automated text processing techniques to measure grammaticality, textual coherence, prespecified errors, and so forth.",Experiment/Discussion
+"Deployment of automated assessment systems gives a number of advantages, such as the reduced workload in marking texts, especially when applied to large-scale assessments.",Experiment/Discussion
+"Additionally, automated systems guarantee the application of the same marking criteria, thus reducing inconsistency, which may arise when more than one human examiner is employed.",Experiment/Discussion
+"Often, implementations include feedback with respect to the writers’ writing abilities, thus facilitating self-assessment and self-tutoring.",Experiment/Discussion
+"Implicitly or explicitly, previous work has mostly treated automated assessment as a supervised text classification task, where training texts are labelled with a grade and unlabelled test texts are fitted to the same grade point scale via a regression step applied to the classifier output (see Section 6 for more details).",Experiment/Discussion
+"Different techniques have been used, including cosine similarity of vectors representing text in various ways (Attali and Burstein, 2006), often combined with dimensionality reduction techniques such as Latent Semantic Analysis (LSA) (Landauer et al., 2003), generative machine learning models (Rudner and Liang, 2002), domain-specific feature extraction (Attali and Burstein, 2006), and/or modified syntactic parsers (Lonsdale and Strong-Krause, 2003).",Experiment/Discussion
+"A recent review identifies twelve different automated free-text scoring systems (Williamson, 2009).",Experiment/Discussion
+"Examples include e-Rater (Attali and Burstein, 2006), Intelligent Essay Assessor (IEA) (Landauer et al., 2003), IntelliMetric (Elliot, 2003; Rudner et al., 2006) and Project Essay Grade (PEG) (Page, 2003).",Experiment/Discussion
+Several of these are now deployed in highstakes assessment of examination scripts.,Experiment/Discussion
+"Although there are many published analyses of the performance of individual systems, as yet there is no publically available shared dataset for training and testing such systems and comparing their performance.",Experiment/Discussion
+"As it is likely that the deployment of such systems will increase, standardised and independent evaluation methods are important.",Experiment/Discussion
+"We make such a dataset of ESOL examination scripts available1 (see Section 2 for more details), describe our novel approach to the task, and provide results for our system on this dataset.",Experiment/Discussion
+"We address automated assessment as a supervised discriminative machine learning problem and particularly as a rank preference problem (Joachims, 2002).",Experiment/Discussion
+"Our reasons are twofold: Discriminative classification techniques often outperform non-discriminative ones in the context of text classification (Joachims, 1998).",Experiment/Discussion
+"Additionally, rank preference techniques (Joachims, 2002) allow us to explicitly learn an optimal ranking model of text quality.",Experiment/Discussion
+"Learning a ranking directly, rather than fitting a classifier score to a grade point scale after training, is both a more generic approach to the task and one which exploits the labelling information in the training data efficiently and directly.",Experiment/Discussion
+"Techniques such as LSA (Landauer and Foltz, 1998) measure, in addition to writing competence, the semantic relevance of a text written in response to a given prompt.",Experiment/Discussion
+"However, although our corpus of manually-marked texts was produced by learners of English in response to prompts eliciting free-text answers, the marking criteria are primarily based on the accurate use of a range of different linguistic constructions.",Experiment/Discussion
+"For this reason, we believe that an approach which directly measures linguistic competence will be better suited to ESOL text assessment, and will have the additional advantage that it may not require retraining for new prompts or tasks.",Experiment/Discussion
+"As far as we know, this is the first application of a rank preference model to automated assessment (hereafter AA).",Experiment/Discussion
+"In this paper, we report experiments on rank preference Support Vector Machines (SVMs) trained on a relatively small amount of data, on identification of appropriate feature types derived automatically from generic text processing tools, on comparison with a regression SVM model, and on the robustness of the best model to ‘outlier’ texts.",Experiment/Discussion
+"We report a consistent, comparable and replicable set of results based entirely on the new dataset and on public-domain tools and data, whilst also experimentally motivating some novel feature types for the AA task, thus extending the work described in (Briscoe et al., 2010).",Experiment/Discussion
+"In the following sections we describe in more detail the dataset used for training and testing, the system developed, the evaluation methodology, as well as ablation experiments aimed at studying the contribution of different feature types to the AA task.",Experiment/Discussion
+"We show experimentally that discriminative models with appropriate feature types can achieve performance close to the upper bound, as defined by the agreement between human examiners on the same test corpus.",Experiment/Discussion
+"The Cambridge Learner Corpus2 (CLC), developed as a collaborative project between Cambridge University Press and Cambridge Assessment, is a large collection of texts produced by English language learners from around the world, sitting Cambridge Assessment’s English as a Second or Other Language (ESOL) examinations3.",Experiment/Discussion
+"For the purpose of this work, we extracted scripts produced by learners taking the First Certificate in English (FCE) exam, which assesses English at an upper-intermediate level.",Experiment/Discussion
+"The scripts, which are anonymised, are annotated using XML and linked to meta-data about the question prompts, the candidate’s grades, native language and age.",Experiment/Discussion
+"The FCE writing component consists of two tasks asking learners to write either a letter, a report, an article, a composition or a short story, between 200 and 400 words.",Experiment/Discussion
+"Answers to each of these tasks are annotated with marks (in the range 1–40), which have been fitted to a RASCH model (Fischer and Molenaar, 1995) to correct for inter-examiner inconsistency and comparability.",Experiment/Discussion
+"In addition, an overall mark is assigned to both tasks, which is the one we use in our experiments.",Experiment/Discussion
+"Each script has been also manually tagged with information about the linguistic errors committed, using a taxonomy of approximately 80 error types (Nicholls, 2003).",Experiment/Discussion
+"The following is an example errorcoded sentence: In the morning, you are <NS type = “TV”> waken|woken</NS> up by a singing puppy.",Experiment/Discussion
+"In this sentence, TV denotes an incorrect tense of verb error, where waken can be corrected to woken.",Experiment/Discussion
+"Our data consists of 1141 scripts from the year 2000 for training written by 1141 distinct learners, and 97 scripts from the year 2001 for testing written by 97 distinct learners.",Experiment/Discussion
+The learners’ ages follow a bimodal distribution with peaks at approximately 16–20 and 26–30 years of age.,Experiment/Discussion
+The prompts eliciting the free text are provided with the dataset.,Experiment/Discussion
+"However, in this paper we make no use of prompt information and do not make any attempt to check that the text answer is appropriate to the prompt.",Experiment/Discussion
+Our focus is on developing an accurate AA system for ESOL text that does not require prompt-specific or topic-specific training.,Experiment/Discussion
+There is no overlap between the prompts used in 2000 and in 2001.,Experiment/Discussion
+A typical prompt taken from the 2000 training dataset is shown below: Your teacher has asked you to write a story for the school’s English language magazine.,Experiment/Discussion
+"The story must begin with the following words: “Unfortunately, Pat wasn’t very good at keeping secrets”.",Experiment/Discussion
+We treat automated assessment of ESOL text (see Section 2) as a rank preference learning problem (see Section 1).,Experiment/Discussion
+"In the experiments reported here we use Support Vector Machines (SVMs) (Vapnik, 1995) through the SVMlight package (Joachims, 1999).",Experiment/Discussion
+"Using the dataset described in Section 2, a number of linguistic features are automatically extracted and their contribution to overall performance is investigated.",Experiment/Discussion
+"SVMs have been extensively used for learning classification, regression and ranking functions.",Experiment/Discussion
+"In its basic form, a binary SVM classifier learns a linear threshold function that discriminates data points of two categories.",Experiment/Discussion
+"By using a different loss function, the e-insensitive loss function (Smola, 1996), SVMs can also perform regression.",Experiment/Discussion
+SVMs in regression mode estimate a function that outputs a real number based on the training data.,Experiment/Discussion
+"In both cases, the model generalises by computing a hyperplane that has the largest (soft-)margin.",Experiment/Discussion
+"In rank preference SVMs, the goal is to learn a ranking function which outputs a score for each data point, from which a global ordering of the data is constructed.",Experiment/Discussion
+"This procedure requires a set R consisting of training samples xn and their target rankings rn: such that xi >-R xj when ri < rj, where 1 5 i,j 5 n and i =� j.",Experiment/Discussion
+A rank preference model is not trained directly on this set of data objects and their labels; rather a set of pair-wise difference vectors is created.,Experiment/Discussion
+"The goal of a linear ranking model is to compute a weight vector w that maximises the number of correctly ranked pairs: This is equivalent to solving the following optimisation problem: The factor C allows a trade-off between the training error and the margin size, while �ij are nonnegative slack variables that measure the degree of misclassification.",Experiment/Discussion
+The optimisation problem is equivalent to that for the classification model on pair-wise difference vectors.,Experiment/Discussion
+"In this case, generalisation is achieved by maximising the differences between closely-ranked data pairs.",Experiment/Discussion
+The principal advantage of applying rank preference learning to the AA task is that we explicitly model the grade relationships between scripts and do not need to apply a further regression step to fit the classifier output to the scoring scheme.,Experiment/Discussion
+The results reported in this paper are obtained by learning a linear classification function.,Experiment/Discussion
+"We parsed the training and test data (see Section 2) using the Robust Accurate Statistical Parsing (RASP) system with the standard tokenisation and sentence boundary detection modules (Briscoe et al., 2006) in order to broaden the space of candidate features suitable for the task.",Experiment/Discussion
+The features used in our experiments are mainly motivated by the fact that lexical and grammatical features should be highly discriminative for the AA task.,Experiment/Discussion
+Our full feature set is as follows: Word unigrams and bigrams are lower-cased and used in their inflected forms.,Experiment/Discussion
+"PoS unigrams, bigrams and trigrams are extracted using the RASP tagger, which uses the CLAWS4 tagset.",Experiment/Discussion
+"The most probable posterior tag per word is used to construct PoS ngram features, but we use the RASP parser’s option to analyse words assigned multiple tags when the posterior probability of the highest ranked tag is less than 0.9, and the next n tags have probability greater than 150 of it.",Experiment/Discussion
+"Based on the most likely parse for each identified sentence, we extract the rule names from the phrase structure (PS) tree.",Experiment/Discussion
+RASP’s rule names are semiautomatically generated and encode detailed information about the grammatical constructions found (e.g.,Experiment/Discussion
+"V1/modal bse/+-, ‘a VP consisting of a modal auxiliary head followed by an (optional) adverbial phrase, followed by a VP headed by a verb with base inflection’).",Experiment/Discussion
+"Moreover, rule names explicitly represent information about peripheral or rare constructions (e.g.",Experiment/Discussion
+"S/pp-ap s-r, ‘a S with preposed PP with adjectival complement, e.g. for better or worse, he left’), as well as about fragmentary and likely extragrammatical sequences (e.g.",Experiment/Discussion
+"T/txt-frag, ‘a text unit consisting of 2 or more subanalyses that cannot be combined using any rule in the grammar’).",Experiment/Discussion
+"Therefore, we believe that many (longer-distance) grammatical constructions and errors found in texts can be (implicitly) captured by this feature type.",Experiment/Discussion
+"In developing our AA system, a number of different grammatical complexity measures were extracted from parses, and their impact on the accuracy of the system was explored.",Experiment/Discussion
+"For the experiments reported here, we use complexity measures representing the sum of the longest distance in word tokens between a head and dependent in a grammatical relation (GR) from the RASP GR output, calculated for each GR graph from the top 10 parses per sentence.",Experiment/Discussion
+"In particular, we extract the mean and median values of these distances per sentence and use the maximum values per script.",Experiment/Discussion
+"Intuitively, this feature captures information about the grammatical sophistication of the writer.",Experiment/Discussion
+"However, it may also be confounded in cases where sentence boundaries are not identified through, for example, poor punctuation.",Experiment/Discussion
+"Although the CLC contains information about the linguistic errors committed (see Section 2), we try to extract an error-rate in a way that doesn’t require manually tagged data.",Experiment/Discussion
+"However, we also use an error-rate calculated from the CLC error tags to obtain an upper bound for the performance of an automated error estimator (true CLC error-rate).",Experiment/Discussion
+"In order to estimate the error-rate, we build a trigram language model (LM) using ukWaC (ukWaC LM) (Ferraresi et al., 2008), a large corpus of English containing more than 2 billion tokens.",Experiment/Discussion
+"Next, we extend our language model with trigrams extracted from a subset of the texts contained in the CLC (CLC LM).",Experiment/Discussion
+"As the CLC contains texts produced by second language learners, we only extract frequently occurring trigrams from highly ranked scripts to avoid introducing erroneous ones to our language model.",Experiment/Discussion
+A word trigram in test data is counted as an error if it is not found in the language model.,Experiment/Discussion
+"We compute presence/absence efficiently using a Bloom filter encoding of the language models (Bloom, 1970).",Experiment/Discussion
+Feature instances of types i and ii are weighted using the tf*idf scheme and normalised by the L2 norm.,Experiment/Discussion
+"Feature type iii is weighted using frequency counts, while iii and iv are scaled so that their final value has approximately the same order of magnitude as i and ii.",Experiment/Discussion
+The script length is based on the number of words and is mainly added to balance the effect the length of a script has on other features.,Experiment/Discussion
+"Finally, features whose overall frequency is lower than four are discarded from the model.",Experiment/Discussion
+"In order to evaluate our AA system, we use two correlation measures, Pearson’s product-moment correlation coefficient and Spearman’s rank correlation coefficient (hereafter Pearson’s and Spearman’s correlation respectively).",Experiment/Discussion
+Pearson’s correlation determines the degree to which two linearly dependent variables are related.,Experiment/Discussion
+"As Pearson’s correlation is sensitive to the distribution of data and, due to outliers, its value can be misleading, we also report Spearman’s correlation.",Experiment/Discussion
+The latter is a nonparametric robust measure of association which is sensitive only to the ordinal arrangement of values.,Experiment/Discussion
+"As our data contains some tied values, we calculate Spearman’s correlation by using Pearson’s correlation on the ranks.",Experiment/Discussion
+"Table 1 presents the Pearson’s and Spearman’s correlation between the CLC scores and the AA system predicted values, when incrementally adding to the model the feature types described in Section 3.2.",Experiment/Discussion
+Each feature type improves the model’s performance.,Experiment/Discussion
+Extending our language model with frequent trigrams extracted from the CLC improves Pearson’s and Spearman’s correlation by 0.006 and 0.015 respectively.,Experiment/Discussion
+The addition of the error-rate obtained from the manually annotated CLC error tags on top of all the features further improves performance by 0.01 and 0.016.,Experiment/Discussion
+An evaluation of our best error detection method shows a Pearson correlation of 0.611 between the estimated and the true CLC error counts.,Experiment/Discussion
+This suggests that there is room for improvement in the language models we developed to estimate the error-rate.,Experiment/Discussion
+"In the experiments reported hereafter, we use the ukWaC+CLC LM to calculate the error-rate.",Experiment/Discussion
+"In order to assess the independent as opposed to the order-dependent additive contribution of each feature type to the overall performance of the system, we run a number of ablation tests.",Experiment/Discussion
+An ablation test consists of removing one feature of the system at a time and re-evaluating the model on the test set.,Experiment/Discussion
+"Table 2 presents Pearson’s and Spearman’s correlation between the CLC and our system, when removing one feature at a time.",Experiment/Discussion
+"All features have a positive effect on performance, while the error-rate has a big impact, as its absence is responsible for a 0.061 decrease of Spearman’s correlation.",Experiment/Discussion
+"In addition, the removal of either the word ngrams, the PS rules, or the error-rate estimate contributes to a large decrease in Pearson’s correlation.",Experiment/Discussion
+"In order to test the significance of the improved correlations, we ran one-tailed t-tests with a = 0.05 for the difference between dependent correlations (Williams, 1959; Steiger, 1980).",Experiment/Discussion
+"The results showed that PoS ngrams, PS rules, the complexity measures, and the estimated error-rate contribute significantly to the improvement of Spearman’s correlation, while PS rules also contribute significantly to the improvement of Pearson’s correlation.",Experiment/Discussion
+"One of the main approaches adopted by previous systems involves the identification of features that measure writing skill, and then the application of linear or stepwise regression to find optimal feature weights so that the correlation with manually assigned scores is maximised.",Experiment/Discussion
+We trained a SVM regression model with our full set of feature types and compared it to the SVM rank preference model.,Experiment/Discussion
+The results are given in Table 3.,Experiment/Discussion
+"The rank preference model improves Pearson’s and Spearman’s correlation by 0.044 and 0.067 respectively, and these differences are significant, suggesting that rank preference is a more appropriate model for the AA task.",Experiment/Discussion
+"Four senior and experienced ESOL examiners remarked the 97 FCE test scripts drawn from 2001 exams, using the marking scheme from that year (see Section 2).",Experiment/Discussion
+"In order to obtain a ceiling for the performance of our system, we calculate the average correlation between the CLC and the examiners’ scores, and find an upper bound of 0.796 and 0.792 Pearson’s and Spearman’s correlation respectively.",Experiment/Discussion
+"In order to evaluate the overall performance of our system, we calculate its correlation with the four senior examiners in addition to the RASCH-adjusted CLC scores.",Experiment/Discussion
+Tables 4 and 5 present the results obtained.,Experiment/Discussion
+"The average correlation of the AA system with the CLC and the examiner scores shows that it is close dicted values with the CLC and the examiners’ scores, where E1 refers to the first examiner, E2 to the second etc. to the upper bound for the task.",Experiment/Discussion
+"Human–machine agreement is comparable to that of human–human agreement, with the exception of Pearson’s correlation with examiner E4 and Spearman’s correlation with examiners E1 and E4, where the discrepancies are higher.",Experiment/Discussion
+It is likely that a larger training set and/or more consistent grading of the existing training data would help to close this gap.,Experiment/Discussion
+"However, our system is not measuring some properties of the scripts, such as discourse cohesion or relevance to the prompt eliciting the text, that examiners will take into account.",Experiment/Discussion
+The practical utility of an AA system will depend strongly on its robustness to subversion by writers who understand something of its workings and attempt to exploit this to maximise their scores (independently of their underlying ability).,Experiment/Discussion
+"Surprisingly, there is very little published data on the robustness of existing systems.",Experiment/Discussion
+"However, Powers et al. (2002) invited writing experts to trick the scoring capabilities of an earlier version of e-Rater (Burstein et al., 1998). e-Rater (see Section 6 for more details) assigns a score to a text based on linguistic feature types extracted using relatively domain-specific techniques.",Experiment/Discussion
+Participants were given a description of these techniques as well as of the cue words that the system uses.,Experiment/Discussion
+The results showed that it was easier to fool the system into assigning higher than lower scores.,Experiment/Discussion
+"Our goal here is to determine the extent to which knowledge of the feature types deployed poses a threat to the validity of our system, where certain text generation strategies may give rise to large positive discrepancies.",Experiment/Discussion
+"As mentioned in Section 2, the marking criteria for FCE scripts are primarily based on the accurate use of a range of different grammatical constructions relevant to specific communicative goals, but our system assesses this indirectly.",Experiment/Discussion
+We extracted 6 high-scoring FCE scripts from the CLC that do not overlap with our training and test data.,Experiment/Discussion
+"Based on the features used by our system and without bias towards any modification, we modified each script in one of the following ways: ii.",Experiment/Discussion
+"Swap words that have the same PoS within a sentence Although the above modifications do not exhaust the potential challenges a deployed AA system might face, they represent a threat to the validity of our system since we are using a highly related feature set.",Experiment/Discussion
+"In total, we create 30 such ‘outlier’ texts, which were given to an ESOL examiner for marking.",Experiment/Discussion
+"Using the ‘outlier’ scripts as well as their original/unmodified versions, we ran our system on each modification separately and calculated the correlation between the predicted values and the examiner’s scores.",Experiment/Discussion
+Table 6 presents the results.,Experiment/Discussion
+"The predicted values of the system have a high correlation with the examiner’s scores when tested on ‘outlier’ texts of modification types i(a), i(b) and i(c).",Experiment/Discussion
+"However, as i(c) has a lower correlation compared to i(a) and i(b), it is likely that a random ordering of ngrams with N > 3 will further decrease performance.",Experiment/Discussion
+"A modification of type ii, where words with the same PoS within a sentence are swapped, results in a Pearson and Spearman correlation of 0.634 and 0.761 respectively.",Experiment/Discussion
+Analysis of the results showed that our system predicted higher scores than the ones assigned by the examiner.,Experiment/Discussion
+This can be explained by the fact that texts produced using modification type ii contain a small portion of correct sentences.,Experiment/Discussion
+"However, the marking criteria are based on the overall writing quality.",Experiment/Discussion
+"The final case, where correct sentences are randomly ordered, receives the lowest correlation.",Experiment/Discussion
+"As our system is not measuring discourse cohesion, discrepancies are much higher; the system’s predicted scores are high whilst the ones assigned by the examiner are very low.",Experiment/Discussion
+"However, for a writer to be able to generate text of this type already requires significant linguistic competence, whilst a number of generic methods for assessing text and/or discourse cohesion have been developed and could be deployed in an extended version of our system.",Experiment/Discussion
+It is also likely that highly creative ‘outlier’ essays may give rise to large negative discrepancies.,Experiment/Discussion
+"Recent comments in the British media have focussed on this issue, reporting that, for example, one deployed essay marking system assigned Winston Churchill’s speech ‘We Shall Fight on the Beaches’ a low score because of excessive repetition5.",Experiment/Discussion
+"Our model predicted a high passing mark for this text, but not the highest one possible, that some journalists clearly feel it deserves.",Experiment/Discussion
+In this section we briefly discuss a number of the more influential and/or better described approaches.,Experiment/Discussion
+"P´erez-Marin et al. (2009), Williamson (2009), Dikli (2006) and Valenti et al.",Experiment/Discussion
+(2003) provide a more detailed overview of existing AA systems.,Experiment/Discussion
+"Project Essay Grade (PEG) (Page, 2003), one of the earliest systems, uses a number of manuallyidentified mostly shallow textual features, which are considered to be proxies for intrinsic qualities of writing competence.",Experiment/Discussion
+Linear regression is used to assign optimal feature weights that maximise the correlation with the examiner’s scores.,Experiment/Discussion
+"The main issue with this system is that features such as word length and script length are easy to manipulate independently of genuine writing ability, potentially undermining the validity of the system.",Experiment/Discussion
+"In e-Rater (Attali and Burstein, 2006), texts are represented using vectors of weighted features.",Experiment/Discussion
+"Each feature corresponds to a different property of texts, such as an aspect of grammar, style, discourse and topic similarity.",Experiment/Discussion
+"Additional features, representing stereotypical grammatical errors for example, are extracted using manually-coded task-specific detectors based, in part, on typical marking criteria.",Experiment/Discussion
+An unmarked text is scored based on the cosine similarity between its weighted vector and the ones in the training set.,Experiment/Discussion
+Feature weights and/or scores can be fitted to a marking scheme by stepwise or linear regression.,Experiment/Discussion
+"Unlike our approach, e-Rater models discourse structure, semantic coherence and relevance to the prompt.",Experiment/Discussion
+"However, the system contains manually developed task-specific components and requires retraining or tuning for each new prompt and assessment task.",Experiment/Discussion
+"Intelligent Essay Assessor (IEA) (Landauer et al., 2003) uses Latent Semantic Analysis (LSA) (Landauer and Foltz, 1998) to compute the semantic similarity between texts, at a specific grade point, and a test text.",Experiment/Discussion
+"In LSA, text is represented by a matrix, where rows correspond to words and columns to context (texts).",Experiment/Discussion
+Singular Value Decomposition (SVD) is used to obtain a reduced dimension matrix clustering words and contexts.,Experiment/Discussion
+The system is trained on topic and/or prompt specific texts while test texts are assigned a score based on the ones in the training set that are most similar.,Experiment/Discussion
+"The overall score, which is calculated using regression techniques, is based on the content score as well as on other properties of texts, such as style, grammar, and so forth, though the methods used to assess these are not described in any detail in published work.",Experiment/Discussion
+"Again, the system requires retraining or tuning for new prompts and assessment tasks.",Experiment/Discussion
+Lonsdale and Strong-Krause (2003) use a modified syntactic parser to analyse and score texts.,Experiment/Discussion
+"Their method is based on a modified version of the Link Grammar parser (Sleator and Templerley, 1995) where the overall score of a text is calculated as the average of the scores assigned to each sentence.",Experiment/Discussion
+"Sentences are scored on a five-point scale based on the parser’s cost vector, which roughly measures the complexity and deviation of a sentence from the parser’s grammatical model.",Experiment/Discussion
+"This approach bears some similarities to our use of grammatical complexity and extragrammaticality features, but grammatical features represent only one component of our overall system, and of the task.",Experiment/Discussion
+"The Bayesian Essay Test Scoring sYstem (BETSY) (Rudner and Liang, 2002) uses multinomial or Bernoulli Naive Bayes models to classify texts into different classes (e.g. pass/fail, grades A– F) based on content and style features such as word unigrams and bigrams, sentence length, number of verbs, noun–verb pairs etc.",Experiment/Discussion
+"Classification is based on the conditional probability of a class given a set of features, which is calculated using the assumption that each feature is independent of the other.",Experiment/Discussion
+"This system shows that treating AA as a text classification problem is viable, but the feature types are all fairly shallow, and the approach doesn’t make efficient use of the training data as a separate classifier is trained for each grade point.",Experiment/Discussion
+"Recently, Chen et al. (2010) has proposed an unsupervised approach to AA of texts addressing the same topic, based on a voting algorithm.",Experiment/Discussion
+Texts are clustered according to their grade and given an initial Z-score.,Experiment/Discussion
+A model is trained where the initial score of a text changes iteratively based on its similarity with the rest of the texts as well as their Zscores.,Experiment/Discussion
+The approach might be better described as weakly supervised as the distribution of text grades in the training data is used to fit the final Z-scores to grades.,Experiment/Discussion
+"The system uses a bag-of-words representation of text, so would be easy to subvert.",Experiment/Discussion
+"Nevertheless, exploration of the trade-offs between degree of supervision required in training and grading accuracy is an important area for future research.",Experiment/Discussion
+"Finally, we hope that the release of the training and test dataset described here will facilitate further research on the AA task for ESOL free text and, in particular, precise comparison of different systems, feature types, and grade fitting methods.",Results/Conclusion
+"Though many of the systems described in Section 6 have been shown to correlate well with examiners’ marks on test data in many experimental contexts, no cross-system comparisons are available because of the lack of a shared training and test dataset.",Results/Conclusion
+"Furthermore, none of the published work of which we are aware has systematically compared the contribution of different feature types to the AA task, and only one (Powers et al., 2002) assesses the ease with which the system can be subverted given some knowledge of the features deployed.",Results/Conclusion
+We have shown experimentally how rank preference models can be effectively deployed for automated assessment of ESOL free-text answers.,Results/Conclusion
+"Based on a range of feature types automatically extracted using generic text processing techniques, our system achieves performance close to the upper bound for the task.",Results/Conclusion
+"Ablation tests highlight the contribution of each feature type to the overall performance, while significance of the resulting improvements in correlation with human scores has been calculated.",Results/Conclusion
+A comparison between regression and rank preference models further supports our approach.,Results/Conclusion
+Preliminary experiments based on a set of ‘outlier’ texts have shown the types of texts for which the system’s scoring capability can be undermined.,Results/Conclusion
+"We plan to experiment with better error detection techniques, since the overall error-rate of a script is one of the most discriminant features.",Results/Conclusion
+Briscoe et al. (2010) describe an approach to automatic offprompt detection which does not require retraining for each new question prompt and which we plan to integrate with our system.,Results/Conclusion
+"It is clear from the ‘outlier’ experiments reported here that our system would benefit from features assessing discourse coherence, and to a lesser extent from features assessing semantic (selectional) coherence over longer bounds than those captured by ngrams.",Results/Conclusion
+"The addition of an incoherence metric to the feature set of an AA system has been shown to improve performance significantly (Miltsakaki and Kukich, 2000; Miltsakaki and Kukich, 2004).",Results/Conclusion
+"We would like to thank Cambridge ESOL, a division of Cambridge Assessment, for permission to use and distribute the examination scripts.",Results/Conclusion
+We are also grateful to Cambridge Assessment for arranging for the test scripts to be remarked by four of their senior examiners.,Results/Conclusion
+"Finally, we would like to thank Marek Rei, Øistein Andersen and the anonymous reviewers for their useful comments.",Results/Conclusion

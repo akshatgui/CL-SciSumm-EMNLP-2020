@@ -1,156 +1,156 @@
 col1,col2
-A central problem of word sense disambiguation (WSD) is the lack of manually sense-tagged data required for supervised learning.,{}
-"In this paper, we evaluate an approach to automatically acquire sensetagged training data from English-Chinese parallel corpora, which are then used for disambiguating the nouns in the SENSEVAL-2 English lexical sample task.",{}
-Our investigation reveals that this method of acquiring sense-tagged data is promising.,{}
-"On a subset of the most difficult SENSEVAL-2 nouns, the accuracy difference between the two approaches is only 14.0%, and the difference could narrow further to 6.5% if we disregard the advantage that manually sense-tagged data have in their sense coverage.",{}
-Our analysis also highlights the importance of the issue of domain dependence in evaluating WSD programs.,{}
-"The task of word sense disambiguation (WSD) is to determine the correct meaning, or sense of a word in context.","{'title': '1 Introduction', 'number': '1'}"
-"It is a fundamental problem in natural language processing (NLP), and the ability to disambiguate word sense accurately is important for applications like machine translation, information retrieval, etc.","{'title': '1 Introduction', 'number': '1'}"
-"Corpus-based, supervised machine learning methods have been used to tackle the WSD task, just like the other NLP tasks.","{'title': '1 Introduction', 'number': '1'}"
-"Among the various approaches to WSD, the supervised learning approach is the most successful to date.","{'title': '1 Introduction', 'number': '1'}"
-"In this approach, we first collect a corpus in which each occurrence of an ambiguous word w has been manually annotated with the correct sense, according to some existing sense inventory in a dictionary.","{'title': '1 Introduction', 'number': '1'}"
-This annotated corpus then serves as the training material for a learning algorithm.,"{'title': '1 Introduction', 'number': '1'}"
-"After training, a model is automatically learned and it is used to assign the correct sense to any previously unseen occurrence of w in a new context.","{'title': '1 Introduction', 'number': '1'}"
-"While the supervised learning approach has been successful, it has the drawback of requiring manually sense-tagged data.","{'title': '1 Introduction', 'number': '1'}"
-"This problem is particular severe for WSD, since sense-tagged data must be collected separately for each word in a language.","{'title': '1 Introduction', 'number': '1'}"
-"One source to look for potential training data for WSD is parallel texts, as proposed by Resnik and Yarowsky (1997).","{'title': '1 Introduction', 'number': '1'}"
-"Given a word-aligned parallel corpus, the different translations in a target language serve as the “sense-tags” of an ambiguous word in the source language.","{'title': '1 Introduction', 'number': '1'}"
-"For example, some possible Chinese translations of the English noun channel are listed in Table 1.","{'title': '1 Introduction', 'number': '1'}"
-"To illustrate, if the sense of an occurrence of the noun channel is “a path over which electrical signals can pass”, then this occurrence can be translated as “频道” in Chinese.","{'title': '1 Introduction', 'number': '1'}"
-This approach of getting sense-tagged corpus also addresses two related issues in WSD.,"{'title': '1 Introduction', 'number': '1'}"
-"Firstly, what constitutes a valid sense distinction carries much subjectivity.","{'title': '1 Introduction', 'number': '1'}"
-Different dictionaries define a different sense inventory.,"{'title': '1 Introduction', 'number': '1'}"
-"By tying sense distinction to the different translations in a target language, this introduces a “data-oriented” view to sense distinction and serves to add an element of objectivity to sense definition.","{'title': '1 Introduction', 'number': '1'}"
-"Secondly, WSD has been criticized as addressing an isolated problem without being grounded to any real application.","{'title': '1 Introduction', 'number': '1'}"
-"By defining sense distinction in terms of different target translations, the outcome of word sense disambiguation of a source language word is the selection of a target word, which directly corresponds to word selection in machine translation.","{'title': '1 Introduction', 'number': '1'}"
-"While this use of parallel corpus for word sense disambiguation seems appealing, several practical issues arise in its implementation: (i) What is the size of the parallel corpus needed in order for this approach to be able to disambiguate a source language word accurately?","{'title': '1 Introduction', 'number': '1'}"
-"(ii) While we can obtain large parallel corpora in the long run, to have them manually wordaligned would be too time-consuming and would defeat the original purpose of getting a sensetagged corpus without manual annotation.","{'title': '1 Introduction', 'number': '1'}"
-"However, are current word alignment algorithms accurate enough for our purpose?","{'title': '1 Introduction', 'number': '1'}"
-"(iii) Ultimately, using a state-of-the-art supervised WSD program, what is its disambiguation accuracy when it is trained on a “sense-tagged” corpus obtained via parallel text alignment, compared with training on a manually sense-tagged corpus?","{'title': '1 Introduction', 'number': '1'}"
-Much research remains to be done to investigate all of the above issues.,"{'title': '1 Introduction', 'number': '1'}"
-"The lack of large-scale parallel corpora no doubt has impeded progress in this direction, although attempts have been made to mine parallel corpora from the Web (Resnik, 1999).","{'title': '1 Introduction', 'number': '1'}"
-"However, large-scale, good-quality parallel corpora have recently become available.","{'title': '1 Introduction', 'number': '1'}"
-"For example, six English-Chinese parallel corpora are now available from Linguistic Data Consortium.","{'title': '1 Introduction', 'number': '1'}"
-"These parallel corpora are listed in Table 2, with a combined size of 280 MB.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we address the above issues and report our findings, exploiting the English-Chinese parallel corpora in Table 2 for word sense disambiguation.","{'title': '1 Introduction', 'number': '1'}"
-"We evaluated our approach on all the nouns in the English lexical sample task of SENSEVAL-2 (Edmonds and Cotton, 2001; Kilgarriff 2001), which used the WordNet 1.7 sense inventory (Miller, 1990).","{'title': '1 Introduction', 'number': '1'}"
-"While our approach has only been tested on English and Chinese, it is completely general and applicable to other language pairs.","{'title': '1 Introduction', 'number': '1'}"
-Our approach of exploiting parallel texts for word sense disambiguation consists of four steps: (1) parallel text alignment (2) manual selection of target translations (3) training of WSD classifier (4) WSD of words in new contexts.,"{'title': '2 Approach', 'number': '2'}"
-"In this step, parallel texts are first sentence-aligned and then word-aligned.","{'title': '2 Approach', 'number': '2'}"
-Various alignment algorithms (Melamed 2001; Och and Ney 2000) have been developed in the past.,"{'title': '2 Approach', 'number': '2'}"
-"For the six bilingual corpora that we used, they already come with sentences pre-aligned, either manually when the corpora were prepared or automatically by sentencealignment programs.","{'title': '2 Approach', 'number': '2'}"
-"After sentence alignment, the English texts are tokenized so that a punctuation symbol is separated from its preceding word.","{'title': '2 Approach', 'number': '2'}"
-"For the Chinese texts, we performed word segmentation, so that Chinese characters are segmented into words.","{'title': '2 Approach', 'number': '2'}"
-The resulting parallel texts are then input to the GIZA++ software (Och and Ney 2000) for word alignment.,"{'title': '2 Approach', 'number': '2'}"
-"In the output of GIZA++, each English word token is aligned to some Chinese word token.","{'title': '2 Approach', 'number': '2'}"
-"The alignment result contains much noise, especially for words with low frequency counts.","{'title': '2 Approach', 'number': '2'}"
-"In this step, we will decide on the sense classes of an English word w that are relevant to translating w into Chinese.","{'title': '2 Approach', 'number': '2'}"
-"We will illustrate with the noun channel, which is one of the nouns evaluated in the English lexical sample task of SENSEVAL-2.","{'title': '2 Approach', 'number': '2'}"
-"We rely on two sources to decide on the sense classes of w: (i) The sense definitions in WordNet 1.7, which lists seven senses for the noun channel.","{'title': '2 Approach', 'number': '2'}"
-Two senses are lumped together if they are translated in the same way in Chinese.,"{'title': '2 Approach', 'number': '2'}"
-"For example, sense 1 and 7 of channel are both translated as “频道” in Chinese, so these two senses are lumped together.","{'title': '2 Approach', 'number': '2'}"
-"(ii) From the word alignment output of GIZA++, we select those occurrences of the noun channel which have been aligned to one of the Chinese translations chosen (as listed in Table 1).","{'title': '2 Approach', 'number': '2'}"
-These occurrences of the noun channel in the English side of the parallel texts are considered to have been disambiguated and “sense-tagged” by the appropriate Chinese translations.,"{'title': '2 Approach', 'number': '2'}"
-Each such occurrence of channel together with the 3-sentence context in English surrounding channel then forms a training example for a supervised WSD program in the next step.,"{'title': '2 Approach', 'number': '2'}"
-The average time taken to perform manual selection of target translations for one SENSEVAL-2 English noun is less than 15 minutes.,"{'title': '2 Approach', 'number': '2'}"
-"This is a relatively short time, especially when compared to the effort that we would otherwise need to spend to perform manual sense-tagging of training examples.","{'title': '2 Approach', 'number': '2'}"
-This step could also be potentially automated if we have a suitable bilingual translation lexicon.,"{'title': '2 Approach', 'number': '2'}"
-"Much research has been done on the best supervised learning approach for WSD (Florian and Yarowsky, 2002; Lee and Ng, 2002; Mihalcea and Moldovan, 2001; Yarowsky et al., 2001).","{'title': '2 Approach', 'number': '2'}"
-"In this paper, we used the WSD program reported in (Lee and Ng, 2002).","{'title': '2 Approach', 'number': '2'}"
-"In particular, our method made use of the knowledge sources of part-of-speech, surrounding words, and local collocations.","{'title': '2 Approach', 'number': '2'}"
-We used naïve Bayes as the learning algorithm.,"{'title': '2 Approach', 'number': '2'}"
-Our previous research demonstrated that such an approach leads to a state-of-the-art WSD program with good performance.,"{'title': '2 Approach', 'number': '2'}"
-"Given an occurrence of w in a new context, we then used the naïve Bayes classifier to determine the most probable sense of w.","{'title': '2 Approach', 'number': '2'}"
-"We evaluated our approach to word sense disambiguation on all the 29 nouns in the English lexical sample task of SENSEVAL-2 (Edmonds and Cotton, 2001; Kilgarriff 2001).","{'title': '3 An Empirical Study', 'number': '3'}"
-The list of 29 nouns is given in Table 3.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"The second column of Table 3 lists the number of senses of each noun as given in the WordNet 1.7 sense inventory (Miller, 1990).","{'title': '3 An Empirical Study', 'number': '3'}"
-"We first lump together two senses s, and s2 of a noun if s, and s2 are translated into the same Chinese word.","{'title': '3 An Empirical Study', 'number': '3'}"
-The number of senses of each noun after sense lumping is given in column 3 of Table 3.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"For the 7 nouns that are lumped into one sense (i.e., they are all translated into one Chinese word), we do not perform WSD on these words.","{'title': '3 An Empirical Study', 'number': '3'}"
-The average number of senses before and after sense lumping is 5.07 and 3.52 respectively.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"After sense lumping, we trained a WSD classifier for each noun w, by using the lumped senses in the manually sense-tagged training data for w provided by the SENSEVAL-2 organizers.","{'title': '3 An Empirical Study', 'number': '3'}"
-We then tested the WSD classifier on the official SENSEVAL-2 test data (but with lumped senses) for w. The test accuracy (based on fine-grained scoring of SENSEVAL-2) of each noun obtained is listed in the column labeled M1 in Table 3.,"{'title': '3 An Empirical Study', 'number': '3'}"
-We then used our approach of parallel text alignment described in the last section to obtain the training examples from the English side of the parallel texts.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"Due to the memory size limitation of our machine, we were not able to align all six parallel corpora of 280MB in one alignment run of GIZA++.","{'title': '3 An Empirical Study', 'number': '3'}"
-"For two of the corpora, Hong Kong Hansards and Xinhua News, we gathered all English sentences containing the 29 SENSEVAL-2 noun occurrences (and their sentence-aligned Chinese sentence counterparts).","{'title': '3 An Empirical Study', 'number': '3'}"
-"This subset, together with the complete corpora of Hong Kong News, Hong Kong Laws, English translation of Chinese Treebank, and Sinorama, is then given to GIZA++ to perform one word alignment run.","{'title': '3 An Empirical Study', 'number': '3'}"
-It took about 40 hours on our 2.4 GHz machine with 2 GB memory to perform this alignment.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"After word alignment, each 3-sentence context in English containing an occurrence of the noun w that is aligned to a selected Chinese translation then forms a training example.","{'title': '3 An Empirical Study', 'number': '3'}"
-"For each SENSEVAL-2 noun w, we then collected training examples from the English side of the parallel texts using the same number of training examples for each sense of w that are present in the manually sense-tagged SENSEVAL-2 official training corpus (lumped-sense version).","{'title': '3 An Empirical Study', 'number': '3'}"
-"If there are insufficient training examples for some sense of w from the parallel texts, then we just used as many parallel text training examples as we could find for that sense.","{'title': '3 An Empirical Study', 'number': '3'}"
-We chose the same number of training examples for each sense as the official training data so that we can do a fair comparison between the accuracy of the parallel text alignment approach versus the manual sense-tagging approach.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"After training a WSD classifier for w with such parallel text examples, we then evaluated the WSD classifier on the same official SENSEVAL-2 test set (with lumped senses).","{'title': '3 An Empirical Study', 'number': '3'}"
-The test accuracy of each noun obtained by training on such parallel text training examples (averaged over 10 trials) is listed in the column labeled P1 in Table 3.,"{'title': '3 An Empirical Study', 'number': '3'}"
-The baseline accuracy for each noun is also listed in the column labeled “P1-Baseline” in Table 3.,"{'title': '3 An Empirical Study', 'number': '3'}"
-The baseline accuracy corresponds to always picking the most frequently occurring sense in the training data.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"Ideally, we would hope M1 and P1 to be close in value, since this would imply that WSD based on training examples collected from the parallel text alignment approach performs as well as manually sense-tagged training examples.","{'title': '3 An Empirical Study', 'number': '3'}"
-"Comparing the M1 and P1 figures, we observed that there is a set of nouns for which they are relatively close.","{'title': '3 An Empirical Study', 'number': '3'}"
-"These nouns are: bar, bum, chair, day, dyke, fatigue, hearth, mouth, nation, nature, post, restraint, sense, stress.","{'title': '3 An Empirical Study', 'number': '3'}"
-"This set of nouns is relatively easy to disambiguate, since using the mostfrequently-occurring-sense baseline would have done well for most of these nouns.","{'title': '3 An Empirical Study', 'number': '3'}"
-"The parallel text alignment approach works well for nature and sense, among these nouns.","{'title': '3 An Empirical Study', 'number': '3'}"
-"For nature, the parallel text alignment approach gives better accuracy, and for sense the accuracy difference is only 0.014 (while there is a relatively large difference of 0.231 between P1 and P1-Baseline of sense).","{'title': '3 An Empirical Study', 'number': '3'}"
-This demonstrates that the parallel text alignment approach to acquiring training examples can yield good results.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"For the remaining nouns (art, authority, channel, church, circuit, facility, grip, spade), the accuracy difference between M1 and P1 is at least 0.10.","{'title': '3 An Empirical Study', 'number': '3'}"
-"Henceforth, we shall refer to this set of 8 nouns as “difficult” nouns.","{'title': '3 An Empirical Study', 'number': '3'}"
-We will give an analysis of the reason for the accuracy difference between M1 and P1 in the next section.,"{'title': '3 An Empirical Study', 'number': '3'}"
-"To see why there is still a difference between the accuracy of the two approaches, we first examined the quality of the training examples obtained through parallel text alignment.","{'title': '4 Analysis', 'number': '4'}"
-"If the automatically acquired training examples are noisy, then this could account for the lower P1 score.","{'title': '4 Analysis', 'number': '4'}"
-The word alignment output of GIZA++ contains much noise in general (especially for the low frequency words).,"{'title': '4 Analysis', 'number': '4'}"
-"However, note that in our approach, we only select the English word occurrences that align to our manually selected Chinese translations.","{'title': '4 Analysis', 'number': '4'}"
-"Hence, while the complete set of word alignment output contains much noise, the subset of word occurrences chosen may still have high quality sense tags.","{'title': '4 Analysis', 'number': '4'}"
-Our manual inspection reveals that the annotation errors introduced by parallel text alignment can be attributed to the following sources: nese translations appear in the aligned Chinese sentence.,"{'title': '4 Analysis', 'number': '4'}"
-"For example, for an English occurrence channel, both “频道” (sense 1 translation) and “途 径” (sense 5 translation) happen to appear in the aligned Chinese sentence.","{'title': '4 Analysis', 'number': '4'}"
-"In this case, word alignment may erroneously align the wrong Chinese translation to channel.","{'title': '4 Analysis', 'number': '4'}"
-"(iii) Truly ambiguous word: Sometimes, a word is truly ambiguous in a particular context, and different translators may translate it differently.","{'title': '4 Analysis', 'number': '4'}"
-"For example, in the phrase “the church meeting”, church could be the physical building sense (教 堂), or the institution sense (教会).","{'title': '4 Analysis', 'number': '4'}"
-"In manual sense tagging done in SENSEVAL-2, it is possible to assign two sense tags to church in this case, but in the parallel text setting, a particular translator will translate it in one of the two ways (教堂 or 教 会), and hence the sense tag found by parallel text alignment is only one of the two sense tags.","{'title': '4 Analysis', 'number': '4'}"
-"By manually examining a subset of about 1,000 examples, we estimate that the sense-tag error rate of training examples (tagged with lumped senses) obtained by our parallel text alignment approach is less than 1%, which compares favorably with the quality of manually sense tagged corpus prepared in SENSEVAL-2 (Kilgarriff, 2001).","{'title': '4 Analysis', 'number': '4'}"
-"While it is encouraging to find out that the parallel text sense tags are of high quality, we are still left with the task of explaining the difference between M1 and P1 for the set of difficult nouns.","{'title': '4 Analysis', 'number': '4'}"
-Our further investigation reveals that the accuracy difference between M1 and P1 is due to the following two reasons: domain dependence and insufficient sense coverage.,"{'title': '4 Analysis', 'number': '4'}"
-"Domain Dependence The accuracy figure of M1 for each noun is obtained by training a WSD classifier on the manually sense-tagged training data (with lumped senses) provided by SENSEVAL-2 organizers, and testing on the corresponding official test data (also with lumped senses), both of which come from similar domains.","{'title': '4 Analysis', 'number': '4'}"
-"In contrast, the P1 score of each noun is obtained by training the WSD classifier on a mixture of six parallel corpora, and tested on the official SENSEVAL-2 test set, and hence the training and test data come from dissimilar domains in this case.","{'title': '4 Analysis', 'number': '4'}"
-"Moreover, from the “docsrc” field (which records the document id that each training or test example originates) of the official SENSEVAL-2 training and test examples, we realized that there are many cases when some of the examples from a document are used as training examples, while the rest of the examples from the same document are used as test examples.","{'title': '4 Analysis', 'number': '4'}"
-"In general, such a practice results in higher test accuracy, since the test examples would look a lot closer to the training examples in this case.","{'title': '4 Analysis', 'number': '4'}"
-"To address this issue, we took the official SENSEVAL-2 training and test examples of each noun w and combined them together.","{'title': '4 Analysis', 'number': '4'}"
-We then randomly split the data into a new training and a new test set such that no training and test examples come from the same document.,"{'title': '4 Analysis', 'number': '4'}"
-"The number of training examples in each sense in such a new training set is the same as that in the official training data set of w. A WSD classifier was then trained on this new training set, and tested on this new test set.","{'title': '4 Analysis', 'number': '4'}"
-"We conducted 10 random trials, each time splitting into a different training and test set but ensuring that the number of training examples in each sense (and thus the sense distribution) follows the official training set of w. We report the average accuracy of the 10 trials.","{'title': '4 Analysis', 'number': '4'}"
-The accuracy figures for the set of difficult nouns thus obtained are listed in the column labeled M2 in Table 3.,"{'title': '4 Analysis', 'number': '4'}"
-We observed that M2 is always lower in value compared to M1 for all difficult nouns.,"{'title': '4 Analysis', 'number': '4'}"
-This suggests that the effect of training and test examples coming from the same document has inflated the accuracy figures of SENSEVAL-2 nouns.,"{'title': '4 Analysis', 'number': '4'}"
-"Next, we randomly selected 10 sets of training examples from the parallel corpora, such that the number of training examples in each sense followed the official training set of w. (When there were insufficient training examples for a sense, we just used as many as we could find from the parallel corpora.)","{'title': '4 Analysis', 'number': '4'}"
-"In each trial, after training a WSD classifier on the selected parallel text examples, we tested the classifier on the same test set (from SENSEVAL-2 provided data) used in that trial that generated the M2 score.","{'title': '4 Analysis', 'number': '4'}"
-The accuracy figures thus obtained for all the difficult nouns are listed in the column labeled P2 in Table 3.,"{'title': '4 Analysis', 'number': '4'}"
-Insufficient Sense Coverage We observed that there are situations when we have insufficient training examples in the parallel corpora for some of the senses of some nouns.,"{'title': '4 Analysis', 'number': '4'}"
-"For instance, no occurrences of sense 5 of the noun circuit (racing circuit, a racetrack for automobile races) could be found in the parallel corpora.","{'title': '4 Analysis', 'number': '4'}"
-"To ensure a fairer comparison, for each of the 10-trial manually sense-tagged training data that gave rise to the accuracy figure M2 of a noun w, we extracted a new subset of 10-trial (manually sense-tagged) training data by ensuring adherence to the number of training examples found for each sense of w in the corresponding parallel text training set that gave rise to the accuracy figure P2 for w. The accuracy figures thus obtained for the difficult nouns are listed in the column labeled M3 in Table 3.","{'title': '4 Analysis', 'number': '4'}"
-M3 thus gave the accuracy of training on manually sense-tagged data but restricted to the number of training examples found in each sense from parallel corpora.,"{'title': '4 Analysis', 'number': '4'}"
-9.8 training examples and 6.2 test examples contain this collocation.,"{'title': '4 Analysis', 'number': '4'}"
-This alone would have accounted for 0.088 of the accuracy difference between the two approaches.,"{'title': '4 Analysis', 'number': '4'}"
-"That domain dependence is an important issue affecting the performance of WSD programs has been pointed out by (Escudero et al., 2000).","{'title': '4 Analysis', 'number': '4'}"
-Our work confirms the importance of domain dependence in WSD.,"{'title': '4 Analysis', 'number': '4'}"
-"As to the problem of insufficient sense coverage, with the steady increase and availability of parallel corpora, we believe that getting sufficient sense coverage from larger parallel corpora should not be a problem in the near future for most of the commonly occurring words in a language.","{'title': '4 Analysis', 'number': '4'}"
-The difference between the accuracy figures of M2 and P2 averaged over the set of all difficult nouns is 0.140.,"{'title': '5 Related Work', 'number': '5'}"
-This is smaller than the difference of 0.189 between the accuracy figures of M1 and P1 averaged over the set of all difficult nouns.,"{'title': '5 Related Work', 'number': '5'}"
-This confirms our hypothesis that eliminating the possibility that training and test examples come from the same document would result in a fairer comparison.,"{'title': '5 Related Work', 'number': '5'}"
-"In addition, the difference between the accuracy figures of M3 and P2 averaged over the set of all difficult nouns is 0.065.","{'title': '5 Related Work', 'number': '5'}"
-"That is, eliminating the advantage that manually sense-tagged data have in their sense coverage would reduce the performance gap between the two approaches from 0.140 to 0.065.","{'title': '5 Related Work', 'number': '5'}"
-Notice that this reduction is particularly significant for the noun circuit.,"{'title': '5 Related Work', 'number': '5'}"
-"For this noun, the parallel corpora do not have enough training examples for sense 4 and sense 5 of circuit, and these two senses constitute approximately 23% in each of the 10-trial test set.","{'title': '5 Related Work', 'number': '5'}"
-"We believe that the remaining difference of 0.065 between the two approaches could be attributed to the fact that the training and test examples of the manually sense-tagged corpus, while not coming from the same document, are however still drawn from the same general domain.","{'title': '5 Related Work', 'number': '5'}"
-"To illustrate, we consider the noun channel where the difference between M3 and P2 is the largest.","{'title': '5 Related Work', 'number': '5'}"
-"For channel, it turns out that a substantial number of the training and test examples contain the collocation “Channel tunnel” or “Channel Tunnel”.","{'title': '5 Related Work', 'number': '5'}"
-"On average, about statistical methods in word sense disambiguation in the context of machine translation.","{'title': '5 Related Work', 'number': '5'}"
-"However, they only looked at assigning at most two senses to a word, and their method only asked a single question about a single word of context.","{'title': '5 Related Work', 'number': '5'}"
-"Li and Li (2002) investigated a bilingual bootstrapping technique, which differs from the method we implemented here.","{'title': '5 Related Work', 'number': '5'}"
-Their method also does not require a parallel corpus.,"{'title': '5 Related Work', 'number': '5'}"
-"The research of (Chugur et al., 2002) dealt with sense distinctions across multiple languages.","{'title': '5 Related Work', 'number': '5'}"
-Ide et al. (2002) investigated word sense distinctions using parallel corpora.,"{'title': '5 Related Work', 'number': '5'}"
-Resnik and Yarowsky (2000) considered word sense disambiguation using multiple languages.,"{'title': '5 Related Work', 'number': '5'}"
-Our present work can be similarly extended beyond bilingual corpora to multilingual corpora.,"{'title': '5 Related Work', 'number': '5'}"
-The research most similar to ours is the work of Diab and Resnik (2002).,"{'title': '5 Related Work', 'number': '5'}"
-"However, they used machine translated parallel corpus instead of human translated parallel corpus.","{'title': '5 Related Work', 'number': '5'}"
-"In addition, they used an unsupervised method of noun group disambiguation, and evaluated on the English all-words task.","{'title': '5 Related Work', 'number': '5'}"
-"In this paper, we reported an empirical study to evaluate an approach of automatically acquiring sense-tagged training data from English-Chinese parallel corpora, which were then used for disambiguating the nouns in the SENSEVAL-2 English lexical sample task.","{'title': '6 Conclusion', 'number': '6'}"
-Our investigation reveals that this method of acquiring sense-tagged data is promising and provides an alternative to manual sense tagging.,"{'title': '6 Conclusion', 'number': '6'}"
-This research is partially supported by a research grant R252-000-125-112 from National University of Singapore Academic Research Fund.,"{'title': 'Acknowledgements', 'number': '7'}"
+A central problem of word sense disambiguation (WSD) is the lack of manually sense-tagged data required for supervised learning.,Introduction
+"In this paper, we evaluate an approach to automatically acquire sensetagged training data from English-Chinese parallel corpora, which are then used for disambiguating the nouns in the SENSEVAL-2 English lexical sample task.",Introduction
+Our investigation reveals that this method of acquiring sense-tagged data is promising.,Introduction
+"On a subset of the most difficult SENSEVAL-2 nouns, the accuracy difference between the two approaches is only 14.0%, and the difference could narrow further to 6.5% if we disregard the advantage that manually sense-tagged data have in their sense coverage.",Introduction
+Our analysis also highlights the importance of the issue of domain dependence in evaluating WSD programs.,Introduction
+"The task of word sense disambiguation (WSD) is to determine the correct meaning, or sense of a word in context.",Experiment/Discussion
+"It is a fundamental problem in natural language processing (NLP), and the ability to disambiguate word sense accurately is important for applications like machine translation, information retrieval, etc.",Experiment/Discussion
+"Corpus-based, supervised machine learning methods have been used to tackle the WSD task, just like the other NLP tasks.",Experiment/Discussion
+"Among the various approaches to WSD, the supervised learning approach is the most successful to date.",Experiment/Discussion
+"In this approach, we first collect a corpus in which each occurrence of an ambiguous word w has been manually annotated with the correct sense, according to some existing sense inventory in a dictionary.",Experiment/Discussion
+This annotated corpus then serves as the training material for a learning algorithm.,Experiment/Discussion
+"After training, a model is automatically learned and it is used to assign the correct sense to any previously unseen occurrence of w in a new context.",Experiment/Discussion
+"While the supervised learning approach has been successful, it has the drawback of requiring manually sense-tagged data.",Experiment/Discussion
+"This problem is particular severe for WSD, since sense-tagged data must be collected separately for each word in a language.",Experiment/Discussion
+"One source to look for potential training data for WSD is parallel texts, as proposed by Resnik and Yarowsky (1997).",Experiment/Discussion
+"Given a word-aligned parallel corpus, the different translations in a target language serve as the “sense-tags” of an ambiguous word in the source language.",Experiment/Discussion
+"For example, some possible Chinese translations of the English noun channel are listed in Table 1.",Experiment/Discussion
+"To illustrate, if the sense of an occurrence of the noun channel is “a path over which electrical signals can pass”, then this occurrence can be translated as “频道” in Chinese.",Experiment/Discussion
+This approach of getting sense-tagged corpus also addresses two related issues in WSD.,Experiment/Discussion
+"Firstly, what constitutes a valid sense distinction carries much subjectivity.",Experiment/Discussion
+Different dictionaries define a different sense inventory.,Experiment/Discussion
+"By tying sense distinction to the different translations in a target language, this introduces a “data-oriented” view to sense distinction and serves to add an element of objectivity to sense definition.",Experiment/Discussion
+"Secondly, WSD has been criticized as addressing an isolated problem without being grounded to any real application.",Experiment/Discussion
+"By defining sense distinction in terms of different target translations, the outcome of word sense disambiguation of a source language word is the selection of a target word, which directly corresponds to word selection in machine translation.",Experiment/Discussion
+"While this use of parallel corpus for word sense disambiguation seems appealing, several practical issues arise in its implementation: (i) What is the size of the parallel corpus needed in order for this approach to be able to disambiguate a source language word accurately?",Experiment/Discussion
+"(ii) While we can obtain large parallel corpora in the long run, to have them manually wordaligned would be too time-consuming and would defeat the original purpose of getting a sensetagged corpus without manual annotation.",Experiment/Discussion
+"However, are current word alignment algorithms accurate enough for our purpose?",Experiment/Discussion
+"(iii) Ultimately, using a state-of-the-art supervised WSD program, what is its disambiguation accuracy when it is trained on a “sense-tagged” corpus obtained via parallel text alignment, compared with training on a manually sense-tagged corpus?",Experiment/Discussion
+Much research remains to be done to investigate all of the above issues.,Experiment/Discussion
+"The lack of large-scale parallel corpora no doubt has impeded progress in this direction, although attempts have been made to mine parallel corpora from the Web (Resnik, 1999).",Experiment/Discussion
+"However, large-scale, good-quality parallel corpora have recently become available.",Experiment/Discussion
+"For example, six English-Chinese parallel corpora are now available from Linguistic Data Consortium.",Experiment/Discussion
+"These parallel corpora are listed in Table 2, with a combined size of 280 MB.",Experiment/Discussion
+"In this paper, we address the above issues and report our findings, exploiting the English-Chinese parallel corpora in Table 2 for word sense disambiguation.",Experiment/Discussion
+"We evaluated our approach on all the nouns in the English lexical sample task of SENSEVAL-2 (Edmonds and Cotton, 2001; Kilgarriff 2001), which used the WordNet 1.7 sense inventory (Miller, 1990).",Experiment/Discussion
+"While our approach has only been tested on English and Chinese, it is completely general and applicable to other language pairs.",Experiment/Discussion
+Our approach of exploiting parallel texts for word sense disambiguation consists of four steps: (1) parallel text alignment (2) manual selection of target translations (3) training of WSD classifier (4) WSD of words in new contexts.,Experiment/Discussion
+"In this step, parallel texts are first sentence-aligned and then word-aligned.",Experiment/Discussion
+Various alignment algorithms (Melamed 2001; Och and Ney 2000) have been developed in the past.,Experiment/Discussion
+"For the six bilingual corpora that we used, they already come with sentences pre-aligned, either manually when the corpora were prepared or automatically by sentencealignment programs.",Experiment/Discussion
+"After sentence alignment, the English texts are tokenized so that a punctuation symbol is separated from its preceding word.",Experiment/Discussion
+"For the Chinese texts, we performed word segmentation, so that Chinese characters are segmented into words.",Experiment/Discussion
+The resulting parallel texts are then input to the GIZA++ software (Och and Ney 2000) for word alignment.,Experiment/Discussion
+"In the output of GIZA++, each English word token is aligned to some Chinese word token.",Experiment/Discussion
+"The alignment result contains much noise, especially for words with low frequency counts.",Experiment/Discussion
+"In this step, we will decide on the sense classes of an English word w that are relevant to translating w into Chinese.",Experiment/Discussion
+"We will illustrate with the noun channel, which is one of the nouns evaluated in the English lexical sample task of SENSEVAL-2.",Experiment/Discussion
+"We rely on two sources to decide on the sense classes of w: (i) The sense definitions in WordNet 1.7, which lists seven senses for the noun channel.",Experiment/Discussion
+Two senses are lumped together if they are translated in the same way in Chinese.,Experiment/Discussion
+"For example, sense 1 and 7 of channel are both translated as “频道” in Chinese, so these two senses are lumped together.",Experiment/Discussion
+"(ii) From the word alignment output of GIZA++, we select those occurrences of the noun channel which have been aligned to one of the Chinese translations chosen (as listed in Table 1).",Experiment/Discussion
+These occurrences of the noun channel in the English side of the parallel texts are considered to have been disambiguated and “sense-tagged” by the appropriate Chinese translations.,Experiment/Discussion
+Each such occurrence of channel together with the 3-sentence context in English surrounding channel then forms a training example for a supervised WSD program in the next step.,Experiment/Discussion
+The average time taken to perform manual selection of target translations for one SENSEVAL-2 English noun is less than 15 minutes.,Experiment/Discussion
+"This is a relatively short time, especially when compared to the effort that we would otherwise need to spend to perform manual sense-tagging of training examples.",Experiment/Discussion
+This step could also be potentially automated if we have a suitable bilingual translation lexicon.,Experiment/Discussion
+"Much research has been done on the best supervised learning approach for WSD (Florian and Yarowsky, 2002; Lee and Ng, 2002; Mihalcea and Moldovan, 2001; Yarowsky et al., 2001).",Experiment/Discussion
+"In this paper, we used the WSD program reported in (Lee and Ng, 2002).",Experiment/Discussion
+"In particular, our method made use of the knowledge sources of part-of-speech, surrounding words, and local collocations.",Experiment/Discussion
+We used naïve Bayes as the learning algorithm.,Experiment/Discussion
+Our previous research demonstrated that such an approach leads to a state-of-the-art WSD program with good performance.,Experiment/Discussion
+"Given an occurrence of w in a new context, we then used the naïve Bayes classifier to determine the most probable sense of w.",Experiment/Discussion
+"We evaluated our approach to word sense disambiguation on all the 29 nouns in the English lexical sample task of SENSEVAL-2 (Edmonds and Cotton, 2001; Kilgarriff 2001).",Experiment/Discussion
+The list of 29 nouns is given in Table 3.,Experiment/Discussion
+"The second column of Table 3 lists the number of senses of each noun as given in the WordNet 1.7 sense inventory (Miller, 1990).",Experiment/Discussion
+"We first lump together two senses s, and s2 of a noun if s, and s2 are translated into the same Chinese word.",Experiment/Discussion
+The number of senses of each noun after sense lumping is given in column 3 of Table 3.,Experiment/Discussion
+"For the 7 nouns that are lumped into one sense (i.e., they are all translated into one Chinese word), we do not perform WSD on these words.",Experiment/Discussion
+The average number of senses before and after sense lumping is 5.07 and 3.52 respectively.,Experiment/Discussion
+"After sense lumping, we trained a WSD classifier for each noun w, by using the lumped senses in the manually sense-tagged training data for w provided by the SENSEVAL-2 organizers.",Experiment/Discussion
+We then tested the WSD classifier on the official SENSEVAL-2 test data (but with lumped senses) for w. The test accuracy (based on fine-grained scoring of SENSEVAL-2) of each noun obtained is listed in the column labeled M1 in Table 3.,Experiment/Discussion
+We then used our approach of parallel text alignment described in the last section to obtain the training examples from the English side of the parallel texts.,Experiment/Discussion
+"Due to the memory size limitation of our machine, we were not able to align all six parallel corpora of 280MB in one alignment run of GIZA++.",Experiment/Discussion
+"For two of the corpora, Hong Kong Hansards and Xinhua News, we gathered all English sentences containing the 29 SENSEVAL-2 noun occurrences (and their sentence-aligned Chinese sentence counterparts).",Experiment/Discussion
+"This subset, together with the complete corpora of Hong Kong News, Hong Kong Laws, English translation of Chinese Treebank, and Sinorama, is then given to GIZA++ to perform one word alignment run.",Experiment/Discussion
+It took about 40 hours on our 2.4 GHz machine with 2 GB memory to perform this alignment.,Experiment/Discussion
+"After word alignment, each 3-sentence context in English containing an occurrence of the noun w that is aligned to a selected Chinese translation then forms a training example.",Experiment/Discussion
+"For each SENSEVAL-2 noun w, we then collected training examples from the English side of the parallel texts using the same number of training examples for each sense of w that are present in the manually sense-tagged SENSEVAL-2 official training corpus (lumped-sense version).",Experiment/Discussion
+"If there are insufficient training examples for some sense of w from the parallel texts, then we just used as many parallel text training examples as we could find for that sense.",Experiment/Discussion
+We chose the same number of training examples for each sense as the official training data so that we can do a fair comparison between the accuracy of the parallel text alignment approach versus the manual sense-tagging approach.,Experiment/Discussion
+"After training a WSD classifier for w with such parallel text examples, we then evaluated the WSD classifier on the same official SENSEVAL-2 test set (with lumped senses).",Experiment/Discussion
+The test accuracy of each noun obtained by training on such parallel text training examples (averaged over 10 trials) is listed in the column labeled P1 in Table 3.,Experiment/Discussion
+The baseline accuracy for each noun is also listed in the column labeled “P1-Baseline” in Table 3.,Experiment/Discussion
+The baseline accuracy corresponds to always picking the most frequently occurring sense in the training data.,Experiment/Discussion
+"Ideally, we would hope M1 and P1 to be close in value, since this would imply that WSD based on training examples collected from the parallel text alignment approach performs as well as manually sense-tagged training examples.",Experiment/Discussion
+"Comparing the M1 and P1 figures, we observed that there is a set of nouns for which they are relatively close.",Experiment/Discussion
+"These nouns are: bar, bum, chair, day, dyke, fatigue, hearth, mouth, nation, nature, post, restraint, sense, stress.",Experiment/Discussion
+"This set of nouns is relatively easy to disambiguate, since using the mostfrequently-occurring-sense baseline would have done well for most of these nouns.",Experiment/Discussion
+"The parallel text alignment approach works well for nature and sense, among these nouns.",Experiment/Discussion
+"For nature, the parallel text alignment approach gives better accuracy, and for sense the accuracy difference is only 0.014 (while there is a relatively large difference of 0.231 between P1 and P1-Baseline of sense).",Experiment/Discussion
+This demonstrates that the parallel text alignment approach to acquiring training examples can yield good results.,Experiment/Discussion
+"For the remaining nouns (art, authority, channel, church, circuit, facility, grip, spade), the accuracy difference between M1 and P1 is at least 0.10.",Experiment/Discussion
+"Henceforth, we shall refer to this set of 8 nouns as “difficult” nouns.",Experiment/Discussion
+We will give an analysis of the reason for the accuracy difference between M1 and P1 in the next section.,Experiment/Discussion
+"To see why there is still a difference between the accuracy of the two approaches, we first examined the quality of the training examples obtained through parallel text alignment.",Experiment/Discussion
+"If the automatically acquired training examples are noisy, then this could account for the lower P1 score.",Experiment/Discussion
+The word alignment output of GIZA++ contains much noise in general (especially for the low frequency words).,Experiment/Discussion
+"However, note that in our approach, we only select the English word occurrences that align to our manually selected Chinese translations.",Experiment/Discussion
+"Hence, while the complete set of word alignment output contains much noise, the subset of word occurrences chosen may still have high quality sense tags.",Experiment/Discussion
+Our manual inspection reveals that the annotation errors introduced by parallel text alignment can be attributed to the following sources: nese translations appear in the aligned Chinese sentence.,Experiment/Discussion
+"For example, for an English occurrence channel, both “频道” (sense 1 translation) and “途 径” (sense 5 translation) happen to appear in the aligned Chinese sentence.",Experiment/Discussion
+"In this case, word alignment may erroneously align the wrong Chinese translation to channel.",Experiment/Discussion
+"(iii) Truly ambiguous word: Sometimes, a word is truly ambiguous in a particular context, and different translators may translate it differently.",Experiment/Discussion
+"For example, in the phrase “the church meeting”, church could be the physical building sense (教 堂), or the institution sense (教会).",Experiment/Discussion
+"In manual sense tagging done in SENSEVAL-2, it is possible to assign two sense tags to church in this case, but in the parallel text setting, a particular translator will translate it in one of the two ways (教堂 or 教 会), and hence the sense tag found by parallel text alignment is only one of the two sense tags.",Experiment/Discussion
+"By manually examining a subset of about 1,000 examples, we estimate that the sense-tag error rate of training examples (tagged with lumped senses) obtained by our parallel text alignment approach is less than 1%, which compares favorably with the quality of manually sense tagged corpus prepared in SENSEVAL-2 (Kilgarriff, 2001).",Experiment/Discussion
+"While it is encouraging to find out that the parallel text sense tags are of high quality, we are still left with the task of explaining the difference between M1 and P1 for the set of difficult nouns.",Experiment/Discussion
+Our further investigation reveals that the accuracy difference between M1 and P1 is due to the following two reasons: domain dependence and insufficient sense coverage.,Experiment/Discussion
+"Domain Dependence The accuracy figure of M1 for each noun is obtained by training a WSD classifier on the manually sense-tagged training data (with lumped senses) provided by SENSEVAL-2 organizers, and testing on the corresponding official test data (also with lumped senses), both of which come from similar domains.",Experiment/Discussion
+"In contrast, the P1 score of each noun is obtained by training the WSD classifier on a mixture of six parallel corpora, and tested on the official SENSEVAL-2 test set, and hence the training and test data come from dissimilar domains in this case.",Experiment/Discussion
+"Moreover, from the “docsrc” field (which records the document id that each training or test example originates) of the official SENSEVAL-2 training and test examples, we realized that there are many cases when some of the examples from a document are used as training examples, while the rest of the examples from the same document are used as test examples.",Experiment/Discussion
+"In general, such a practice results in higher test accuracy, since the test examples would look a lot closer to the training examples in this case.",Experiment/Discussion
+"To address this issue, we took the official SENSEVAL-2 training and test examples of each noun w and combined them together.",Experiment/Discussion
+We then randomly split the data into a new training and a new test set such that no training and test examples come from the same document.,Experiment/Discussion
+"The number of training examples in each sense in such a new training set is the same as that in the official training data set of w. A WSD classifier was then trained on this new training set, and tested on this new test set.",Experiment/Discussion
+"We conducted 10 random trials, each time splitting into a different training and test set but ensuring that the number of training examples in each sense (and thus the sense distribution) follows the official training set of w. We report the average accuracy of the 10 trials.",Experiment/Discussion
+The accuracy figures for the set of difficult nouns thus obtained are listed in the column labeled M2 in Table 3.,Experiment/Discussion
+We observed that M2 is always lower in value compared to M1 for all difficult nouns.,Experiment/Discussion
+This suggests that the effect of training and test examples coming from the same document has inflated the accuracy figures of SENSEVAL-2 nouns.,Experiment/Discussion
+"Next, we randomly selected 10 sets of training examples from the parallel corpora, such that the number of training examples in each sense followed the official training set of w. (When there were insufficient training examples for a sense, we just used as many as we could find from the parallel corpora.)",Experiment/Discussion
+"In each trial, after training a WSD classifier on the selected parallel text examples, we tested the classifier on the same test set (from SENSEVAL-2 provided data) used in that trial that generated the M2 score.",Experiment/Discussion
+The accuracy figures thus obtained for all the difficult nouns are listed in the column labeled P2 in Table 3.,Experiment/Discussion
+Insufficient Sense Coverage We observed that there are situations when we have insufficient training examples in the parallel corpora for some of the senses of some nouns.,Experiment/Discussion
+"For instance, no occurrences of sense 5 of the noun circuit (racing circuit, a racetrack for automobile races) could be found in the parallel corpora.",Experiment/Discussion
+"To ensure a fairer comparison, for each of the 10-trial manually sense-tagged training data that gave rise to the accuracy figure M2 of a noun w, we extracted a new subset of 10-trial (manually sense-tagged) training data by ensuring adherence to the number of training examples found for each sense of w in the corresponding parallel text training set that gave rise to the accuracy figure P2 for w. The accuracy figures thus obtained for the difficult nouns are listed in the column labeled M3 in Table 3.",Experiment/Discussion
+M3 thus gave the accuracy of training on manually sense-tagged data but restricted to the number of training examples found in each sense from parallel corpora.,Experiment/Discussion
+9.8 training examples and 6.2 test examples contain this collocation.,Experiment/Discussion
+This alone would have accounted for 0.088 of the accuracy difference between the two approaches.,Experiment/Discussion
+"That domain dependence is an important issue affecting the performance of WSD programs has been pointed out by (Escudero et al., 2000).",Experiment/Discussion
+Our work confirms the importance of domain dependence in WSD.,Experiment/Discussion
+"As to the problem of insufficient sense coverage, with the steady increase and availability of parallel corpora, we believe that getting sufficient sense coverage from larger parallel corpora should not be a problem in the near future for most of the commonly occurring words in a language.",Experiment/Discussion
+The difference between the accuracy figures of M2 and P2 averaged over the set of all difficult nouns is 0.140.,Experiment/Discussion
+This is smaller than the difference of 0.189 between the accuracy figures of M1 and P1 averaged over the set of all difficult nouns.,Experiment/Discussion
+This confirms our hypothesis that eliminating the possibility that training and test examples come from the same document would result in a fairer comparison.,Experiment/Discussion
+"In addition, the difference between the accuracy figures of M3 and P2 averaged over the set of all difficult nouns is 0.065.",Experiment/Discussion
+"That is, eliminating the advantage that manually sense-tagged data have in their sense coverage would reduce the performance gap between the two approaches from 0.140 to 0.065.",Experiment/Discussion
+Notice that this reduction is particularly significant for the noun circuit.,Experiment/Discussion
+"For this noun, the parallel corpora do not have enough training examples for sense 4 and sense 5 of circuit, and these two senses constitute approximately 23% in each of the 10-trial test set.",Experiment/Discussion
+"We believe that the remaining difference of 0.065 between the two approaches could be attributed to the fact that the training and test examples of the manually sense-tagged corpus, while not coming from the same document, are however still drawn from the same general domain.",Experiment/Discussion
+"To illustrate, we consider the noun channel where the difference between M3 and P2 is the largest.",Experiment/Discussion
+"For channel, it turns out that a substantial number of the training and test examples contain the collocation “Channel tunnel” or “Channel Tunnel”.",Experiment/Discussion
+"On average, about statistical methods in word sense disambiguation in the context of machine translation.",Experiment/Discussion
+"However, they only looked at assigning at most two senses to a word, and their method only asked a single question about a single word of context.",Experiment/Discussion
+"Li and Li (2002) investigated a bilingual bootstrapping technique, which differs from the method we implemented here.",Experiment/Discussion
+Their method also does not require a parallel corpus.,Experiment/Discussion
+"The research of (Chugur et al., 2002) dealt with sense distinctions across multiple languages.",Experiment/Discussion
+Ide et al. (2002) investigated word sense distinctions using parallel corpora.,Experiment/Discussion
+Resnik and Yarowsky (2000) considered word sense disambiguation using multiple languages.,Experiment/Discussion
+Our present work can be similarly extended beyond bilingual corpora to multilingual corpora.,Experiment/Discussion
+The research most similar to ours is the work of Diab and Resnik (2002).,Experiment/Discussion
+"However, they used machine translated parallel corpus instead of human translated parallel corpus.",Experiment/Discussion
+"In addition, they used an unsupervised method of noun group disambiguation, and evaluated on the English all-words task.",Experiment/Discussion
+"In this paper, we reported an empirical study to evaluate an approach of automatically acquiring sense-tagged training data from English-Chinese parallel corpora, which were then used for disambiguating the nouns in the SENSEVAL-2 English lexical sample task.",Results/Conclusion
+Our investigation reveals that this method of acquiring sense-tagged data is promising and provides an alternative to manual sense tagging.,Results/Conclusion
+This research is partially supported by a research grant R252-000-125-112 from National University of Singapore Academic Research Fund.,Results/Conclusion

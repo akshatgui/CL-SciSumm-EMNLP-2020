@@ -1,140 +1,140 @@
 col1,col2
-Previous work has shown that automatic methods can be used in building semantic lexicons.,{}
-"This work goes a step further by automatically creating not just clusters of related words, but a hierarchy of nouns and their hypernyms, akin to the hand-built hierarchy in WordNet.",{}
-"The purpose of this work is to build something like the hypernym-labeled noun hierarchy of WordNet (Fellbaum, 1998) automatically from text using no other lexical resources.","{'title': '1 Introduction', 'number': '1'}"
-"WordNet has been an important research tool, but it is insufficient for domainspecific text, such as that encountered in the MUCs (Message Understanding Conferences).","{'title': '1 Introduction', 'number': '1'}"
-Our work develops a labeled hierarchy based on a text corpus.,"{'title': '1 Introduction', 'number': '1'}"
-"In this project, nouns are clustered into a hierarchy using data on conjunctions and appositives appearing in the Wall Street Journal.","{'title': '1 Introduction', 'number': '1'}"
-"The internal nodes of the resulting tree are then labeled with hypernyms for the nouns clustered underneath them, also based on data extracted from the Wall Street Journal.","{'title': '1 Introduction', 'number': '1'}"
-"The resulting hierarchy is evaluated by human judges, and future research directions are discussed.","{'title': '1 Introduction', 'number': '1'}"
-"The first stage in constructing our hierarchy is to build an unlabeled hierarchy of nouns using bottom-up clustering methods (see, e.g., Brown et al. (1992)).","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Nouns are clustered based on conjunction and appositive data collected from the Wall Street Journal corpus.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Some of the data comes from the parsed files 2-21 of the Wall Street Journal Penn Treebank corpus (Marcus et al., 1993), and additional parsed text was obtained by parsing the 1987 Wall Street Journal text using the parser described in Charniak et al. (1998).","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"From this parsed text, we identified all conjunctions of noun phrases (e.g., &quot;executive vice-president and treasurer&quot; or &quot;scientific equipment, apparatus and disposables&quot;) and all appositives (e.g., &quot;James H. Rosenfield, a former CBS Inc. executive&quot; or &quot;Boeing, a defense contractor&quot;).","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"The idea here is that nouns in conjunctions or appositives tend to be semantically related, as discussed in Riloff and Shepherd (1997) and Roark and Charniak (1998).","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Taking the head words of each NP and stemming them results in data for about 50,000 distinct nouns.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-A vector is created for each noun containing counts for how many times each other noun appears in a conjunction or appositive with it.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"We can then measure the similarity of the vectors for two nouns by computing the cosine of the angle between these vectors, as 11'1iWr To compare the similarity of two groups of nouns, we define similarity as the average of the cosines between each pair of nouns made up of one noun from each of the two groups.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Ev cos (v, w) size(A)size(B) where v ranges over all vectors for nouns in group A, w ranges over the vectors for group B, and size(x) represents the number of nouns which are descendants of node x.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-We want to create a tree of all of the nouns in this data using standard bottom-up clustering techniques as follows: Put each noun into its own node.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Compute the similarity between each pair of nodes using the cosine method.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Find the two most similar nouns and combine them by giving them a common parent (and removing the child nodes from future consideration).,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-We can then compute the new node's similarity to each other node by computing a weighted average of the similarities between each of its children and the other node.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"In other words, assuming nodes A and B have been combined under a new parent C, the similarity between C and any other node i can be computed as Once again, we combine the two most similar nodes under a common parent.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Repeat until all nouns have been placed under a common ancestor.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Nouns which have a cosine of 0 with every other noun are not included in the final tree.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"In practice, we cannot follow exactly that algorithm, because maintaining a list of the cosines between every pair of nodes requires a tremendous amount of memory.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"With 50,000 nouns, we would initially require a 50,000 x 50,000 array of values (or a triangular array of about half this size).","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"With our current hardware, the largest array we The way we handled this limitation is to process the nouns in batches.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Initially 5,000 nouns are read in.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"We cluster these until we have 2,500 nodes.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Then 2,500 more nouns are read in, to bring the total to 5,000 again, and once again we cluster until 2,500 nodes remain.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-This process is repeated until all nouns have been processed.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Since the lowest-frequency nouns are clustered based on very little information and have a greater tendency to be clustered badly, we chose to filter some of these out.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"By reducing the number of nouns to be read, a much nicer structure is obtained.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-We now only consider nouns with a vector of length at least 2.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"There are approximately 20,000 nouns as the leaves in our final binary tree structure.","{'title': '2 Building the noun hierarchy', 'number': '2'}"
-Our next step is to try to label each of the internal nodes with a hypernym describing its descendant nouns.,"{'title': '2 Building the noun hierarchy', 'number': '2'}"
-"Following WordNet, a word A is said to be a hypernym of a word B if native speakers of English accept the sentence &quot;B is a (kind of) A.&quot; To determine possible hypernyms for a particular noun, we use the same parsed text described in the previous section.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-"As suggested in Hearst (1992), we can find some hypernym data in the text by looking for conjunctions involving the word &quot;other&quot;, as in &quot;X, Y, and other Zs&quot; (patterns 3 and 4 in Hearst).","{'title': '3 Assigning hypernyms', 'number': '3'}"
-From this phrase we can extract that Z is likely a hypernym for both X and Y.,"{'title': '3 Assigning hypernyms', 'number': '3'}"
-"This data is extracted from the parsed text, and for each noun we construct a vector of hypernyms, with a value of 1 if a word has been seen as a hypernym for this noun and 0 otherwise.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-These vectors are associated with the leaves of the binary tree constructed in the previous section.,"{'title': '3 Assigning hypernyms', 'number': '3'}"
-"For each internal node of the tree, we construct a vector of hypernyms by adding together the vectors of its children.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-"We then assign a hypernym to this node by simply choosing the hypernym with the largest value in this vector; that is, the hypernym which appeared with the largest number of the node's descendant nouns.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-"(In case of ties, the hypernyms are ordered arbitrarily.)","{'title': '3 Assigning hypernyms', 'number': '3'}"
-"We also list the second- and third-best hypernyms, to account for cases where a single word does not describe the cluster adequately, or cases where there are a few good hypernyms which tend to alternate, such as &quot;country&quot; and &quot;nation&quot;.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-(There may or may not be any kind of semantic relationship among the hypernyms listed.,"{'title': '3 Assigning hypernyms', 'number': '3'}"
-"Because of the method of selecting hypernyms, the hypernyms may be synonyms of each other, have hypernym-hyponym relationships of their own, or be completely unrelated.)","{'title': '3 Assigning hypernyms', 'number': '3'}"
-"If a hypernym has occurred with only one of the descendant nouns, it is not listed as one of the best hypernyms, since we have insufficient evidence that the word could describe this class of nouns.","{'title': '3 Assigning hypernyms', 'number': '3'}"
-Not every node has sufficient data to be assigned a hypernym.,"{'title': '3 Assigning hypernyms', 'number': '3'}"
-The labeled tree constructed in the previous section tends to be extremely redundant.,"{'title': '4 Compressing the tree', 'number': '4'}"
-Recall that the tree is binary.,"{'title': '4 Compressing the tree', 'number': '4'}"
-"In many cases, a group of nouns really do not have an inherent tree structure, for example, a cluster of countries.","{'title': '4 Compressing the tree', 'number': '4'}"
-"Although it is possible that a reasonable tree structure could be created with subtrees of, say, European countries, Asian countries, etc., recall that we are using single-word hypernyms.","{'title': '4 Compressing the tree', 'number': '4'}"
-A large binary tree of countries would ideally have &quot;country&quot; (or &quot;nation&quot;) as the best hypernym at every level.,"{'title': '4 Compressing the tree', 'number': '4'}"
-"We would like to combine these subtrees into a single parent labeled &quot;country&quot; or &quot;nation&quot;, with each country appearing as a leaf directly beneath this parent.","{'title': '4 Compressing the tree', 'number': '4'}"
-"(Obviously, the tree will no longer be binary).","{'title': '4 Compressing the tree', 'number': '4'}"
-"Another type of redundancy can occur when an internal node is unlabeled, meaning a hypernym could not be found to describe its descendant nouns.","{'title': '4 Compressing the tree', 'number': '4'}"
-"Since the tree's root is labeled, somewhere above this node there is necessarily a node labeled with a hypernym which applies to its descendant nouns, including those which are a descendant of this node.","{'title': '4 Compressing the tree', 'number': '4'}"
-We want to move this node's children directly under the nearest labeled ancestor.,"{'title': '4 Compressing the tree', 'number': '4'}"
-"We compress the tree using the following very simple algorithm: in depth-first order, examine the children of each internal node.","{'title': '4 Compressing the tree', 'number': '4'}"
-"If the child is itself an internal node, and it either has no best hypernym or the same three best hypernyms as its parent, delete this child and make its children into children of the parent instead.","{'title': '4 Compressing the tree', 'number': '4'}"
-"There are 20,014 leaves (nouns) and 654 internal nodes in the final tree (reduced from 20,013 internal nodes in the uncompressed tree).","{'title': '5 Results and evaluation', 'number': '5'}"
-The top-level node in our learned tree is labeled &quot;product/analyst/official&quot; .,"{'title': '5 Results and evaluation', 'number': '5'}"
-(Recall from the previous discussion that we do not assume any kind of semantic relationship among the hypernyms listed for a particular cluster.),"{'title': '5 Results and evaluation', 'number': '5'}"
-"Since these hypernyms are learned from the Wall Street Journal, they are domain-specific labels rather than the more general &quot;thing/person&quot;.","{'title': '5 Results and evaluation', 'number': '5'}"
-"However, if the hierarchy were to be used for text from the financial domain, these labels may be preferred.","{'title': '5 Results and evaluation', 'number': '5'}"
-"The next level of the hierarchy, the children of the root, is as shown in Table 1.","{'title': '5 Results and evaluation', 'number': '5'}"
-(&quot;Conductor&quot; seems out-of-place on this list; see the next section for discussion.),"{'title': '5 Results and evaluation', 'number': '5'}"
-"These numbers do not add up to 20,014 because 1,288 nouns are attached directly to the root, meaning that they couldn't be clustered to any greater level of detail.","{'title': '5 Results and evaluation', 'number': '5'}"
-"These tend to be nouns for which little data was available, generally proper nouns (e.g., Reindel, Yaghoubi, Igoe).","{'title': '5 Results and evaluation', 'number': '5'}"
-"To evaluate the hierarchy, 10 internal nodes dominating at least 20 nouns were selected at random.","{'title': '5 Results and evaluation', 'number': '5'}"
-"For each of these nodes, we randomly selected 20 of the nouns from the cluster under that node.","{'title': '5 Results and evaluation', 'number': '5'}"
-"Three human judges were asked to evaluate for each noun and each of the (up to) three hypernyms listed as &quot;best&quot; for that cluster, whether they were actually in a hyponym-hypernym relation.","{'title': '5 Results and evaluation', 'number': '5'}"
-The judges were students working in natural language processing or computational linguistics at our institution who were not directly involved in the research for this project.,"{'title': '5 Results and evaluation', 'number': '5'}"
-5 &quot;noise&quot; nouns randomly selected from elsewhere in the tree were also added to each cluster without the judges' knowledge to verify that the judges were not overly generous.,"{'title': '5 Results and evaluation', 'number': '5'}"
-"Some nouns, especially proper nouns, were not recognized by the judges.","{'title': '5 Results and evaluation', 'number': '5'}"
-"For any noun that was not evaluated by at least two judges, we evaluated the noun/hypernym pair by examining the appearances of that noun in the source text and verifying that the hypernym was correct for the predominant sense of the noun.","{'title': '5 Results and evaluation', 'number': '5'}"
-Table 2 presents the results of this evaluation.,"{'title': '5 Results and evaluation', 'number': '5'}"
-"The table lists only results for the actual candidate hyponym nouns, not the noise words.","{'title': '5 Results and evaluation', 'number': '5'}"
-"The &quot;Hypernym 1&quot; column indicates whether the &quot;best&quot; hypernym was considered correct, while the &quot;Any hypernym&quot; column indicates whether any of the listed hypernyms were accepted.","{'title': '5 Results and evaluation', 'number': '5'}"
-"Within those columns, &quot;majority&quot; lists the opinion of the majority of judges, and &quot;any&quot; indicates the hypernyms that were accepted by even one of the judges.","{'title': '5 Results and evaluation', 'number': '5'}"
-The &quot;Hypernym 1/any&quot; column can be used to compare results to Riloff and Shepherd (1997).,"{'title': '5 Results and evaluation', 'number': '5'}"
-"For five hand-selected categories, each with a single hypernym, and the 20 nouns their algorithm scored as the best members of each category, at least one judge marked on average about 31% of the nouns as correct.","{'title': '5 Results and evaluation', 'number': '5'}"
-Using randomly-selected categories and randomly-selected category members we achieved 39%.,"{'title': '5 Results and evaluation', 'number': '5'}"
-"By the strictest criteria, our algorithm produces correct hyponyms for a randomlyselected hypernym 33% of the time.","{'title': '5 Results and evaluation', 'number': '5'}"
-"Roark and Charniak (1998) report that for a handselected category, their algorithm generally produces 20% to 40% correct entries.","{'title': '5 Results and evaluation', 'number': '5'}"
-"Furthermore, if we loosen our criteria to consider also the second- and third-best hypernyms, 60% of the nouns evaluated were assigned to at least one correct hypernym according to at least one judge.","{'title': '5 Results and evaluation', 'number': '5'}"
-"The &quot;bank/firm/station&quot; cluster consists largely of investment firms, which were marked as incorrect for &quot;bank&quot;, resulting in the poor performance on the Hypernym 1 measures for this cluster.","{'title': '5 Results and evaluation', 'number': '5'}"
-"The last cluster in the list, labeled &quot;company&quot;, is actually a very good cluster of cities that because of sparse data was assigned a poor hypernym.","{'title': '5 Results and evaluation', 'number': '5'}"
-Some of the suggestions in the following section might correct this problem.,"{'title': '5 Results and evaluation', 'number': '5'}"
-"Of the 50 noise words, a few of them were actually rated as correct as well, as shown in Table 3.","{'title': '5 Results and evaluation', 'number': '5'}"
-"This is largely because the noise words were selected truly at random, so that a noise word for the &quot;company&quot; cluster may not have been in that particular cluster but may still have appeared under a &quot;company&quot; hypernym elsewhere in the hierarchy.","{'title': '5 Results and evaluation', 'number': '5'}"
-Future work should benefit greatly by using data on the hypernyms of hypernyms.,"{'title': '6 Discussion and future directions', 'number': '6'}"
-"In our current tree, the best hypernym for the entire tree is &quot;product&quot;; however, many times nodes deeper in the tree are given this label also.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"For example, we have a cluster including many forms of currency, but because there is little data for these particular words, the only hypernym found was &quot;product&quot;.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"However, the parent of this node has the best hypernym of &quot;currency&quot;.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"If we knew that &quot;product&quot; was a hypernym of &quot;currency&quot;, we could detect that the parent node's label is more specific and simply absorb the child node into the parent.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"Furthermore, we may be able to use data on the hypernyms of hypernyms to give better labels to some nodes that are currently labeled simply with the best hypernyms of their subtrees, such as a node labeled &quot;product/analyst&quot; which has two subtrees, one labeled &quot;product&quot; and containing words for things, the other labeled &quot;analyst&quot; and containing names of people.","{'title': '6 Discussion and future directions', 'number': '6'}"
-We would like to instead label this node something like &quot;entity&quot;.,"{'title': '6 Discussion and future directions', 'number': '6'}"
-"It is not yet clear whether corpus data will provide sufficient data for hypernyms at such a high level of the tree, but depending on the intended application for the hierarchy, this level of generality might not be required.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"As noted in the previous section, one major spurious result is a cluster of 51 nouns, mainly people, which is given the hypernym &quot;conductor&quot;.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"The reason for this is that few of the nouns appear with hypernyms, and two of them (Giulini and Ozawa) appear in the same phrase listing conductors, thus giving &quot;conductor&quot; a count of two, sufficient to be listed as the only hypernym for the cluster.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"It might be useful to have some stricter criterion for hypernyms, say, that they occur with a certain percentage of the nouns below them in the tree.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"Additional hypernym data would also be helpful in this case, and should be easily obtainable by looking for other patterns in the text as suggested by Hearst (1992).","{'title': '6 Discussion and future directions', 'number': '6'}"
-"Because the tree is built in a binary fashion, when, e.g., three clusters should all be distinct children of a common parent, two of them must merge first, giving an artificial intermediate level in the tree.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"For example, in the current tree a cluster with best hypernym &quot;agency&quot; and one with best hypernym &quot;exchange&quot; (as in &quot;stock exchange&quot;) have a parent with two best hypernyms &quot;agency/exchange&quot; , rather than both of these nodes simply being attached to the next level up with best hypernym &quot;group&quot;.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"It might be possible to correct for this situation by comparing the hypernyms for the two clusters and if there is little overlap, deleting their parent node and attaching them to their grandparent instead.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"It would be useful to try to identify terms made up of multiple words, rather than just using the head nouns of the noun phrases.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"Not only would this provide a more Useful hierarchy, or at least perhaps one that is more useful for certain applications, but it would also help to prevent some errors.","{'title': '6 Discussion and future directions', 'number': '6'}"
-Hearst (1992) gives an example of a potential hyponym-hypernym pair &quot;broken bone/injury&quot; .,"{'title': '6 Discussion and future directions', 'number': '6'}"
-"Using our algorithm, we would learn that &quot;injury&quot; is a hypernym of &quot;bone&quot;.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"Ideally, this would not appear in our hierarchy since a more common hypernym would be chosen instead, but it is possible that in some cases a bad hypernym would be found based on multiple word phrases.","{'title': '6 Discussion and future directions', 'number': '6'}"
-A discussion of the difficulties in deciding how much of a noun phrase to use can be found in Hearst.,"{'title': '6 Discussion and future directions', 'number': '6'}"
-"Ideally, a useful hierarchy should allow for multiple senses of a word, and this is an area which can be explored in future work.","{'title': '6 Discussion and future directions', 'number': '6'}"
-"However, domain-specific text tends to greatly constrain which senses of a word will appear, and if the learned hierarchy is intended for use with the same type of text from which it was learned, it is possible that this would be of limited benefit.","{'title': '6 Discussion and future directions', 'number': '6'}"
-We used parsed text for these experiments because we believed we would get better results and the parsed data was readily available.,"{'title': '6 Discussion and future directions', 'number': '6'}"
-"However, it would be interesting to see if parsing is necessary or if we can get equivalent or nearly-equivalent results doing some simpler text processing, as suggested in Ahlswede and Evens (1988).","{'title': '6 Discussion and future directions', 'number': '6'}"
-Both Hearst (1992) and Riloff and Shepherd (1997) use unparsed text.,"{'title': '6 Discussion and future directions', 'number': '6'}"
-Pereira et al. (1993) used clustering to build an unlabeled hierarchy of nouns.,"{'title': '7 Related work', 'number': '7'}"
-"Their hierarchy is constructed top-down, rather than bottom-up, with nouns being allowed membership in multiple clusters.","{'title': '7 Related work', 'number': '7'}"
-Their clustering is based on verb-object relations rather than on the noun-noun relations that we use.,"{'title': '7 Related work', 'number': '7'}"
-Future work on our project will include an attempt to incorporate verb-object data as well in the clustering process.,"{'title': '7 Related work', 'number': '7'}"
-"The tree they construct is also binary with some internal nodes which seem to be &quot;artificial&quot;, but for evaluation purposes they disregard the tree structure and consider only the leaf nodes.","{'title': '7 Related work', 'number': '7'}"
-Unfortunately it is difficult to compare their results to ours since their evaluation is based on the verb-object relations.,"{'title': '7 Related work', 'number': '7'}"
-"Riloff and Shepherd (1997) suggested using conjunction and appositive data to cluster nouns; however, they approximated this data by just looking at the nearest NP on each side of a particular NP.","{'title': '7 Related work', 'number': '7'}"
-"Roark and Charniak (1998) built on that work by actually using conjunction and appositive data for noun clustering, as we do here.","{'title': '7 Related work', 'number': '7'}"
-"(They also use noun compound data, but in a separate stage of processing.)","{'title': '7 Related work', 'number': '7'}"
-"Both of these projects have the goal of building a single cluster of, e.g., vehicles, and both use seed words to initialize a cluster with nouns belonging to it.","{'title': '7 Related work', 'number': '7'}"
-"Hearst (1992) introduced the idea of learning hypernym-hyponym relationships from text and gives several examples of patterns that can be used to detect these relationships including those used here, along with an algorithm for identifying new patterns.","{'title': '7 Related work', 'number': '7'}"
-"This work shares with ours the feature that it does not need large amounts of data to learn a hypernym; unlike in much statistical work, a single occurrence is sufficient.","{'title': '7 Related work', 'number': '7'}"
-"The hyponym-hypernym pairs found by Hearst's algorithm include some that Hearst describes as &quot;context and point-of-view dependent,&quot; such as &quot;Washington/nationalist&quot; and &quot;aircraft/target&quot; .","{'title': '7 Related work', 'number': '7'}"
-"Our work is somewhat less sensitive to this kind of problem since only the most common hypernym of an entire cluster of nouns is reported, so much of the noise is filtered.","{'title': '7 Related work', 'number': '7'}"
-We have shown that hypernym hierarchies of nouns can be constructed automatically from text with similar performance to semantic lexicons built automatically for hand-selected hypernyms.,"{'title': '8 Conclusion', 'number': '8'}"
-"With the addition of some improvements we have identified, we believe that these automatic methods can be used to construct truly useful hierarchies.","{'title': '8 Conclusion', 'number': '8'}"
-"Since the hierarchy is learned from sample text, it could be trained on domainspecific text to create a hierarchy that is more applicable to a particular domain than a general-purpose resource such as WordNet.","{'title': '8 Conclusion', 'number': '8'}"
-Thanks to Eugene Charniak for helpful discussions and for the data used in this project.,"{'title': '9 Acknowledgments', 'number': '9'}"
-"Thanks also to Brian Roark, Heidi J.","{'title': '9 Acknowledgments', 'number': '9'}"
-"Fox, and Keith Hall for acting as judges in the project evaluation.","{'title': '9 Acknowledgments', 'number': '9'}"
-This research is supported in part by NSF grant IRI-9319516 and by ONR grant N0014-96-1-0549.,"{'title': '9 Acknowledgments', 'number': '9'}"
+Previous work has shown that automatic methods can be used in building semantic lexicons.,Introduction
+"This work goes a step further by automatically creating not just clusters of related words, but a hierarchy of nouns and their hypernyms, akin to the hand-built hierarchy in WordNet.",Introduction
+"The purpose of this work is to build something like the hypernym-labeled noun hierarchy of WordNet (Fellbaum, 1998) automatically from text using no other lexical resources.",Experiment/Discussion
+"WordNet has been an important research tool, but it is insufficient for domainspecific text, such as that encountered in the MUCs (Message Understanding Conferences).",Experiment/Discussion
+Our work develops a labeled hierarchy based on a text corpus.,Experiment/Discussion
+"In this project, nouns are clustered into a hierarchy using data on conjunctions and appositives appearing in the Wall Street Journal.",Experiment/Discussion
+"The internal nodes of the resulting tree are then labeled with hypernyms for the nouns clustered underneath them, also based on data extracted from the Wall Street Journal.",Experiment/Discussion
+"The resulting hierarchy is evaluated by human judges, and future research directions are discussed.",Experiment/Discussion
+"The first stage in constructing our hierarchy is to build an unlabeled hierarchy of nouns using bottom-up clustering methods (see, e.g., Brown et al. (1992)).",Experiment/Discussion
+Nouns are clustered based on conjunction and appositive data collected from the Wall Street Journal corpus.,Experiment/Discussion
+"Some of the data comes from the parsed files 2-21 of the Wall Street Journal Penn Treebank corpus (Marcus et al., 1993), and additional parsed text was obtained by parsing the 1987 Wall Street Journal text using the parser described in Charniak et al. (1998).",Experiment/Discussion
+"From this parsed text, we identified all conjunctions of noun phrases (e.g., &quot;executive vice-president and treasurer&quot; or &quot;scientific equipment, apparatus and disposables&quot;) and all appositives (e.g., &quot;James H. Rosenfield, a former CBS Inc. executive&quot; or &quot;Boeing, a defense contractor&quot;).",Experiment/Discussion
+"The idea here is that nouns in conjunctions or appositives tend to be semantically related, as discussed in Riloff and Shepherd (1997) and Roark and Charniak (1998).",Experiment/Discussion
+"Taking the head words of each NP and stemming them results in data for about 50,000 distinct nouns.",Experiment/Discussion
+A vector is created for each noun containing counts for how many times each other noun appears in a conjunction or appositive with it.,Experiment/Discussion
+"We can then measure the similarity of the vectors for two nouns by computing the cosine of the angle between these vectors, as 11'1iWr To compare the similarity of two groups of nouns, we define similarity as the average of the cosines between each pair of nouns made up of one noun from each of the two groups.",Experiment/Discussion
+"Ev cos (v, w) size(A)size(B) where v ranges over all vectors for nouns in group A, w ranges over the vectors for group B, and size(x) represents the number of nouns which are descendants of node x.",Experiment/Discussion
+We want to create a tree of all of the nouns in this data using standard bottom-up clustering techniques as follows: Put each noun into its own node.,Experiment/Discussion
+Compute the similarity between each pair of nodes using the cosine method.,Experiment/Discussion
+Find the two most similar nouns and combine them by giving them a common parent (and removing the child nodes from future consideration).,Experiment/Discussion
+We can then compute the new node's similarity to each other node by computing a weighted average of the similarities between each of its children and the other node.,Experiment/Discussion
+"In other words, assuming nodes A and B have been combined under a new parent C, the similarity between C and any other node i can be computed as Once again, we combine the two most similar nodes under a common parent.",Experiment/Discussion
+Repeat until all nouns have been placed under a common ancestor.,Experiment/Discussion
+Nouns which have a cosine of 0 with every other noun are not included in the final tree.,Experiment/Discussion
+"In practice, we cannot follow exactly that algorithm, because maintaining a list of the cosines between every pair of nodes requires a tremendous amount of memory.",Experiment/Discussion
+"With 50,000 nouns, we would initially require a 50,000 x 50,000 array of values (or a triangular array of about half this size).",Experiment/Discussion
+"With our current hardware, the largest array we The way we handled this limitation is to process the nouns in batches.",Experiment/Discussion
+"Initially 5,000 nouns are read in.",Experiment/Discussion
+"We cluster these until we have 2,500 nodes.",Experiment/Discussion
+"Then 2,500 more nouns are read in, to bring the total to 5,000 again, and once again we cluster until 2,500 nodes remain.",Experiment/Discussion
+This process is repeated until all nouns have been processed.,Experiment/Discussion
+"Since the lowest-frequency nouns are clustered based on very little information and have a greater tendency to be clustered badly, we chose to filter some of these out.",Experiment/Discussion
+"By reducing the number of nouns to be read, a much nicer structure is obtained.",Experiment/Discussion
+We now only consider nouns with a vector of length at least 2.,Experiment/Discussion
+"There are approximately 20,000 nouns as the leaves in our final binary tree structure.",Experiment/Discussion
+Our next step is to try to label each of the internal nodes with a hypernym describing its descendant nouns.,Experiment/Discussion
+"Following WordNet, a word A is said to be a hypernym of a word B if native speakers of English accept the sentence &quot;B is a (kind of) A.&quot; To determine possible hypernyms for a particular noun, we use the same parsed text described in the previous section.",Experiment/Discussion
+"As suggested in Hearst (1992), we can find some hypernym data in the text by looking for conjunctions involving the word &quot;other&quot;, as in &quot;X, Y, and other Zs&quot; (patterns 3 and 4 in Hearst).",Experiment/Discussion
+From this phrase we can extract that Z is likely a hypernym for both X and Y.,Experiment/Discussion
+"This data is extracted from the parsed text, and for each noun we construct a vector of hypernyms, with a value of 1 if a word has been seen as a hypernym for this noun and 0 otherwise.",Experiment/Discussion
+These vectors are associated with the leaves of the binary tree constructed in the previous section.,Experiment/Discussion
+"For each internal node of the tree, we construct a vector of hypernyms by adding together the vectors of its children.",Experiment/Discussion
+"We then assign a hypernym to this node by simply choosing the hypernym with the largest value in this vector; that is, the hypernym which appeared with the largest number of the node's descendant nouns.",Experiment/Discussion
+"(In case of ties, the hypernyms are ordered arbitrarily.)",Experiment/Discussion
+"We also list the second- and third-best hypernyms, to account for cases where a single word does not describe the cluster adequately, or cases where there are a few good hypernyms which tend to alternate, such as &quot;country&quot; and &quot;nation&quot;.",Experiment/Discussion
+(There may or may not be any kind of semantic relationship among the hypernyms listed.,Experiment/Discussion
+"Because of the method of selecting hypernyms, the hypernyms may be synonyms of each other, have hypernym-hyponym relationships of their own, or be completely unrelated.)",Experiment/Discussion
+"If a hypernym has occurred with only one of the descendant nouns, it is not listed as one of the best hypernyms, since we have insufficient evidence that the word could describe this class of nouns.",Experiment/Discussion
+Not every node has sufficient data to be assigned a hypernym.,Experiment/Discussion
+The labeled tree constructed in the previous section tends to be extremely redundant.,Experiment/Discussion
+Recall that the tree is binary.,Experiment/Discussion
+"In many cases, a group of nouns really do not have an inherent tree structure, for example, a cluster of countries.",Experiment/Discussion
+"Although it is possible that a reasonable tree structure could be created with subtrees of, say, European countries, Asian countries, etc., recall that we are using single-word hypernyms.",Experiment/Discussion
+A large binary tree of countries would ideally have &quot;country&quot; (or &quot;nation&quot;) as the best hypernym at every level.,Experiment/Discussion
+"We would like to combine these subtrees into a single parent labeled &quot;country&quot; or &quot;nation&quot;, with each country appearing as a leaf directly beneath this parent.",Experiment/Discussion
+"(Obviously, the tree will no longer be binary).",Experiment/Discussion
+"Another type of redundancy can occur when an internal node is unlabeled, meaning a hypernym could not be found to describe its descendant nouns.",Experiment/Discussion
+"Since the tree's root is labeled, somewhere above this node there is necessarily a node labeled with a hypernym which applies to its descendant nouns, including those which are a descendant of this node.",Experiment/Discussion
+We want to move this node's children directly under the nearest labeled ancestor.,Experiment/Discussion
+"We compress the tree using the following very simple algorithm: in depth-first order, examine the children of each internal node.",Experiment/Discussion
+"If the child is itself an internal node, and it either has no best hypernym or the same three best hypernyms as its parent, delete this child and make its children into children of the parent instead.",Experiment/Discussion
+"There are 20,014 leaves (nouns) and 654 internal nodes in the final tree (reduced from 20,013 internal nodes in the uncompressed tree).",Experiment/Discussion
+The top-level node in our learned tree is labeled &quot;product/analyst/official&quot; .,Experiment/Discussion
+(Recall from the previous discussion that we do not assume any kind of semantic relationship among the hypernyms listed for a particular cluster.),Experiment/Discussion
+"Since these hypernyms are learned from the Wall Street Journal, they are domain-specific labels rather than the more general &quot;thing/person&quot;.",Experiment/Discussion
+"However, if the hierarchy were to be used for text from the financial domain, these labels may be preferred.",Experiment/Discussion
+"The next level of the hierarchy, the children of the root, is as shown in Table 1.",Experiment/Discussion
+(&quot;Conductor&quot; seems out-of-place on this list; see the next section for discussion.),Experiment/Discussion
+"These numbers do not add up to 20,014 because 1,288 nouns are attached directly to the root, meaning that they couldn't be clustered to any greater level of detail.",Experiment/Discussion
+"These tend to be nouns for which little data was available, generally proper nouns (e.g., Reindel, Yaghoubi, Igoe).",Experiment/Discussion
+"To evaluate the hierarchy, 10 internal nodes dominating at least 20 nouns were selected at random.",Experiment/Discussion
+"For each of these nodes, we randomly selected 20 of the nouns from the cluster under that node.",Experiment/Discussion
+"Three human judges were asked to evaluate for each noun and each of the (up to) three hypernyms listed as &quot;best&quot; for that cluster, whether they were actually in a hyponym-hypernym relation.",Experiment/Discussion
+The judges were students working in natural language processing or computational linguistics at our institution who were not directly involved in the research for this project.,Experiment/Discussion
+5 &quot;noise&quot; nouns randomly selected from elsewhere in the tree were also added to each cluster without the judges' knowledge to verify that the judges were not overly generous.,Experiment/Discussion
+"Some nouns, especially proper nouns, were not recognized by the judges.",Experiment/Discussion
+"For any noun that was not evaluated by at least two judges, we evaluated the noun/hypernym pair by examining the appearances of that noun in the source text and verifying that the hypernym was correct for the predominant sense of the noun.",Experiment/Discussion
+Table 2 presents the results of this evaluation.,Experiment/Discussion
+"The table lists only results for the actual candidate hyponym nouns, not the noise words.",Experiment/Discussion
+"The &quot;Hypernym 1&quot; column indicates whether the &quot;best&quot; hypernym was considered correct, while the &quot;Any hypernym&quot; column indicates whether any of the listed hypernyms were accepted.",Experiment/Discussion
+"Within those columns, &quot;majority&quot; lists the opinion of the majority of judges, and &quot;any&quot; indicates the hypernyms that were accepted by even one of the judges.",Experiment/Discussion
+The &quot;Hypernym 1/any&quot; column can be used to compare results to Riloff and Shepherd (1997).,Experiment/Discussion
+"For five hand-selected categories, each with a single hypernym, and the 20 nouns their algorithm scored as the best members of each category, at least one judge marked on average about 31% of the nouns as correct.",Experiment/Discussion
+Using randomly-selected categories and randomly-selected category members we achieved 39%.,Experiment/Discussion
+"By the strictest criteria, our algorithm produces correct hyponyms for a randomlyselected hypernym 33% of the time.",Experiment/Discussion
+"Roark and Charniak (1998) report that for a handselected category, their algorithm generally produces 20% to 40% correct entries.",Experiment/Discussion
+"Furthermore, if we loosen our criteria to consider also the second- and third-best hypernyms, 60% of the nouns evaluated were assigned to at least one correct hypernym according to at least one judge.",Experiment/Discussion
+"The &quot;bank/firm/station&quot; cluster consists largely of investment firms, which were marked as incorrect for &quot;bank&quot;, resulting in the poor performance on the Hypernym 1 measures for this cluster.",Experiment/Discussion
+"The last cluster in the list, labeled &quot;company&quot;, is actually a very good cluster of cities that because of sparse data was assigned a poor hypernym.",Experiment/Discussion
+Some of the suggestions in the following section might correct this problem.,Experiment/Discussion
+"Of the 50 noise words, a few of them were actually rated as correct as well, as shown in Table 3.",Experiment/Discussion
+"This is largely because the noise words were selected truly at random, so that a noise word for the &quot;company&quot; cluster may not have been in that particular cluster but may still have appeared under a &quot;company&quot; hypernym elsewhere in the hierarchy.",Experiment/Discussion
+Future work should benefit greatly by using data on the hypernyms of hypernyms.,Experiment/Discussion
+"In our current tree, the best hypernym for the entire tree is &quot;product&quot;; however, many times nodes deeper in the tree are given this label also.",Experiment/Discussion
+"For example, we have a cluster including many forms of currency, but because there is little data for these particular words, the only hypernym found was &quot;product&quot;.",Experiment/Discussion
+"However, the parent of this node has the best hypernym of &quot;currency&quot;.",Experiment/Discussion
+"If we knew that &quot;product&quot; was a hypernym of &quot;currency&quot;, we could detect that the parent node's label is more specific and simply absorb the child node into the parent.",Experiment/Discussion
+"Furthermore, we may be able to use data on the hypernyms of hypernyms to give better labels to some nodes that are currently labeled simply with the best hypernyms of their subtrees, such as a node labeled &quot;product/analyst&quot; which has two subtrees, one labeled &quot;product&quot; and containing words for things, the other labeled &quot;analyst&quot; and containing names of people.",Experiment/Discussion
+We would like to instead label this node something like &quot;entity&quot;.,Experiment/Discussion
+"It is not yet clear whether corpus data will provide sufficient data for hypernyms at such a high level of the tree, but depending on the intended application for the hierarchy, this level of generality might not be required.",Experiment/Discussion
+"As noted in the previous section, one major spurious result is a cluster of 51 nouns, mainly people, which is given the hypernym &quot;conductor&quot;.",Experiment/Discussion
+"The reason for this is that few of the nouns appear with hypernyms, and two of them (Giulini and Ozawa) appear in the same phrase listing conductors, thus giving &quot;conductor&quot; a count of two, sufficient to be listed as the only hypernym for the cluster.",Experiment/Discussion
+"It might be useful to have some stricter criterion for hypernyms, say, that they occur with a certain percentage of the nouns below them in the tree.",Experiment/Discussion
+"Additional hypernym data would also be helpful in this case, and should be easily obtainable by looking for other patterns in the text as suggested by Hearst (1992).",Experiment/Discussion
+"Because the tree is built in a binary fashion, when, e.g., three clusters should all be distinct children of a common parent, two of them must merge first, giving an artificial intermediate level in the tree.",Experiment/Discussion
+"For example, in the current tree a cluster with best hypernym &quot;agency&quot; and one with best hypernym &quot;exchange&quot; (as in &quot;stock exchange&quot;) have a parent with two best hypernyms &quot;agency/exchange&quot; , rather than both of these nodes simply being attached to the next level up with best hypernym &quot;group&quot;.",Experiment/Discussion
+"It might be possible to correct for this situation by comparing the hypernyms for the two clusters and if there is little overlap, deleting their parent node and attaching them to their grandparent instead.",Experiment/Discussion
+"It would be useful to try to identify terms made up of multiple words, rather than just using the head nouns of the noun phrases.",Experiment/Discussion
+"Not only would this provide a more Useful hierarchy, or at least perhaps one that is more useful for certain applications, but it would also help to prevent some errors.",Experiment/Discussion
+Hearst (1992) gives an example of a potential hyponym-hypernym pair &quot;broken bone/injury&quot; .,Experiment/Discussion
+"Using our algorithm, we would learn that &quot;injury&quot; is a hypernym of &quot;bone&quot;.",Experiment/Discussion
+"Ideally, this would not appear in our hierarchy since a more common hypernym would be chosen instead, but it is possible that in some cases a bad hypernym would be found based on multiple word phrases.",Experiment/Discussion
+A discussion of the difficulties in deciding how much of a noun phrase to use can be found in Hearst.,Experiment/Discussion
+"Ideally, a useful hierarchy should allow for multiple senses of a word, and this is an area which can be explored in future work.",Experiment/Discussion
+"However, domain-specific text tends to greatly constrain which senses of a word will appear, and if the learned hierarchy is intended for use with the same type of text from which it was learned, it is possible that this would be of limited benefit.",Experiment/Discussion
+We used parsed text for these experiments because we believed we would get better results and the parsed data was readily available.,Experiment/Discussion
+"However, it would be interesting to see if parsing is necessary or if we can get equivalent or nearly-equivalent results doing some simpler text processing, as suggested in Ahlswede and Evens (1988).",Experiment/Discussion
+Both Hearst (1992) and Riloff and Shepherd (1997) use unparsed text.,Experiment/Discussion
+Pereira et al. (1993) used clustering to build an unlabeled hierarchy of nouns.,Experiment/Discussion
+"Their hierarchy is constructed top-down, rather than bottom-up, with nouns being allowed membership in multiple clusters.",Experiment/Discussion
+Their clustering is based on verb-object relations rather than on the noun-noun relations that we use.,Experiment/Discussion
+Future work on our project will include an attempt to incorporate verb-object data as well in the clustering process.,Experiment/Discussion
+"The tree they construct is also binary with some internal nodes which seem to be &quot;artificial&quot;, but for evaluation purposes they disregard the tree structure and consider only the leaf nodes.",Experiment/Discussion
+Unfortunately it is difficult to compare their results to ours since their evaluation is based on the verb-object relations.,Experiment/Discussion
+"Riloff and Shepherd (1997) suggested using conjunction and appositive data to cluster nouns; however, they approximated this data by just looking at the nearest NP on each side of a particular NP.",Experiment/Discussion
+"Roark and Charniak (1998) built on that work by actually using conjunction and appositive data for noun clustering, as we do here.",Experiment/Discussion
+"(They also use noun compound data, but in a separate stage of processing.)",Experiment/Discussion
+"Both of these projects have the goal of building a single cluster of, e.g., vehicles, and both use seed words to initialize a cluster with nouns belonging to it.",Experiment/Discussion
+"Hearst (1992) introduced the idea of learning hypernym-hyponym relationships from text and gives several examples of patterns that can be used to detect these relationships including those used here, along with an algorithm for identifying new patterns.",Experiment/Discussion
+"This work shares with ours the feature that it does not need large amounts of data to learn a hypernym; unlike in much statistical work, a single occurrence is sufficient.",Experiment/Discussion
+"The hyponym-hypernym pairs found by Hearst's algorithm include some that Hearst describes as &quot;context and point-of-view dependent,&quot; such as &quot;Washington/nationalist&quot; and &quot;aircraft/target&quot; .",Experiment/Discussion
+"Our work is somewhat less sensitive to this kind of problem since only the most common hypernym of an entire cluster of nouns is reported, so much of the noise is filtered.",Experiment/Discussion
+We have shown that hypernym hierarchies of nouns can be constructed automatically from text with similar performance to semantic lexicons built automatically for hand-selected hypernyms.,Results/Conclusion
+"With the addition of some improvements we have identified, we believe that these automatic methods can be used to construct truly useful hierarchies.",Results/Conclusion
+"Since the hierarchy is learned from sample text, it could be trained on domainspecific text to create a hierarchy that is more applicable to a particular domain than a general-purpose resource such as WordNet.",Results/Conclusion
+Thanks to Eugene Charniak for helpful discussions and for the data used in this project.,Results/Conclusion
+"Thanks also to Brian Roark, Heidi J.",Results/Conclusion
+"Fox, and Keith Hall for acting as judges in the project evaluation.",Results/Conclusion
+This research is supported in part by NSF grant IRI-9319516 and by ONR grant N0014-96-1-0549.,Results/Conclusion

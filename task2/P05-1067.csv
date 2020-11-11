@@ -1,164 +1,164 @@
 col1,col2
-Syntax-based statistical machine translation (MT) aims at applying statistical models to structured data.,{}
-"In this paper, we present a syntax-based statistical matranslation system based on a probabilistic synchronous dependency insertion grammar.",{}
-Synchronous dependency insertion grammars are a version of synchronous grammars defined on dependency trees.,{}
-We first introduce our approach to inducing such a grammar from parallel corpora.,{}
-"Second, we describe the graphical model for the machine translation task, which can also be viewed as a stochastic tree-to-tree transducer.",{}
-We introduce a polynomial time decoding algorithm for the model.,{}
-We evaluate the outputs of our MT system using the NIST and Bleu automatic MT evaluation software.,{}
-The result shows that our system outperforms the baseline system based on the IBM models in both translation speed and quality.,{}
-"Statistical approaches to machine translation, pioneered by (Brown et al., 1993), achieved impressive performance by leveraging large amounts of parallel corpora.","{'title': '1 Introduction', 'number': '1'}"
-"Such approaches, which are essentially stochastic string-to-string transducers, do not explicitly model natural language syntax or semantics.","{'title': '1 Introduction', 'number': '1'}"
-"In reality, pure statistical systems sometimes suffer from ungrammatical outputs, which are understandable at the phrasal level but sometimes hard to comprehend as a coherent sentence.","{'title': '1 Introduction', 'number': '1'}"
-"In recent years, syntax-based statistical machine translation, which aims at applying statistical models to structural data, has begun to emerge.","{'title': '1 Introduction', 'number': '1'}"
-"With the research advances in natural language parsing, especially the broad-coverage parsers trained from treebanks, for example (Collins, 1999), the utilization of structural analysis of different languages has been made possible.","{'title': '1 Introduction', 'number': '1'}"
-"Ideally, by combining the natural language syntax and machine learning methods, a broad-coverage and linguistically wellmotivated statistical MT system can be constructed.","{'title': '1 Introduction', 'number': '1'}"
-"However, structural divergences between languages (Dorr, 1994),which are due to either systematic differences between languages or loose translations in real corpora,pose a major challenge to syntax-based statistical MT.","{'title': '1 Introduction', 'number': '1'}"
-"As a result, the syntax based MT systems have to transduce between non-isomorphic tree structures.","{'title': '1 Introduction', 'number': '1'}"
-"(Wu, 1997) introduced a polynomial-time solution for the alignment problem based on synchronous binary trees.","{'title': '1 Introduction', 'number': '1'}"
-"(Alshawi et al., 2000) represents each production in parallel dependency trees as a finite-state transducer.","{'title': '1 Introduction', 'number': '1'}"
-"Both approaches learn the tree representations directly from parallel sentences, and do not make allowances for nonisomorphic structures.","{'title': '1 Introduction', 'number': '1'}"
-"(Yamada and Knight, 2001, 2002) modeled translation as a sequence of tree operations transforming a syntactic tree into a string of the target language.","{'title': '1 Introduction', 'number': '1'}"
-"When researchers try to use syntax trees in both languages, the problem of non-isomorphism must be addressed.","{'title': '1 Introduction', 'number': '1'}"
-"In theory, stochastic tree transducers and some versions of synchronous grammars provide solutions for the non-isomorphic tree based transduction problem and hence possible solutions for MT.","{'title': '1 Introduction', 'number': '1'}"
-"Synchronous Tree Adjoining Grammars, proposed by (Shieber and Schabes, 1990), were introduced primarily for semantics but were later also proposed for translation.","{'title': '1 Introduction', 'number': '1'}"
-Eisner (2003) proposed viewing the MT problem as a probabilistic synchronous tree substitution grammar parsing problem.,"{'title': '1 Introduction', 'number': '1'}"
-"Melamed (2003, 2004) formalized the MT problem as synchronous parsing based on multitext grammars.","{'title': '1 Introduction', 'number': '1'}"
-Graehl and Knight (2004) defined training and decoding algorithms for both generalized tree-to-tree and tree-to-string transducers.,"{'title': '1 Introduction', 'number': '1'}"
-"All these approaches, though different in formalism, model the two languages using tree-based transduction rules or a synchronous grammar, possibly probabilistic, and using multi-lemma elementary structures as atomic units.","{'title': '1 Introduction', 'number': '1'}"
-The machine translation is done either as a stochastic tree-to-tree transduction or a synchronous parsing process.,"{'title': '1 Introduction', 'number': '1'}"
-"However, few of the above mentioned formalisms have large scale implementations.","{'title': '1 Introduction', 'number': '1'}"
-"And to the best of our knowledge, the advantages of syntax based statistical MT systems over pure statistical MT systems have yet to be empirically verified.","{'title': '1 Introduction', 'number': '1'}"
-We believe difficulties in inducing a synchronous grammar or a set of tree transduction rules from large scale parallel corpora are caused by: Hajic et al. (2002) limited non-isomorphism by n-to-m matching of nodes in the two trees.,"{'title': '1 Introduction', 'number': '1'}"
-"However, even after extending this model by allowing cloning operations on subtrees, Gildea (2003) found that parallel trees over-constrained the alignment problem, and achieved better results with a tree-to-string model than with a tree-to-tree model using two trees.","{'title': '1 Introduction', 'number': '1'}"
-"In a different approach, Hwa et al. (2002) aligned the parallel sentences using phrase based statistical MT models and then projected the alignments back to the parse trees.","{'title': '1 Introduction', 'number': '1'}"
-This motivated us to look for a more efficient and effective way to induce a synchronous grammar from parallel corpora and to build an MT system that performs competitively with the pure statistical MT systems.,"{'title': '1 Introduction', 'number': '1'}"
-We chose to build the synchronous grammar on the parallel dependency structures of the sentences.,"{'title': '1 Introduction', 'number': '1'}"
-The synchronous grammar is induced by hierarchical tree partitioning operations.,"{'title': '1 Introduction', 'number': '1'}"
-The rest of this paper describes the system details as follows: Sections 2 and 3 describe the motivation behind the usage of dependency structures and how a version of synchronous dependency grammar is learned.,"{'title': '1 Introduction', 'number': '1'}"
-This grammar is used as the primary translation knowledge source for our system.,"{'title': '1 Introduction', 'number': '1'}"
-Section 4 defines the tree-to-tree transducer and the graphical model for the stochastic tree-to-tree transduction process and introduces a polynomial time decoding algorithm for the transducer.,"{'title': '1 Introduction', 'number': '1'}"
-We evaluate our system in section 5 with the NIST/Bleu automatic MT evaluation software and the results are discussed in Section 6.,"{'title': '1 Introduction', 'number': '1'}"
-"According to Fox (2002), dependency representations have the best inter-lingual phrasal cohesion properties.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-The percentage for head crossings is 12.62% and that of modifier crossings is 9.22%.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"Furthermore, a grammar based on dependency structures has the advantage of being simple in formalism yet having CFG equivalent formal generative capacity (Ding and Palmer, 2004b).","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-Dependency structures are inherently lexicalized as each node is one word.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"In comparison, phrasal structures (treebank style trees) have two node types: terminals store the lexical items and non-terminals store word order and phrasal scopes.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-Ding and Palmer (2004b) described one version of synchronous grammar: Synchronous Dependency Insertion Grammars.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-A Dependency Insertion Grammars (DIG) is a generative grammar formalism that captures word order phenomena within the dependency representation.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"In the scenario of two languages, the two sentences in the source and target languages can be modeled as being generated from a synchronous derivation process.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-A synchronous derivation process for the two syntactic structures of both languages suggests the level of cross-lingual isomorphism between the two trees (e.g.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"Synchronous Tree Adjoining Grammars (Shieber and Schabes, 1990)).","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"Apart from other details, a DIG can be viewed as a tree substitution grammar defined on dependency trees (as opposed to phrasal structure trees).","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"The basic units of the grammar are elementary trees (ET), which are sub-sentential dependency structures containing one or more lexical items.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"The synchronous version, SDIG, assumes that the isomorphism of the two syntactic structures is at the ET level, rather than at the word level, hence allowing non-isomorphic tree to tree mapping.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-We illustrate how the SDIG works using the following pseudo-translation example: Almost any tree-transduction operations defined on a single node will fail to generate the target sentence from the source sentence without using insertion/deletion operations.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"However, if we view each dependency tree as an assembly of indivisible sub-sentential elementary trees (ETs), we can find a proper way to transduce the input tree to the output tree.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-An ET is a single “symbol” in a transducer’s language.,"{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"As shown in Figure 2, each circle stands for an ET and thick arrows denote the transduction of each ET as a single symbol.","{'title': '2 The Synchronous Grammar', 'number': '2'}"
-"As the start to our syntax-based SMT system, the SDIG must be learned from the parallel corpora.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-One straightforward way to induce a generative grammar is using EM style estimation on the generative process.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Different versions of such training algorithms can be found in (Hajic et al., 2002; Eisner 2003; Gildea 2003; Graehl and Knight 2004).","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"However, a synchronous derivation process cannot handle two types of cross-language mappings: crossing-dependencies (parent-descendent switch) and broken dependencies (descendent appears elsewhere), which are illustrated below: In the above graph, the two sides are English and the foreign dependency trees.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-Each node in a tree stands for a lemma in a dependency tree.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The arrows denote aligned nodes and those resulting inconsistent dependencies are marked with a “*”.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Fox (2002) collected the statistics mainly on French and English data: in dependency representations, the percentage of head crossings per chance (case [b] in the graph) is 12.62%.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Using the statistics on cross-lingual dependency consistencies from a small word to word aligned Chinese-English parallel corpus1, we found that the percentage of crossing-dependencies (case [b]) between Chinese and English is 4.7% while that of broken dependencies (case [c]) is 59.3%.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The large number of broken dependencies presents a major challenge for grammar induction based on a top-down style EM learning process.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-Such broken and crossing dependencies can be modeled by SDIG if they appear inside a pair of elementary trees.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"However, if they appear between the elementary trees, they are not compatible with the isomorphism assumption on which SDIG is based.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Nevertheless, the hope is that the fact that the training corpus contains a significant percentage of dependency inconsistencies does not mean that during decoding the target language sentence cannot be written in a dependency consistent way.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"(Ding and Palmer, 2004a) gave a polynomial time solution for learning parallel sub-sentential dependency structures from non-isomorphic dependency trees.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Our approach, while similar to (Ding and Palmer, 2004a) in that we also iteratively partition the parallel dependency trees based on a heuristic function, departs (Ding and Palmer, 2004a) in three ways: (1) we base the hierarchical tree partitioning operations on the categories of the dependency trees; (2) the statistics of the resultant tree pairs from the partitioning operation are collected at each iteration rather than at the end of the algorithm; (3) we do not re-train the word to word probabilities at each iteration.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-Our grammar induction algorithm is sketched below: C = CategorySequence[i] be the current syntactic category set.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"For each tree pair in the corpus, do { a) For the tentative synchronous partitioning operation, use a heuristic function to select the BEST word pair (ei*, f j*) , where both ei*, f j* are NOT “chosen”, Category(ei*) E C and Category(f j*) E C. b) If (ei*, fj*) is found in (a), mark ei*, fj* as “chosen” and go back to (a), else go to (c).","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"At each iteration, one specific set of categories of nodes is handled.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The category sequence we used in the grammar induction is: We first process top NP chunks because they are the most stable between languages.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Interestingly, NPs are also used as anchor points to learn monolingual paraphrases (Ibrahim et al., 2003).","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"The phrasal structure categories can be extracted from automatic parsers using methods in (Xia, 2001).","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-An illustration is given below (Chinese in pinyin form).,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The placement of the dependency arcs reflects the relative word order between a parent node and all its immediate children.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The collected ETs are put into square boxes and the partitioning operations taken are marked with dotted arrows.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Similar to (Ding and Palmer, 2004a), we also use a heuristic function in Step 1(a) of the algorithm to rank all the word pairs for the tentative tree partitioning operation.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"The heuristic function is based on a set of heuristics, most of which are similar to those in (Ding and Palmer, 2004a).","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"For a word pair (ei, fj)for the tentative partitioning operation, we briefly describe the heuristics: the foreign words in the current tree.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The above heuristics are a set of real valued numbers.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"We use a Maximum Entropy model to interpolate the heuristics in a log-linear fashion, which is different from the error minimization training in (Ding and Palmer, 2004a). where y = (0,1) as labeled in the training data whether the two words are mapped with each other.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-The MaxEnt model is trained using the same word level aligned parallel corpus as the one in Section 3.1.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Although the training corpus isn’t large, the fact that we only have a handful of parameters to fit eased the problem.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-It is worth noting that the set of derived parallel dependency Elementary Trees is not a full-fledged SDIG yet.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"Many features in the SDIG formalism such as arguments, head percolation, etc. are not yet filled.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"We nevertheless use this derived grammar as a Mini-SDIG, assuming the unfilled features as empty by default.","{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-A full-fledged SDIG remains a goal for future research.,"{'title': '3 Inducing a Synchronous Dependency Insertion Grammar', 'number': '3'}"
-"As discussed before (see Figure 1 and 2), the architecture of our syntax based statistical MT system is illustrated in Figure 5.","{'title': '4 The Machine Translation System', 'number': '4'}"
-Note that this is a nondeterministic process.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-The input sentence is first parsed using an automatic parser and a dependency tree is derived.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-The rest of the pipeline can be viewed as a stochastic tree transducer.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-The MT decoding starts first by decomposing the input dependency tree in to elementary trees.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-Several different results of the decomposition are possible.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-Each decomposition is indeed a derivation process on the foreign side of SDIG.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-Then the elementary trees go through a transfer phase and target ETs are combined together into the output.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-The stochastic tree-to-tree transducer we propose models MT as a probabilistic optimization process.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"Let f be the input sentence (foreign language), and e be the output sentence (English).","{'title': '4 The Machine Translation System', 'number': '4'}"
-We have lation model” (TM) and the “language model” (LM).,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"Assuming the decomposition of the foreign tree is given, our approach, which is based on ETs, uses the graphical model shown in Figure 6.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"In the model, the left side is the input dependency tree (foreign language) and the right side is the output dependency tree (English).","{'title': '4 The Machine Translation System', 'number': '4'}"
-Each circle stands for an ET.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-The solid lines denote the syntactical dependencies while the dashed arrows denote the statistical dependencies.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-Let T( x) be the dependency tree constructed from sentence x .,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"A tree-decomposition function D( t) is defined on a dependency tree t , and outputs a certain ET derivation tree of t , which is generated by decomposing t into ETs.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Given t , there could be multiple decompositions.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Conditioned on decomposition D , we can rewrite (2) as: By definition, the ET derivation trees of the input and output trees should be isomorphic: D(T(f )) ≅ D(T(e)) .","{'title': '4 The Machine Translation System', 'number': '4'}"
-Let Tran(u) be a set of possible translations for the ET u .,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"We have: For any ET v in a given ET derivation tree d , let Root(d) be the root ET of d , and let Parent(v) denote the parent ET of v .","{'title': '4 The Machine Translation System', 'number': '4'}"
-We have: an HMM.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-While HMM is defined on a sequence our model is defined on the derivation tree of ETs.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"In reality, the learned parallel ETs are unlikely to cover all the structures that we may encounter in decoding.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"As a unified approach, we augment the SDIG by adding all the possible word pairs (fj, ei) as a parallel ET pair and using the IBM Model 1 (Brown et al., 1993) word to word translation probability as the ET translation probability.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"For efficiency reasons, we use maximum approximation for (3).","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Instead of summing over all the possible decompositions, we only search for the best decomposition as follows: where, letting root(v) denote the root word of v , P(v  |Parent(v)) = P(root(v)  |root (Parent(v))) (6) The prior probability of tree decomposition is An analogy between our model and a Hidden Markov Model (Figure 7) may be helpful.","{'title': '4 The Machine Translation System', 'number': '4'}"
-In Eq.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"(4), P(u  |v) is analogous to the emission probably P(oi  |si) in an HMM.","{'title': '4 The Machine Translation System', 'number': '4'}"
-In Eq.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"(5), P(v  |Parent(v)) is analogous to the transition probability P(si  |si−1) in So bringing equations (4) to (9) together, the best translation would maximize: Observing the similarity between our model and a HMM, our dynamic programming decoding algorithm is in spirit similar to the Viterbi algorithm except that instead of being sequential the decoding is done on trees in a top down fashion.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"As to the relative orders of the ETs, we currently choose not to reorder the children ETs given the parent ET because: (1) the permutation of the ETs is computationally expensive (2) it is possible that we can resort to simple linguistic treatments on the output dependency tree to order the ETs.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Currently, all the ETs are attached to each other at their root nodes.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"In our implementation, the different decompositions of the input dependency tree are stored in a shared forest structure, utilizing the dynamic programming property of the tree structures explicitly.","{'title': '4 The Machine Translation System', 'number': '4'}"
-Suppose the input sentence has n words and the shared forest representation has m nodes.,"{'title': '4 The Machine Translation System', 'number': '4'}"
-"Suppose for each word, there are maximally k different ETs containing it, we have m <_ kn .","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Let b be the max breadth factor in the packed forest, it can be shown that the decoder visits at most mb nodes during execution.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Hence, we have: which is linear to the input size.","{'title': '4 The Machine Translation System', 'number': '4'}"
-"Combined with a polynomial time parsing algorithm, the whole decoding process is polynomial time.","{'title': '4 The Machine Translation System', 'number': '4'}"
-We implemented the above approach for a Chinese-English machine translation system.,"{'title': '5 Evaluation', 'number': '5'}"
-"We used an automatic syntactic parser (Bikel, 2002) to produce the parallel parse trees.","{'title': '5 Evaluation', 'number': '5'}"
-The parser was trained using the Penn English/Chinese Treebanks.,"{'title': '5 Evaluation', 'number': '5'}"
-We then used the algorithm in (Xia 2001) to convert the phrasal structure trees to dependency trees to acquire the parallel dependency trees.,"{'title': '5 Evaluation', 'number': '5'}"
-"The statistics of the datasets we used are shown as follows: The training set consists of Xinhua newswire data from LDC and the FBIS data (mostly news), both filtered to ensure parallel sentence pair quality.","{'title': '5 Evaluation', 'number': '5'}"
-We used the development test data from the 2001 NIST MT evaluation workshop as our test data for the MT system performance.,"{'title': '5 Evaluation', 'number': '5'}"
-"In the testing data, each input Chinese sentence has 4 English translations as references.","{'title': '5 Evaluation', 'number': '5'}"
-"Our MT system was evaluated using the n-gram based Bleu (Papineni et al., 2002) and NIST machine translation evaluation software.","{'title': '5 Evaluation', 'number': '5'}"
-"We used the NIST software package “mteval” version 11a, configured as case-insensitive.","{'title': '5 Evaluation', 'number': '5'}"
-"In comparison, we deployed the GIZA++ MT modeling tool kit, which is an implementation of the IBM Models 1 to 4 (Brown et al., 1993; AlOnaizan et al., 1999; Och and Ney, 2003).","{'title': '5 Evaluation', 'number': '5'}"
-The IBM models were trained on the same training data as our system.,"{'title': '5 Evaluation', 'number': '5'}"
-We used the ISI Rewrite decoder (Germann et al. 2001) to decode the IBM models.,"{'title': '5 Evaluation', 'number': '5'}"
-The results are shown in Figure 9.,"{'title': '5 Evaluation', 'number': '5'}"
-The score types “I” and “C” stand for individual and cumulative n-gram scores.,"{'title': '5 Evaluation', 'number': '5'}"
-The final NIST and Bleu scores are marked with bold fonts.,"{'title': '5 Evaluation', 'number': '5'}"
-"The evaluation results show that the NIST score achieved a 97.3% increase, while the Bleu score increased by 21.1%.","{'title': '5 Evaluation', 'number': '5'}"
-"In terms of decoding speed, the Rewrite decoder took 8102 seconds to decode the test sentences on a Xeon 1.2GHz 2GB memory machine.","{'title': '5 Evaluation', 'number': '5'}"
-"On the same machine, the SDIG decoder took 3 seconds to decode, excluding the parsing time.","{'title': '5 Evaluation', 'number': '5'}"
-"The recent advances in parsing have achieved parsers with 3 O(n ) time complexity without the grammar constant (McDonald et al., 2005).","{'title': '5 Evaluation', 'number': '5'}"
-It can be expected that the total decoding time for SDIG can be as short as 0.1 second per sentence.,"{'title': '5 Evaluation', 'number': '5'}"
-"Neither of the two systems has any specific translation components, which are usually present in real world systems (E.g. components that translate numbers, dates, names, etc.)","{'title': '5 Evaluation', 'number': '5'}"
-It is reasonable to expect that the performance of SDIG can be further improved with such specific optimizations.,"{'title': '5 Evaluation', 'number': '5'}"
-"We noticed that the SDIG system outputs tend to be longer than those of the IBM Model 4 system, and are closer to human translations in length.","{'title': '6 Discussions', 'number': '6'}"
-This partly explains why the IBM Model 4 system has slightly higher individual n-gram precision scores (while the SDIG system outputs are still better in terms of absolute matches).,"{'title': '6 Discussions', 'number': '6'}"
-The relative orders between the parent and child ETs in the output tree is currently kept the same as the orders in the input tree.,"{'title': '6 Discussions', 'number': '6'}"
-"Admittedly, we benefited from the fact that both Chinese and English are SVO languages, and that many of orderings between the arguments and adjuncts can be kept the same.","{'title': '6 Discussions', 'number': '6'}"
-"However, we did notice that this simple “ostrich” treatment caused outputs such as “foreign financial institutions the president of”.","{'title': '6 Discussions', 'number': '6'}"
-"While statistical modeling of children reordering is one possible remedy for this problem, we believe simple linguistic treatment is another, as the output of the SDIG system is an English dependency tree rather than a string of words.","{'title': '6 Discussions', 'number': '6'}"
-In this paper we presented a syntax-based statistical MT system based on a Synchronous Dependency Insertion Grammar and a non-isomorphic stochastic tree-to-tree transducer.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-A graphical model for the transducer is defined and a polynomial time decoding algorithm is introduced.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-The results of our current implementation were evaluated using the NIST and Bleu automatic MT evaluation software.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-The evaluation shows that the SDIG system outperforms an IBM Model 4 based system in both speed and quality.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-Future work includes a full-fledged version of SDIG and a more sophisticated MT pipeline with possibly a tri-gram language model for decoding.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
+Syntax-based statistical machine translation (MT) aims at applying statistical models to structured data.,Introduction
+"In this paper, we present a syntax-based statistical matranslation system based on a probabilistic synchronous dependency insertion grammar.",Introduction
+Synchronous dependency insertion grammars are a version of synchronous grammars defined on dependency trees.,Introduction
+We first introduce our approach to inducing such a grammar from parallel corpora.,Introduction
+"Second, we describe the graphical model for the machine translation task, which can also be viewed as a stochastic tree-to-tree transducer.",Introduction
+We introduce a polynomial time decoding algorithm for the model.,Introduction
+We evaluate the outputs of our MT system using the NIST and Bleu automatic MT evaluation software.,Introduction
+The result shows that our system outperforms the baseline system based on the IBM models in both translation speed and quality.,Introduction
+"Statistical approaches to machine translation, pioneered by (Brown et al., 1993), achieved impressive performance by leveraging large amounts of parallel corpora.",Experiment/Discussion
+"Such approaches, which are essentially stochastic string-to-string transducers, do not explicitly model natural language syntax or semantics.",Experiment/Discussion
+"In reality, pure statistical systems sometimes suffer from ungrammatical outputs, which are understandable at the phrasal level but sometimes hard to comprehend as a coherent sentence.",Experiment/Discussion
+"In recent years, syntax-based statistical machine translation, which aims at applying statistical models to structural data, has begun to emerge.",Experiment/Discussion
+"With the research advances in natural language parsing, especially the broad-coverage parsers trained from treebanks, for example (Collins, 1999), the utilization of structural analysis of different languages has been made possible.",Experiment/Discussion
+"Ideally, by combining the natural language syntax and machine learning methods, a broad-coverage and linguistically wellmotivated statistical MT system can be constructed.",Experiment/Discussion
+"However, structural divergences between languages (Dorr, 1994),which are due to either systematic differences between languages or loose translations in real corpora,pose a major challenge to syntax-based statistical MT.",Experiment/Discussion
+"As a result, the syntax based MT systems have to transduce between non-isomorphic tree structures.",Experiment/Discussion
+"(Wu, 1997) introduced a polynomial-time solution for the alignment problem based on synchronous binary trees.",Experiment/Discussion
+"(Alshawi et al., 2000) represents each production in parallel dependency trees as a finite-state transducer.",Experiment/Discussion
+"Both approaches learn the tree representations directly from parallel sentences, and do not make allowances for nonisomorphic structures.",Experiment/Discussion
+"(Yamada and Knight, 2001, 2002) modeled translation as a sequence of tree operations transforming a syntactic tree into a string of the target language.",Experiment/Discussion
+"When researchers try to use syntax trees in both languages, the problem of non-isomorphism must be addressed.",Experiment/Discussion
+"In theory, stochastic tree transducers and some versions of synchronous grammars provide solutions for the non-isomorphic tree based transduction problem and hence possible solutions for MT.",Experiment/Discussion
+"Synchronous Tree Adjoining Grammars, proposed by (Shieber and Schabes, 1990), were introduced primarily for semantics but were later also proposed for translation.",Experiment/Discussion
+Eisner (2003) proposed viewing the MT problem as a probabilistic synchronous tree substitution grammar parsing problem.,Experiment/Discussion
+"Melamed (2003, 2004) formalized the MT problem as synchronous parsing based on multitext grammars.",Experiment/Discussion
+Graehl and Knight (2004) defined training and decoding algorithms for both generalized tree-to-tree and tree-to-string transducers.,Experiment/Discussion
+"All these approaches, though different in formalism, model the two languages using tree-based transduction rules or a synchronous grammar, possibly probabilistic, and using multi-lemma elementary structures as atomic units.",Experiment/Discussion
+The machine translation is done either as a stochastic tree-to-tree transduction or a synchronous parsing process.,Experiment/Discussion
+"However, few of the above mentioned formalisms have large scale implementations.",Experiment/Discussion
+"And to the best of our knowledge, the advantages of syntax based statistical MT systems over pure statistical MT systems have yet to be empirically verified.",Experiment/Discussion
+We believe difficulties in inducing a synchronous grammar or a set of tree transduction rules from large scale parallel corpora are caused by: Hajic et al. (2002) limited non-isomorphism by n-to-m matching of nodes in the two trees.,Experiment/Discussion
+"However, even after extending this model by allowing cloning operations on subtrees, Gildea (2003) found that parallel trees over-constrained the alignment problem, and achieved better results with a tree-to-string model than with a tree-to-tree model using two trees.",Experiment/Discussion
+"In a different approach, Hwa et al. (2002) aligned the parallel sentences using phrase based statistical MT models and then projected the alignments back to the parse trees.",Experiment/Discussion
+This motivated us to look for a more efficient and effective way to induce a synchronous grammar from parallel corpora and to build an MT system that performs competitively with the pure statistical MT systems.,Experiment/Discussion
+We chose to build the synchronous grammar on the parallel dependency structures of the sentences.,Experiment/Discussion
+The synchronous grammar is induced by hierarchical tree partitioning operations.,Experiment/Discussion
+The rest of this paper describes the system details as follows: Sections 2 and 3 describe the motivation behind the usage of dependency structures and how a version of synchronous dependency grammar is learned.,Experiment/Discussion
+This grammar is used as the primary translation knowledge source for our system.,Experiment/Discussion
+Section 4 defines the tree-to-tree transducer and the graphical model for the stochastic tree-to-tree transduction process and introduces a polynomial time decoding algorithm for the transducer.,Experiment/Discussion
+We evaluate our system in section 5 with the NIST/Bleu automatic MT evaluation software and the results are discussed in Section 6.,Experiment/Discussion
+"According to Fox (2002), dependency representations have the best inter-lingual phrasal cohesion properties.",Experiment/Discussion
+The percentage for head crossings is 12.62% and that of modifier crossings is 9.22%.,Experiment/Discussion
+"Furthermore, a grammar based on dependency structures has the advantage of being simple in formalism yet having CFG equivalent formal generative capacity (Ding and Palmer, 2004b).",Experiment/Discussion
+Dependency structures are inherently lexicalized as each node is one word.,Experiment/Discussion
+"In comparison, phrasal structures (treebank style trees) have two node types: terminals store the lexical items and non-terminals store word order and phrasal scopes.",Experiment/Discussion
+Ding and Palmer (2004b) described one version of synchronous grammar: Synchronous Dependency Insertion Grammars.,Experiment/Discussion
+A Dependency Insertion Grammars (DIG) is a generative grammar formalism that captures word order phenomena within the dependency representation.,Experiment/Discussion
+"In the scenario of two languages, the two sentences in the source and target languages can be modeled as being generated from a synchronous derivation process.",Experiment/Discussion
+A synchronous derivation process for the two syntactic structures of both languages suggests the level of cross-lingual isomorphism between the two trees (e.g.,Experiment/Discussion
+"Synchronous Tree Adjoining Grammars (Shieber and Schabes, 1990)).",Experiment/Discussion
+"Apart from other details, a DIG can be viewed as a tree substitution grammar defined on dependency trees (as opposed to phrasal structure trees).",Experiment/Discussion
+"The basic units of the grammar are elementary trees (ET), which are sub-sentential dependency structures containing one or more lexical items.",Experiment/Discussion
+"The synchronous version, SDIG, assumes that the isomorphism of the two syntactic structures is at the ET level, rather than at the word level, hence allowing non-isomorphic tree to tree mapping.",Experiment/Discussion
+We illustrate how the SDIG works using the following pseudo-translation example: Almost any tree-transduction operations defined on a single node will fail to generate the target sentence from the source sentence without using insertion/deletion operations.,Experiment/Discussion
+"However, if we view each dependency tree as an assembly of indivisible sub-sentential elementary trees (ETs), we can find a proper way to transduce the input tree to the output tree.",Experiment/Discussion
+An ET is a single “symbol” in a transducer’s language.,Experiment/Discussion
+"As shown in Figure 2, each circle stands for an ET and thick arrows denote the transduction of each ET as a single symbol.",Experiment/Discussion
+"As the start to our syntax-based SMT system, the SDIG must be learned from the parallel corpora.",Experiment/Discussion
+One straightforward way to induce a generative grammar is using EM style estimation on the generative process.,Experiment/Discussion
+"Different versions of such training algorithms can be found in (Hajic et al., 2002; Eisner 2003; Gildea 2003; Graehl and Knight 2004).",Experiment/Discussion
+"However, a synchronous derivation process cannot handle two types of cross-language mappings: crossing-dependencies (parent-descendent switch) and broken dependencies (descendent appears elsewhere), which are illustrated below: In the above graph, the two sides are English and the foreign dependency trees.",Experiment/Discussion
+Each node in a tree stands for a lemma in a dependency tree.,Experiment/Discussion
+The arrows denote aligned nodes and those resulting inconsistent dependencies are marked with a “*”.,Experiment/Discussion
+"Fox (2002) collected the statistics mainly on French and English data: in dependency representations, the percentage of head crossings per chance (case [b] in the graph) is 12.62%.",Experiment/Discussion
+"Using the statistics on cross-lingual dependency consistencies from a small word to word aligned Chinese-English parallel corpus1, we found that the percentage of crossing-dependencies (case [b]) between Chinese and English is 4.7% while that of broken dependencies (case [c]) is 59.3%.",Experiment/Discussion
+The large number of broken dependencies presents a major challenge for grammar induction based on a top-down style EM learning process.,Experiment/Discussion
+Such broken and crossing dependencies can be modeled by SDIG if they appear inside a pair of elementary trees.,Experiment/Discussion
+"However, if they appear between the elementary trees, they are not compatible with the isomorphism assumption on which SDIG is based.",Experiment/Discussion
+"Nevertheless, the hope is that the fact that the training corpus contains a significant percentage of dependency inconsistencies does not mean that during decoding the target language sentence cannot be written in a dependency consistent way.",Experiment/Discussion
+"(Ding and Palmer, 2004a) gave a polynomial time solution for learning parallel sub-sentential dependency structures from non-isomorphic dependency trees.",Experiment/Discussion
+"Our approach, while similar to (Ding and Palmer, 2004a) in that we also iteratively partition the parallel dependency trees based on a heuristic function, departs (Ding and Palmer, 2004a) in three ways: (1) we base the hierarchical tree partitioning operations on the categories of the dependency trees; (2) the statistics of the resultant tree pairs from the partitioning operation are collected at each iteration rather than at the end of the algorithm; (3) we do not re-train the word to word probabilities at each iteration.",Experiment/Discussion
+Our grammar induction algorithm is sketched below: C = CategorySequence[i] be the current syntactic category set.,Experiment/Discussion
+"For each tree pair in the corpus, do { a) For the tentative synchronous partitioning operation, use a heuristic function to select the BEST word pair (ei*, f j*) , where both ei*, f j* are NOT “chosen”, Category(ei*) E C and Category(f j*) E C. b) If (ei*, fj*) is found in (a), mark ei*, fj* as “chosen” and go back to (a), else go to (c).",Experiment/Discussion
+"At each iteration, one specific set of categories of nodes is handled.",Experiment/Discussion
+The category sequence we used in the grammar induction is: We first process top NP chunks because they are the most stable between languages.,Experiment/Discussion
+"Interestingly, NPs are also used as anchor points to learn monolingual paraphrases (Ibrahim et al., 2003).",Experiment/Discussion
+"The phrasal structure categories can be extracted from automatic parsers using methods in (Xia, 2001).",Experiment/Discussion
+An illustration is given below (Chinese in pinyin form).,Experiment/Discussion
+The placement of the dependency arcs reflects the relative word order between a parent node and all its immediate children.,Experiment/Discussion
+The collected ETs are put into square boxes and the partitioning operations taken are marked with dotted arrows.,Experiment/Discussion
+"Similar to (Ding and Palmer, 2004a), we also use a heuristic function in Step 1(a) of the algorithm to rank all the word pairs for the tentative tree partitioning operation.",Experiment/Discussion
+"The heuristic function is based on a set of heuristics, most of which are similar to those in (Ding and Palmer, 2004a).",Experiment/Discussion
+"For a word pair (ei, fj)for the tentative partitioning operation, we briefly describe the heuristics: the foreign words in the current tree.",Experiment/Discussion
+The above heuristics are a set of real valued numbers.,Experiment/Discussion
+"We use a Maximum Entropy model to interpolate the heuristics in a log-linear fashion, which is different from the error minimization training in (Ding and Palmer, 2004a). where y = (0,1) as labeled in the training data whether the two words are mapped with each other.",Experiment/Discussion
+The MaxEnt model is trained using the same word level aligned parallel corpus as the one in Section 3.1.,Experiment/Discussion
+"Although the training corpus isn’t large, the fact that we only have a handful of parameters to fit eased the problem.",Experiment/Discussion
+It is worth noting that the set of derived parallel dependency Elementary Trees is not a full-fledged SDIG yet.,Experiment/Discussion
+"Many features in the SDIG formalism such as arguments, head percolation, etc. are not yet filled.",Experiment/Discussion
+"We nevertheless use this derived grammar as a Mini-SDIG, assuming the unfilled features as empty by default.",Experiment/Discussion
+A full-fledged SDIG remains a goal for future research.,Experiment/Discussion
+"As discussed before (see Figure 1 and 2), the architecture of our syntax based statistical MT system is illustrated in Figure 5.",Experiment/Discussion
+Note that this is a nondeterministic process.,Experiment/Discussion
+The input sentence is first parsed using an automatic parser and a dependency tree is derived.,Experiment/Discussion
+The rest of the pipeline can be viewed as a stochastic tree transducer.,Experiment/Discussion
+The MT decoding starts first by decomposing the input dependency tree in to elementary trees.,Experiment/Discussion
+Several different results of the decomposition are possible.,Experiment/Discussion
+Each decomposition is indeed a derivation process on the foreign side of SDIG.,Experiment/Discussion
+Then the elementary trees go through a transfer phase and target ETs are combined together into the output.,Experiment/Discussion
+The stochastic tree-to-tree transducer we propose models MT as a probabilistic optimization process.,Experiment/Discussion
+"Let f be the input sentence (foreign language), and e be the output sentence (English).",Experiment/Discussion
+We have lation model” (TM) and the “language model” (LM).,Experiment/Discussion
+"Assuming the decomposition of the foreign tree is given, our approach, which is based on ETs, uses the graphical model shown in Figure 6.",Experiment/Discussion
+"In the model, the left side is the input dependency tree (foreign language) and the right side is the output dependency tree (English).",Experiment/Discussion
+Each circle stands for an ET.,Experiment/Discussion
+The solid lines denote the syntactical dependencies while the dashed arrows denote the statistical dependencies.,Experiment/Discussion
+Let T( x) be the dependency tree constructed from sentence x .,Experiment/Discussion
+"A tree-decomposition function D( t) is defined on a dependency tree t , and outputs a certain ET derivation tree of t , which is generated by decomposing t into ETs.",Experiment/Discussion
+"Given t , there could be multiple decompositions.",Experiment/Discussion
+"Conditioned on decomposition D , we can rewrite (2) as: By definition, the ET derivation trees of the input and output trees should be isomorphic: D(T(f )) ≅ D(T(e)) .",Experiment/Discussion
+Let Tran(u) be a set of possible translations for the ET u .,Experiment/Discussion
+"We have: For any ET v in a given ET derivation tree d , let Root(d) be the root ET of d , and let Parent(v) denote the parent ET of v .",Experiment/Discussion
+We have: an HMM.,Experiment/Discussion
+While HMM is defined on a sequence our model is defined on the derivation tree of ETs.,Experiment/Discussion
+"In reality, the learned parallel ETs are unlikely to cover all the structures that we may encounter in decoding.",Experiment/Discussion
+"As a unified approach, we augment the SDIG by adding all the possible word pairs (fj, ei) as a parallel ET pair and using the IBM Model 1 (Brown et al., 1993) word to word translation probability as the ET translation probability.",Experiment/Discussion
+"For efficiency reasons, we use maximum approximation for (3).",Experiment/Discussion
+"Instead of summing over all the possible decompositions, we only search for the best decomposition as follows: where, letting root(v) denote the root word of v , P(v  |Parent(v)) = P(root(v)  |root (Parent(v))) (6) The prior probability of tree decomposition is An analogy between our model and a Hidden Markov Model (Figure 7) may be helpful.",Experiment/Discussion
+In Eq.,Experiment/Discussion
+"(4), P(u  |v) is analogous to the emission probably P(oi  |si) in an HMM.",Experiment/Discussion
+In Eq.,Experiment/Discussion
+"(5), P(v  |Parent(v)) is analogous to the transition probability P(si  |si−1) in So bringing equations (4) to (9) together, the best translation would maximize: Observing the similarity between our model and a HMM, our dynamic programming decoding algorithm is in spirit similar to the Viterbi algorithm except that instead of being sequential the decoding is done on trees in a top down fashion.",Experiment/Discussion
+"As to the relative orders of the ETs, we currently choose not to reorder the children ETs given the parent ET because: (1) the permutation of the ETs is computationally expensive (2) it is possible that we can resort to simple linguistic treatments on the output dependency tree to order the ETs.",Experiment/Discussion
+"Currently, all the ETs are attached to each other at their root nodes.",Experiment/Discussion
+"In our implementation, the different decompositions of the input dependency tree are stored in a shared forest structure, utilizing the dynamic programming property of the tree structures explicitly.",Experiment/Discussion
+Suppose the input sentence has n words and the shared forest representation has m nodes.,Experiment/Discussion
+"Suppose for each word, there are maximally k different ETs containing it, we have m <_ kn .",Experiment/Discussion
+"Let b be the max breadth factor in the packed forest, it can be shown that the decoder visits at most mb nodes during execution.",Experiment/Discussion
+"Hence, we have: which is linear to the input size.",Experiment/Discussion
+"Combined with a polynomial time parsing algorithm, the whole decoding process is polynomial time.",Experiment/Discussion
+We implemented the above approach for a Chinese-English machine translation system.,Experiment/Discussion
+"We used an automatic syntactic parser (Bikel, 2002) to produce the parallel parse trees.",Experiment/Discussion
+The parser was trained using the Penn English/Chinese Treebanks.,Experiment/Discussion
+We then used the algorithm in (Xia 2001) to convert the phrasal structure trees to dependency trees to acquire the parallel dependency trees.,Experiment/Discussion
+"The statistics of the datasets we used are shown as follows: The training set consists of Xinhua newswire data from LDC and the FBIS data (mostly news), both filtered to ensure parallel sentence pair quality.",Experiment/Discussion
+We used the development test data from the 2001 NIST MT evaluation workshop as our test data for the MT system performance.,Experiment/Discussion
+"In the testing data, each input Chinese sentence has 4 English translations as references.",Experiment/Discussion
+"Our MT system was evaluated using the n-gram based Bleu (Papineni et al., 2002) and NIST machine translation evaluation software.",Experiment/Discussion
+"We used the NIST software package “mteval” version 11a, configured as case-insensitive.",Experiment/Discussion
+"In comparison, we deployed the GIZA++ MT modeling tool kit, which is an implementation of the IBM Models 1 to 4 (Brown et al., 1993; AlOnaizan et al., 1999; Och and Ney, 2003).",Experiment/Discussion
+The IBM models were trained on the same training data as our system.,Experiment/Discussion
+We used the ISI Rewrite decoder (Germann et al. 2001) to decode the IBM models.,Experiment/Discussion
+The results are shown in Figure 9.,Experiment/Discussion
+The score types “I” and “C” stand for individual and cumulative n-gram scores.,Experiment/Discussion
+The final NIST and Bleu scores are marked with bold fonts.,Experiment/Discussion
+"The evaluation results show that the NIST score achieved a 97.3% increase, while the Bleu score increased by 21.1%.",Experiment/Discussion
+"In terms of decoding speed, the Rewrite decoder took 8102 seconds to decode the test sentences on a Xeon 1.2GHz 2GB memory machine.",Experiment/Discussion
+"On the same machine, the SDIG decoder took 3 seconds to decode, excluding the parsing time.",Experiment/Discussion
+"The recent advances in parsing have achieved parsers with 3 O(n ) time complexity without the grammar constant (McDonald et al., 2005).",Experiment/Discussion
+It can be expected that the total decoding time for SDIG can be as short as 0.1 second per sentence.,Experiment/Discussion
+"Neither of the two systems has any specific translation components, which are usually present in real world systems (E.g. components that translate numbers, dates, names, etc.)",Experiment/Discussion
+It is reasonable to expect that the performance of SDIG can be further improved with such specific optimizations.,Experiment/Discussion
+"We noticed that the SDIG system outputs tend to be longer than those of the IBM Model 4 system, and are closer to human translations in length.",Results/Conclusion
+This partly explains why the IBM Model 4 system has slightly higher individual n-gram precision scores (while the SDIG system outputs are still better in terms of absolute matches).,Results/Conclusion
+The relative orders between the parent and child ETs in the output tree is currently kept the same as the orders in the input tree.,Results/Conclusion
+"Admittedly, we benefited from the fact that both Chinese and English are SVO languages, and that many of orderings between the arguments and adjuncts can be kept the same.",Results/Conclusion
+"However, we did notice that this simple “ostrich” treatment caused outputs such as “foreign financial institutions the president of”.",Results/Conclusion
+"While statistical modeling of children reordering is one possible remedy for this problem, we believe simple linguistic treatment is another, as the output of the SDIG system is an English dependency tree rather than a string of words.",Results/Conclusion
+In this paper we presented a syntax-based statistical MT system based on a Synchronous Dependency Insertion Grammar and a non-isomorphic stochastic tree-to-tree transducer.,Results/Conclusion
+A graphical model for the transducer is defined and a polynomial time decoding algorithm is introduced.,Results/Conclusion
+The results of our current implementation were evaluated using the NIST and Bleu automatic MT evaluation software.,Results/Conclusion
+The evaluation shows that the SDIG system outperforms an IBM Model 4 based system in both speed and quality.,Results/Conclusion
+Future work includes a full-fledged version of SDIG and a more sophisticated MT pipeline with possibly a tri-gram language model for decoding.,Results/Conclusion

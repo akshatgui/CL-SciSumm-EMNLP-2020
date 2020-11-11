@@ -1,173 +1,173 @@
 col1,col2
-We propose an approach for extracting relations between entities from biomedical literature based solely on shallow linguistic information.,{}
-"We use a combination of kernel functions to integrate two different information sources: (i) the whole sentence where the relation appears, and (ii) the local contexts around the interacting entities.",{}
-We performed experiments on extracting gene and protein interactions from two different data sets.,{}
-The results show that our approach outperforms most of the previous methods based on syntactic and semantic information.,{}
-Information Extraction (IE) is the process of finding relevant entities and their relationships within textual documents.,"{'title': '1 Introduction', 'number': '1'}"
-Applications of IE range from Semantic Web to Bioinformatics.,"{'title': '1 Introduction', 'number': '1'}"
-"For example, there is an increasing interest in automatically extracting relevant information from biomedical literature.","{'title': '1 Introduction', 'number': '1'}"
-"Recent evaluation campaigns on bio-entity recognition, such as BioCreAtIvE and JNLPBA 2004 shared task, have shown that several systems are able to achieve good performance (even if it is a bit worse than that reported on news articles).","{'title': '1 Introduction', 'number': '1'}"
-"However, relation identification is more useful from an applicative perspective but it is still a considerable challenge for automatic tools.","{'title': '1 Introduction', 'number': '1'}"
-"In this work, we propose a supervised machine learning approach to relation extraction which is applicable even when (deep) linguistic processing is not available or reliable.","{'title': '1 Introduction', 'number': '1'}"
-"In particular, we explore a kernel-based approach based solely on shallow linguistic processing, such as tokenization, sentence splitting, Part-of-Speech (PoS) tagging and lemmatization.","{'title': '1 Introduction', 'number': '1'}"
-"Kernel methods (Shawe-Taylor and Cristianini, 2004) show their full potential when an explicit computation of the feature map becomes computationally infeasible, due to the high or even infinite dimension of the feature space.","{'title': '1 Introduction', 'number': '1'}"
-"For this reason, kernels have been recently used to develop innovative approaches to relation extraction based on syntactic information, in which the examples preserve their original representations (i.e. parse trees) and are compared by the kernel function (Zelenko et al., 2003; Culotta and Sorensen, 2004; Zhao and Grishman, 2005).","{'title': '1 Introduction', 'number': '1'}"
-"Despite the positive results obtained exploiting syntactic information, we claim that there is still room for improvement relying exclusively on shallow linguistic information for two main reasons.","{'title': '1 Introduction', 'number': '1'}"
-"First of all, previous comparative evaluations put more stress on the deep linguistic approaches and did not put as much effort on developing effective methods based on shallow linguistic information.","{'title': '1 Introduction', 'number': '1'}"
-A second reason concerns the fact that syntactic parsing is not always robust enough to deal with real-world sentences.,"{'title': '1 Introduction', 'number': '1'}"
-This may prevent approaches based on syntactic features from producing any result.,"{'title': '1 Introduction', 'number': '1'}"
-Another related issue concerns the fact that parsers are available only for few languages and may not produce reliable results when used on domain specific texts (as is the case of the biomedical literature).,"{'title': '1 Introduction', 'number': '1'}"
-"For example, most of the participants at the Learning Language in Logic (LLL) challenge on Genic Interaction Extraction (see Section 4.2) were unable to successfully exploit linguistic information provided by parsers.","{'title': '1 Introduction', 'number': '1'}"
-It is still an open issue whether the use of domainspecific treebanks (such as the Genia treebank1) can be successfully exploited to overcome this problem.,"{'title': '1 Introduction', 'number': '1'}"
-Therefore it is essential to better investigate the potential of approaches based exclusively on simple linguistic features.,"{'title': '1 Introduction', 'number': '1'}"
-In our approach we use a combination of kernel functions to represent two distinct information sources: the global context where entities appear and their local contexts.,"{'title': '1 Introduction', 'number': '1'}"
-"The whole sentence where the entities appear (global context) is used to discover the presence of a relation between two entities, similarly to what was done by Bunescu and Mooney (2005b).","{'title': '1 Introduction', 'number': '1'}"
-Windows of limited size around the entities (local contexts) provide useful clues to identify the roles of the entities within a relation.,"{'title': '1 Introduction', 'number': '1'}"
-The approach has some resemblance with what was proposed by Roth and Yih (2002).,"{'title': '1 Introduction', 'number': '1'}"
-"The main difference is that we perform the extraction task in a single step via a combined kernel, while they used two separate classifiers to identify entities and relations and their output is later combined with a probabilistic global inference.","{'title': '1 Introduction', 'number': '1'}"
-We evaluated our relation extraction algorithm on two biomedical data sets (i.e. the AImed corpus and the LLL challenge data set; see Section 4).,"{'title': '1 Introduction', 'number': '1'}"
-"The motivations for using these benchmarks derive from the increasing applicative interest in tools able to extract relations between relevant entities in biomedical texts and, consequently, from the growing availability of annotated data sets.","{'title': '1 Introduction', 'number': '1'}"
-The experiments show clearly that our approach consistently improves previous results.,"{'title': '1 Introduction', 'number': '1'}"
-"Surprisingly, it outperforms most of the systems based on syntactic or semantic information, even when this information is manually annotated (i.e. the LLL challenge).","{'title': '1 Introduction', 'number': '1'}"
-The problem considered here is that of identifying interactions between genes and proteins from biomedical literature.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"More specifically, we performed experiments on two slightly different benchmark data sets (see Section 4 for a detailed description).","{'title': '2 Problem Formalization', 'number': '2'}"
-In the former (AImed) gene/protein interactions are annotated without distinguishing the type and roles of the two interacting entities.,"{'title': '2 Problem Formalization', 'number': '2'}"
-The latter (LLL challenge) is more realistic (and complex) because it also aims at identifying the roles played by the interacting entities (agent and target).,"{'title': '2 Problem Formalization', 'number': '2'}"
-"For example, in Figure 1 three entities are mentioned and two of the six ordered pairs of GENIA/topics/Corpus/GTB.html entities actually interact: (sigma(K), cwlH) and (gerE, cwlH).","{'title': '2 Problem Formalization', 'number': '2'}"
-"In our approach we cast relation extraction as a classification problem, in which examples are generated from sentences as follows.","{'title': '2 Problem Formalization', 'number': '2'}"
-"First of all, we describe the complex case, namely the protein/gene interactions (LLL challenge).","{'title': '2 Problem Formalization', 'number': '2'}"
-For this data set entity recognition is performed using a dictionary of protein and gene names in which the type of the entities is unknown.,"{'title': '2 Problem Formalization', 'number': '2'}"
-We generate examples for all the sentences containing at least two entities.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"Thus the number of examples generated for each sentence is given by the combinations of distinct entities (N) selected two at a time, i.e.","{'title': '2 Problem Formalization', 'number': '2'}"
-NC2.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"For example, as the sentence shown in Figure 1 contains three entities, the total number of examples generated is 3C2 = 3.","{'title': '2 Problem Formalization', 'number': '2'}"
-"In each example we assign the attribute CANDIDATE to each of the candidate interacting entities, while the other entities in the example are assigned the attribute OTHER, meaning that they do not participate in the relation.","{'title': '2 Problem Formalization', 'number': '2'}"
-"If a relation holds between the two candidate interacting entities the example is labeled 1 or 2 (according to the roles of the interacting entities, agent and target, i.e. to the direction of the relation); 0 otherwise.","{'title': '2 Problem Formalization', 'number': '2'}"
-Figure 2 shows the examples generated from the sentence in Figure 1.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"Note that in generating the examples from the sentence in Figure 1 we did not create three negative examples (there are six potential ordered relations between three entities), thereby implicitly under-sampling the data set.","{'title': '2 Problem Formalization', 'number': '2'}"
-This allows us to make the classification task simpler without loosing information.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"As a matter of fact, generating examples for each ordered pair of entities would produce two subsets of the same size containing similar examples (differing only for the attributes CANDIDATE and OTHER), but with different classification labels.","{'title': '2 Problem Formalization', 'number': '2'}"
-"Furthermore, under-sampling allows us to halve the data set size and reduce the data skewness.","{'title': '2 Problem Formalization', 'number': '2'}"
-For the protein-protein interaction task (AImed) we use the correct entities provided by the manual annotation.,"{'title': '2 Problem Formalization', 'number': '2'}"
-"As said at the beginning of this section, this task is simpler than the LLL challenge because there is no distinction between types (all entities are proteins) and roles (the relation is symmetric).","{'title': '2 Problem Formalization', 'number': '2'}"
-"As a consequence, the examples are generated as described above with the following difference: an example is labeled 1 if a relation holds between the two candidate interacting entities; 0 otherwise.","{'title': '2 Problem Formalization', 'number': '2'}"
-"The basic idea behind kernel methods is to embed the input data into a suitable feature space F via a mapping function 0 : X → F, and then use a linear algorithm for discovering nonlinear patterns.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Instead of using the explicit mapping 0, we can use a kernel function K : X x X → R, that corresponds to the inner product in a feature space which is, in general, different from the input space.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Kernel methods allow us to design a modular system, in which the kernel function acts as an interface between the data and the learning algorithm.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Thus the kernel function is the only domain specific module of the system, while the learning algorithm is a general purpose component.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-Potentially any kernel function can work with any kernel-based algorithm.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"In our approach we use Support Vector Machines (Vapnik, 1998).","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-In order to implement the approach based on shallow linguistic information we employed a linear combination of kernels.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Different works (Gliozzo et al., 2005; Zhao and Grishman, 2005; Culotta and Sorensen, 2004) empirically demonstrate the effectiveness of combining kernels in this way, showing that the combined kernel always improves the performance of the individual ones.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"In addition, this formulation allows us to evaluate the individual contribution of each information source.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"We designed two families of kernels: Global Context kernels and Local Context kernels, in which each single kernel is explicitly calculated as follows where 0(·) is the embedding vector and II · II is the 2-norm.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-The kernel is normalized (divided) by the product of the norms of embedding vectors.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-The normalization factor plays an important role in allowing us to integrate information from heterogeneous feature spaces.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Even though the resulting feature space has high dimensionality, an efficient computation of Equation 1 can be carried out explicitly since the input representations defined below are extremely sparse.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"In (Bunescu and Mooney, 2005b), the authors observed that a relation between two entities is generally expressed using only words that appear simultaneously in one of the following three patterns: Fore-Between: tokens before and between the two candidate interacting entities.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"For instance: binding of [P1] to [P2], interaction involving [P1] and [P2], association of [P1] by [P2].","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-Between: only tokens between the two candidate interacting entities.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"For instance: [P1] associates with [P2], [P1] binding to [P2], [P1], inhibitor of [P2].","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-Between-After: tokens between and after the two candidate interacting entities.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"For instance: [P1] - [P2] association, [P1] and [P2] interact, [P1] has influence on [P2] binding.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Our global context kernels operate on the patterns above, where each pattern is represented using a bag-of-words instead of sparse subsequences of words, PoS tags, entity and chunk types, or WordNet synsets as in (Bunescu and Mooney, 2005b).","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"More formally, given a relation example R, we represent a pattern P as a row vector where the function tf(ti, P) records how many times a particular token tz is used in P. Note that, this approach differs from the standard bag-ofwords as punctuation and stop words are included in OP, while the entities (with attribute CANDIDATE and OTHER) are not.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"To improve the classification performance, we have further extended OP to embed n-grams of (contiguous) tokens (up to n = 3).","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"By substituting OP into Equation 1, we obtain the n-gram kernel Kn, which counts common uni-grams, bi-grams, ... , n-grams that two patterns have in common2.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"The Global Context kernel KGC(R1, R2) is then defined as where KFB, KB and KBA are n-gram kernels that operate on the Fore-Between, Between and Between-After patterns respectively.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"The type of the candidate interacting entities can provide useful clues for detecting the agent and target of the relation, as well as the presence of the relation itself.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"As the type is not known, we use the information provided by the two local contexts of the candidate interacting entities, called left and right local context respectively.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"As typically done in entity recognition, we represent each local context by using the following basic features: Token The token itself.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-Lemma The lemma of the token.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-PoS The PoS tag of the token.,"{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Orthographic This feature maps each token into equivalence classes that encode attributes such as capitalization, punctuation, numerals and so on.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Formally, given a relation example R, a local context L = t_w, ... , t_1, t0, t+1, ... , t+w is represented as a row vector where fi is a feature function that returns 1 if it is active in the specified position of L, 0 otherwise3.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"The Local Context kernel KLC(R1, R2) is defined as where Kleft and Kright are defined by substituting the embedding of the left and right local context into Equation 1 respectively.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Notice that KLC differs substantially from KGC as it considers the ordering of the tokens and the feature space is enriched with PoS, lemma and orthographic features.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-"Finally, the Shallow Linguistic kernel It follows directly from the explicit construction of the feature space and from closure properties of kernels that KSL is a valid kernel.","{'title': '3 Kernel Methods for Relation Extraction', 'number': '3'}"
-The two data sets used for the experiments concern the same domain (i.e. gene/protein interactions).,"{'title': '4 Data sets', 'number': '4'}"
-"However, they present a crucial difference which makes it worthwhile to show the experimental results on both of them.","{'title': '4 Data sets', 'number': '4'}"
-"In one case (AImed) interactions are considered symmetric, while in the other (LLL challenge) agents and targets of genic interactions have to be identified.","{'title': '4 Data sets', 'number': '4'}"
-"The first data set used in the experiments is the AImed corpus4, previously used for training protein interaction extraction systems in (Bunescu et al., 2005; Bunescu and Mooney, 2005b).","{'title': '4 Data sets', 'number': '4'}"
-"It consists of 225 Medline abstracts: 200 are known to describe interactions between human proteins, while the other 25 do not refer to any interaction.","{'title': '4 Data sets', 'number': '4'}"
-"There are 4,084 protein references and around 1,000 tagged interactions in this data set.","{'title': '4 Data sets', 'number': '4'}"
-In this data set there is no distinction between genes and proteins and the relations are symmetric.,"{'title': '4 Data sets', 'number': '4'}"
-"This data set was used in the Learning Language in Logic (LLL) challenge on Genic Interaction extraction5 (Ned´ellec, 2005).","{'title': '4 Data sets', 'number': '4'}"
-"The objective of the challenge was to evaluate the performance of systems based on machine learning techniques to identify gene/protein interactions and their roles, agent or target.","{'title': '4 Data sets', 'number': '4'}"
-The data set was collected by querying Medline on Bacillus subtilis transcription and sporulation.,"{'title': '4 Data sets', 'number': '4'}"
-It is divided in a training set (80 sentences describing 271 interactions) and a test set (87 sentences describing 106 interactions).,"{'title': '4 Data sets', 'number': '4'}"
-"Differently from the training set, the test set contains sentences without interactions.","{'title': '4 Data sets', 'number': '4'}"
-The data set is decomposed in two subsets of increasing difficulty.,"{'title': '4 Data sets', 'number': '4'}"
-"The first subset does not include coreferences, while the second one includes simple cases of coreference, mainly appositions.","{'title': '4 Data sets', 'number': '4'}"
-Both subsets are available with different kinds of annotation: basic and enriched.,"{'title': '4 Data sets', 'number': '4'}"
-The former includes word and sentence segmentation.,"{'title': '4 Data sets', 'number': '4'}"
-"The latter also includes manually checked information, such as lemma and syntactic dependencies.","{'title': '4 Data sets', 'number': '4'}"
-A dictionary of named entities (including typographical variants and synonyms) is associated to the data set.,"{'title': '4 Data sets', 'number': '4'}"
-"Before describing the results of the experiments, a note concerning the evaluation methodology.","{'title': '5 Experiments', 'number': '5'}"
-"There are different ways of evaluating performance in extracting information, as noted in (Lavelli et al., 2004) for the extraction of slot fillers in the Seminar Announcement and the Job Posting data sets.","{'title': '5 Experiments', 'number': '5'}"
-"Adapting the proposed classification to relation extraction, the following two cases can be identified: Figure 3 shows a fragment of tagged text drawn from the AImed corpus.","{'title': '5 Experiments', 'number': '5'}"
-"It contains three different interactions between pairs of proteins, for a total of seven occurrences of interactions.","{'title': '5 Experiments', 'number': '5'}"
-"For example, there are three occurrences of the interaction between IGF-IR and p52Shc (i.e. number 1, 3 and 7).","{'title': '5 Experiments', 'number': '5'}"
-"If we adopt the OAOD methodology, all the seven occurrences have to be extracted to achieve the maximum score.","{'title': '5 Experiments', 'number': '5'}"
-"On the other hand, if we use the OARD methodology, only one occurrence for each interaction has to be extracted to maximize the score.","{'title': '5 Experiments', 'number': '5'}"
-"On the AImed data set both evaluations were performed, while on the LLL challenge only the OAOD evaluation methodology was performed because this is the only one provided by the evaluation server of the challenge.","{'title': '5 Experiments', 'number': '5'}"
-Figure 3: Fragment of the AImed corpus with all proteins and their interactions tagged.,"{'title': '5 Experiments', 'number': '5'}"
-The protein names have been highlighted in bold face and their same subscript numbers indicate interaction between the proteins.,"{'title': '5 Experiments', 'number': '5'}"
-All the experiments were performed using the SVM package LIBSVM6 customized to embed our own kernel.,"{'title': '5 Experiments', 'number': '5'}"
-"For the LLL challenge submission, we optimized the regularization parameter C by 10-fold cross validation; while we used its default value for the AImed experiment.","{'title': '5 Experiments', 'number': '5'}"
-"In both experiments, we set the cost-factor WZ to be the ratio between the number of negative and positive examples.","{'title': '5 Experiments', 'number': '5'}"
-KSL performance was first evaluated on the AImed data set (Section 4.1).,"{'title': '5 Experiments', 'number': '5'}"
-"We first give an evaluation of the kernel combination and then we compare our results with the Subsequence Kernel for Relation Extraction (ERK) described in (Bunescu and Mooney, 2005b).","{'title': '5 Experiments', 'number': '5'}"
-"All experiments are conducted using 10-fold cross validation on the same data splitting used in (Bunescu et al., 2005; Bunescu and Mooney, 2005b).","{'title': '5 Experiments', 'number': '5'}"
-Table 1 shows the performance of the three kernels defined in Section 3 for protein-protein interactions using the two evaluation methodologies described above.,"{'title': '5 Experiments', 'number': '5'}"
-We report in Figure 4 the precision-recall curves of ERK and KSL using OARD evaluation methodology (the evaluation performed by Bunescu and Mooney (2005b)).,"{'title': '5 Experiments', 'number': '5'}"
-"As in (Bunescu et al., 2005; Bunescu and Mooney, 2005b), the graph points are obtained by varying the threshold on the classifiFinally, Figure 5 shows the learning curve of the combined kernel KSL using the OARD evaluation methodology.","{'title': '5 Experiments', 'number': '5'}"
-The curve reaches a plateau with around 100 Medline abstracts.,"{'title': '5 Experiments', 'number': '5'}"
-The system was evaluated on the “basic” version of the LLL challenge data set (Section 4.2).,"{'title': '5 Experiments', 'number': '5'}"
-"Table 2 shows the results of KSL returned by the scoring service8 for the three subsets of the training set (with and without coreferences, and with their union).","{'title': '5 Experiments', 'number': '5'}"
-Table 3 shows the best results obtained at the official competition performed in April 2005.,"{'title': '5 Experiments', 'number': '5'}"
-Comparing the results we see that KSL trained on each subset outperforms the best systems of the LLL challenge9.,"{'title': '5 Experiments', 'number': '5'}"
-Notice that the best results at the challenge were obtained by different groups and exploiting the linguistic “enriched” version of the data set.,"{'title': '5 Experiments', 'number': '5'}"
-"As observed in (Ned´ellec, 2005), the scores obtained using the training set without coreferences and the whole training set are similar.","{'title': '5 Experiments', 'number': '5'}"
-We also report in Table 4 an analysis of the kernel combination.,"{'title': '5 Experiments', 'number': '5'}"
-"Given that we are interested here in the contribution of each kernel, we evaluated the experiments by 10-fold cross-validation on the whole training set avoiding the submission process.","{'title': '5 Experiments', 'number': '5'}"
-The experimental results show that the combined kernel KSL outperforms the basic kernels KGC and KLC on both data sets.,"{'title': '5 Experiments', 'number': '5'}"
-"In particular, precision significantly increases at the expense of a lower recall.","{'title': '5 Experiments', 'number': '5'}"
-"High precision is particularly advantageous when extracting knowledge from large corpora, because it avoids overloading end users with too many false positives.","{'title': '5 Experiments', 'number': '5'}"
-Although the basic kernels were designed to model complementary aspects of the task (i.e.,"{'title': '5 Experiments', 'number': '5'}"
-"9After the challenge deadline, Reidel and Klein (2005) achieved a significant improvement, Fl = 68.4% (without coreferences) and Fl = 64.7% (with and without coreferences). presence of the relation and roles of the interacting entities), they perform reasonably well even when considered separately.","{'title': '5 Experiments', 'number': '5'}"
-"In particular, KGC achieved good performance on both data sets.","{'title': '5 Experiments', 'number': '5'}"
-This result was not expected on the LLL challenge because this task requires not only to recognize the presence of relationships between entities but also to identify their roles.,"{'title': '5 Experiments', 'number': '5'}"
-"On the other hand, the outcomes of KLC on the AImed data set show that such kernel helps to identify the presence of relationships as well.","{'title': '5 Experiments', 'number': '5'}"
-"At first glance, it may seem strange that KGC outperforms ERK on AImed, as the latter approach exploits a richer representation: sparse sub-sequences of words, PoS tags, entity and chunk types, or WordNet synsets.","{'title': '5 Experiments', 'number': '5'}"
-"However, an approach based on n-grams is sufficient to identify the presence of a relationship.","{'title': '5 Experiments', 'number': '5'}"
-"This result sounds less surprising, if we recall that both approaches cast the relation extraction problem as a text categorization task.","{'title': '5 Experiments', 'number': '5'}"
-Approaches to text categorization based on rich linguistic information have obtained less accuracy than the traditional bag-of-words approach (e.g.,"{'title': '5 Experiments', 'number': '5'}"
-"(Koster and Seutter, 2003)).","{'title': '5 Experiments', 'number': '5'}"
-Shallow linguistics information seems to be more effective to model the local context of the entities.,"{'title': '5 Experiments', 'number': '5'}"
-"Finally, we obtained worse results performing dimensionality reduction either based on generic linguistic assumptions (e.g. by removing words from stop lists or with certain PoS tags) or using statistical methods (e.g. tf.idf weighting schema).","{'title': '5 Experiments', 'number': '5'}"
-"This may be explained by the fact that, in tasks like entity recognition and relation extraction, useful clues are also provided by high frequency tokens, such as stop words or punctuation marks, and by the relative positions in which they appear.","{'title': '5 Experiments', 'number': '5'}"
-"First of all, the obvious references for our work are the approaches evaluated on AImed and LLL challenge data sets.","{'title': '6 Related Work', 'number': '6'}"
-"In (Bunescu and Mooney, 2005b), the authors present a generalized subsequence kernel that works with sparse sequences containing combinations of words and PoS tags.","{'title': '6 Related Work', 'number': '6'}"
-"The best results on the LLL challenge were obtained by the group from the University of Edinburgh (Reidel and Klein, 2005), which used Markov Logic, a framework that combines loglinear models and First Order Logic, to create a set of weighted clauses which can classify pairs of gene named entities as genic interactions.","{'title': '6 Related Work', 'number': '6'}"
-"These clauses are based on chains of syntactic and semantic relations in the parse or Discourse Representation Structure (DRS) of a sentence, respectively.","{'title': '6 Related Work', 'number': '6'}"
-Other relevant approaches include those that adopt kernel methods to perform relation extraction.,"{'title': '6 Related Work', 'number': '6'}"
-Zelenko et al. (2003) describe a relation extraction algorithm that uses a tree kernel defined over a shallow parse tree representation of sentences.,"{'title': '6 Related Work', 'number': '6'}"
-The approach is vulnerable to unrecoverable parsing errors.,"{'title': '6 Related Work', 'number': '6'}"
-"Culotta and Sorensen (2004) describe a slightly generalized version of this kernel based on dependency trees, in which a bag-ofwords kernel is used to compensate for errors in syntactic analysis.","{'title': '6 Related Work', 'number': '6'}"
-A further extension is proposed by Zhao and Grishman (2005).,"{'title': '6 Related Work', 'number': '6'}"
-"They use composite kernels to integrate information from different syntactic sources (tokenization, sentence parsing, and deep dependency analysis) so that processing errors occurring at one level may be overcome by information from other levels.","{'title': '6 Related Work', 'number': '6'}"
-Bunescu and Mooney (2005a) present an alternative approach which uses information concentrated in the shortest path in the dependency tree between the two entities.,"{'title': '6 Related Work', 'number': '6'}"
-"As mentioned in Section 1, another relevant approach is presented in (Roth and Yih, 2002).","{'title': '6 Related Work', 'number': '6'}"
-Classifiers that identify entities and relations among them are first learned from local information in the sentence.,"{'title': '6 Related Work', 'number': '6'}"
-"This information, along with constraints induced among entity types and relations, is used to perform global probabilistic inference that accounts for the mutual dependencies among the entities.","{'title': '6 Related Work', 'number': '6'}"
-All the previous approaches have been evaluated on different data sets so that it is not possible to have a clear idea of which approach is better than the other.,"{'title': '6 Related Work', 'number': '6'}"
-The good results obtained using only shallow linguistic features provide a higher baseline against which it is possible to measure improvements obtained using methods based on deep linguistic processing.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-"In the near future, we plan to extend our work in several ways.","{'title': '7 Conclusions and Future Work', 'number': '7'}"
-"First, we would like to evaluate the contribution of syntactic information to relation extraction from biomedical literature.","{'title': '7 Conclusions and Future Work', 'number': '7'}"
-"With this aim, we will integrate the output of a parser (possibly trained on a domain-specific resource such the Genia Treebank).","{'title': '7 Conclusions and Future Work', 'number': '7'}"
-"Second, we plan to test the portability of our model on ACE and MUC data sets.","{'title': '7 Conclusions and Future Work', 'number': '7'}"
-"Third, we would like to use a named entity recognizer instead of assuming that entities are already extracted or given by a dictionary.","{'title': '7 Conclusions and Future Work', 'number': '7'}"
-Our long term goal is to populate databases and ontologies by extracting information from large text collections such as Medline.,"{'title': '7 Conclusions and Future Work', 'number': '7'}"
-We would like to thank Razvan Bunescu for providing detailed information about the AImed data set and the settings of the experiments.,"{'title': '8 Acknowledgements', 'number': '8'}"
-"Claudio Giuliano and Lorenza Romano have been supported by the ONTOTEXT project, funded by the Autonomous Province of Trento under the FUP2004 research program.","{'title': '8 Acknowledgements', 'number': '8'}"
+We propose an approach for extracting relations between entities from biomedical literature based solely on shallow linguistic information.,Introduction
+"We use a combination of kernel functions to integrate two different information sources: (i) the whole sentence where the relation appears, and (ii) the local contexts around the interacting entities.",Introduction
+We performed experiments on extracting gene and protein interactions from two different data sets.,Introduction
+The results show that our approach outperforms most of the previous methods based on syntactic and semantic information.,Introduction
+Information Extraction (IE) is the process of finding relevant entities and their relationships within textual documents.,Experiment/Discussion
+Applications of IE range from Semantic Web to Bioinformatics.,Experiment/Discussion
+"For example, there is an increasing interest in automatically extracting relevant information from biomedical literature.",Experiment/Discussion
+"Recent evaluation campaigns on bio-entity recognition, such as BioCreAtIvE and JNLPBA 2004 shared task, have shown that several systems are able to achieve good performance (even if it is a bit worse than that reported on news articles).",Experiment/Discussion
+"However, relation identification is more useful from an applicative perspective but it is still a considerable challenge for automatic tools.",Experiment/Discussion
+"In this work, we propose a supervised machine learning approach to relation extraction which is applicable even when (deep) linguistic processing is not available or reliable.",Experiment/Discussion
+"In particular, we explore a kernel-based approach based solely on shallow linguistic processing, such as tokenization, sentence splitting, Part-of-Speech (PoS) tagging and lemmatization.",Experiment/Discussion
+"Kernel methods (Shawe-Taylor and Cristianini, 2004) show their full potential when an explicit computation of the feature map becomes computationally infeasible, due to the high or even infinite dimension of the feature space.",Experiment/Discussion
+"For this reason, kernels have been recently used to develop innovative approaches to relation extraction based on syntactic information, in which the examples preserve their original representations (i.e. parse trees) and are compared by the kernel function (Zelenko et al., 2003; Culotta and Sorensen, 2004; Zhao and Grishman, 2005).",Experiment/Discussion
+"Despite the positive results obtained exploiting syntactic information, we claim that there is still room for improvement relying exclusively on shallow linguistic information for two main reasons.",Experiment/Discussion
+"First of all, previous comparative evaluations put more stress on the deep linguistic approaches and did not put as much effort on developing effective methods based on shallow linguistic information.",Experiment/Discussion
+A second reason concerns the fact that syntactic parsing is not always robust enough to deal with real-world sentences.,Experiment/Discussion
+This may prevent approaches based on syntactic features from producing any result.,Experiment/Discussion
+Another related issue concerns the fact that parsers are available only for few languages and may not produce reliable results when used on domain specific texts (as is the case of the biomedical literature).,Experiment/Discussion
+"For example, most of the participants at the Learning Language in Logic (LLL) challenge on Genic Interaction Extraction (see Section 4.2) were unable to successfully exploit linguistic information provided by parsers.",Experiment/Discussion
+It is still an open issue whether the use of domainspecific treebanks (such as the Genia treebank1) can be successfully exploited to overcome this problem.,Experiment/Discussion
+Therefore it is essential to better investigate the potential of approaches based exclusively on simple linguistic features.,Experiment/Discussion
+In our approach we use a combination of kernel functions to represent two distinct information sources: the global context where entities appear and their local contexts.,Experiment/Discussion
+"The whole sentence where the entities appear (global context) is used to discover the presence of a relation between two entities, similarly to what was done by Bunescu and Mooney (2005b).",Experiment/Discussion
+Windows of limited size around the entities (local contexts) provide useful clues to identify the roles of the entities within a relation.,Experiment/Discussion
+The approach has some resemblance with what was proposed by Roth and Yih (2002).,Experiment/Discussion
+"The main difference is that we perform the extraction task in a single step via a combined kernel, while they used two separate classifiers to identify entities and relations and their output is later combined with a probabilistic global inference.",Experiment/Discussion
+We evaluated our relation extraction algorithm on two biomedical data sets (i.e. the AImed corpus and the LLL challenge data set; see Section 4).,Experiment/Discussion
+"The motivations for using these benchmarks derive from the increasing applicative interest in tools able to extract relations between relevant entities in biomedical texts and, consequently, from the growing availability of annotated data sets.",Experiment/Discussion
+The experiments show clearly that our approach consistently improves previous results.,Experiment/Discussion
+"Surprisingly, it outperforms most of the systems based on syntactic or semantic information, even when this information is manually annotated (i.e. the LLL challenge).",Experiment/Discussion
+The problem considered here is that of identifying interactions between genes and proteins from biomedical literature.,Experiment/Discussion
+"More specifically, we performed experiments on two slightly different benchmark data sets (see Section 4 for a detailed description).",Experiment/Discussion
+In the former (AImed) gene/protein interactions are annotated without distinguishing the type and roles of the two interacting entities.,Experiment/Discussion
+The latter (LLL challenge) is more realistic (and complex) because it also aims at identifying the roles played by the interacting entities (agent and target).,Experiment/Discussion
+"For example, in Figure 1 three entities are mentioned and two of the six ordered pairs of GENIA/topics/Corpus/GTB.html entities actually interact: (sigma(K), cwlH) and (gerE, cwlH).",Experiment/Discussion
+"In our approach we cast relation extraction as a classification problem, in which examples are generated from sentences as follows.",Experiment/Discussion
+"First of all, we describe the complex case, namely the protein/gene interactions (LLL challenge).",Experiment/Discussion
+For this data set entity recognition is performed using a dictionary of protein and gene names in which the type of the entities is unknown.,Experiment/Discussion
+We generate examples for all the sentences containing at least two entities.,Experiment/Discussion
+"Thus the number of examples generated for each sentence is given by the combinations of distinct entities (N) selected two at a time, i.e.",Experiment/Discussion
+NC2.,Experiment/Discussion
+"For example, as the sentence shown in Figure 1 contains three entities, the total number of examples generated is 3C2 = 3.",Experiment/Discussion
+"In each example we assign the attribute CANDIDATE to each of the candidate interacting entities, while the other entities in the example are assigned the attribute OTHER, meaning that they do not participate in the relation.",Experiment/Discussion
+"If a relation holds between the two candidate interacting entities the example is labeled 1 or 2 (according to the roles of the interacting entities, agent and target, i.e. to the direction of the relation); 0 otherwise.",Experiment/Discussion
+Figure 2 shows the examples generated from the sentence in Figure 1.,Experiment/Discussion
+"Note that in generating the examples from the sentence in Figure 1 we did not create three negative examples (there are six potential ordered relations between three entities), thereby implicitly under-sampling the data set.",Experiment/Discussion
+This allows us to make the classification task simpler without loosing information.,Experiment/Discussion
+"As a matter of fact, generating examples for each ordered pair of entities would produce two subsets of the same size containing similar examples (differing only for the attributes CANDIDATE and OTHER), but with different classification labels.",Experiment/Discussion
+"Furthermore, under-sampling allows us to halve the data set size and reduce the data skewness.",Experiment/Discussion
+For the protein-protein interaction task (AImed) we use the correct entities provided by the manual annotation.,Experiment/Discussion
+"As said at the beginning of this section, this task is simpler than the LLL challenge because there is no distinction between types (all entities are proteins) and roles (the relation is symmetric).",Experiment/Discussion
+"As a consequence, the examples are generated as described above with the following difference: an example is labeled 1 if a relation holds between the two candidate interacting entities; 0 otherwise.",Experiment/Discussion
+"The basic idea behind kernel methods is to embed the input data into a suitable feature space F via a mapping function 0 : X → F, and then use a linear algorithm for discovering nonlinear patterns.",Experiment/Discussion
+"Instead of using the explicit mapping 0, we can use a kernel function K : X x X → R, that corresponds to the inner product in a feature space which is, in general, different from the input space.",Experiment/Discussion
+"Kernel methods allow us to design a modular system, in which the kernel function acts as an interface between the data and the learning algorithm.",Experiment/Discussion
+"Thus the kernel function is the only domain specific module of the system, while the learning algorithm is a general purpose component.",Experiment/Discussion
+Potentially any kernel function can work with any kernel-based algorithm.,Experiment/Discussion
+"In our approach we use Support Vector Machines (Vapnik, 1998).",Experiment/Discussion
+In order to implement the approach based on shallow linguistic information we employed a linear combination of kernels.,Experiment/Discussion
+"Different works (Gliozzo et al., 2005; Zhao and Grishman, 2005; Culotta and Sorensen, 2004) empirically demonstrate the effectiveness of combining kernels in this way, showing that the combined kernel always improves the performance of the individual ones.",Experiment/Discussion
+"In addition, this formulation allows us to evaluate the individual contribution of each information source.",Experiment/Discussion
+"We designed two families of kernels: Global Context kernels and Local Context kernels, in which each single kernel is explicitly calculated as follows where 0(·) is the embedding vector and II · II is the 2-norm.",Experiment/Discussion
+The kernel is normalized (divided) by the product of the norms of embedding vectors.,Experiment/Discussion
+The normalization factor plays an important role in allowing us to integrate information from heterogeneous feature spaces.,Experiment/Discussion
+"Even though the resulting feature space has high dimensionality, an efficient computation of Equation 1 can be carried out explicitly since the input representations defined below are extremely sparse.",Experiment/Discussion
+"In (Bunescu and Mooney, 2005b), the authors observed that a relation between two entities is generally expressed using only words that appear simultaneously in one of the following three patterns: Fore-Between: tokens before and between the two candidate interacting entities.",Experiment/Discussion
+"For instance: binding of [P1] to [P2], interaction involving [P1] and [P2], association of [P1] by [P2].",Experiment/Discussion
+Between: only tokens between the two candidate interacting entities.,Experiment/Discussion
+"For instance: [P1] associates with [P2], [P1] binding to [P2], [P1], inhibitor of [P2].",Experiment/Discussion
+Between-After: tokens between and after the two candidate interacting entities.,Experiment/Discussion
+"For instance: [P1] - [P2] association, [P1] and [P2] interact, [P1] has influence on [P2] binding.",Experiment/Discussion
+"Our global context kernels operate on the patterns above, where each pattern is represented using a bag-of-words instead of sparse subsequences of words, PoS tags, entity and chunk types, or WordNet synsets as in (Bunescu and Mooney, 2005b).",Experiment/Discussion
+"More formally, given a relation example R, we represent a pattern P as a row vector where the function tf(ti, P) records how many times a particular token tz is used in P. Note that, this approach differs from the standard bag-ofwords as punctuation and stop words are included in OP, while the entities (with attribute CANDIDATE and OTHER) are not.",Experiment/Discussion
+"To improve the classification performance, we have further extended OP to embed n-grams of (contiguous) tokens (up to n = 3).",Experiment/Discussion
+"By substituting OP into Equation 1, we obtain the n-gram kernel Kn, which counts common uni-grams, bi-grams, ... , n-grams that two patterns have in common2.",Experiment/Discussion
+"The Global Context kernel KGC(R1, R2) is then defined as where KFB, KB and KBA are n-gram kernels that operate on the Fore-Between, Between and Between-After patterns respectively.",Experiment/Discussion
+"The type of the candidate interacting entities can provide useful clues for detecting the agent and target of the relation, as well as the presence of the relation itself.",Experiment/Discussion
+"As the type is not known, we use the information provided by the two local contexts of the candidate interacting entities, called left and right local context respectively.",Experiment/Discussion
+"As typically done in entity recognition, we represent each local context by using the following basic features: Token The token itself.",Experiment/Discussion
+Lemma The lemma of the token.,Experiment/Discussion
+PoS The PoS tag of the token.,Experiment/Discussion
+"Orthographic This feature maps each token into equivalence classes that encode attributes such as capitalization, punctuation, numerals and so on.",Experiment/Discussion
+"Formally, given a relation example R, a local context L = t_w, ... , t_1, t0, t+1, ... , t+w is represented as a row vector where fi is a feature function that returns 1 if it is active in the specified position of L, 0 otherwise3.",Experiment/Discussion
+"The Local Context kernel KLC(R1, R2) is defined as where Kleft and Kright are defined by substituting the embedding of the left and right local context into Equation 1 respectively.",Experiment/Discussion
+"Notice that KLC differs substantially from KGC as it considers the ordering of the tokens and the feature space is enriched with PoS, lemma and orthographic features.",Experiment/Discussion
+"Finally, the Shallow Linguistic kernel It follows directly from the explicit construction of the feature space and from closure properties of kernels that KSL is a valid kernel.",Experiment/Discussion
+The two data sets used for the experiments concern the same domain (i.e. gene/protein interactions).,Experiment/Discussion
+"However, they present a crucial difference which makes it worthwhile to show the experimental results on both of them.",Experiment/Discussion
+"In one case (AImed) interactions are considered symmetric, while in the other (LLL challenge) agents and targets of genic interactions have to be identified.",Experiment/Discussion
+"The first data set used in the experiments is the AImed corpus4, previously used for training protein interaction extraction systems in (Bunescu et al., 2005; Bunescu and Mooney, 2005b).",Experiment/Discussion
+"It consists of 225 Medline abstracts: 200 are known to describe interactions between human proteins, while the other 25 do not refer to any interaction.",Experiment/Discussion
+"There are 4,084 protein references and around 1,000 tagged interactions in this data set.",Experiment/Discussion
+In this data set there is no distinction between genes and proteins and the relations are symmetric.,Experiment/Discussion
+"This data set was used in the Learning Language in Logic (LLL) challenge on Genic Interaction extraction5 (Ned´ellec, 2005).",Experiment/Discussion
+"The objective of the challenge was to evaluate the performance of systems based on machine learning techniques to identify gene/protein interactions and their roles, agent or target.",Experiment/Discussion
+The data set was collected by querying Medline on Bacillus subtilis transcription and sporulation.,Experiment/Discussion
+It is divided in a training set (80 sentences describing 271 interactions) and a test set (87 sentences describing 106 interactions).,Experiment/Discussion
+"Differently from the training set, the test set contains sentences without interactions.",Experiment/Discussion
+The data set is decomposed in two subsets of increasing difficulty.,Experiment/Discussion
+"The first subset does not include coreferences, while the second one includes simple cases of coreference, mainly appositions.",Experiment/Discussion
+Both subsets are available with different kinds of annotation: basic and enriched.,Experiment/Discussion
+The former includes word and sentence segmentation.,Experiment/Discussion
+"The latter also includes manually checked information, such as lemma and syntactic dependencies.",Experiment/Discussion
+A dictionary of named entities (including typographical variants and synonyms) is associated to the data set.,Experiment/Discussion
+"Before describing the results of the experiments, a note concerning the evaluation methodology.",Experiment/Discussion
+"There are different ways of evaluating performance in extracting information, as noted in (Lavelli et al., 2004) for the extraction of slot fillers in the Seminar Announcement and the Job Posting data sets.",Experiment/Discussion
+"Adapting the proposed classification to relation extraction, the following two cases can be identified: Figure 3 shows a fragment of tagged text drawn from the AImed corpus.",Experiment/Discussion
+"It contains three different interactions between pairs of proteins, for a total of seven occurrences of interactions.",Experiment/Discussion
+"For example, there are three occurrences of the interaction between IGF-IR and p52Shc (i.e. number 1, 3 and 7).",Experiment/Discussion
+"If we adopt the OAOD methodology, all the seven occurrences have to be extracted to achieve the maximum score.",Experiment/Discussion
+"On the other hand, if we use the OARD methodology, only one occurrence for each interaction has to be extracted to maximize the score.",Experiment/Discussion
+"On the AImed data set both evaluations were performed, while on the LLL challenge only the OAOD evaluation methodology was performed because this is the only one provided by the evaluation server of the challenge.",Experiment/Discussion
+Figure 3: Fragment of the AImed corpus with all proteins and their interactions tagged.,Experiment/Discussion
+The protein names have been highlighted in bold face and their same subscript numbers indicate interaction between the proteins.,Experiment/Discussion
+All the experiments were performed using the SVM package LIBSVM6 customized to embed our own kernel.,Experiment/Discussion
+"For the LLL challenge submission, we optimized the regularization parameter C by 10-fold cross validation; while we used its default value for the AImed experiment.",Experiment/Discussion
+"In both experiments, we set the cost-factor WZ to be the ratio between the number of negative and positive examples.",Experiment/Discussion
+KSL performance was first evaluated on the AImed data set (Section 4.1).,Experiment/Discussion
+"We first give an evaluation of the kernel combination and then we compare our results with the Subsequence Kernel for Relation Extraction (ERK) described in (Bunescu and Mooney, 2005b).",Experiment/Discussion
+"All experiments are conducted using 10-fold cross validation on the same data splitting used in (Bunescu et al., 2005; Bunescu and Mooney, 2005b).",Experiment/Discussion
+Table 1 shows the performance of the three kernels defined in Section 3 for protein-protein interactions using the two evaluation methodologies described above.,Experiment/Discussion
+We report in Figure 4 the precision-recall curves of ERK and KSL using OARD evaluation methodology (the evaluation performed by Bunescu and Mooney (2005b)).,Experiment/Discussion
+"As in (Bunescu et al., 2005; Bunescu and Mooney, 2005b), the graph points are obtained by varying the threshold on the classifiFinally, Figure 5 shows the learning curve of the combined kernel KSL using the OARD evaluation methodology.",Experiment/Discussion
+The curve reaches a plateau with around 100 Medline abstracts.,Experiment/Discussion
+The system was evaluated on the “basic” version of the LLL challenge data set (Section 4.2).,Experiment/Discussion
+"Table 2 shows the results of KSL returned by the scoring service8 for the three subsets of the training set (with and without coreferences, and with their union).",Experiment/Discussion
+Table 3 shows the best results obtained at the official competition performed in April 2005.,Experiment/Discussion
+Comparing the results we see that KSL trained on each subset outperforms the best systems of the LLL challenge9.,Experiment/Discussion
+Notice that the best results at the challenge were obtained by different groups and exploiting the linguistic “enriched” version of the data set.,Experiment/Discussion
+"As observed in (Ned´ellec, 2005), the scores obtained using the training set without coreferences and the whole training set are similar.",Experiment/Discussion
+We also report in Table 4 an analysis of the kernel combination.,Experiment/Discussion
+"Given that we are interested here in the contribution of each kernel, we evaluated the experiments by 10-fold cross-validation on the whole training set avoiding the submission process.",Experiment/Discussion
+The experimental results show that the combined kernel KSL outperforms the basic kernels KGC and KLC on both data sets.,Experiment/Discussion
+"In particular, precision significantly increases at the expense of a lower recall.",Experiment/Discussion
+"High precision is particularly advantageous when extracting knowledge from large corpora, because it avoids overloading end users with too many false positives.",Experiment/Discussion
+Although the basic kernels were designed to model complementary aspects of the task (i.e.,Experiment/Discussion
+"9After the challenge deadline, Reidel and Klein (2005) achieved a significant improvement, Fl = 68.4% (without coreferences) and Fl = 64.7% (with and without coreferences). presence of the relation and roles of the interacting entities), they perform reasonably well even when considered separately.",Experiment/Discussion
+"In particular, KGC achieved good performance on both data sets.",Experiment/Discussion
+This result was not expected on the LLL challenge because this task requires not only to recognize the presence of relationships between entities but also to identify their roles.,Experiment/Discussion
+"On the other hand, the outcomes of KLC on the AImed data set show that such kernel helps to identify the presence of relationships as well.",Experiment/Discussion
+"At first glance, it may seem strange that KGC outperforms ERK on AImed, as the latter approach exploits a richer representation: sparse sub-sequences of words, PoS tags, entity and chunk types, or WordNet synsets.",Experiment/Discussion
+"However, an approach based on n-grams is sufficient to identify the presence of a relationship.",Experiment/Discussion
+"This result sounds less surprising, if we recall that both approaches cast the relation extraction problem as a text categorization task.",Experiment/Discussion
+Approaches to text categorization based on rich linguistic information have obtained less accuracy than the traditional bag-of-words approach (e.g.,Experiment/Discussion
+"(Koster and Seutter, 2003)).",Experiment/Discussion
+Shallow linguistics information seems to be more effective to model the local context of the entities.,Experiment/Discussion
+"Finally, we obtained worse results performing dimensionality reduction either based on generic linguistic assumptions (e.g. by removing words from stop lists or with certain PoS tags) or using statistical methods (e.g. tf.idf weighting schema).",Experiment/Discussion
+"This may be explained by the fact that, in tasks like entity recognition and relation extraction, useful clues are also provided by high frequency tokens, such as stop words or punctuation marks, and by the relative positions in which they appear.",Experiment/Discussion
+"First of all, the obvious references for our work are the approaches evaluated on AImed and LLL challenge data sets.",Experiment/Discussion
+"In (Bunescu and Mooney, 2005b), the authors present a generalized subsequence kernel that works with sparse sequences containing combinations of words and PoS tags.",Experiment/Discussion
+"The best results on the LLL challenge were obtained by the group from the University of Edinburgh (Reidel and Klein, 2005), which used Markov Logic, a framework that combines loglinear models and First Order Logic, to create a set of weighted clauses which can classify pairs of gene named entities as genic interactions.",Experiment/Discussion
+"These clauses are based on chains of syntactic and semantic relations in the parse or Discourse Representation Structure (DRS) of a sentence, respectively.",Experiment/Discussion
+Other relevant approaches include those that adopt kernel methods to perform relation extraction.,Experiment/Discussion
+Zelenko et al. (2003) describe a relation extraction algorithm that uses a tree kernel defined over a shallow parse tree representation of sentences.,Experiment/Discussion
+The approach is vulnerable to unrecoverable parsing errors.,Experiment/Discussion
+"Culotta and Sorensen (2004) describe a slightly generalized version of this kernel based on dependency trees, in which a bag-ofwords kernel is used to compensate for errors in syntactic analysis.",Experiment/Discussion
+A further extension is proposed by Zhao and Grishman (2005).,Experiment/Discussion
+"They use composite kernels to integrate information from different syntactic sources (tokenization, sentence parsing, and deep dependency analysis) so that processing errors occurring at one level may be overcome by information from other levels.",Experiment/Discussion
+Bunescu and Mooney (2005a) present an alternative approach which uses information concentrated in the shortest path in the dependency tree between the two entities.,Experiment/Discussion
+"As mentioned in Section 1, another relevant approach is presented in (Roth and Yih, 2002).",Experiment/Discussion
+Classifiers that identify entities and relations among them are first learned from local information in the sentence.,Experiment/Discussion
+"This information, along with constraints induced among entity types and relations, is used to perform global probabilistic inference that accounts for the mutual dependencies among the entities.",Experiment/Discussion
+All the previous approaches have been evaluated on different data sets so that it is not possible to have a clear idea of which approach is better than the other.,Experiment/Discussion
+The good results obtained using only shallow linguistic features provide a higher baseline against which it is possible to measure improvements obtained using methods based on deep linguistic processing.,Results/Conclusion
+"In the near future, we plan to extend our work in several ways.",Results/Conclusion
+"First, we would like to evaluate the contribution of syntactic information to relation extraction from biomedical literature.",Results/Conclusion
+"With this aim, we will integrate the output of a parser (possibly trained on a domain-specific resource such the Genia Treebank).",Results/Conclusion
+"Second, we plan to test the portability of our model on ACE and MUC data sets.",Results/Conclusion
+"Third, we would like to use a named entity recognizer instead of assuming that entities are already extracted or given by a dictionary.",Results/Conclusion
+Our long term goal is to populate databases and ontologies by extracting information from large text collections such as Medline.,Results/Conclusion
+We would like to thank Razvan Bunescu for providing detailed information about the AImed data set and the settings of the experiments.,Results/Conclusion
+"Claudio Giuliano and Lorenza Romano have been supported by the ONTOTEXT project, funded by the Autonomous Province of Trento under the FUP2004 research program.",Results/Conclusion

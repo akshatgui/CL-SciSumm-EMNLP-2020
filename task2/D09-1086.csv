@@ -1,239 +1,239 @@
 col1,col2
-"We connect two scenarios in structured parser trained on one corpus to another annotation style, and annotations from one to another.",{}
-We propose quasigrammar features for these structured learning tasks.,{}
-"That is, we score a aligned pair of source and target trees based on local features of the trees and the alignment.",{}
-"Our quasi-synchronous model assigns positive probability to any alignment of any trees, in contrast to a synchronous grammar, which would insist on some form of structural parallelism.",{}
-"In monolingual dependency parser adaptation, we achieve high accuracy in translating among multiple annotation styles for the same sentence.",{}
-"On the more difficult problem of cross-lingual parser projection, we learn a dependency parser for a target language by using bilingual text, an English parser, and automatic word alignments.",{}
-"Our experiments show that unsupervised QG projection improves on parses trained using only highprecision projected annotations and far outperforms, by more than 35% absolute dependency accuracy, learning an unsupervised parser from raw target-language text alone.",{}
-"When a few target-language parse trees are available, projection gives a boost equivalent to doubling the number of target-language trees. first author would like to thank the Center for Intelligent Information Retrieval at UMass Amherst.",{}
-We would also like to thank Noah Smith and Rebecca Hwa for helpful discussions and the anonymous reviewers for their suggestions for improving the paper.,{}
-"Consider the problem of learning a dependency parser, which must produce a directed tree whose vertices are the words of a given sentence.","{'title': '1 Introduction', 'number': '1'}"
-There are many differing conventions for representing syntactic relations in dependency trees.,"{'title': '1 Introduction', 'number': '1'}"
-"Say that we wish to output parses in the Prague style and so have annotated a small target corpus—e.g., 100 sentences—with those conventions.","{'title': '1 Introduction', 'number': '1'}"
-A parser trained on those hundred sentences will achieve mediocre dependency accuracy (the proportion of words that attach to their correct parent).,"{'title': '1 Introduction', 'number': '1'}"
-But what if we also had a large number of trees in the CoNLL style (the source corpus)?,"{'title': '1 Introduction', 'number': '1'}"
-Ideally they should help train our parser.,"{'title': '1 Introduction', 'number': '1'}"
-"But unfortunately, a parser that learned to produce perfect CoNLL-style trees would, for example, get both links “wrong” when its coordination constructions were evaluated against a Prague-style gold standard (Figure 1).","{'title': '1 Introduction', 'number': '1'}"
-"If it were just a matter of this one construction, the obvious solution would be to write a few rules by hand to transform the large source training corpus into the target style.","{'title': '1 Introduction', 'number': '1'}"
-"Suppose, however, that there were many more ways that our corpora differed.","{'title': '1 Introduction', 'number': '1'}"
-Then we would like to learn a statistical model to transform one style of tree into another.,"{'title': '1 Introduction', 'number': '1'}"
-We may not possess hand-annotated training data for this tree-to-tree transformation task.,"{'title': '1 Introduction', 'number': '1'}"
-That would require the two corpora to annotate some of the same sentences in different styles.,"{'title': '1 Introduction', 'number': '1'}"
-"But fortunately, we can automatically obtain a noisy form of the necessary paired-tree training data.","{'title': '1 Introduction', 'number': '1'}"
-"A parser trained on the source corpus can parse the sentences in our target corpus, yielding trees (or more generally, probability distributions over trees) in the source style.","{'title': '1 Introduction', 'number': '1'}"
-We will then learn a tree transformation model relating these noisy source trees to our known trees in the target style.,"{'title': '1 Introduction', 'number': '1'}"
-"This model should enable us to convert the original large source corpus to target style, giving us additional training data in the target style.","{'title': '1 Introduction', 'number': '1'}"
-"For many target languages, however, we do not have the luxury of a large parsed “source corpus” in the language, even one in a different style or domain as above.","{'title': '1 Introduction', 'number': '1'}"
-"Thus, we may seek other forms of data to augment our small target corpus.","{'title': '1 Introduction', 'number': '1'}"
-"One option would be to leverage unannotated text (McClosky et al., 2006; Smith and Eisner, 2007).","{'title': '1 Introduction', 'number': '1'}"
-But we can also try to transfer syntactic information from a parsed source corpus in another language.,"{'title': '1 Introduction', 'number': '1'}"
-This is an extreme case of out-of-domain data.,"{'title': '1 Introduction', 'number': '1'}"
-This leads to the second task of this paper: learning a statistical model to transform a syntactic analysis of a sentence in one language into an analysis of its translation.,"{'title': '1 Introduction', 'number': '1'}"
-Tree transformations are often modeled with synchronous grammars.,"{'title': '1 Introduction', 'number': '1'}"
-Suppose we are given a sentence w' in the “source” language and its translation w into the “target” language.,"{'title': '1 Introduction', 'number': '1'}"
-"Their syntactic parses t' and t are presumably not independent, but will tend to have some parallel or at least correlated structure.","{'title': '1 Introduction', 'number': '1'}"
-"So we could jointly model the parses t', t and the alignment a between them, with a model of the form p(t, a, t' I w, w').","{'title': '1 Introduction', 'number': '1'}"
-"Such a joint model captures how t, a, t' mutually constrain each other, so that even partial knowledge of some of these three variables can help us to recover the others when training or decoding on bilingual text.","{'title': '1 Introduction', 'number': '1'}"
-"This idea underlies a number of recent papers on syntax-based alignment (using t and t' to better recover a), grammar induction from bitext (using a to better recover t and t'), parser projection (using t' and a to better recover t), as well as full joint parsing (Smith and Smith, 2004; Burkett and Klein, 2008).","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we condition on the 1-best source tree t'.","{'title': '1 Introduction', 'number': '1'}"
-"As for the alignment a, our models either condition on the 1-best alignment or integrate the alignment out.","{'title': '1 Introduction', 'number': '1'}"
-"Our models are thus of the form p(t w, w', t', a) or, in the generative case, p(w, t, a w', t').","{'title': '1 Introduction', 'number': '1'}"
-We intend to consider other formulations in future work.,"{'title': '1 Introduction', 'number': '1'}"
-"So far, this is very similar to the monolingual parser adaptation scenario, but there are a few key differences.","{'title': '1 Introduction', 'number': '1'}"
-"Since the source and target sentences in the bitext are in different languages, there is no longer a trivial alignment between the words of the source and target trees.","{'title': '1 Introduction', 'number': '1'}"
-"Given word alignments, we could simply try to project dependency links in the source tree onto the target text.","{'title': '1 Introduction', 'number': '1'}"
-"A link-by-link projection, however, could result in invalid trees on the target side, with cycles or disconnected words.","{'title': '1 Introduction', 'number': '1'}"
-"Instead, our models learn the necessary transformations that align and transform a source tree into a target tree by means of quasisynchronous grammar (QG) features.","{'title': '1 Introduction', 'number': '1'}"
-Figure 2 shows an example of bitext helping disambiguation when a parser is trained with only a small number of Chinese trees.,"{'title': '1 Introduction', 'number': '1'}"
-"With the help of the English tree and alignment, the parser is able to recover the correct Chinese dependencies using QG features.","{'title': '1 Introduction', 'number': '1'}"
-Incorrect edges from the monolingual parser are shown with dashed lines.,"{'title': '1 Introduction', 'number': '1'}"
-"(The bilingual parser corrects additional errors in the second half of this sentence, which has been removed to improve legibility.)","{'title': '1 Introduction', 'number': '1'}"
-"The parser is able to recover the long-distance dependency from the first Chinese word (China) to the last (begun), while skipping over the intervening noun phrase that confused the undertrained monolingual parser.","{'title': '1 Introduction', 'number': '1'}"
-"Although, due to the auxiliary verb, “China” and “begun” are siblings in English and not in direct dependency, the QG features still leverage this indirect projection.","{'title': '1 Introduction', 'number': '1'}"
-We start by describing the features we use to augment conditional and generative parsers when scoring pairs of trees (§2).,"{'title': '1 Introduction', 'number': '1'}"
-Then we discuss in turn monolingual (§3) and cross-lingual (§4) parser adaptation.,"{'title': '1 Introduction', 'number': '1'}"
-"Finally, we present experiments on cross-lingual parser projection in conditions when no target language trees are available for training (§5) and when some trees are available (§6).","{'title': '1 Introduction', 'number': '1'}"
-What should our model of source and target trees look like?,"{'title': '2 Form of the Model', 'number': '2'}"
-"In our view, traditional approaches based on synchronous grammar are problematic both computationally and linguistically.","{'title': '2 Form of the Model', 'number': '2'}"
-Full inference takes O(n6) time or worse (depending on the grammar formalism).,"{'title': '2 Form of the Model', 'number': '2'}"
-"Yet synchronous models only consider a limited hypothesis space: e.g., parses must be projective, and alignments must decompose according to the recursive parse structure.","{'title': '2 Form of the Model', 'number': '2'}"
-"(For example, two nodes can be aligned only if their respective parents are also aligned.)","{'title': '2 Form of the Model', 'number': '2'}"
-"The synchronous model’s probability mass function is also restricted to decompose in this way, so it makes certain conditional independence assumptions; put another way, it can evaluate only certain properties of the triple (t, a, t0).","{'title': '2 Form of the Model', 'number': '2'}"
-"We instead model (t, a, t0) as an arbitrary graph that includes dependency links among the words of each sentence as well as arbitrary alignment links between the words of the two sentences.","{'title': '2 Form of the Model', 'number': '2'}"
-This permits non-synchronous and many-to-many alignments.,"{'title': '2 Form of the Model', 'number': '2'}"
-"The only hard constraint we impose is that the dependency links within each sentence must constitute a valid monolingual parse—a directed projective spanning tree.1 Given the two sentences w, w0, our probability distribution over possible graphs considers local features of the parses, the alignment, and both jointly.","{'title': '2 Form of the Model', 'number': '2'}"
-"Thus, we learn what local syntactic configurations tend to occur in each language and how they correspond across languages.","{'title': '2 Form of the Model', 'number': '2'}"
-"As a result, we might learn that parses are “mostly synchronous,” but that there are some systematic cross-linguistic 1Non-projective parsing would also be possible. divergences and some instances of sloppy (nonparallel or inexact) translation.","{'title': '2 Form of the Model', 'number': '2'}"
-"Our model is thus a form of quasi-synchronous grammar (QG) (Smith and Eisner, 2006a).","{'title': '2 Form of the Model', 'number': '2'}"
-"In that paper, QG was applied to word alignment and has since found applications in question answering (Wang et al., 2007), paraphrase detection (Das and Smith, 2009), and machine translation (Gimpel and Smith, 2009).","{'title': '2 Form of the Model', 'number': '2'}"
-All the models in this paper are conditioned on the source tree t0.,"{'title': '2 Form of the Model', 'number': '2'}"
-"Conditionally-trained models of adaptation and projection also condition on the target string w and its alignment a to w0 and thus have the form p(t  |w, w0, t0, a); the unsupervised, generative projection models in §5 have the form p(w, t, a  |w0, t0).","{'title': '2 Form of the Model', 'number': '2'}"
-"The score s of a given tuple of trees, words, and alignment can thus be written as a dot product of weights w with features f and g: � wjgj(t,t0,a,w,w0) + j The features f look only at target words and dependencies.","{'title': '2 Form of the Model', 'number': '2'}"
-"In the conditional models of §3 and §6, these features are those of an edge-factored dependency parser (McDonald et al., 2005).","{'title': '2 Form of the Model', 'number': '2'}"
-"In the generative models of §5, f has the form of a dependency model with valence (Klein and Manning, 2004).","{'title': '2 Form of the Model', 'number': '2'}"
-"All models, for instance, have a feature template that considers the parts of speech of a potential parent-child relation.","{'title': '2 Form of the Model', 'number': '2'}"
-"In order to benefit from the source language, we also need to include bilingual features g. When scoring a candidate target dependency link from word x → y, these features consider the relationship of their corresponding source words x0 and y0.","{'title': '2 Form of the Model', 'number': '2'}"
-(The correspondences are determined by the alignment a.),"{'title': '2 Form of the Model', 'number': '2'}"
-"For instance, the source tree t0 may contain the link x0 → y0, which would cause a feature for monotonic projection to fire for the x → y edge.","{'title': '2 Form of the Model', 'number': '2'}"
-"If, on the other hand, y0 → x0 E t0, a head-swapping feature fires.","{'title': '2 Form of the Model', 'number': '2'}"
-"If x0 = y0, i.e. x and y align to the same word, the same-word feature fires.","{'title': '2 Form of the Model', 'number': '2'}"
-"Similar features fire when x0 and y0 are in grandparent-grandchild, sibling, c-command, or none-of-the above relationships, or when y aligns to NULL.","{'title': '2 Form of the Model', 'number': '2'}"
-"These alignment classes are called configurations (Smith and Eisner, 2006a, and following).","{'title': '2 Form of the Model', 'number': '2'}"
-"When training is conditioned on the target words (see §3 and §6 below), we conjoin these configuration features with the part of speech and coarse part of speech of one or both of the source and target words, i.e. the feature template has from one to four tags.","{'title': '2 Form of the Model', 'number': '2'}"
-"In conditional training, the exponentiated scores s are normalized by a constant: Z = Et exp[s(t, t', a, w, w')].","{'title': '2 Form of the Model', 'number': '2'}"
-"For the generative model, the locally normalized generative process is explained in §5.3.4.","{'title': '2 Form of the Model', 'number': '2'}"
-"Previous researchers have written fix-up rules to massage the projected links after the fact and learned a parser from the resulting trees (Hwa et al., 2005).","{'title': '2 Form of the Model', 'number': '2'}"
-"Instead, our models learn the necessary transformations that align and transform a source tree into a target tree.","{'title': '2 Form of the Model', 'number': '2'}"
-"Other researchers have tackled the interesting task of learning parsers from unparsed bitext alone (Kuhn, 2004; Snyder et al., 2009); our methods take advantage of investments in high-resource languages such as English.","{'title': '2 Form of the Model', 'number': '2'}"
-"In work most closely related to this paper, Ganchev et al. (2009) constrain the posterior distribution over target-language dependencies to align to source dependencies some “reasonable” proportion of the time (≈ 70%, cf.","{'title': '2 Form of the Model', 'number': '2'}"
-Table 2 in this paper).,"{'title': '2 Form of the Model', 'number': '2'}"
-"This approach performs well but cannot directly learn regular cross-language non-isomorphisms; for instance, some fixup rules for auxiliary verbs need to be introduced.","{'title': '2 Form of the Model', 'number': '2'}"
-"Finally, Huang et al. (2009) use features, somewhat like QG configurations, on the shift-reduce actions in a monolingual, targetlanguage parser.","{'title': '2 Form of the Model', 'number': '2'}"
-"As discussed in §1, the adaptation scenario is a special case of parser projection where the word alignments are one-to-one and observed.","{'title': '3 Adaptation', 'number': '3'}"
-"To test our handling of QG features, we performed experiments in which training saw the correct parse trees in both source and target domains, and the mapping between them was simple and regular.","{'title': '3 Adaptation', 'number': '3'}"
-"We also performed experiments where the source trees were replaced by the noisy output of a trained parser, making the mapping more complex and harder to learn.","{'title': '3 Adaptation', 'number': '3'}"
-"We used the subset of the Penn Treebank from the CoNLL 2007 shared task and converted it to dependency representation while varying two parameters: (1) CoNLL vs. Prague coordination style (Figure 1), and (2) preposition the head vs. the child of its nominal object.","{'title': '3 Adaptation', 'number': '3'}"
-"We trained an edge-factored dependency parser (McDonald et al., 2005) on “source” domain data that followed one set of dependency conventions.","{'title': '3 Adaptation', 'number': '3'}"
-We then trained an edge-factored parser with QG features on a small amount of “target” domain data.,"{'title': '3 Adaptation', 'number': '3'}"
-"The source parser outputs were produced for all target data, both training and test, so that features for the target parser could refer to them.","{'title': '3 Adaptation', 'number': '3'}"
-"In this task, we know what the gold-standard source language parses are for any given text, since we can produce them from the original Penn Treebank.","{'title': '3 Adaptation', 'number': '3'}"
-"We can thus measure the contribution of adaptation loss alone, and the combined loss of imperfect source-domain parsing with adaptation (Table 1).","{'title': '3 Adaptation', 'number': '3'}"
-"When no target domain trees are available, we simply have the performance of the source domain parser on this out-of-domain data.","{'title': '3 Adaptation', 'number': '3'}"
-Training a target-domain parser on as few as 10 sentences shows substantial improvements in accuracy.,"{'title': '3 Adaptation', 'number': '3'}"
-"In the “gold” conditions, where the target parser starts with perfect source trees, accuracy approaches 100%; in the realistic “parse” conditions, where the target-domain parser gets noisy source-domain parses, the improvements are quite significant but approach a lower ceiling imposed by the performance of the source parser.2 The adaptation problem in this section is a simple proof of concept of the QG approach; however, more complex and realistic adaptation problems exist.","{'title': '3 Adaptation', 'number': '3'}"
-Monolingual adaptation is perhaps most obviously useful when the source parser is a blackbox or rule-based system or is trained on unavailable data.,"{'title': '3 Adaptation', 'number': '3'}"
-"One might still want to use such a parser in some new context, which might require new data or a new annotation standard.","{'title': '3 Adaptation', 'number': '3'}"
-We are also interested in scenarios where we want to avoid expensive retraining on large reannotated treebanks.,"{'title': '3 Adaptation', 'number': '3'}"
-We would like a linguist to be able to annotate a few trees according to a hypothesized theory and then quickly use QG adaptation to get a parser for that theory.,"{'title': '3 Adaptation', 'number': '3'}"
-One example would be adapting a constituency parser to produce dependency parses.,"{'title': '3 Adaptation', 'number': '3'}"
-"We have concentrated here on adapting between two dependency parse styles, in order to line up with the cross-lingual tasks to which we now turn.","{'title': '3 Adaptation', 'number': '3'}"
-"As in the adaptation scenario above, many syntactic structures can be transferred from one language to another.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"In this section, we evaluate the extent of this direct projection on a small handannotated corpus.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"In §5, we will use a QG generative model to learn dependency parsers from bitext when there are no annotations in the target language.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Finally, in §6,we show how QG features can augment a target-language parser trained on a small set of labeled trees.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"For syntactic annotation projection to work at all, we must hypothesize, or observe, that at least some syntactic structures are preserved in translation.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Hwa et al. (2005) have called this intuition the Direct Correspondence Assumption (DCA, with slight notational changes): Given a pair of sentences w and w' that are translations of each other with syntactic structure t and t', if nodes x' and y' of t' are aligned with nodes x and y of t, respectively, and if syntactic relationship R(x', y') holds in t', then R(x, y) holds in t. The validity of this assumption clearly depends on the node-to-node alignment of the two trees.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"We again work in a dependency framework, where syntactic nodes are simply lexical items.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-This allows us to use existing work on word alignment.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-Hwa et al. (2005) tested the DCA under idealized conditions by obtaining hand-corrected dependency parse trees of a few hundred sentences of Spanish-English and Chinese-English bitext.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-They also used human-produced word alignments.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Since their word alignments could be many-tomany, they gave a heuristic Direct Projection Algorithm (DPA) for resolving them into component dependency relations.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"It should be noted that this process introduced empty words into the projected target language tree and left words that are unaligned to English detached from the tree; as a result, they measured performance in dependency Fscore rather than accuracy.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"With manual English parses and word alignments, this DPA achieved 36.8% F-score in Spanish and 38.1% in Chinese.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"With Collins-model English parses and GIZA++ word alignments, F-score was 33.9% for Spanish and 26.3% for Chinese.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-Compare this to the Spanish attach-left baseline of 31.0% and the Chinese attach-right baselines of 35.9%.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-These discouragingly low numbers led them to write languagespecific transformation rules to fix up the projected trees.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"After these rules were applied to the projections of automatic English parses, F-score was 65.7% for English and 52.4% for Chinese.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"While these F-scores were low, it is useful to look at a subset of the alignment: dependencies projected across one-to-one alignments before the heuristic fix-ups had a much higher precision, if lower recall, than Hwa et al.’s final results.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Using Hwa et al.’s data, we calculated that the precision of projection to Spanish and Chinese via these one-to-one links was ≈ 65% (Table 2).","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-There is clearly more information in these direct links than one would think from the F-scores.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"To exploit this information, however, we need to overcome the problems of (1) learning from partial trees, when not all target words are attached, and (2) learning in the presence of the still considerable noise in the projected one-to-one dependencies—e.g., at least 28% error for Spanish non-punctuation dependencies.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-What does this noise consist of?,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Some errors reflect fairly arbitrary annotation conventions in treebanks, e.g. should the auxiliary verb govern the main verb or vice versa.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-(Examples like this suggest that the projection problem contains the adaptation problem above.),"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-Other errors arise from divergences in the complements required of certain head words.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"In the German-English translation pair, with co-indexed words aligned, [an [den Libanon1]] denken2 H remember2 Lebanon1 we would prefer that the preposition an attach to denken, even though the preposition’s object Libanon aligns to a direct child of remember.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"In other words, we would like the grandparentparent-child chain of denken → an → Libanon to align to the parent-child pair of remember → Lebanon.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"Finally, naturally occurring bitexts contain some number of free or erroneous translations.","{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-Machine translation researchers often seek to strike these examples from their training corpora; “free” translations are not usually welcome from an MT system.,"{'title': '4 Cross-Lingual Projection: Background', 'number': '4'}"
-"First, we consider the problem of parser projection when there are zero target-language trees available.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"As in much other work on unsupervised parsing, we try to learn a generative model that can predict target-language sentences.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Our novel contribution is to condition the probabilities of the generative actions on the dependency parse of a source-language translation.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Thus, our generative model is a quasi-synchronous grammar, exactly as in (Smith and Eisner, 2006a).3 When training on target sentences w, therefore, we tune the model parameters to maximize not Et p(t, w) as in ordinary EM, but rather Et p(t, w, a  |t', w').","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"We hope that this conditional EM training will drive the model to posit appropriate syntactic relationships in the latent variable t, because—thanks to the structure of the QG model—that is the easiest way for it to exploit the extra information in t', w' to help predict w.4 At test time, t', w' are not made available, so we just use the trained model to find argmaxt p(t  |w), backing off from the conditioning on t', w' and summing over a.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Below, we present the specific generative model (§5.1) and some details of training (§5.2).","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"We will then compare three approaches (§5.3): §5.3.2 a straight EM baseline (which does not condition on t', w' at all) §5.3.3 a “hard” projection baseline (which naively projects t', w' to derive direct supervision in the target language) §5.3.4 our conditional EM approach above (which makes t', w' available to the learner for “soft” indirect supervision via QG) Our base models of target-language syntax are generative dependency models that have achieved state-of-the art results in unsupervised dependency structure induction.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The simplest version, called Dependency Model with Valence (DMV), has been used in isolation and in combination with other models (Klein and Manning, 2004; Smith and Eisner, 2006b).","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The DMV generates the right children, and then independently the left children, for each node in the dependency tree.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Nodes correspond to words, which are represented by their part-of-speech tags.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"At each step of generation, the DMV stochastically chooses whether to stop generating, conditioned on the currently generating head; whether it is generating to the right or left; and whether it has yet generated any children on that side.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"If it chooses to continue, it then 4The contrastive estimation of Smith and Eisner (2005) also used a form of conditional EM, with similar motivation.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"They suggested that EM grammar induction, which learns to predict w, unfortunately learns mostly to predict lexical topic or other properties of the training sentences that do not strongly require syntactic latent variables.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"To focus EM on modeling the syntactic relationships, they conditioned the prediction of w on almost complete knowledge of the lexical items.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Similarly, we condition on a source translation of w. Furthermore, our QG model structure makes it easy for EM to learn to exploit the (explicitly represented) syntactic properties of that translation when predicting w. stochastically generates the tag of a new child, conditioned on the head.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The parameters of the model are thus of the form where head and child are part-of-speech tags, dir E {left, right}, and adj, stop E {true, false}.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-ROOT is stipulated to generate a single right child.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Bilingual configurations that condition on t', w' (§2) are incorporated into the generative process as in Smith and Eisner (2006a).","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"When the model is generating a new child for word x, aligned to x', it first chooses a configuration and then chooses a source word y' in that configuration.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The child y is then generated, conditioned on its parent x, most recent sibling a, and its source analogue y'.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"As in previous work on grammar induction, we learn the DMV from part-of-speech-tagged targetlanguage text.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We use expectation maximization (EM) to maximize the likelihood of the data.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Since the likelihood function is nonconvex in the unsupervised case, our choice of initial parameters can have a significant effect on the outcome.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Although we could also try many random starting points, the initializer in Klein and Manning (2004) performs quite well.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The base dependency parser generates the right dependents of a head separately from the left dependents, which allows O(n3) dynamic programming for an n-word target sentence.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Since the QG annotates nonterminals of the grammar with single nodes of t', and we consider two nodes of t' when evaluating the above dependency configurations, QG parsing runs in O(n3m2) for an m-word source sentence.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"If, however, we restrict candidate senses for a target child c to come from links in an IBM Model 4 Viterbi alignment, we achieve O(n3k2), where k is the maximum number of possible words aligned to a given target language word.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In practice, k « m, and parsing is not appreciably slower than in the monolingual setting.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"If all configurations were equiprobable, the source sentence would provide no information to the target.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In our QG experiments, therefore, we started with a bias towards direct parent–child links and a very small probability for breakages of locality.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The values of other configuration parameters seem, experimentally, less important for insuring accurate learning.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Our experiments compare learning on target language text to learning on parallel text.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In the latter case, we compare learning from high-precision one-to-one alignments alone, to learning from all alignments using a QG.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Our development and test data were drawn from the German TIGER and Spanish Cast3LB treebanks as converted to projective dependencies for the CoNLL 2007 Shared Task (Brants et al., 2002; Civit Torruella and MartiAntonin, 2002).5 Our training data were subsets of the 2006 Statistical Machine Translation Workshop Shared Task, in particular from the German-English and Spanish-English Europarl parallel corpora (Koehn, 2002).","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The Shared Task provided prebuilt automatic GIZA++ word alignments, which we used to facilitate replicability.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Since these word alignments do not contain posterior probabilities or null links, nor do they distinguish which links are in the IBM Model intersection, we treated all links as equally likely when learning the QG.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Target language words unaligned to any source language words were the only nodes allowed to align to NULL in QG derivations.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We parsed the English side of the bitext with the projective dependency parser described by McDonald et al. (2005) trained on the Penn Treebank §§2–20.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Much previous work on unsupervised grammar induction has used gold-standard partof-speech tags (Smith and Eisner, 2006b; Klein and Manning, 2004; Klein and Manning, 2002).","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"While there are no gold-standard tags for the Europarl bitext, we did train a conditional Markov 5We made one change to the annotation conventions in German: in the dependencies provided, words in a noun phrase governed by a preposition were all attached to that preposition.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"This meant that in the phrase das Kind (“the child”) in, say, subject position, das was the child of Kind; but, in f¨ur das Kind (“for the child”), das was the child of f¨ur.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"This seems to be a strange choice in converting from the TIGER constituency format, which does in fact annotate NPs inside PPs; we have standardized prepositions to govern only the head of the noun phrase.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We did not change any other annotation conventions to make them more like English.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In the Spanish treebank, for instance, control verbs are the children of their verbal complements: in quiero decir (“I want to say”=“I mean”), quiero is the child of decir.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In German coordinations, the coordinands all attach to the first, but in English, they all attach to the last.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-These particular divergences in annotation style hurt all of our models equally (since none of them have access to labeled trees).,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-These annotation divergences are one motivation for experiments below that include some target trees. model tagger on a few thousand tagged sentences.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-This is the only supervised data we used in the target.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"We created versions of each training corpus with the first thousand, ten thousand, and hundred thousand sentence pairs, each a prefix of the next.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Since the target-language-only baseline converged much more slowly, we used a version of the corpora with sentences 15 target words or fewer.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Using the target side of the bitext as training data, we initialized our model parameters as described in §5.2 and ran EM.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We checked convergence on a development set and measured unlabeled dependency accuracy on held-out test data.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We compare performance to simple attach-right and attach left baselines (Table 3).,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"For mostly headfinal German, the “modify next” baseline is better; for mostly head-initial Spanish, “modify previous” wins.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Even after several hundred iterations, performance was slightly, but not significantly better than the baseline for German.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-EM training did not beat the baseline for Spanish.6 The simplest approach to using the high-precision one-to-one word alignments is labeled “hard projection” in the table.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-We filtered the training corpus to find sentences where enough links were projected to completely determine a target language tree.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Of course, we needed to filter more than 1000 sentences of bitext to output 1000 training sentences in this way.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"We simply perform supervised training with this subset, which is still quite noisy (§4), and performance quickly 6While these results are worse than those obtained previously for this model, the experiments in Klein and Manning (2004) and only used sentences of 10 words or fewer, without punctuation, and with gold-standard tags.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Punctuation in particular seems to trip up the initializer: since a sentence-final periods appear in most sentences, EM often decides to make it the head. plateaus.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Still, this method substantially improves over the baselines and unsupervised EM.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Restricting ourselves to fully projected trees seems a waste of information.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"We can also simply take all one-to-one projected links, impute expected counts for the remaining dependencies with EM, and update our models.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"This approach (“hard projection with EM”), however, performed worse than using only the fully projected trees.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In fact, only the first iteration of EM with this method made any improvement; afterwards, EM degraded accuracy further from the numbers in Table 3.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-The quasi-synchronous model used all of the alignments in re-estimating its parameters and performed significantly better than hard projection.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Unlike EM on the target language alone, the QG’s performance does not depend on a clever initializer for initial model weights—all parameters of the generative model except for the QG configuration features were initialized to zero.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Setting the prior to prefer direct correspondence provides the necessary bias to initialize learning.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Error analysis showed that certain types of dependencies eluded the QG’s ability to learn from bitext.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"The Spanish treebank treats some verbal complements as the heads of main verbs and auxiliary verbs as the children of participles; the QG, following the English, learned the opposite dependency direction.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-Spanish treebank conventions for punctuation were also a common source of errors.,"{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"In both German and Spanish, coordinations (a common bugbear for dependency grammars) were often mishandled: both treebanks attach the later coordinands and any conjunctions to the first coordinand; the reverse is true in English.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Finally, in both German and Spanish, preposition attachments often led to errors, which is not surprising given the unlexicalized target-language grammars.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Rather than trying to adjudicate which dependencies are “mere” annotation conventions, it would be useful to test learned dependency models on some extrinsic task such as relation extraction or machine translation.","{'title': '5 Unsupervised Cross-Lingual Projection', 'number': '5'}"
-"Finally, we consider the problem of parser projection when some target language trees are available.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"As in the adaptation case (§3), we train a conditional model (not a generative DMV) of the target tree given the target sentence, using the monolingual and bilingual QG features, including configurations conjoined with tags, outlined above (§2).","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"For these experiments, we used the LDC’s English-Chinese Parallel Treebank (ECTB).","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"Since manual word alignments also exist for a part of this corpus, we were able to measure the loss in accuracy (if any) from the use of an automatic English parser and word aligner.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"The sourcelanguage English dependency parser was trained on the Wall Street Journal, where it achieved 91% dependency accuracy on development data.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"However, it was only 80.3% accurate when applied to our task, the English side of the ECTB.7 After parsing the source side of the bitext, we train a parser on the annotated target side, using QG features described above (§2).","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-Both the monolingual target-language parser and the projected parsers are trained to optimize conditional likelihood of the target trees t' with ten iterations of stochastic gradient ascent.,"{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"In Figure 3, we plot the performance of the target-language parser on held-out bitext.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"Although projection performance is, not surprisingly, better if we know the true source trees at training and test time, even with the 1-best output of the source parser, QG features help produce a parser as accurate asq one trained on twice the amount of monolingual data.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"In ablation experiments, we included bilingual features only for directly projected links, with no features for head-swapping, grandparents, etc.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-"When using 1-best English parses, parsers trained only with direct-projection and monolingual features performed worse; when using gold English parses, parsers with directprojection-only features performed better when trained with more Chinese trees.","{'title': '6 Supervised Cross-Lingual Projection', 'number': '6'}"
-The two related problems of parser adaptation and projection are often approached in different ways.,"{'title': '7 Discussion', 'number': '7'}"
-"Many adaptation methods operate by simple augmentations of the target feature space, as we have done here (Daume III, 2007).","{'title': '7 Discussion', 'number': '7'}"
-"Parser projection, on the other hand, often uses a multi-stage pipeline 7It would be useful to explore whether the techniques of §3 above could be used to improve English accuracy by domain adaptation.","{'title': '7 Discussion', 'number': '7'}"
-"In theory a model with QG features trained to perform well on Chinese should not suffer from an inaccurate, but consistent, English parser, but the results in Figure 3 indicate a significant benefit to be had from better English parsing or from joint Chinese-English inference. having twice as much data in the target language.","{'title': '7 Discussion', 'number': '7'}"
-"Note that the penalty for using automatic alignments instead of gold alignments is negligible; in fact, using Source text alone is often higher than +Gold alignments.","{'title': '7 Discussion', 'number': '7'}"
-"Using gold source trees, however, significantly outperforms using 1-best source trees.","{'title': '7 Discussion', 'number': '7'}"
-"(Hwa et al., 2005).","{'title': '7 Discussion', 'number': '7'}"
-The methods presented here move parser projection much closer in efficiency and simplicity to monolingual parsing.,"{'title': '7 Discussion', 'number': '7'}"
-"We showed that augmenting a target parser with quasi-synchronous features can lead to significant improvements—first in experiments with adapting to different dependency representations in English, and then in cross-language parser projection.","{'title': '7 Discussion', 'number': '7'}"
-"As with many domain adaptation problems, it is quite helpful to have some annotated target data, especially when annotation styles vary (Dredze et al., 2007).","{'title': '7 Discussion', 'number': '7'}"
-"Our experiments show that unsupervised QG projection improves on parsers trained using only high-precision projected annotations and far outperforms, by more than 35% absolute dependency accuracy, unsupervised EM.","{'title': '7 Discussion', 'number': '7'}"
-"When a small number of target-language parse trees is available, projection gives a boost equivalent to doubling the number of target trees.","{'title': '7 Discussion', 'number': '7'}"
-The loss in performance from conditioning only on noisy 1-best source parses points to some natural avenues for improvement.,"{'title': '7 Discussion', 'number': '7'}"
-We are exploring methods that incorporate a packed parse forest on the source side and similar representations of uncertainty about alignments.,"{'title': '7 Discussion', 'number': '7'}"
-"Building on our recent belief propagation work (Smith and Eisner, 2008), we can jointly infer two dependency trees and their alignment, under a joint distribution p(t, a, t'  |w, w') that evaluates the full graph of dependency and alignment edges.","{'title': '7 Discussion', 'number': '7'}"
+"We connect two scenarios in structured parser trained on one corpus to another annotation style, and annotations from one to another.",Introduction
+We propose quasigrammar features for these structured learning tasks.,Introduction
+"That is, we score a aligned pair of source and target trees based on local features of the trees and the alignment.",Introduction
+"Our quasi-synchronous model assigns positive probability to any alignment of any trees, in contrast to a synchronous grammar, which would insist on some form of structural parallelism.",Introduction
+"In monolingual dependency parser adaptation, we achieve high accuracy in translating among multiple annotation styles for the same sentence.",Introduction
+"On the more difficult problem of cross-lingual parser projection, we learn a dependency parser for a target language by using bilingual text, an English parser, and automatic word alignments.",Introduction
+"Our experiments show that unsupervised QG projection improves on parses trained using only highprecision projected annotations and far outperforms, by more than 35% absolute dependency accuracy, learning an unsupervised parser from raw target-language text alone.",Introduction
+"When a few target-language parse trees are available, projection gives a boost equivalent to doubling the number of target-language trees. first author would like to thank the Center for Intelligent Information Retrieval at UMass Amherst.",Introduction
+We would also like to thank Noah Smith and Rebecca Hwa for helpful discussions and the anonymous reviewers for their suggestions for improving the paper.,Introduction
+"Consider the problem of learning a dependency parser, which must produce a directed tree whose vertices are the words of a given sentence.",Experiment/Discussion
+There are many differing conventions for representing syntactic relations in dependency trees.,Experiment/Discussion
+"Say that we wish to output parses in the Prague style and so have annotated a small target corpus—e.g., 100 sentences—with those conventions.",Experiment/Discussion
+A parser trained on those hundred sentences will achieve mediocre dependency accuracy (the proportion of words that attach to their correct parent).,Experiment/Discussion
+But what if we also had a large number of trees in the CoNLL style (the source corpus)?,Experiment/Discussion
+Ideally they should help train our parser.,Experiment/Discussion
+"But unfortunately, a parser that learned to produce perfect CoNLL-style trees would, for example, get both links “wrong” when its coordination constructions were evaluated against a Prague-style gold standard (Figure 1).",Experiment/Discussion
+"If it were just a matter of this one construction, the obvious solution would be to write a few rules by hand to transform the large source training corpus into the target style.",Experiment/Discussion
+"Suppose, however, that there were many more ways that our corpora differed.",Experiment/Discussion
+Then we would like to learn a statistical model to transform one style of tree into another.,Experiment/Discussion
+We may not possess hand-annotated training data for this tree-to-tree transformation task.,Experiment/Discussion
+That would require the two corpora to annotate some of the same sentences in different styles.,Experiment/Discussion
+"But fortunately, we can automatically obtain a noisy form of the necessary paired-tree training data.",Experiment/Discussion
+"A parser trained on the source corpus can parse the sentences in our target corpus, yielding trees (or more generally, probability distributions over trees) in the source style.",Experiment/Discussion
+We will then learn a tree transformation model relating these noisy source trees to our known trees in the target style.,Experiment/Discussion
+"This model should enable us to convert the original large source corpus to target style, giving us additional training data in the target style.",Experiment/Discussion
+"For many target languages, however, we do not have the luxury of a large parsed “source corpus” in the language, even one in a different style or domain as above.",Experiment/Discussion
+"Thus, we may seek other forms of data to augment our small target corpus.",Experiment/Discussion
+"One option would be to leverage unannotated text (McClosky et al., 2006; Smith and Eisner, 2007).",Experiment/Discussion
+But we can also try to transfer syntactic information from a parsed source corpus in another language.,Experiment/Discussion
+This is an extreme case of out-of-domain data.,Experiment/Discussion
+This leads to the second task of this paper: learning a statistical model to transform a syntactic analysis of a sentence in one language into an analysis of its translation.,Experiment/Discussion
+Tree transformations are often modeled with synchronous grammars.,Experiment/Discussion
+Suppose we are given a sentence w' in the “source” language and its translation w into the “target” language.,Experiment/Discussion
+"Their syntactic parses t' and t are presumably not independent, but will tend to have some parallel or at least correlated structure.",Experiment/Discussion
+"So we could jointly model the parses t', t and the alignment a between them, with a model of the form p(t, a, t' I w, w').",Experiment/Discussion
+"Such a joint model captures how t, a, t' mutually constrain each other, so that even partial knowledge of some of these three variables can help us to recover the others when training or decoding on bilingual text.",Experiment/Discussion
+"This idea underlies a number of recent papers on syntax-based alignment (using t and t' to better recover a), grammar induction from bitext (using a to better recover t and t'), parser projection (using t' and a to better recover t), as well as full joint parsing (Smith and Smith, 2004; Burkett and Klein, 2008).",Experiment/Discussion
+"In this paper, we condition on the 1-best source tree t'.",Experiment/Discussion
+"As for the alignment a, our models either condition on the 1-best alignment or integrate the alignment out.",Experiment/Discussion
+"Our models are thus of the form p(t w, w', t', a) or, in the generative case, p(w, t, a w', t').",Experiment/Discussion
+We intend to consider other formulations in future work.,Experiment/Discussion
+"So far, this is very similar to the monolingual parser adaptation scenario, but there are a few key differences.",Experiment/Discussion
+"Since the source and target sentences in the bitext are in different languages, there is no longer a trivial alignment between the words of the source and target trees.",Experiment/Discussion
+"Given word alignments, we could simply try to project dependency links in the source tree onto the target text.",Experiment/Discussion
+"A link-by-link projection, however, could result in invalid trees on the target side, with cycles or disconnected words.",Experiment/Discussion
+"Instead, our models learn the necessary transformations that align and transform a source tree into a target tree by means of quasisynchronous grammar (QG) features.",Experiment/Discussion
+Figure 2 shows an example of bitext helping disambiguation when a parser is trained with only a small number of Chinese trees.,Experiment/Discussion
+"With the help of the English tree and alignment, the parser is able to recover the correct Chinese dependencies using QG features.",Experiment/Discussion
+Incorrect edges from the monolingual parser are shown with dashed lines.,Experiment/Discussion
+"(The bilingual parser corrects additional errors in the second half of this sentence, which has been removed to improve legibility.)",Experiment/Discussion
+"The parser is able to recover the long-distance dependency from the first Chinese word (China) to the last (begun), while skipping over the intervening noun phrase that confused the undertrained monolingual parser.",Experiment/Discussion
+"Although, due to the auxiliary verb, “China” and “begun” are siblings in English and not in direct dependency, the QG features still leverage this indirect projection.",Experiment/Discussion
+We start by describing the features we use to augment conditional and generative parsers when scoring pairs of trees (§2).,Experiment/Discussion
+Then we discuss in turn monolingual (§3) and cross-lingual (§4) parser adaptation.,Experiment/Discussion
+"Finally, we present experiments on cross-lingual parser projection in conditions when no target language trees are available for training (§5) and when some trees are available (§6).",Experiment/Discussion
+What should our model of source and target trees look like?,Experiment/Discussion
+"In our view, traditional approaches based on synchronous grammar are problematic both computationally and linguistically.",Experiment/Discussion
+Full inference takes O(n6) time or worse (depending on the grammar formalism).,Experiment/Discussion
+"Yet synchronous models only consider a limited hypothesis space: e.g., parses must be projective, and alignments must decompose according to the recursive parse structure.",Experiment/Discussion
+"(For example, two nodes can be aligned only if their respective parents are also aligned.)",Experiment/Discussion
+"The synchronous model’s probability mass function is also restricted to decompose in this way, so it makes certain conditional independence assumptions; put another way, it can evaluate only certain properties of the triple (t, a, t0).",Experiment/Discussion
+"We instead model (t, a, t0) as an arbitrary graph that includes dependency links among the words of each sentence as well as arbitrary alignment links between the words of the two sentences.",Experiment/Discussion
+This permits non-synchronous and many-to-many alignments.,Experiment/Discussion
+"The only hard constraint we impose is that the dependency links within each sentence must constitute a valid monolingual parse—a directed projective spanning tree.1 Given the two sentences w, w0, our probability distribution over possible graphs considers local features of the parses, the alignment, and both jointly.",Experiment/Discussion
+"Thus, we learn what local syntactic configurations tend to occur in each language and how they correspond across languages.",Experiment/Discussion
+"As a result, we might learn that parses are “mostly synchronous,” but that there are some systematic cross-linguistic 1Non-projective parsing would also be possible. divergences and some instances of sloppy (nonparallel or inexact) translation.",Experiment/Discussion
+"Our model is thus a form of quasi-synchronous grammar (QG) (Smith and Eisner, 2006a).",Experiment/Discussion
+"In that paper, QG was applied to word alignment and has since found applications in question answering (Wang et al., 2007), paraphrase detection (Das and Smith, 2009), and machine translation (Gimpel and Smith, 2009).",Experiment/Discussion
+All the models in this paper are conditioned on the source tree t0.,Experiment/Discussion
+"Conditionally-trained models of adaptation and projection also condition on the target string w and its alignment a to w0 and thus have the form p(t  |w, w0, t0, a); the unsupervised, generative projection models in §5 have the form p(w, t, a  |w0, t0).",Experiment/Discussion
+"The score s of a given tuple of trees, words, and alignment can thus be written as a dot product of weights w with features f and g: � wjgj(t,t0,a,w,w0) + j The features f look only at target words and dependencies.",Experiment/Discussion
+"In the conditional models of §3 and §6, these features are those of an edge-factored dependency parser (McDonald et al., 2005).",Experiment/Discussion
+"In the generative models of §5, f has the form of a dependency model with valence (Klein and Manning, 2004).",Experiment/Discussion
+"All models, for instance, have a feature template that considers the parts of speech of a potential parent-child relation.",Experiment/Discussion
+"In order to benefit from the source language, we also need to include bilingual features g. When scoring a candidate target dependency link from word x → y, these features consider the relationship of their corresponding source words x0 and y0.",Experiment/Discussion
+(The correspondences are determined by the alignment a.),Experiment/Discussion
+"For instance, the source tree t0 may contain the link x0 → y0, which would cause a feature for monotonic projection to fire for the x → y edge.",Experiment/Discussion
+"If, on the other hand, y0 → x0 E t0, a head-swapping feature fires.",Experiment/Discussion
+"If x0 = y0, i.e. x and y align to the same word, the same-word feature fires.",Experiment/Discussion
+"Similar features fire when x0 and y0 are in grandparent-grandchild, sibling, c-command, or none-of-the above relationships, or when y aligns to NULL.",Experiment/Discussion
+"These alignment classes are called configurations (Smith and Eisner, 2006a, and following).",Experiment/Discussion
+"When training is conditioned on the target words (see §3 and §6 below), we conjoin these configuration features with the part of speech and coarse part of speech of one or both of the source and target words, i.e. the feature template has from one to four tags.",Experiment/Discussion
+"In conditional training, the exponentiated scores s are normalized by a constant: Z = Et exp[s(t, t', a, w, w')].",Experiment/Discussion
+"For the generative model, the locally normalized generative process is explained in §5.3.4.",Experiment/Discussion
+"Previous researchers have written fix-up rules to massage the projected links after the fact and learned a parser from the resulting trees (Hwa et al., 2005).",Experiment/Discussion
+"Instead, our models learn the necessary transformations that align and transform a source tree into a target tree.",Experiment/Discussion
+"Other researchers have tackled the interesting task of learning parsers from unparsed bitext alone (Kuhn, 2004; Snyder et al., 2009); our methods take advantage of investments in high-resource languages such as English.",Experiment/Discussion
+"In work most closely related to this paper, Ganchev et al. (2009) constrain the posterior distribution over target-language dependencies to align to source dependencies some “reasonable” proportion of the time (≈ 70%, cf.",Experiment/Discussion
+Table 2 in this paper).,Experiment/Discussion
+"This approach performs well but cannot directly learn regular cross-language non-isomorphisms; for instance, some fixup rules for auxiliary verbs need to be introduced.",Experiment/Discussion
+"Finally, Huang et al. (2009) use features, somewhat like QG configurations, on the shift-reduce actions in a monolingual, targetlanguage parser.",Experiment/Discussion
+"As discussed in §1, the adaptation scenario is a special case of parser projection where the word alignments are one-to-one and observed.",Experiment/Discussion
+"To test our handling of QG features, we performed experiments in which training saw the correct parse trees in both source and target domains, and the mapping between them was simple and regular.",Experiment/Discussion
+"We also performed experiments where the source trees were replaced by the noisy output of a trained parser, making the mapping more complex and harder to learn.",Experiment/Discussion
+"We used the subset of the Penn Treebank from the CoNLL 2007 shared task and converted it to dependency representation while varying two parameters: (1) CoNLL vs. Prague coordination style (Figure 1), and (2) preposition the head vs. the child of its nominal object.",Experiment/Discussion
+"We trained an edge-factored dependency parser (McDonald et al., 2005) on “source” domain data that followed one set of dependency conventions.",Experiment/Discussion
+We then trained an edge-factored parser with QG features on a small amount of “target” domain data.,Experiment/Discussion
+"The source parser outputs were produced for all target data, both training and test, so that features for the target parser could refer to them.",Experiment/Discussion
+"In this task, we know what the gold-standard source language parses are for any given text, since we can produce them from the original Penn Treebank.",Experiment/Discussion
+"We can thus measure the contribution of adaptation loss alone, and the combined loss of imperfect source-domain parsing with adaptation (Table 1).",Experiment/Discussion
+"When no target domain trees are available, we simply have the performance of the source domain parser on this out-of-domain data.",Experiment/Discussion
+Training a target-domain parser on as few as 10 sentences shows substantial improvements in accuracy.,Experiment/Discussion
+"In the “gold” conditions, where the target parser starts with perfect source trees, accuracy approaches 100%; in the realistic “parse” conditions, where the target-domain parser gets noisy source-domain parses, the improvements are quite significant but approach a lower ceiling imposed by the performance of the source parser.2 The adaptation problem in this section is a simple proof of concept of the QG approach; however, more complex and realistic adaptation problems exist.",Experiment/Discussion
+Monolingual adaptation is perhaps most obviously useful when the source parser is a blackbox or rule-based system or is trained on unavailable data.,Experiment/Discussion
+"One might still want to use such a parser in some new context, which might require new data or a new annotation standard.",Experiment/Discussion
+We are also interested in scenarios where we want to avoid expensive retraining on large reannotated treebanks.,Experiment/Discussion
+We would like a linguist to be able to annotate a few trees according to a hypothesized theory and then quickly use QG adaptation to get a parser for that theory.,Experiment/Discussion
+One example would be adapting a constituency parser to produce dependency parses.,Experiment/Discussion
+"We have concentrated here on adapting between two dependency parse styles, in order to line up with the cross-lingual tasks to which we now turn.",Experiment/Discussion
+"As in the adaptation scenario above, many syntactic structures can be transferred from one language to another.",Experiment/Discussion
+"In this section, we evaluate the extent of this direct projection on a small handannotated corpus.",Experiment/Discussion
+"In §5, we will use a QG generative model to learn dependency parsers from bitext when there are no annotations in the target language.",Experiment/Discussion
+"Finally, in §6,we show how QG features can augment a target-language parser trained on a small set of labeled trees.",Experiment/Discussion
+"For syntactic annotation projection to work at all, we must hypothesize, or observe, that at least some syntactic structures are preserved in translation.",Experiment/Discussion
+"Hwa et al. (2005) have called this intuition the Direct Correspondence Assumption (DCA, with slight notational changes): Given a pair of sentences w and w' that are translations of each other with syntactic structure t and t', if nodes x' and y' of t' are aligned with nodes x and y of t, respectively, and if syntactic relationship R(x', y') holds in t', then R(x, y) holds in t. The validity of this assumption clearly depends on the node-to-node alignment of the two trees.",Experiment/Discussion
+"We again work in a dependency framework, where syntactic nodes are simply lexical items.",Experiment/Discussion
+This allows us to use existing work on word alignment.,Experiment/Discussion
+Hwa et al. (2005) tested the DCA under idealized conditions by obtaining hand-corrected dependency parse trees of a few hundred sentences of Spanish-English and Chinese-English bitext.,Experiment/Discussion
+They also used human-produced word alignments.,Experiment/Discussion
+"Since their word alignments could be many-tomany, they gave a heuristic Direct Projection Algorithm (DPA) for resolving them into component dependency relations.",Experiment/Discussion
+"It should be noted that this process introduced empty words into the projected target language tree and left words that are unaligned to English detached from the tree; as a result, they measured performance in dependency Fscore rather than accuracy.",Experiment/Discussion
+"With manual English parses and word alignments, this DPA achieved 36.8% F-score in Spanish and 38.1% in Chinese.",Experiment/Discussion
+"With Collins-model English parses and GIZA++ word alignments, F-score was 33.9% for Spanish and 26.3% for Chinese.",Experiment/Discussion
+Compare this to the Spanish attach-left baseline of 31.0% and the Chinese attach-right baselines of 35.9%.,Experiment/Discussion
+These discouragingly low numbers led them to write languagespecific transformation rules to fix up the projected trees.,Experiment/Discussion
+"After these rules were applied to the projections of automatic English parses, F-score was 65.7% for English and 52.4% for Chinese.",Experiment/Discussion
+"While these F-scores were low, it is useful to look at a subset of the alignment: dependencies projected across one-to-one alignments before the heuristic fix-ups had a much higher precision, if lower recall, than Hwa et al.’s final results.",Experiment/Discussion
+"Using Hwa et al.’s data, we calculated that the precision of projection to Spanish and Chinese via these one-to-one links was ≈ 65% (Table 2).",Experiment/Discussion
+There is clearly more information in these direct links than one would think from the F-scores.,Experiment/Discussion
+"To exploit this information, however, we need to overcome the problems of (1) learning from partial trees, when not all target words are attached, and (2) learning in the presence of the still considerable noise in the projected one-to-one dependencies—e.g., at least 28% error for Spanish non-punctuation dependencies.",Experiment/Discussion
+What does this noise consist of?,Experiment/Discussion
+"Some errors reflect fairly arbitrary annotation conventions in treebanks, e.g. should the auxiliary verb govern the main verb or vice versa.",Experiment/Discussion
+(Examples like this suggest that the projection problem contains the adaptation problem above.),Experiment/Discussion
+Other errors arise from divergences in the complements required of certain head words.,Experiment/Discussion
+"In the German-English translation pair, with co-indexed words aligned, [an [den Libanon1]] denken2 H remember2 Lebanon1 we would prefer that the preposition an attach to denken, even though the preposition’s object Libanon aligns to a direct child of remember.",Experiment/Discussion
+"In other words, we would like the grandparentparent-child chain of denken → an → Libanon to align to the parent-child pair of remember → Lebanon.",Experiment/Discussion
+"Finally, naturally occurring bitexts contain some number of free or erroneous translations.",Experiment/Discussion
+Machine translation researchers often seek to strike these examples from their training corpora; “free” translations are not usually welcome from an MT system.,Experiment/Discussion
+"First, we consider the problem of parser projection when there are zero target-language trees available.",Experiment/Discussion
+"As in much other work on unsupervised parsing, we try to learn a generative model that can predict target-language sentences.",Experiment/Discussion
+Our novel contribution is to condition the probabilities of the generative actions on the dependency parse of a source-language translation.,Experiment/Discussion
+"Thus, our generative model is a quasi-synchronous grammar, exactly as in (Smith and Eisner, 2006a).3 When training on target sentences w, therefore, we tune the model parameters to maximize not Et p(t, w) as in ordinary EM, but rather Et p(t, w, a  |t', w').",Experiment/Discussion
+"We hope that this conditional EM training will drive the model to posit appropriate syntactic relationships in the latent variable t, because—thanks to the structure of the QG model—that is the easiest way for it to exploit the extra information in t', w' to help predict w.4 At test time, t', w' are not made available, so we just use the trained model to find argmaxt p(t  |w), backing off from the conditioning on t', w' and summing over a.",Experiment/Discussion
+"Below, we present the specific generative model (§5.1) and some details of training (§5.2).",Experiment/Discussion
+"We will then compare three approaches (§5.3): §5.3.2 a straight EM baseline (which does not condition on t', w' at all) §5.3.3 a “hard” projection baseline (which naively projects t', w' to derive direct supervision in the target language) §5.3.4 our conditional EM approach above (which makes t', w' available to the learner for “soft” indirect supervision via QG) Our base models of target-language syntax are generative dependency models that have achieved state-of-the art results in unsupervised dependency structure induction.",Experiment/Discussion
+"The simplest version, called Dependency Model with Valence (DMV), has been used in isolation and in combination with other models (Klein and Manning, 2004; Smith and Eisner, 2006b).",Experiment/Discussion
+"The DMV generates the right children, and then independently the left children, for each node in the dependency tree.",Experiment/Discussion
+"Nodes correspond to words, which are represented by their part-of-speech tags.",Experiment/Discussion
+"At each step of generation, the DMV stochastically chooses whether to stop generating, conditioned on the currently generating head; whether it is generating to the right or left; and whether it has yet generated any children on that side.",Experiment/Discussion
+"If it chooses to continue, it then 4The contrastive estimation of Smith and Eisner (2005) also used a form of conditional EM, with similar motivation.",Experiment/Discussion
+"They suggested that EM grammar induction, which learns to predict w, unfortunately learns mostly to predict lexical topic or other properties of the training sentences that do not strongly require syntactic latent variables.",Experiment/Discussion
+"To focus EM on modeling the syntactic relationships, they conditioned the prediction of w on almost complete knowledge of the lexical items.",Experiment/Discussion
+"Similarly, we condition on a source translation of w. Furthermore, our QG model structure makes it easy for EM to learn to exploit the (explicitly represented) syntactic properties of that translation when predicting w. stochastically generates the tag of a new child, conditioned on the head.",Experiment/Discussion
+"The parameters of the model are thus of the form where head and child are part-of-speech tags, dir E {left, right}, and adj, stop E {true, false}.",Experiment/Discussion
+ROOT is stipulated to generate a single right child.,Experiment/Discussion
+"Bilingual configurations that condition on t', w' (§2) are incorporated into the generative process as in Smith and Eisner (2006a).",Experiment/Discussion
+"When the model is generating a new child for word x, aligned to x', it first chooses a configuration and then chooses a source word y' in that configuration.",Experiment/Discussion
+"The child y is then generated, conditioned on its parent x, most recent sibling a, and its source analogue y'.",Experiment/Discussion
+"As in previous work on grammar induction, we learn the DMV from part-of-speech-tagged targetlanguage text.",Experiment/Discussion
+We use expectation maximization (EM) to maximize the likelihood of the data.,Experiment/Discussion
+"Since the likelihood function is nonconvex in the unsupervised case, our choice of initial parameters can have a significant effect on the outcome.",Experiment/Discussion
+"Although we could also try many random starting points, the initializer in Klein and Manning (2004) performs quite well.",Experiment/Discussion
+"The base dependency parser generates the right dependents of a head separately from the left dependents, which allows O(n3) dynamic programming for an n-word target sentence.",Experiment/Discussion
+"Since the QG annotates nonterminals of the grammar with single nodes of t', and we consider two nodes of t' when evaluating the above dependency configurations, QG parsing runs in O(n3m2) for an m-word source sentence.",Experiment/Discussion
+"If, however, we restrict candidate senses for a target child c to come from links in an IBM Model 4 Viterbi alignment, we achieve O(n3k2), where k is the maximum number of possible words aligned to a given target language word.",Experiment/Discussion
+"In practice, k « m, and parsing is not appreciably slower than in the monolingual setting.",Experiment/Discussion
+"If all configurations were equiprobable, the source sentence would provide no information to the target.",Experiment/Discussion
+"In our QG experiments, therefore, we started with a bias towards direct parent–child links and a very small probability for breakages of locality.",Experiment/Discussion
+"The values of other configuration parameters seem, experimentally, less important for insuring accurate learning.",Experiment/Discussion
+Our experiments compare learning on target language text to learning on parallel text.,Experiment/Discussion
+"In the latter case, we compare learning from high-precision one-to-one alignments alone, to learning from all alignments using a QG.",Experiment/Discussion
+"Our development and test data were drawn from the German TIGER and Spanish Cast3LB treebanks as converted to projective dependencies for the CoNLL 2007 Shared Task (Brants et al., 2002; Civit Torruella and MartiAntonin, 2002).5 Our training data were subsets of the 2006 Statistical Machine Translation Workshop Shared Task, in particular from the German-English and Spanish-English Europarl parallel corpora (Koehn, 2002).",Experiment/Discussion
+"The Shared Task provided prebuilt automatic GIZA++ word alignments, which we used to facilitate replicability.",Experiment/Discussion
+"Since these word alignments do not contain posterior probabilities or null links, nor do they distinguish which links are in the IBM Model intersection, we treated all links as equally likely when learning the QG.",Experiment/Discussion
+Target language words unaligned to any source language words were the only nodes allowed to align to NULL in QG derivations.,Experiment/Discussion
+We parsed the English side of the bitext with the projective dependency parser described by McDonald et al. (2005) trained on the Penn Treebank §§2–20.,Experiment/Discussion
+"Much previous work on unsupervised grammar induction has used gold-standard partof-speech tags (Smith and Eisner, 2006b; Klein and Manning, 2004; Klein and Manning, 2002).",Experiment/Discussion
+"While there are no gold-standard tags for the Europarl bitext, we did train a conditional Markov 5We made one change to the annotation conventions in German: in the dependencies provided, words in a noun phrase governed by a preposition were all attached to that preposition.",Experiment/Discussion
+"This meant that in the phrase das Kind (“the child”) in, say, subject position, das was the child of Kind; but, in f¨ur das Kind (“for the child”), das was the child of f¨ur.",Experiment/Discussion
+"This seems to be a strange choice in converting from the TIGER constituency format, which does in fact annotate NPs inside PPs; we have standardized prepositions to govern only the head of the noun phrase.",Experiment/Discussion
+We did not change any other annotation conventions to make them more like English.,Experiment/Discussion
+"In the Spanish treebank, for instance, control verbs are the children of their verbal complements: in quiero decir (“I want to say”=“I mean”), quiero is the child of decir.",Experiment/Discussion
+"In German coordinations, the coordinands all attach to the first, but in English, they all attach to the last.",Experiment/Discussion
+These particular divergences in annotation style hurt all of our models equally (since none of them have access to labeled trees).,Experiment/Discussion
+These annotation divergences are one motivation for experiments below that include some target trees. model tagger on a few thousand tagged sentences.,Experiment/Discussion
+This is the only supervised data we used in the target.,Experiment/Discussion
+"We created versions of each training corpus with the first thousand, ten thousand, and hundred thousand sentence pairs, each a prefix of the next.",Experiment/Discussion
+"Since the target-language-only baseline converged much more slowly, we used a version of the corpora with sentences 15 target words or fewer.",Experiment/Discussion
+"Using the target side of the bitext as training data, we initialized our model parameters as described in §5.2 and ran EM.",Experiment/Discussion
+We checked convergence on a development set and measured unlabeled dependency accuracy on held-out test data.,Experiment/Discussion
+We compare performance to simple attach-right and attach left baselines (Table 3).,Experiment/Discussion
+"For mostly headfinal German, the “modify next” baseline is better; for mostly head-initial Spanish, “modify previous” wins.",Experiment/Discussion
+"Even after several hundred iterations, performance was slightly, but not significantly better than the baseline for German.",Experiment/Discussion
+EM training did not beat the baseline for Spanish.6 The simplest approach to using the high-precision one-to-one word alignments is labeled “hard projection” in the table.,Experiment/Discussion
+We filtered the training corpus to find sentences where enough links were projected to completely determine a target language tree.,Experiment/Discussion
+"Of course, we needed to filter more than 1000 sentences of bitext to output 1000 training sentences in this way.",Experiment/Discussion
+"We simply perform supervised training with this subset, which is still quite noisy (§4), and performance quickly 6While these results are worse than those obtained previously for this model, the experiments in Klein and Manning (2004) and only used sentences of 10 words or fewer, without punctuation, and with gold-standard tags.",Experiment/Discussion
+"Punctuation in particular seems to trip up the initializer: since a sentence-final periods appear in most sentences, EM often decides to make it the head. plateaus.",Experiment/Discussion
+"Still, this method substantially improves over the baselines and unsupervised EM.",Experiment/Discussion
+Restricting ourselves to fully projected trees seems a waste of information.,Experiment/Discussion
+"We can also simply take all one-to-one projected links, impute expected counts for the remaining dependencies with EM, and update our models.",Experiment/Discussion
+"This approach (“hard projection with EM”), however, performed worse than using only the fully projected trees.",Experiment/Discussion
+"In fact, only the first iteration of EM with this method made any improvement; afterwards, EM degraded accuracy further from the numbers in Table 3.",Experiment/Discussion
+The quasi-synchronous model used all of the alignments in re-estimating its parameters and performed significantly better than hard projection.,Experiment/Discussion
+"Unlike EM on the target language alone, the QG’s performance does not depend on a clever initializer for initial model weights—all parameters of the generative model except for the QG configuration features were initialized to zero.",Experiment/Discussion
+Setting the prior to prefer direct correspondence provides the necessary bias to initialize learning.,Experiment/Discussion
+Error analysis showed that certain types of dependencies eluded the QG’s ability to learn from bitext.,Experiment/Discussion
+"The Spanish treebank treats some verbal complements as the heads of main verbs and auxiliary verbs as the children of participles; the QG, following the English, learned the opposite dependency direction.",Experiment/Discussion
+Spanish treebank conventions for punctuation were also a common source of errors.,Experiment/Discussion
+"In both German and Spanish, coordinations (a common bugbear for dependency grammars) were often mishandled: both treebanks attach the later coordinands and any conjunctions to the first coordinand; the reverse is true in English.",Experiment/Discussion
+"Finally, in both German and Spanish, preposition attachments often led to errors, which is not surprising given the unlexicalized target-language grammars.",Experiment/Discussion
+"Rather than trying to adjudicate which dependencies are “mere” annotation conventions, it would be useful to test learned dependency models on some extrinsic task such as relation extraction or machine translation.",Experiment/Discussion
+"Finally, we consider the problem of parser projection when some target language trees are available.",Results/Conclusion
+"As in the adaptation case (§3), we train a conditional model (not a generative DMV) of the target tree given the target sentence, using the monolingual and bilingual QG features, including configurations conjoined with tags, outlined above (§2).",Results/Conclusion
+"For these experiments, we used the LDC’s English-Chinese Parallel Treebank (ECTB).",Results/Conclusion
+"Since manual word alignments also exist for a part of this corpus, we were able to measure the loss in accuracy (if any) from the use of an automatic English parser and word aligner.",Results/Conclusion
+"The sourcelanguage English dependency parser was trained on the Wall Street Journal, where it achieved 91% dependency accuracy on development data.",Results/Conclusion
+"However, it was only 80.3% accurate when applied to our task, the English side of the ECTB.7 After parsing the source side of the bitext, we train a parser on the annotated target side, using QG features described above (§2).",Results/Conclusion
+Both the monolingual target-language parser and the projected parsers are trained to optimize conditional likelihood of the target trees t' with ten iterations of stochastic gradient ascent.,Results/Conclusion
+"In Figure 3, we plot the performance of the target-language parser on held-out bitext.",Results/Conclusion
+"Although projection performance is, not surprisingly, better if we know the true source trees at training and test time, even with the 1-best output of the source parser, QG features help produce a parser as accurate asq one trained on twice the amount of monolingual data.",Results/Conclusion
+"In ablation experiments, we included bilingual features only for directly projected links, with no features for head-swapping, grandparents, etc.",Results/Conclusion
+"When using 1-best English parses, parsers trained only with direct-projection and monolingual features performed worse; when using gold English parses, parsers with directprojection-only features performed better when trained with more Chinese trees.",Results/Conclusion
+The two related problems of parser adaptation and projection are often approached in different ways.,Results/Conclusion
+"Many adaptation methods operate by simple augmentations of the target feature space, as we have done here (Daume III, 2007).",Results/Conclusion
+"Parser projection, on the other hand, often uses a multi-stage pipeline 7It would be useful to explore whether the techniques of §3 above could be used to improve English accuracy by domain adaptation.",Results/Conclusion
+"In theory a model with QG features trained to perform well on Chinese should not suffer from an inaccurate, but consistent, English parser, but the results in Figure 3 indicate a significant benefit to be had from better English parsing or from joint Chinese-English inference. having twice as much data in the target language.",Results/Conclusion
+"Note that the penalty for using automatic alignments instead of gold alignments is negligible; in fact, using Source text alone is often higher than +Gold alignments.",Results/Conclusion
+"Using gold source trees, however, significantly outperforms using 1-best source trees.",Results/Conclusion
+"(Hwa et al., 2005).",Results/Conclusion
+The methods presented here move parser projection much closer in efficiency and simplicity to monolingual parsing.,Results/Conclusion
+"We showed that augmenting a target parser with quasi-synchronous features can lead to significant improvements—first in experiments with adapting to different dependency representations in English, and then in cross-language parser projection.",Results/Conclusion
+"As with many domain adaptation problems, it is quite helpful to have some annotated target data, especially when annotation styles vary (Dredze et al., 2007).",Results/Conclusion
+"Our experiments show that unsupervised QG projection improves on parsers trained using only high-precision projected annotations and far outperforms, by more than 35% absolute dependency accuracy, unsupervised EM.",Results/Conclusion
+"When a small number of target-language parse trees is available, projection gives a boost equivalent to doubling the number of target trees.",Results/Conclusion
+The loss in performance from conditioning only on noisy 1-best source parses points to some natural avenues for improvement.,Results/Conclusion
+We are exploring methods that incorporate a packed parse forest on the source side and similar representations of uncertainty about alignments.,Results/Conclusion
+"Building on our recent belief propagation work (Smith and Eisner, 2008), we can jointly infer two dependency trees and their alignment, under a joint distribution p(t, a, t'  |w, w') that evaluates the full graph of dependency and alignment edges.",Results/Conclusion

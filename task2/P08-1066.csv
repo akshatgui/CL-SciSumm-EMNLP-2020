@@ -1,213 +1,213 @@
 col1,col2
-"In this paper, we propose a novel string-todependency algorithm for statistical machine translation.",{}
-"With this new framework, we employ a target dependency language model during decoding to exploit long distance word relations, which are unavailable with a traditional n-gram language model.",{}
-Our experiments show that the string-to-dependency decoder achieves 1.48 point improvement in BLEU and 2.53 point improvement in TER compared to a standard hierarchical string-tostring system on the NIST 04 Chinese-English evaluation set.,{}
-"In recent years, hierarchical methods have been successfully applied to Statistical Machine Translation (Graehl and Knight, 2004; Chiang, 2005; Ding and Palmer, 2005; Quirk et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-"In some language pairs, i.e.","{'title': '1 Introduction', 'number': '1'}"
-"Chinese-to-English translation, state-ofthe-art hierarchical systems show significant advantage over phrasal systems in MT accuracy.","{'title': '1 Introduction', 'number': '1'}"
-"For example, Chiang (2007) showed that the Hiero system achieved about 1 to 3 point improvement in BLEU on the NIST 03/04/05 Chinese-English evaluation sets compared to a start-of-the-art phrasal system.","{'title': '1 Introduction', 'number': '1'}"
-Our work extends the hierarchical MT approach.,"{'title': '1 Introduction', 'number': '1'}"
-"We propose a string-to-dependency model for MT, which employs rules that represent the source side as strings and the target side as dependency structures.","{'title': '1 Introduction', 'number': '1'}"
-"We restrict the target side to the so called wellformed dependency structures, in order to cover a large set of non-constituent transfer rules (Marcu et al., 2006), and enable efficient decoding through dynamic programming.","{'title': '1 Introduction', 'number': '1'}"
-"We incorporate a dependency language model during decoding, in order to exploit long-distance word relations which are unavailable with a traditional n-gram language model on target strings.","{'title': '1 Introduction', 'number': '1'}"
-"For comparison purposes, we replicated the Hiero decoder (Chiang, 2005) as our baseline.","{'title': '1 Introduction', 'number': '1'}"
-Our stringto-dependency decoder shows 1.48 point improvement in BLEU and 2.53 point improvement in TER on the NIST 04 Chinese-English MT evaluation set.,"{'title': '1 Introduction', 'number': '1'}"
-"In the rest of this section, we will briefly discuss previous work on hierarchical MT and dependency representations, which motivated our research.","{'title': '1 Introduction', 'number': '1'}"
-"In section 2, we introduce the model of string-to-dependency decoding.","{'title': '1 Introduction', 'number': '1'}"
-Section 3 illustrates of the use of dependency language models.,"{'title': '1 Introduction', 'number': '1'}"
-"In section 4, we describe the implementation details of our MT system.","{'title': '1 Introduction', 'number': '1'}"
-"We discuss experimental results in section 5, compare to related work in section 6, and draw conclusions in section 7.","{'title': '1 Introduction', 'number': '1'}"
-Graehl and Knight (2004) proposed the use of targettree-to-source-string transducers (xRS) to model translation.,"{'title': '1 Introduction', 'number': '1'}"
-"In xRS rules, the right-hand-side(rhs) of the target side is a tree with non-terminals(NTs), while the rhs of the source side is a string with NTs.","{'title': '1 Introduction', 'number': '1'}"
-Galley et al. (2006) extended this string-to-tree model by using Context-Free parse trees to represent the target side.,"{'title': '1 Introduction', 'number': '1'}"
-A tree could represent multi-level transfer rules.,"{'title': '1 Introduction', 'number': '1'}"
-"The Hiero decoder (Chiang, 2007) does not require explicit syntactic representation on either side of the rules.","{'title': '1 Introduction', 'number': '1'}"
-Both source and target are strings with NTs.,"{'title': '1 Introduction', 'number': '1'}"
-Decoding is solved as chart parsing.,"{'title': '1 Introduction', 'number': '1'}"
-Hiero can be viewed as a hierarchical string-to-string model.,"{'title': '1 Introduction', 'number': '1'}"
-"Ding and Palmer (2005) and Quirk et al. (2005) followed the tree-to-tree approach (Shieber and Schabes, 1990) for translation.","{'title': '1 Introduction', 'number': '1'}"
-"In their models, dependency treelets are used to represent both the source and the target sides.","{'title': '1 Introduction', 'number': '1'}"
-Decoding is implemented as tree transduction preceded by source side dependency parsing.,"{'title': '1 Introduction', 'number': '1'}"
-"While tree-to-tree models can represent richer structural information, existing tree-totree models did not show advantage over string-totree models on translation accuracy due to a much larger search space.","{'title': '1 Introduction', 'number': '1'}"
-One of the motivations of our work is to achieve desirable trade-off between model capability and search space through the use of the so called wellformed dependency structures in rule representation.,"{'title': '1 Introduction', 'number': '1'}"
-Dependency trees reveal long-distance relations between words.,"{'title': '1 Introduction', 'number': '1'}"
-"For a given sentence, each word has a parent word which it depends on, except for the root word.","{'title': '1 Introduction', 'number': '1'}"
-Figure 1 shows an example of a dependency tree.,"{'title': '1 Introduction', 'number': '1'}"
-Arrows point from the child to the parent.,"{'title': '1 Introduction', 'number': '1'}"
-"In this example, the word find is the root.","{'title': '1 Introduction', 'number': '1'}"
-Dependency trees are simpler in form than CFG trees since there are no constituent labels.,"{'title': '1 Introduction', 'number': '1'}"
-"However, dependency relations directly model semantic structure of a sentence.","{'title': '1 Introduction', 'number': '1'}"
-"As such, dependency trees are a desirable prior model of the target sentence.","{'title': '1 Introduction', 'number': '1'}"
-We restrict ourselves to the so-called well-formed target dependency structures based on the following considerations.,"{'title': '1 Introduction', 'number': '1'}"
-"In (Ding and Palmer, 2005; Quirk et al., 2005), there is no restriction on dependency treelets used in transfer rules except for the size limit.","{'title': '1 Introduction', 'number': '1'}"
-This may result in a high dimensionality in hypothesis representation and make it hard to employ shared structures for efficient dynamic programming.,"{'title': '1 Introduction', 'number': '1'}"
-"In (Galley et al., 2004), rules contain NT slots and combination is only allowed at those slots.","{'title': '1 Introduction', 'number': '1'}"
-"Therefore, the search space becomes much smaller.","{'title': '1 Introduction', 'number': '1'}"
-"Furthermore, shared structures can be easily defined based on the labels of the slots.","{'title': '1 Introduction', 'number': '1'}"
-"In order to take advantage of dynamic programming, we fixed the positions onto which another another tree could be attached by specifying NTs in dependency trees.","{'title': '1 Introduction', 'number': '1'}"
-"Marcu et al. (2006) showed that many useful phrasal rules cannot be represented as hierarchical rules with the existing representation methods, even with composed transfer rules (Galley et al., 2006).","{'title': '1 Introduction', 'number': '1'}"
-"For example, the following rule A number of techniques have been proposed to improve rule coverage.","{'title': '1 Introduction', 'number': '1'}"
-"(Marcu et al., 2006) and (Galley et al., 2006) introduced artificial constituent nodes dominating the phrase of interest.","{'title': '1 Introduction', 'number': '1'}"
-"The binarization method used by Wang et al. (2007) can cover many non-constituent rules also, but not all of them.","{'title': '1 Introduction', 'number': '1'}"
-"For example, it cannot handle the above example.","{'title': '1 Introduction', 'number': '1'}"
-DeNeefe et al. (2007) showed that the best results were obtained by combing these methods.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we use well-formed dependency structures to handle the coverage of non-constituent rules.","{'title': '1 Introduction', 'number': '1'}"
-"The use of dependency structures is due to the flexibility of dependency trees as a representation method which does not rely on constituents (Fox, 2002; Ding and Palmer, 2005; Quirk et al., 2005).","{'title': '1 Introduction', 'number': '1'}"
-The well-formedness of the dependency structures enables efficient decoding through dynamic programming.,"{'title': '1 Introduction', 'number': '1'}"
-"A string-to-dependency grammar G is a 4-tuple G =< R, X, Tf, Te >, where R is a set of transfer rules.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"X is the only non-terminal, which is similar to the Hiero system (Chiang, 2007).","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Tf is a set of terminals in the source language, and Te is a set of terminals in the target language1.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"A string-to-dependency transfer rule R E R is a 4-tuple R =< 5f, 5e, D, A >, where 5f E (Tf U {X})+ is a source string, 5e E (Te U {X})+ is a target string, D represents the dependency structure for 5e, and A is the alignment between 5f and 5e.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Non-terminal alignments in A must be one-to-one.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"In order to exclude undesirable structures, we only allow 5e whose dependency structure D is well-formed, which we will define below.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"In addition, the same well-formedness requirement will be applied to partial decoding results.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Thus, we will be able to employ shared structures to merge multiple partial results.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Based on the results in previous work (DeNeefe et al., 2007), we want to keep two kinds of dependency structures.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"In one kind, we keep dependency trees with a sub-root, where all the children of the sub-root are complete.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We call them fixed dependency structures because the head is known or fixed.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"In the other, we keep dependency structures of sibling nodes of a common head, but the head itself is unspecified or floating.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Each of the siblings must be a complete constituent.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We call them floating dependency structures.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Floating structures can represent many linguistically meaningful non-constituent structures: for example, like the red, a modifier of a noun.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Only those two kinds of dependency structures are well-formed structures in our system.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Furthermore, we operate over well-formed structures in a bottom-up style in decoding.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"However, the description given above does not provide a clear definition on how to combine those two types of structures.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"In the rest of this section, we will provide formal definitions of well-formed structures and combinatory operations over them, so that we can easily manipulate well-formed structures in decoding.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Formal definitions also allow us to easily extend the framework to incorporate a dependency language model in decoding.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Examples will be provided along with the formal definitions.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Consider a sentence 5 = w1w2...wn.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Let d1d2...dn represent the parent word IDs for each word.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"For example, d4 = 2 means that w4 depends 'We ignore the left hand side here because there is only one non-terminal X.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Of course, this formalism can be extended to have multiple NTs.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Definition 1 A dependency structure di..j is fixed on head h, where h E [i, j], or fixed for short, if and only if it meets the following conditions In addition, we say the category of di..j is (−, h, −), where − means this field is undefined.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"We say the category of di..j is (C, −, −) if j < h, or (−, −, C) otherwise.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"A category is composed of the three fields (A, h, B), where h is used to represent the head, and A and B are designed to model left and right dependents of the head respectively.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-A dependency structure is well-formed if and only if it is either fixed or floating.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We can represent dependency structures with graphs.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Figure 2 shows examples of fixed structures, Figure 3 shows examples of floating structures, and Figure 4 shows ill-formed dependency structures.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-It is easy to verify that the structures in Figures 2 and 3 are well-formed.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-4(a) is ill-formed because boy does not have its child word the in the tree.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-4(b) is ill-formed because it is not a continuous segment.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"As for the example the red mentioned above, it is a well-formed floating dependency structure.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"One of the purposes of introducing floating dependency structures is that siblings having a common parent will become a well-defined entity, although they are not considered a constituent.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We always build well-formed partial structures on the target side in decoding.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Furthermore, we combine partial dependency structures in a way such that we can obtain all possible well-formed but no ill-formed dependency structures during bottom-up decoding.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-The solution is to employ categories introduced above.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Each well-formed dependency structure has a category.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We can apply four combinatory operations over the categories.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"If we can combine two categories with a certain category operation, we can use a corresponding tree operation to combine two dependency structures.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-The category of the combined dependency structure is the result of the combinatory category operations.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We first introduce three meta category operations.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Two of them are unary operations, left raising (LR) and right raising (RR), and one is the binary operation unification (UF).","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"First, the raising operations are used to turn a completed fixed structure into a floating structure.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-It is easy to verify the following theorem according to the definitions.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Therefore we can always raise a fixed structure if we assume it is complete, i.e.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-(1) holds.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Unification is well-defined if and only if we can unify all three elements and the result is a valid fixed or floating category.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"For example, we can unify a fixed structure with a floating structure or two floating structures in the same direction, but we cannot unify two fixed structures.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Next we introduce the four tree operations on dependency structures.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Instead of providing the formal definition, we use figures to illustrate these operations to make it easy to understand.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Figure 1 shows a traditional dependency tree.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Figure 5 shows the four operations to combine partial dependency structures, which are left adjoining (LA), right adjoining (RA), left concatenation (LC) and right concatenation (RC).","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Child and parent subtrees can be combined with adjoining which is similar to the traditional dependency formalism.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We can either adjoin a fixed structure or a floating structure to the head of a fixed structure.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Complete siblings can be combined via concatenation.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"We can concatenate two fixed structures, one fixed structure with one floating structure, or two floating structures in the same direction.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-The flexibility of the order of operation allows us to take adWe use the same names for the operations on categories for the sake of convenience.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-We can easily use the meta category operations to define the four combinatory operations.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-The definition of the operations in the left direction is as follows.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Those in the right direction are similar.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-It is easy to verify the soundness and completeness of category operations based on one-to-one mapping of the conditions in the definitions of corresponding operations on dependency structures and on categories.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Suppose we have a dependency tree for a red apple, where both a and red depend on apple.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"There are two ways to compute the category of this string from the bottom up. cat(Da red apple) = LA(cat(Da),LA(cat(Dred),cat(Dapple))) = LA(LC(cat(Da), cat(Dred)), cat(Dapple)) Based on Theorem 2, it follows that combinatory operation of categories has the confluence property, since the result dependency structure is determined.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Corollary 1 (confluence) The category of a wellformed dependency tree does not depend on the order of category calculation.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"With categories, we can easily track the types of dependency structures and constrain operations in decoding.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"For example, we have a rule with dependency structure find +— X, where X right adjoins to find.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Suppose we have two floating structures2, We can replace X by X2, but not by X1 based on the definition of category operations.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Now we explain how we get the string-todependency rules from training data.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"The procedure is similar to (Chiang, 2007) except that we maintain tree structures on the target side, instead of strings.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Given sentence-aligned bi-lingual training data, we first use GIZA++ (Och and Ney, 2003) to generate word level alignment.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"We use a statistical CFG parser to parse the English side of the training data, and extract dependency trees with Magerman’s rules (1995).","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-Then we use heuristic rules to extract transferrules recursively based on the GIZA alignment and the target dependency trees.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-The rule extraction procedure is as follows.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-All the 4-tuples (P?,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"',� phrase alignments, where source phrase P ?","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"',� �is e under alignment3 A, and D, the dependency structure for P m,n e , is well-formed.","{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-All valid phrase templates are valid rules templates.,"{'title': '2 String-to-Dependency Translation', 'number': '2'}"
-"Let (Pi,j f , Pm,n e , D1, A) be a valid rule template, and (Pp,q f , Ps,t e , D2, A) a valid phrase alignment, where [p, q] C [i, j], [s, t] C [m, n], D2 is a sub-structure of D1, and at least one word in Pi,j f but not in Pp,q f is aligned.","{'title': '2.', 'number': '3'}"
-"We create a new valid rule template (P0 f, P0e, D0, A), where we obtain Pf0 by replacing Pp,q f with label X in Pi,j f , and obtain Among all valid rule templates, we collect those that contain at most two NTs and at most seven elements in the source as transfer rules in our system.","{'title': '2.', 'number': '3'}"
-"Following previous work on hierarchical MT (Chiang, 2005; Galley et al., 2006), we solve decoding as chart parsing.","{'title': '2.', 'number': '3'}"
-We view target dependency as the hidden structure of source fragments.,"{'title': '2.', 'number': '3'}"
-"The parser scans all source cells in a bottom-up style, and checks matched transfer rules according to the source side.","{'title': '2.', 'number': '3'}"
-"Once there is a completed rule, we build a larger dependency structure by substituting component dependency structures for corresponding NTs in the target dependency structure of rules.","{'title': '2.', 'number': '3'}"
-"Hypothesis dependency structures are organized in a shared forest, or AND-OR structures.","{'title': '2.', 'number': '3'}"
-"An ANDf aligned to Pm,n e , we mean all words in Pi,j f are either aligned to words in Pm,n e or unaligned, and vice versa.","{'title': '2.', 'number': '3'}"
-"Furthermore, at least one word in Pi,j structure represents an application of a rule over component OR-structures, and an OR-structure represents a set of alternative AND-structures with the same state.","{'title': '2.', 'number': '3'}"
-A state means a n-tuple that characterizes the information that will be inquired by up-level AND-structures.,"{'title': '2.', 'number': '3'}"
-"Supposing we use a traditional tri-gram language model in decoding, we need to specify the leftmost two words and the rightmost two words in a state.","{'title': '2.', 'number': '3'}"
-"Since we only have a single NT X in the formalism described above, we do not need to add the NT label in states.","{'title': '2.', 'number': '3'}"
-"However, we need to specify one of the three types of the dependency structure: fixed, floating on the left side, or floating on the right side.","{'title': '2.', 'number': '3'}"
-This information is encoded in the category of the dependency structure.,"{'title': '2.', 'number': '3'}"
-"In the next section, we will explain how to extend categories and states to exploit a dependency language model during decoding.","{'title': '2.', 'number': '3'}"
-"For the dependency tree in Figure 1, we calculate the probability of the tree as follows ×PL(will|find-as-head) ×PL(boy|will, find-as-head) ×PL(the|boy-as-head) ×PR(it|find-as-head) ×PR(interesting|it, find-as-head) Here PT(x) is the probability that word x is the root of a dependency tree.","{'title': '3 Dependency Language Model', 'number': '4'}"
-PL and PR are left and right side generative probabilities respectively.,"{'title': '3 Dependency Language Model', 'number': '4'}"
-"Let wh be the head, and wL1wL2...wLn be the children on the left side from the nearest to the farthest.","{'title': '3 Dependency Language Model', 'number': '4'}"
-"Suppose we use a tri-gram dependency LM, wh-as-head represents wh used as the head, and it is different from wh in the dependency language model.","{'title': '3 Dependency Language Model', 'number': '4'}"
-The right side probability is similar.,"{'title': '3 Dependency Language Model', 'number': '4'}"
-"In order to calculate the dependency language model score, or depLM score for short, on the fly for partial hypotheses in a bottom-up decoding, we need to save more information in categories and states.","{'title': '3 Dependency Language Model', 'number': '4'}"
-"We use a 5-tuple (LF, LN, h, RN, RF) to represent the category of a dependency structure. h represents the head.","{'title': '3 Dependency Language Model', 'number': '4'}"
-LF and RF represent the farthest two children on the left and right sides respectively.,"{'title': '3 Dependency Language Model', 'number': '4'}"
-"Similarly, LN and RN represent the nearest two children on the left and right sides respectively.","{'title': '3 Dependency Language Model', 'number': '4'}"
-The three types of categories are as follows.,"{'title': '3 Dependency Language Model', 'number': '4'}"
-Similar operations as described in Section 2.2 are used to keep track of the head and boundary child nodes which are then used to compute depLM scores in decoding.,"{'title': '3 Dependency Language Model', 'number': '4'}"
-"Due to the limit of space, we skip the details here.","{'title': '3 Dependency Language Model', 'number': '4'}"
-8.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-Discount on ill-formed dependency structures We have eight features in our system.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-The values of the first four features are accumulated on the rules used in a translation.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-"Following (Chiang, 2005), we also use concatenation rules like X —* XX for backup.","{'title': '4 Implementation Details Features', 'number': '5'}"
-The 5th feature counts the number of concatenation rules used in a translation.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-"In our system, we allow substitutions of dependency structures with unmatched categories, but there is a discount for such substitutions.","{'title': '4 Implementation Details Features', 'number': '5'}"
-We tune the weights with several rounds of decoding-optimization.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-"Following (Och, 2003), the k-best results are accumulated as the input of the optimizer.","{'title': '4 Implementation Details Features', 'number': '5'}"
-Powell’s method is used for optimization with 20 random starting points around the weight vector of the last iteration.,"{'title': '4 Implementation Details Features', 'number': '5'}"
-"Rescoring We rescore 1000-best translations (Huang and Chiang, 2005) by replacing the 3-gram LM score with the 5-gram LM score computed offline.","{'title': '4 Implementation Details Features', 'number': '5'}"
-We carried out experiments on three models.,"{'title': '5 Experiments', 'number': '6'}"
-We take the replicated Hiero system as our baseline because it is the closest to our string-todependency model.,"{'title': '5 Experiments', 'number': '6'}"
-They have similar rule extraction and decoding algorithms.,"{'title': '5 Experiments', 'number': '6'}"
-Both systems use only one non-terminal label in rules.,"{'title': '5 Experiments', 'number': '6'}"
-The major difference is in the representation of target structures.,"{'title': '5 Experiments', 'number': '6'}"
-"We use dependency structures instead of strings; thus, the comparison will show the contribution of using dependency information in decoding.","{'title': '5 Experiments', 'number': '6'}"
-"All models are tuned on BLEU (Papineni et al., 2001), and evaluated on both BLEU and Translation Error Rate (TER) (Snover et al., 2006) so that we could detect over-tuning on one metric.","{'title': '5 Experiments', 'number': '6'}"
-"We used part of the NIST 2006 ChineseEnglish large track data as well as some LDC corpora collected for the DARPA GALE program (LDC2005E83, LDC2006E34 and LDC2006G05) as our bilingual training data.","{'title': '5 Experiments', 'number': '6'}"
-It contains about 178M/191M words in source/target.,"{'title': '5 Experiments', 'number': '6'}"
-"Hierarchical rules were extracted from a subset which has about 35M/41M words5, and the rest of the training data were used to extract phrasal rules as in (Och, 2003; Chiang, 2005).","{'title': '5 Experiments', 'number': '6'}"
-The English side of this subset was also used to train a 3-gram dependency LM.,"{'title': '5 Experiments', 'number': '6'}"
-"Traditional 3-gram and 5-gram LMs were trained on a corpus of 6G words composed of the LDC Gigaword corpus and text downloaded from Web (Bulyko et al., 2007).","{'title': '5 Experiments', 'number': '6'}"
-We tuned the weights on NIST MT05 and tested on MT04.,"{'title': '5 Experiments', 'number': '6'}"
-Table 1 shows the number of transfer rules extracted from the training data for the tuning and test sets.,"{'title': '5 Experiments', 'number': '6'}"
-The constraint of well-formed dependency structures greatly reduced the size of the rule set.,"{'title': '5 Experiments', 'number': '6'}"
-"Although the rule size increased a little bit after incorporating dependency structures in rules, the size of string-to-dependency rule set is less than 20% of the baseline rule set size.","{'title': '5 Experiments', 'number': '6'}"
-Table 2 shows the BLEU and TER scores on MT04.,"{'title': '5 Experiments', 'number': '6'}"
-"On decoding output, the string-todependency system achieved 1.48 point improvement in BLEU and 2.53 point improvement in TER compared to the baseline hierarchical stringto-string system.","{'title': '5 Experiments', 'number': '6'}"
-"After 5-gram rescoring, it achieved 1.21 point improvement in BLEU and 1.19 improvement in TER.","{'title': '5 Experiments', 'number': '6'}"
-The filtered model does not show improvement on BLEU.,"{'title': '5 Experiments', 'number': '6'}"
-The filtered string-to-string rules can be viewed the string projection of stringto-dependency rules.,"{'title': '5 Experiments', 'number': '6'}"
-It means that just using dependency structure does not provide an improvement on performance.,"{'title': '5 Experiments', 'number': '6'}"
-"However, dependency structures allow the use of a dependency LM which gives rise to significant improvement.","{'title': '5 Experiments', 'number': '6'}"
-"The well-formed dependency structures defined here are similar to the data structures in previous work on mono-lingual parsing (Eisner and Satta, 1999; McDonald et al., 2005).","{'title': '6 Discussion', 'number': '7'}"
-"However, here we have fixed structures growing on both sides to exploit various translation fragments learned in the training data, while the operations in mono-lingual parsing were designed to avoid artificial ambiguity of derivation.","{'title': '6 Discussion', 'number': '7'}"
-Charniak et al. (2003) described a two-step stringto-CFG-tree translation model which employed a syntax-based language model to select the best translation from a target parse forest built in the first step.,"{'title': '6 Discussion', 'number': '7'}"
-Only translation probability P(FIE) was employed in the construction of the target forest due to the complexity of the syntax-based LM.,"{'title': '6 Discussion', 'number': '7'}"
-"Since our dependency LM models structures over target words directly based on dependency trees, we can build a single-step system.","{'title': '6 Discussion', 'number': '7'}"
-This dependency LM can also be used in hierarchical MT systems using lexicalized CFG trees.,"{'title': '6 Discussion', 'number': '7'}"
-"The use of a dependency LM in MT is similar to the use of a structured LM in ASR (Xu et al., 2002), which was also designed to exploit long-distance relations.","{'title': '6 Discussion', 'number': '7'}"
-"The depLM is used in a bottom-up style, while SLM is employed in a left-to-right style.","{'title': '6 Discussion', 'number': '7'}"
-"In this paper, we propose a novel string-todependency algorithm for statistical machine translation.","{'title': '7 Conclusions and Future Work', 'number': '8'}"
-"For comparison purposes, we replicated the Hiero system as described in (Chiang, 2005).","{'title': '7 Conclusions and Future Work', 'number': '8'}"
-"Our string-to-dependency system generates 80% fewer rules, and achieves 1.48 point improvement in BLEU and 2.53 point improvement in TER on the decoding output on the NIST 04 Chinese-English evaluation set.","{'title': '7 Conclusions and Future Work', 'number': '8'}"
-Dependency structures provide a desirable platform to employ linguistic knowledge in MT.,"{'title': '7 Conclusions and Future Work', 'number': '8'}"
-"In the future, we will continue our research in this direction to carry out translation with deeper features, for example, propositional structures (Palmer et al., 2005).","{'title': '7 Conclusions and Future Work', 'number': '8'}"
-We believe that the fixed and floating structures proposed in this paper can be extended to model predicates and arguments.,"{'title': '7 Conclusions and Future Work', 'number': '8'}"
-This work was supported by DARPA/IPTO Contract No.,"{'title': 'Acknowledgments', 'number': '9'}"
-HR0011-06-C-0022 under the GALE program.,"{'title': 'Acknowledgments', 'number': '9'}"
-"We are grateful to Roger Bock, Ivan Bulyko, Mike Kayser, John Makhoul, Spyros Matsoukas, AnttiVeikko Rosti, Rich Schwartz and Bing Zhang for their help in running the experiments and constructive comments to improve this paper.","{'title': 'Acknowledgments', 'number': '9'}"
+"In this paper, we propose a novel string-todependency algorithm for statistical machine translation.",Introduction
+"With this new framework, we employ a target dependency language model during decoding to exploit long distance word relations, which are unavailable with a traditional n-gram language model.",Introduction
+Our experiments show that the string-to-dependency decoder achieves 1.48 point improvement in BLEU and 2.53 point improvement in TER compared to a standard hierarchical string-tostring system on the NIST 04 Chinese-English evaluation set.,Introduction
+"In recent years, hierarchical methods have been successfully applied to Statistical Machine Translation (Graehl and Knight, 2004; Chiang, 2005; Ding and Palmer, 2005; Quirk et al., 2005).",Experiment/Discussion
+"In some language pairs, i.e.",Experiment/Discussion
+"Chinese-to-English translation, state-ofthe-art hierarchical systems show significant advantage over phrasal systems in MT accuracy.",Experiment/Discussion
+"For example, Chiang (2007) showed that the Hiero system achieved about 1 to 3 point improvement in BLEU on the NIST 03/04/05 Chinese-English evaluation sets compared to a start-of-the-art phrasal system.",Experiment/Discussion
+Our work extends the hierarchical MT approach.,Experiment/Discussion
+"We propose a string-to-dependency model for MT, which employs rules that represent the source side as strings and the target side as dependency structures.",Experiment/Discussion
+"We restrict the target side to the so called wellformed dependency structures, in order to cover a large set of non-constituent transfer rules (Marcu et al., 2006), and enable efficient decoding through dynamic programming.",Experiment/Discussion
+"We incorporate a dependency language model during decoding, in order to exploit long-distance word relations which are unavailable with a traditional n-gram language model on target strings.",Experiment/Discussion
+"For comparison purposes, we replicated the Hiero decoder (Chiang, 2005) as our baseline.",Experiment/Discussion
+Our stringto-dependency decoder shows 1.48 point improvement in BLEU and 2.53 point improvement in TER on the NIST 04 Chinese-English MT evaluation set.,Experiment/Discussion
+"In the rest of this section, we will briefly discuss previous work on hierarchical MT and dependency representations, which motivated our research.",Experiment/Discussion
+"In section 2, we introduce the model of string-to-dependency decoding.",Experiment/Discussion
+Section 3 illustrates of the use of dependency language models.,Experiment/Discussion
+"In section 4, we describe the implementation details of our MT system.",Experiment/Discussion
+"We discuss experimental results in section 5, compare to related work in section 6, and draw conclusions in section 7.",Experiment/Discussion
+Graehl and Knight (2004) proposed the use of targettree-to-source-string transducers (xRS) to model translation.,Experiment/Discussion
+"In xRS rules, the right-hand-side(rhs) of the target side is a tree with non-terminals(NTs), while the rhs of the source side is a string with NTs.",Experiment/Discussion
+Galley et al. (2006) extended this string-to-tree model by using Context-Free parse trees to represent the target side.,Experiment/Discussion
+A tree could represent multi-level transfer rules.,Experiment/Discussion
+"The Hiero decoder (Chiang, 2007) does not require explicit syntactic representation on either side of the rules.",Experiment/Discussion
+Both source and target are strings with NTs.,Experiment/Discussion
+Decoding is solved as chart parsing.,Experiment/Discussion
+Hiero can be viewed as a hierarchical string-to-string model.,Experiment/Discussion
+"Ding and Palmer (2005) and Quirk et al. (2005) followed the tree-to-tree approach (Shieber and Schabes, 1990) for translation.",Experiment/Discussion
+"In their models, dependency treelets are used to represent both the source and the target sides.",Experiment/Discussion
+Decoding is implemented as tree transduction preceded by source side dependency parsing.,Experiment/Discussion
+"While tree-to-tree models can represent richer structural information, existing tree-totree models did not show advantage over string-totree models on translation accuracy due to a much larger search space.",Experiment/Discussion
+One of the motivations of our work is to achieve desirable trade-off between model capability and search space through the use of the so called wellformed dependency structures in rule representation.,Experiment/Discussion
+Dependency trees reveal long-distance relations between words.,Experiment/Discussion
+"For a given sentence, each word has a parent word which it depends on, except for the root word.",Experiment/Discussion
+Figure 1 shows an example of a dependency tree.,Experiment/Discussion
+Arrows point from the child to the parent.,Experiment/Discussion
+"In this example, the word find is the root.",Experiment/Discussion
+Dependency trees are simpler in form than CFG trees since there are no constituent labels.,Experiment/Discussion
+"However, dependency relations directly model semantic structure of a sentence.",Experiment/Discussion
+"As such, dependency trees are a desirable prior model of the target sentence.",Experiment/Discussion
+We restrict ourselves to the so-called well-formed target dependency structures based on the following considerations.,Experiment/Discussion
+"In (Ding and Palmer, 2005; Quirk et al., 2005), there is no restriction on dependency treelets used in transfer rules except for the size limit.",Experiment/Discussion
+This may result in a high dimensionality in hypothesis representation and make it hard to employ shared structures for efficient dynamic programming.,Experiment/Discussion
+"In (Galley et al., 2004), rules contain NT slots and combination is only allowed at those slots.",Experiment/Discussion
+"Therefore, the search space becomes much smaller.",Experiment/Discussion
+"Furthermore, shared structures can be easily defined based on the labels of the slots.",Experiment/Discussion
+"In order to take advantage of dynamic programming, we fixed the positions onto which another another tree could be attached by specifying NTs in dependency trees.",Experiment/Discussion
+"Marcu et al. (2006) showed that many useful phrasal rules cannot be represented as hierarchical rules with the existing representation methods, even with composed transfer rules (Galley et al., 2006).",Experiment/Discussion
+"For example, the following rule A number of techniques have been proposed to improve rule coverage.",Experiment/Discussion
+"(Marcu et al., 2006) and (Galley et al., 2006) introduced artificial constituent nodes dominating the phrase of interest.",Experiment/Discussion
+"The binarization method used by Wang et al. (2007) can cover many non-constituent rules also, but not all of them.",Experiment/Discussion
+"For example, it cannot handle the above example.",Experiment/Discussion
+DeNeefe et al. (2007) showed that the best results were obtained by combing these methods.,Experiment/Discussion
+"In this paper, we use well-formed dependency structures to handle the coverage of non-constituent rules.",Experiment/Discussion
+"The use of dependency structures is due to the flexibility of dependency trees as a representation method which does not rely on constituents (Fox, 2002; Ding and Palmer, 2005; Quirk et al., 2005).",Experiment/Discussion
+The well-formedness of the dependency structures enables efficient decoding through dynamic programming.,Experiment/Discussion
+"A string-to-dependency grammar G is a 4-tuple G =< R, X, Tf, Te >, where R is a set of transfer rules.",Experiment/Discussion
+"X is the only non-terminal, which is similar to the Hiero system (Chiang, 2007).",Experiment/Discussion
+"Tf is a set of terminals in the source language, and Te is a set of terminals in the target language1.",Experiment/Discussion
+"A string-to-dependency transfer rule R E R is a 4-tuple R =< 5f, 5e, D, A >, where 5f E (Tf U {X})+ is a source string, 5e E (Te U {X})+ is a target string, D represents the dependency structure for 5e, and A is the alignment between 5f and 5e.",Experiment/Discussion
+Non-terminal alignments in A must be one-to-one.,Experiment/Discussion
+"In order to exclude undesirable structures, we only allow 5e whose dependency structure D is well-formed, which we will define below.",Experiment/Discussion
+"In addition, the same well-formedness requirement will be applied to partial decoding results.",Experiment/Discussion
+"Thus, we will be able to employ shared structures to merge multiple partial results.",Experiment/Discussion
+"Based on the results in previous work (DeNeefe et al., 2007), we want to keep two kinds of dependency structures.",Experiment/Discussion
+"In one kind, we keep dependency trees with a sub-root, where all the children of the sub-root are complete.",Experiment/Discussion
+We call them fixed dependency structures because the head is known or fixed.,Experiment/Discussion
+"In the other, we keep dependency structures of sibling nodes of a common head, but the head itself is unspecified or floating.",Experiment/Discussion
+Each of the siblings must be a complete constituent.,Experiment/Discussion
+We call them floating dependency structures.,Experiment/Discussion
+"Floating structures can represent many linguistically meaningful non-constituent structures: for example, like the red, a modifier of a noun.",Experiment/Discussion
+Only those two kinds of dependency structures are well-formed structures in our system.,Experiment/Discussion
+"Furthermore, we operate over well-formed structures in a bottom-up style in decoding.",Experiment/Discussion
+"However, the description given above does not provide a clear definition on how to combine those two types of structures.",Experiment/Discussion
+"In the rest of this section, we will provide formal definitions of well-formed structures and combinatory operations over them, so that we can easily manipulate well-formed structures in decoding.",Experiment/Discussion
+Formal definitions also allow us to easily extend the framework to incorporate a dependency language model in decoding.,Experiment/Discussion
+Examples will be provided along with the formal definitions.,Experiment/Discussion
+Consider a sentence 5 = w1w2...wn.,Experiment/Discussion
+Let d1d2...dn represent the parent word IDs for each word.,Experiment/Discussion
+"For example, d4 = 2 means that w4 depends 'We ignore the left hand side here because there is only one non-terminal X.",Experiment/Discussion
+"Of course, this formalism can be extended to have multiple NTs.",Experiment/Discussion
+"Definition 1 A dependency structure di..j is fixed on head h, where h E [i, j], or fixed for short, if and only if it meets the following conditions In addition, we say the category of di..j is (−, h, −), where − means this field is undefined.",Experiment/Discussion
+"We say the category of di..j is (C, −, −) if j < h, or (−, −, C) otherwise.",Experiment/Discussion
+"A category is composed of the three fields (A, h, B), where h is used to represent the head, and A and B are designed to model left and right dependents of the head respectively.",Experiment/Discussion
+A dependency structure is well-formed if and only if it is either fixed or floating.,Experiment/Discussion
+We can represent dependency structures with graphs.,Experiment/Discussion
+"Figure 2 shows examples of fixed structures, Figure 3 shows examples of floating structures, and Figure 4 shows ill-formed dependency structures.",Experiment/Discussion
+It is easy to verify that the structures in Figures 2 and 3 are well-formed.,Experiment/Discussion
+4(a) is ill-formed because boy does not have its child word the in the tree.,Experiment/Discussion
+4(b) is ill-formed because it is not a continuous segment.,Experiment/Discussion
+"As for the example the red mentioned above, it is a well-formed floating dependency structure.",Experiment/Discussion
+"One of the purposes of introducing floating dependency structures is that siblings having a common parent will become a well-defined entity, although they are not considered a constituent.",Experiment/Discussion
+We always build well-formed partial structures on the target side in decoding.,Experiment/Discussion
+"Furthermore, we combine partial dependency structures in a way such that we can obtain all possible well-formed but no ill-formed dependency structures during bottom-up decoding.",Experiment/Discussion
+The solution is to employ categories introduced above.,Experiment/Discussion
+Each well-formed dependency structure has a category.,Experiment/Discussion
+We can apply four combinatory operations over the categories.,Experiment/Discussion
+"If we can combine two categories with a certain category operation, we can use a corresponding tree operation to combine two dependency structures.",Experiment/Discussion
+The category of the combined dependency structure is the result of the combinatory category operations.,Experiment/Discussion
+We first introduce three meta category operations.,Experiment/Discussion
+"Two of them are unary operations, left raising (LR) and right raising (RR), and one is the binary operation unification (UF).",Experiment/Discussion
+"First, the raising operations are used to turn a completed fixed structure into a floating structure.",Experiment/Discussion
+It is easy to verify the following theorem according to the definitions.,Experiment/Discussion
+"Therefore we can always raise a fixed structure if we assume it is complete, i.e.",Experiment/Discussion
+(1) holds.,Experiment/Discussion
+Unification is well-defined if and only if we can unify all three elements and the result is a valid fixed or floating category.,Experiment/Discussion
+"For example, we can unify a fixed structure with a floating structure or two floating structures in the same direction, but we cannot unify two fixed structures.",Experiment/Discussion
+Next we introduce the four tree operations on dependency structures.,Experiment/Discussion
+"Instead of providing the formal definition, we use figures to illustrate these operations to make it easy to understand.",Experiment/Discussion
+Figure 1 shows a traditional dependency tree.,Experiment/Discussion
+"Figure 5 shows the four operations to combine partial dependency structures, which are left adjoining (LA), right adjoining (RA), left concatenation (LC) and right concatenation (RC).",Experiment/Discussion
+Child and parent subtrees can be combined with adjoining which is similar to the traditional dependency formalism.,Experiment/Discussion
+We can either adjoin a fixed structure or a floating structure to the head of a fixed structure.,Experiment/Discussion
+Complete siblings can be combined via concatenation.,Experiment/Discussion
+"We can concatenate two fixed structures, one fixed structure with one floating structure, or two floating structures in the same direction.",Experiment/Discussion
+The flexibility of the order of operation allows us to take adWe use the same names for the operations on categories for the sake of convenience.,Experiment/Discussion
+We can easily use the meta category operations to define the four combinatory operations.,Experiment/Discussion
+The definition of the operations in the left direction is as follows.,Experiment/Discussion
+Those in the right direction are similar.,Experiment/Discussion
+It is easy to verify the soundness and completeness of category operations based on one-to-one mapping of the conditions in the definitions of corresponding operations on dependency structures and on categories.,Experiment/Discussion
+"Suppose we have a dependency tree for a red apple, where both a and red depend on apple.",Experiment/Discussion
+"There are two ways to compute the category of this string from the bottom up. cat(Da red apple) = LA(cat(Da),LA(cat(Dred),cat(Dapple))) = LA(LC(cat(Da), cat(Dred)), cat(Dapple)) Based on Theorem 2, it follows that combinatory operation of categories has the confluence property, since the result dependency structure is determined.",Experiment/Discussion
+Corollary 1 (confluence) The category of a wellformed dependency tree does not depend on the order of category calculation.,Experiment/Discussion
+"With categories, we can easily track the types of dependency structures and constrain operations in decoding.",Experiment/Discussion
+"For example, we have a rule with dependency structure find +— X, where X right adjoins to find.",Experiment/Discussion
+"Suppose we have two floating structures2, We can replace X by X2, but not by X1 based on the definition of category operations.",Experiment/Discussion
+Now we explain how we get the string-todependency rules from training data.,Experiment/Discussion
+"The procedure is similar to (Chiang, 2007) except that we maintain tree structures on the target side, instead of strings.",Experiment/Discussion
+"Given sentence-aligned bi-lingual training data, we first use GIZA++ (Och and Ney, 2003) to generate word level alignment.",Experiment/Discussion
+"We use a statistical CFG parser to parse the English side of the training data, and extract dependency trees with Magerman’s rules (1995).",Experiment/Discussion
+Then we use heuristic rules to extract transferrules recursively based on the GIZA alignment and the target dependency trees.,Experiment/Discussion
+The rule extraction procedure is as follows.,Experiment/Discussion
+All the 4-tuples (P?,Experiment/Discussion
+"',� phrase alignments, where source phrase P ?",Experiment/Discussion
+"',� �is e under alignment3 A, and D, the dependency structure for P m,n e , is well-formed.",Experiment/Discussion
+All valid phrase templates are valid rules templates.,Experiment/Discussion
+"Let (Pi,j f , Pm,n e , D1, A) be a valid rule template, and (Pp,q f , Ps,t e , D2, A) a valid phrase alignment, where [p, q] C [i, j], [s, t] C [m, n], D2 is a sub-structure of D1, and at least one word in Pi,j f but not in Pp,q f is aligned.",Experiment/Discussion
+"We create a new valid rule template (P0 f, P0e, D0, A), where we obtain Pf0 by replacing Pp,q f with label X in Pi,j f , and obtain Among all valid rule templates, we collect those that contain at most two NTs and at most seven elements in the source as transfer rules in our system.",Experiment/Discussion
+"Following previous work on hierarchical MT (Chiang, 2005; Galley et al., 2006), we solve decoding as chart parsing.",Experiment/Discussion
+We view target dependency as the hidden structure of source fragments.,Experiment/Discussion
+"The parser scans all source cells in a bottom-up style, and checks matched transfer rules according to the source side.",Experiment/Discussion
+"Once there is a completed rule, we build a larger dependency structure by substituting component dependency structures for corresponding NTs in the target dependency structure of rules.",Experiment/Discussion
+"Hypothesis dependency structures are organized in a shared forest, or AND-OR structures.",Experiment/Discussion
+"An ANDf aligned to Pm,n e , we mean all words in Pi,j f are either aligned to words in Pm,n e or unaligned, and vice versa.",Experiment/Discussion
+"Furthermore, at least one word in Pi,j structure represents an application of a rule over component OR-structures, and an OR-structure represents a set of alternative AND-structures with the same state.",Experiment/Discussion
+A state means a n-tuple that characterizes the information that will be inquired by up-level AND-structures.,Experiment/Discussion
+"Supposing we use a traditional tri-gram language model in decoding, we need to specify the leftmost two words and the rightmost two words in a state.",Experiment/Discussion
+"Since we only have a single NT X in the formalism described above, we do not need to add the NT label in states.",Experiment/Discussion
+"However, we need to specify one of the three types of the dependency structure: fixed, floating on the left side, or floating on the right side.",Experiment/Discussion
+This information is encoded in the category of the dependency structure.,Experiment/Discussion
+"In the next section, we will explain how to extend categories and states to exploit a dependency language model during decoding.",Experiment/Discussion
+"For the dependency tree in Figure 1, we calculate the probability of the tree as follows ×PL(will|find-as-head) ×PL(boy|will, find-as-head) ×PL(the|boy-as-head) ×PR(it|find-as-head) ×PR(interesting|it, find-as-head) Here PT(x) is the probability that word x is the root of a dependency tree.",Experiment/Discussion
+PL and PR are left and right side generative probabilities respectively.,Experiment/Discussion
+"Let wh be the head, and wL1wL2...wLn be the children on the left side from the nearest to the farthest.",Experiment/Discussion
+"Suppose we use a tri-gram dependency LM, wh-as-head represents wh used as the head, and it is different from wh in the dependency language model.",Experiment/Discussion
+The right side probability is similar.,Experiment/Discussion
+"In order to calculate the dependency language model score, or depLM score for short, on the fly for partial hypotheses in a bottom-up decoding, we need to save more information in categories and states.",Experiment/Discussion
+"We use a 5-tuple (LF, LN, h, RN, RF) to represent the category of a dependency structure. h represents the head.",Experiment/Discussion
+LF and RF represent the farthest two children on the left and right sides respectively.,Experiment/Discussion
+"Similarly, LN and RN represent the nearest two children on the left and right sides respectively.",Experiment/Discussion
+The three types of categories are as follows.,Experiment/Discussion
+Similar operations as described in Section 2.2 are used to keep track of the head and boundary child nodes which are then used to compute depLM scores in decoding.,Experiment/Discussion
+"Due to the limit of space, we skip the details here.",Experiment/Discussion
+8.,Experiment/Discussion
+Discount on ill-formed dependency structures We have eight features in our system.,Experiment/Discussion
+The values of the first four features are accumulated on the rules used in a translation.,Experiment/Discussion
+"Following (Chiang, 2005), we also use concatenation rules like X —* XX for backup.",Experiment/Discussion
+The 5th feature counts the number of concatenation rules used in a translation.,Experiment/Discussion
+"In our system, we allow substitutions of dependency structures with unmatched categories, but there is a discount for such substitutions.",Experiment/Discussion
+We tune the weights with several rounds of decoding-optimization.,Experiment/Discussion
+"Following (Och, 2003), the k-best results are accumulated as the input of the optimizer.",Experiment/Discussion
+Powell’s method is used for optimization with 20 random starting points around the weight vector of the last iteration.,Experiment/Discussion
+"Rescoring We rescore 1000-best translations (Huang and Chiang, 2005) by replacing the 3-gram LM score with the 5-gram LM score computed offline.",Experiment/Discussion
+We carried out experiments on three models.,Experiment/Discussion
+We take the replicated Hiero system as our baseline because it is the closest to our string-todependency model.,Experiment/Discussion
+They have similar rule extraction and decoding algorithms.,Experiment/Discussion
+Both systems use only one non-terminal label in rules.,Experiment/Discussion
+The major difference is in the representation of target structures.,Experiment/Discussion
+"We use dependency structures instead of strings; thus, the comparison will show the contribution of using dependency information in decoding.",Experiment/Discussion
+"All models are tuned on BLEU (Papineni et al., 2001), and evaluated on both BLEU and Translation Error Rate (TER) (Snover et al., 2006) so that we could detect over-tuning on one metric.",Experiment/Discussion
+"We used part of the NIST 2006 ChineseEnglish large track data as well as some LDC corpora collected for the DARPA GALE program (LDC2005E83, LDC2006E34 and LDC2006G05) as our bilingual training data.",Experiment/Discussion
+It contains about 178M/191M words in source/target.,Experiment/Discussion
+"Hierarchical rules were extracted from a subset which has about 35M/41M words5, and the rest of the training data were used to extract phrasal rules as in (Och, 2003; Chiang, 2005).",Experiment/Discussion
+The English side of this subset was also used to train a 3-gram dependency LM.,Experiment/Discussion
+"Traditional 3-gram and 5-gram LMs were trained on a corpus of 6G words composed of the LDC Gigaword corpus and text downloaded from Web (Bulyko et al., 2007).",Experiment/Discussion
+We tuned the weights on NIST MT05 and tested on MT04.,Experiment/Discussion
+Table 1 shows the number of transfer rules extracted from the training data for the tuning and test sets.,Experiment/Discussion
+The constraint of well-formed dependency structures greatly reduced the size of the rule set.,Experiment/Discussion
+"Although the rule size increased a little bit after incorporating dependency structures in rules, the size of string-to-dependency rule set is less than 20% of the baseline rule set size.",Experiment/Discussion
+Table 2 shows the BLEU and TER scores on MT04.,Experiment/Discussion
+"On decoding output, the string-todependency system achieved 1.48 point improvement in BLEU and 2.53 point improvement in TER compared to the baseline hierarchical stringto-string system.",Experiment/Discussion
+"After 5-gram rescoring, it achieved 1.21 point improvement in BLEU and 1.19 improvement in TER.",Experiment/Discussion
+The filtered model does not show improvement on BLEU.,Experiment/Discussion
+The filtered string-to-string rules can be viewed the string projection of stringto-dependency rules.,Experiment/Discussion
+It means that just using dependency structure does not provide an improvement on performance.,Experiment/Discussion
+"However, dependency structures allow the use of a dependency LM which gives rise to significant improvement.",Experiment/Discussion
+"The well-formed dependency structures defined here are similar to the data structures in previous work on mono-lingual parsing (Eisner and Satta, 1999; McDonald et al., 2005).",Experiment/Discussion
+"However, here we have fixed structures growing on both sides to exploit various translation fragments learned in the training data, while the operations in mono-lingual parsing were designed to avoid artificial ambiguity of derivation.",Experiment/Discussion
+Charniak et al. (2003) described a two-step stringto-CFG-tree translation model which employed a syntax-based language model to select the best translation from a target parse forest built in the first step.,Experiment/Discussion
+Only translation probability P(FIE) was employed in the construction of the target forest due to the complexity of the syntax-based LM.,Experiment/Discussion
+"Since our dependency LM models structures over target words directly based on dependency trees, we can build a single-step system.",Experiment/Discussion
+This dependency LM can also be used in hierarchical MT systems using lexicalized CFG trees.,Experiment/Discussion
+"The use of a dependency LM in MT is similar to the use of a structured LM in ASR (Xu et al., 2002), which was also designed to exploit long-distance relations.",Experiment/Discussion
+"The depLM is used in a bottom-up style, while SLM is employed in a left-to-right style.",Experiment/Discussion
+"In this paper, we propose a novel string-todependency algorithm for statistical machine translation.",Results/Conclusion
+"For comparison purposes, we replicated the Hiero system as described in (Chiang, 2005).",Results/Conclusion
+"Our string-to-dependency system generates 80% fewer rules, and achieves 1.48 point improvement in BLEU and 2.53 point improvement in TER on the decoding output on the NIST 04 Chinese-English evaluation set.",Results/Conclusion
+Dependency structures provide a desirable platform to employ linguistic knowledge in MT.,Results/Conclusion
+"In the future, we will continue our research in this direction to carry out translation with deeper features, for example, propositional structures (Palmer et al., 2005).",Results/Conclusion
+We believe that the fixed and floating structures proposed in this paper can be extended to model predicates and arguments.,Results/Conclusion
+This work was supported by DARPA/IPTO Contract No.,Results/Conclusion
+HR0011-06-C-0022 under the GALE program.,Results/Conclusion
+"We are grateful to Roger Bock, Ivan Bulyko, Mike Kayser, John Makhoul, Spyros Matsoukas, AnttiVeikko Rosti, Rich Schwartz and Bing Zhang for their help in running the experiments and constructive comments to improve this paper.",Results/Conclusion

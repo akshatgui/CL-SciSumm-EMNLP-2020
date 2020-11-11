@@ -1,105 +1,105 @@
 col1,col2
-We describe a new approach for synthetically combining the output of several different Machine Translation (MT) engines operating on the same input.,{}
-The goal is to produce a synthetic combination that surpasses all of the original systems in translation quality.,{}
-Our approach uses the individual MT engines as “black boxes” and does not require any explicit cooperation from the original MT systems.,{}
-"A decoding algorithm uses explicit word matches, in conjunction with confidence estimates for the various engines and a trigram language model in order to score and rank a collection of sentence hypotheses that are synthetic combinations of words from the various original engines.",{}
-The highest scoring sentence hypothesis is selected as the final output of our system.,{}
-"Experiments, using several Arabicto-English systems of similar quality, show a substantial improvement in the quality of the translation output.",{}
-"A variety of different paradigms for machine translation (MT) have been developed over the years, ranging from statistical systems that learn mappings between words and phrases in the source language and their corresponding translations in the target language, to Interlingua-based systems that perform deep semantic analysis.","{'title': '1 Introduction', 'number': '1'}"
-Each approach and system has different advantages and disadvantages.,"{'title': '1 Introduction', 'number': '1'}"
-"While statistical systems provide broad coverage with little manpower, the quality of the corpus based systems rarely reaches the quality of knowledge based systems.","{'title': '1 Introduction', 'number': '1'}"
-"With such a wide range of approaches to machine translation, it would be beneficial to have an effective framework for combining these systems into an MT system that carries many of the advantages of the individual systems and suffers from few of their disadvantages.","{'title': '1 Introduction', 'number': '1'}"
-"Attempts at combining the output of different systems have proved useful in other areas of language technologies, such as the ROVER approach for speech recognition (Fiscus 1997).","{'title': '1 Introduction', 'number': '1'}"
-Several approaches to multi-engine machine translation systems have been proposed over the past decade.,"{'title': '1 Introduction', 'number': '1'}"
-"The Pangloss system and work by several other researchers attempted to combine lattices from many different MT systems (Frederking et Nirenburg 1994, Frederking et al 1997; Tidhar & Küssner 2000; Lavie, Probst et al. 2004).","{'title': '1 Introduction', 'number': '1'}"
-These systems suffer from requiring cooperation from all the systems to produce compatible lattices as well as the hard research problem of standardizing confidence scores that come from the individual engines.,"{'title': '1 Introduction', 'number': '1'}"
-"In 2001, Bangalore et al used string alignments between the different translations to train a finite state machine to produce a consensus translation.","{'title': '1 Introduction', 'number': '1'}"
-"The alignment algorithm described in that work, which only allows insertions, deletions and substitutions, does not accurately capture long range phrase movement.","{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we propose a new way of combining the translations of multiple MT systems based on a more versatile word alignment algorithm.","{'title': '1 Introduction', 'number': '1'}"
-"A “decoding” algorithm then uses these alignments, in conjunction with confidence estimates for the various engines and a trigram language model, in order to score and rank a collection of sentence hypotheses that are synthetic combinations of words from the various original engines.","{'title': '1 Introduction', 'number': '1'}"
-The highest scoring sentence hypothesis is selected as the final output of our system.,"{'title': '1 Introduction', 'number': '1'}"
-We experimentally tested the new approach by combining translations obtained from combining three Arabic-to-English translation systems.,"{'title': '1 Introduction', 'number': '1'}"
-"Translation quality is scored using the METEOR MT evaluation metric (Lavie, Sagae et al 2004).","{'title': '1 Introduction', 'number': '1'}"
-"Our experiments demonstrate that our new MEMT system achieves a substantial improvement over all of the original systems, and also outperforms an “oracle” capable of selecting the best of the original systems on a sentence-by-sentence basis.","{'title': '1 Introduction', 'number': '1'}"
-The remainder of this paper is organized as follows.,"{'title': '1 Introduction', 'number': '1'}"
-In section 2 we describe the algorithm for generating multi-engine synthetic translations.,"{'title': '1 Introduction', 'number': '1'}"
-"Section 3 describes the experimental setup used to evaluate our approach, and section 4 presents the results of the evaluation.","{'title': '1 Introduction', 'number': '1'}"
-Our conclusions and directions for future work are presented in section 5.,"{'title': '1 Introduction', 'number': '1'}"
-Our Multi-Engine Machine Translation (MEMT) system operates on the single “top-best” translation output produced by each of several MT systems operating on a common input sentence.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-MEMT first aligns the words of the different translation systems using a word alignment matcher.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Then, using the alignments provided by the matcher, the system generates a set of synthetic sentence hypothesis translations.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Each hypothesis translation is assigned a score based on the alignment information, the confidence of the individual systems, and a language model.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The hypothesis translation with the best score is selected as the final output of the MEMT combination.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The task of the matcher is to produce a wordto-word alignment between the words of two given input strings.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-Identical words that appear in both input sentences are potential matches.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Since the same word may appear multiple times in the sentence, there are multiple ways to produce an alignment between the two input strings.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The goal is to find the alignment that represents the best correspondence between the strings.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-This alignment is defined as the alignment that has the smallest number of “crossing edges.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The matcher can also consider morphological variants of the same word as potential matches.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"To simultaneously align more than two sentences, the matcher simply produces alignments for all pair-wise combinations of the set of sentences.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"In the context of its use within our MEMT approach, the word-alignment matcher provides three main benefits.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"First, it explicitly identifies translated words that appear in multiple MT translations, allowing the MEMT algorithm to reinforce words that are common among the systems.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Second, the alignment information allows the algorithm to ensure that aligned words are not included in a synthetic combination more than once.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Third, by allowing long range matches, the synthetic combination generation algorithm can consider different plausible orderings of the matched words, based on their location in the original translations.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"After the matcher has word aligned the original system translations, the decoder goes to work.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The hypothesis generator produces synthetic combinations of words and phrases from the original translations that satisfy a set of adequacy constraints.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The generation algorithm is an iterative process and produces these translation hypotheses incrementally.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"In each iteration, the set of existing partial hypotheses is extended by incorporating an additional word from one of the original translations.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"For each partial hypothesis, a data-structure keeps track of the words from the original translations which are accounted for by this partial hypothesis.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-One underlying constraint observed by the generator is that the original translations are considered in principle to be word synchronous in the sense that selecting a word from one original translation normally implies “marking” a corresponding word in each of the other original translations as “used”.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The way this is determined is explained below.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Two partial hypotheses that have the same partial translation, but have a different set of words that have been accounted for are considered different.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-A hypothesis is considered “complete” if the next word chosen to extend the hypothesis is the explicit end-of-sentence marker from one of the original translation strings.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"At the start of hypothesis generation, there is a single hypothesis, which has the empty string as its partial translation and where none of the words in any of the original translations are marked as used.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"In each iteration, the decoder extends a hypothesis by choosing the next unused word from one of the original translations.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"When the decoder chooses to extend a hypothesis by selecting word w from original system A, the decoder marks w as used.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The decoder then proceeds to identify and mark as used a word in each of the other original systems.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"If w is aligned to words in any of the other original translation systems, then the words that are aligned with w are also marked as used.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"For each system that does not have a word that aligns with w, the decoder establishes an artificial alignment between w and a word in this system.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The intuition here is that this artificial alignment corresponds to a different translation of the same source-language word that corresponds to w. The choice of an artificial alignment cannot violate constraints that are imposed by alignments that were found by the matcher.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"If no artificial alignment can be established, then no word from this system will be marked as used.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The decoder repeats this process for each of the original translations.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Since the order in which the systems are processed matters, the decoder produces a separate hypothesis for each order.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Each iteration expands the previous set of partial hypotheses, resulting in a large space of complete synthetic hypotheses.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Since this space can grow exponentially, pruning based on scoring of the partial hypotheses is applied when necessary.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"A major component in the scoring of hypothesis translations is a confidence score that is assigned to each of the original translations, which reflects the translation adequacy of the system that produced it.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-We associate a confidence score with each word in a synthetic translation based on the confidence of the system from which it originated.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"If the word was contributed by several different original translations, we sum the confidences of the contributing systems.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-This word confidence score is combined multiplicatively with a score assigned to the word by a trigram language model.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The score assigned to a complete hypothesis is its geometric average word score.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-This removes the inherent bias for shorter hypotheses that is present in multiplicative cumulative scores.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-The basic algorithm works well as long the original translations are reasonably word synchronous.,"{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"This rarely occurs, so several additional constraints are applied during hypothesis generation.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"First, the decoder discards unused words in original systems that “linger” around too long.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Second, the decoder limits how far ahead it looks for an artificial alignment, to prevent incorrect long-range artificial alignments.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-"Finally, the decoder does not allow an artificial match between words that do not share the same part-of-speech.","{'title': '2 The MEMT Algorithm', 'number': '2'}"
-We combined outputs of three Arabic-to-English machine translation systems on the 2003 TIDES Arabic test set.,"{'title': '3 Experimental Setup', 'number': '3'}"
-"The systems were AppTek’s rule based system, CMU’s EBMT system, and Systran’s web-based translation system.","{'title': '3 Experimental Setup', 'number': '3'}"
-We compare the results of MEMT to the individual online machine translation systems.,"{'title': '3 Experimental Setup', 'number': '3'}"
-We also compare the performance of MEMT to the score of an “oracle system” that chooses the best scoring of the individual systems for each sentence.,"{'title': '3 Experimental Setup', 'number': '3'}"
-"Note that this oracle is not a realistic system, since a real system cannot determine at runtime which of the original systems is best on a sentence-by-sentence basis.","{'title': '3 Experimental Setup', 'number': '3'}"
-One goal of the evaluation was to see how rich the space of synthetic translations produced by our hypothesis generator is.,"{'title': '3 Experimental Setup', 'number': '3'}"
-"To this end, we also compare the output selected by our current MEMT system to an “oracle system” that chooses the best synthetic translation that was generated by the decoder for each sentence.","{'title': '3 Experimental Setup', 'number': '3'}"
-"This too is not a realistic system, but it allows us to see how well our hypothesis scoring currently performs.","{'title': '3 Experimental Setup', 'number': '3'}"
-"This also provides a way of estimating a performance ceiling of the MEMT approach, since our MEMT can only produce words that are provided by the original systems (Hogan and Frederking 1998).","{'title': '3 Experimental Setup', 'number': '3'}"
-"Due to the computational complexity of running the oracle system, several practical restrictions were imposed.","{'title': '3 Experimental Setup', 'number': '3'}"
-"First, the oracle system only had access to the top 1000 translation hypotheses produced by MEMT for each sentence.","{'title': '3 Experimental Setup', 'number': '3'}"
-"While this does not guarantee finding the best translation that the decoder can produce, this method provides a good approximation.","{'title': '3 Experimental Setup', 'number': '3'}"
-We also ran the oracle experiment only on the first 140 sentences of the test sets due to time constraints.,"{'title': '3 Experimental Setup', 'number': '3'}"
-"All the system performances are measured using the METEOR evaluation metric (Lavie, Sagae et al., 2004).","{'title': '3 Experimental Setup', 'number': '3'}"
-"METEOR was chosen since, unlike the more commonly used BLEU metric (Papineni et al., 2002), it provides reasonably reliable scores for individual sentences.","{'title': '3 Experimental Setup', 'number': '3'}"
-This property is essential in order to run our oracle experiments.,"{'title': '3 Experimental Setup', 'number': '3'}"
-"METEOR produces scores in the range of [0,1], based on a combination of unigram precision, unigram recall and an explicit penalty related to the average length of matched segments between the evaluated translation and its reference.","{'title': '3 Experimental Setup', 'number': '3'}"
-"On the 2003 TIDES data, the three original systems had similar METEOR scores.","{'title': '4 Results', 'number': '4'}"
-"Table 1 shows the scores of the three systems, with their names obscured to protect their privacy.","{'title': '4 Results', 'number': '4'}"
-Also shown are the score of MEMT’s output and the score of the oracle system that chooses the best original translation on a sentence-by-sentence basis.,"{'title': '4 Results', 'number': '4'}"
-"The score of the MEMT system is significantly better than any of the original systems, and the sentence oracle.","{'title': '4 Results', 'number': '4'}"
-"On the first 140 sentences, the oracle system that selects the best hypothesis translation generated by the MEMT generator has a METEOR score of 0.5883.","{'title': '4 Results', 'number': '4'}"
-This indicates that the scoring algorithm used to select the final MEMT output can be significantly further improved.,"{'title': '4 Results', 'number': '4'}"
-Our MEMT algorithm shows consistent improvement in the quality of the translation compared any of the original systems.,"{'title': '5 Conclusions and Future Work', 'number': '5'}"
-It scores better than an “oracle” that chooses the best original translation on a sentence-by-sentence basis.,"{'title': '5 Conclusions and Future Work', 'number': '5'}"
-"Furthermore, our MEMT algorithm produces hypotheses that are of yet even better quality, but our current scoring algorithm is not yet able to effectively select the best hypothesis.","{'title': '5 Conclusions and Future Work', 'number': '5'}"
-The focus of our future work will thus be on identifying features that support improved hypothesis scoring.,"{'title': '5 Conclusions and Future Work', 'number': '5'}"
-This research work was partly supported by a grant from the US Department of Defense.,"{'title': 'Acknowledgments', 'number': '6'}"
-The word alignment matcher was developed by Satanjeev Banerjee.,"{'title': 'Acknowledgments', 'number': '6'}"
-"We wish to thank Robert Frederking, Ralf Brown and Jaime Carbonell for their valuable input and suggestions.","{'title': 'Acknowledgments', 'number': '6'}"
+We describe a new approach for synthetically combining the output of several different Machine Translation (MT) engines operating on the same input.,Introduction
+The goal is to produce a synthetic combination that surpasses all of the original systems in translation quality.,Introduction
+Our approach uses the individual MT engines as “black boxes” and does not require any explicit cooperation from the original MT systems.,Introduction
+"A decoding algorithm uses explicit word matches, in conjunction with confidence estimates for the various engines and a trigram language model in order to score and rank a collection of sentence hypotheses that are synthetic combinations of words from the various original engines.",Introduction
+The highest scoring sentence hypothesis is selected as the final output of our system.,Introduction
+"Experiments, using several Arabicto-English systems of similar quality, show a substantial improvement in the quality of the translation output.",Introduction
+"A variety of different paradigms for machine translation (MT) have been developed over the years, ranging from statistical systems that learn mappings between words and phrases in the source language and their corresponding translations in the target language, to Interlingua-based systems that perform deep semantic analysis.",Experiment/Discussion
+Each approach and system has different advantages and disadvantages.,Experiment/Discussion
+"While statistical systems provide broad coverage with little manpower, the quality of the corpus based systems rarely reaches the quality of knowledge based systems.",Experiment/Discussion
+"With such a wide range of approaches to machine translation, it would be beneficial to have an effective framework for combining these systems into an MT system that carries many of the advantages of the individual systems and suffers from few of their disadvantages.",Experiment/Discussion
+"Attempts at combining the output of different systems have proved useful in other areas of language technologies, such as the ROVER approach for speech recognition (Fiscus 1997).",Experiment/Discussion
+Several approaches to multi-engine machine translation systems have been proposed over the past decade.,Experiment/Discussion
+"The Pangloss system and work by several other researchers attempted to combine lattices from many different MT systems (Frederking et Nirenburg 1994, Frederking et al 1997; Tidhar & Küssner 2000; Lavie, Probst et al. 2004).",Experiment/Discussion
+These systems suffer from requiring cooperation from all the systems to produce compatible lattices as well as the hard research problem of standardizing confidence scores that come from the individual engines.,Experiment/Discussion
+"In 2001, Bangalore et al used string alignments between the different translations to train a finite state machine to produce a consensus translation.",Experiment/Discussion
+"The alignment algorithm described in that work, which only allows insertions, deletions and substitutions, does not accurately capture long range phrase movement.",Experiment/Discussion
+"In this paper, we propose a new way of combining the translations of multiple MT systems based on a more versatile word alignment algorithm.",Experiment/Discussion
+"A “decoding” algorithm then uses these alignments, in conjunction with confidence estimates for the various engines and a trigram language model, in order to score and rank a collection of sentence hypotheses that are synthetic combinations of words from the various original engines.",Experiment/Discussion
+The highest scoring sentence hypothesis is selected as the final output of our system.,Experiment/Discussion
+We experimentally tested the new approach by combining translations obtained from combining three Arabic-to-English translation systems.,Experiment/Discussion
+"Translation quality is scored using the METEOR MT evaluation metric (Lavie, Sagae et al 2004).",Experiment/Discussion
+"Our experiments demonstrate that our new MEMT system achieves a substantial improvement over all of the original systems, and also outperforms an “oracle” capable of selecting the best of the original systems on a sentence-by-sentence basis.",Experiment/Discussion
+The remainder of this paper is organized as follows.,Experiment/Discussion
+In section 2 we describe the algorithm for generating multi-engine synthetic translations.,Experiment/Discussion
+"Section 3 describes the experimental setup used to evaluate our approach, and section 4 presents the results of the evaluation.",Experiment/Discussion
+Our conclusions and directions for future work are presented in section 5.,Experiment/Discussion
+Our Multi-Engine Machine Translation (MEMT) system operates on the single “top-best” translation output produced by each of several MT systems operating on a common input sentence.,Experiment/Discussion
+MEMT first aligns the words of the different translation systems using a word alignment matcher.,Experiment/Discussion
+"Then, using the alignments provided by the matcher, the system generates a set of synthetic sentence hypothesis translations.",Experiment/Discussion
+"Each hypothesis translation is assigned a score based on the alignment information, the confidence of the individual systems, and a language model.",Experiment/Discussion
+The hypothesis translation with the best score is selected as the final output of the MEMT combination.,Experiment/Discussion
+The task of the matcher is to produce a wordto-word alignment between the words of two given input strings.,Experiment/Discussion
+Identical words that appear in both input sentences are potential matches.,Experiment/Discussion
+"Since the same word may appear multiple times in the sentence, there are multiple ways to produce an alignment between the two input strings.",Experiment/Discussion
+The goal is to find the alignment that represents the best correspondence between the strings.,Experiment/Discussion
+This alignment is defined as the alignment that has the smallest number of “crossing edges.,Experiment/Discussion
+The matcher can also consider morphological variants of the same word as potential matches.,Experiment/Discussion
+"To simultaneously align more than two sentences, the matcher simply produces alignments for all pair-wise combinations of the set of sentences.",Experiment/Discussion
+"In the context of its use within our MEMT approach, the word-alignment matcher provides three main benefits.",Experiment/Discussion
+"First, it explicitly identifies translated words that appear in multiple MT translations, allowing the MEMT algorithm to reinforce words that are common among the systems.",Experiment/Discussion
+"Second, the alignment information allows the algorithm to ensure that aligned words are not included in a synthetic combination more than once.",Experiment/Discussion
+"Third, by allowing long range matches, the synthetic combination generation algorithm can consider different plausible orderings of the matched words, based on their location in the original translations.",Experiment/Discussion
+"After the matcher has word aligned the original system translations, the decoder goes to work.",Experiment/Discussion
+The hypothesis generator produces synthetic combinations of words and phrases from the original translations that satisfy a set of adequacy constraints.,Experiment/Discussion
+The generation algorithm is an iterative process and produces these translation hypotheses incrementally.,Experiment/Discussion
+"In each iteration, the set of existing partial hypotheses is extended by incorporating an additional word from one of the original translations.",Experiment/Discussion
+"For each partial hypothesis, a data-structure keeps track of the words from the original translations which are accounted for by this partial hypothesis.",Experiment/Discussion
+One underlying constraint observed by the generator is that the original translations are considered in principle to be word synchronous in the sense that selecting a word from one original translation normally implies “marking” a corresponding word in each of the other original translations as “used”.,Experiment/Discussion
+The way this is determined is explained below.,Experiment/Discussion
+"Two partial hypotheses that have the same partial translation, but have a different set of words that have been accounted for are considered different.",Experiment/Discussion
+A hypothesis is considered “complete” if the next word chosen to extend the hypothesis is the explicit end-of-sentence marker from one of the original translation strings.,Experiment/Discussion
+"At the start of hypothesis generation, there is a single hypothesis, which has the empty string as its partial translation and where none of the words in any of the original translations are marked as used.",Experiment/Discussion
+"In each iteration, the decoder extends a hypothesis by choosing the next unused word from one of the original translations.",Experiment/Discussion
+"When the decoder chooses to extend a hypothesis by selecting word w from original system A, the decoder marks w as used.",Experiment/Discussion
+The decoder then proceeds to identify and mark as used a word in each of the other original systems.,Experiment/Discussion
+"If w is aligned to words in any of the other original translation systems, then the words that are aligned with w are also marked as used.",Experiment/Discussion
+"For each system that does not have a word that aligns with w, the decoder establishes an artificial alignment between w and a word in this system.",Experiment/Discussion
+The intuition here is that this artificial alignment corresponds to a different translation of the same source-language word that corresponds to w. The choice of an artificial alignment cannot violate constraints that are imposed by alignments that were found by the matcher.,Experiment/Discussion
+"If no artificial alignment can be established, then no word from this system will be marked as used.",Experiment/Discussion
+The decoder repeats this process for each of the original translations.,Experiment/Discussion
+"Since the order in which the systems are processed matters, the decoder produces a separate hypothesis for each order.",Experiment/Discussion
+"Each iteration expands the previous set of partial hypotheses, resulting in a large space of complete synthetic hypotheses.",Experiment/Discussion
+"Since this space can grow exponentially, pruning based on scoring of the partial hypotheses is applied when necessary.",Experiment/Discussion
+"A major component in the scoring of hypothesis translations is a confidence score that is assigned to each of the original translations, which reflects the translation adequacy of the system that produced it.",Experiment/Discussion
+We associate a confidence score with each word in a synthetic translation based on the confidence of the system from which it originated.,Experiment/Discussion
+"If the word was contributed by several different original translations, we sum the confidences of the contributing systems.",Experiment/Discussion
+This word confidence score is combined multiplicatively with a score assigned to the word by a trigram language model.,Experiment/Discussion
+The score assigned to a complete hypothesis is its geometric average word score.,Experiment/Discussion
+This removes the inherent bias for shorter hypotheses that is present in multiplicative cumulative scores.,Experiment/Discussion
+The basic algorithm works well as long the original translations are reasonably word synchronous.,Experiment/Discussion
+"This rarely occurs, so several additional constraints are applied during hypothesis generation.",Experiment/Discussion
+"First, the decoder discards unused words in original systems that “linger” around too long.",Experiment/Discussion
+"Second, the decoder limits how far ahead it looks for an artificial alignment, to prevent incorrect long-range artificial alignments.",Experiment/Discussion
+"Finally, the decoder does not allow an artificial match between words that do not share the same part-of-speech.",Experiment/Discussion
+We combined outputs of three Arabic-to-English machine translation systems on the 2003 TIDES Arabic test set.,Experiment/Discussion
+"The systems were AppTek’s rule based system, CMU’s EBMT system, and Systran’s web-based translation system.",Experiment/Discussion
+We compare the results of MEMT to the individual online machine translation systems.,Experiment/Discussion
+We also compare the performance of MEMT to the score of an “oracle system” that chooses the best scoring of the individual systems for each sentence.,Experiment/Discussion
+"Note that this oracle is not a realistic system, since a real system cannot determine at runtime which of the original systems is best on a sentence-by-sentence basis.",Experiment/Discussion
+One goal of the evaluation was to see how rich the space of synthetic translations produced by our hypothesis generator is.,Experiment/Discussion
+"To this end, we also compare the output selected by our current MEMT system to an “oracle system” that chooses the best synthetic translation that was generated by the decoder for each sentence.",Experiment/Discussion
+"This too is not a realistic system, but it allows us to see how well our hypothesis scoring currently performs.",Experiment/Discussion
+"This also provides a way of estimating a performance ceiling of the MEMT approach, since our MEMT can only produce words that are provided by the original systems (Hogan and Frederking 1998).",Experiment/Discussion
+"Due to the computational complexity of running the oracle system, several practical restrictions were imposed.",Experiment/Discussion
+"First, the oracle system only had access to the top 1000 translation hypotheses produced by MEMT for each sentence.",Experiment/Discussion
+"While this does not guarantee finding the best translation that the decoder can produce, this method provides a good approximation.",Experiment/Discussion
+We also ran the oracle experiment only on the first 140 sentences of the test sets due to time constraints.,Experiment/Discussion
+"All the system performances are measured using the METEOR evaluation metric (Lavie, Sagae et al., 2004).",Experiment/Discussion
+"METEOR was chosen since, unlike the more commonly used BLEU metric (Papineni et al., 2002), it provides reasonably reliable scores for individual sentences.",Experiment/Discussion
+This property is essential in order to run our oracle experiments.,Experiment/Discussion
+"METEOR produces scores in the range of [0,1], based on a combination of unigram precision, unigram recall and an explicit penalty related to the average length of matched segments between the evaluated translation and its reference.",Experiment/Discussion
+"On the 2003 TIDES data, the three original systems had similar METEOR scores.",Experiment/Discussion
+"Table 1 shows the scores of the three systems, with their names obscured to protect their privacy.",Experiment/Discussion
+Also shown are the score of MEMT’s output and the score of the oracle system that chooses the best original translation on a sentence-by-sentence basis.,Experiment/Discussion
+"The score of the MEMT system is significantly better than any of the original systems, and the sentence oracle.",Experiment/Discussion
+"On the first 140 sentences, the oracle system that selects the best hypothesis translation generated by the MEMT generator has a METEOR score of 0.5883.",Experiment/Discussion
+This indicates that the scoring algorithm used to select the final MEMT output can be significantly further improved.,Experiment/Discussion
+Our MEMT algorithm shows consistent improvement in the quality of the translation compared any of the original systems.,Results/Conclusion
+It scores better than an “oracle” that chooses the best original translation on a sentence-by-sentence basis.,Results/Conclusion
+"Furthermore, our MEMT algorithm produces hypotheses that are of yet even better quality, but our current scoring algorithm is not yet able to effectively select the best hypothesis.",Results/Conclusion
+The focus of our future work will thus be on identifying features that support improved hypothesis scoring.,Results/Conclusion
+This research work was partly supported by a grant from the US Department of Defense.,Results/Conclusion
+The word alignment matcher was developed by Satanjeev Banerjee.,Results/Conclusion
+"We wish to thank Robert Frederking, Ralf Brown and Jaime Carbonell for their valuable input and suggestions.",Results/Conclusion

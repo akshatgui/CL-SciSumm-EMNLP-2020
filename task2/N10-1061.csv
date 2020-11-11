@@ -1,171 +1,171 @@
 col1,col2
-"Coreference resolution is governed by syntactic, semantic, and discourse constraints.",{}
-"We present a generative, model-based approach in which each of these factors is modularly encapsulated and learned in a primarily unsupervised manner.",{}
-Our semantic representation first hypothesizes an underlying set of latent which generate specific entities that in turn render individual mentions.,{}
-"By sharing lexical statistics at the level of abstract entity types, our model is able to substantially reduce semantic compatibility errors, resulting in the best results to date on the complete end-to-end coreference task.",{}
-"Coreference systems exploit a variety of information sources, ranging from syntactic and discourse constraints, which are highly configurational, to semantic constraints, which are highly contingent on lexical meaning and world knowledge.","{'title': '1 Introduction', 'number': '1'}"
-"Perhaps because configurational features are inherently easier to learn from small data sets, past work has often emphasized them over semantic knowledge.","{'title': '1 Introduction', 'number': '1'}"
-"Of course, all state-of-the-art coreference systems have needed to capture semantic compatibility to some degree.","{'title': '1 Introduction', 'number': '1'}"
-"As an example of nominal headword compatibility, a “president” can be a “leader” but cannot be not an “increase.” Past systems have often computed the compatibility of specific headword pairs, extracted either from lexical resources (Ng, 2007; Bengston and Roth, 2008; Rahman and Ng, 2009), web statistics (Yang et al., 2005), or surface syntactic patterns (Haghighi and Klein, 2009).","{'title': '1 Introduction', 'number': '1'}"
-"While the pairwise approach has high precision, it is neither realistic nor scalable to explicitly enumerate all pairs of compatible word pairs.","{'title': '1 Introduction', 'number': '1'}"
-"A more compact approach has been to rely on named-entity recognition (NER) systems to give coarse-grained entity types for each mention (Soon et al., 1999; Ng and Cardie, 2002).","{'title': '1 Introduction', 'number': '1'}"
-"Unfortunately, current systems use small inventories of types and so provide little constraint.","{'title': '1 Introduction', 'number': '1'}"
-"In general, coreference errors in state-of-theart systems are frequently due to poor models of semantic compatibility (Haghighi and Klein, 2009).","{'title': '1 Introduction', 'number': '1'}"
-"In this work, we take a primarily unsupervised approach to coreference resolution, broadly similar to Haghighi and Klein (2007), which addresses this issue.","{'title': '1 Introduction', 'number': '1'}"
-"Our generative model exploits a large inventory of distributional entity types, including standard NER types like PERSON and ORG, as well as more refined types like WEAPON and VEHICLE.","{'title': '1 Introduction', 'number': '1'}"
-"For each type, distributions over typical heads, modifiers, and governors are learned from large amounts of unlabeled data, capturing type-level semantic information (e.g.","{'title': '1 Introduction', 'number': '1'}"
-“spokesman” is a likely head for a PERSON).,"{'title': '1 Introduction', 'number': '1'}"
-Each entity inherits from a type but captures entity-level semantic information (e.g.,"{'title': '1 Introduction', 'number': '1'}"
-“giant” may be a likely head for the Microsoft entity but not all ORGs).,"{'title': '1 Introduction', 'number': '1'}"
-"Separately from the type-entity semantic module, a log-linear discourse model captures configurational effects.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, a mention model assembles each textual mention by selecting semantically appropriate words from the entities and types.","{'title': '1 Introduction', 'number': '1'}"
-"Despite being almost entirely unsupervised, our model yields the best reported end-to-end results on a range of standard coreference data sets.","{'title': '1 Introduction', 'number': '1'}"
-sociated with nodes in a parse tree and are typically realized as NPs.,"{'title': '2 Key Abstractions', 'number': '2'}"
-"There are three basic forms of mentions: proper (denoted NAM), nominal (NOM), and pronominal (PRO).","{'title': '2 Key Abstractions', 'number': '2'}"
-We will often describe proper and nominal mentions together as referring mentions.,"{'title': '2 Key Abstractions', 'number': '2'}"
-We represent each mention M as a collection of key-value pairs.,"{'title': '2 Key Abstractions', 'number': '2'}"
-The keys are called properties and the values are words.,"{'title': '2 Key Abstractions', 'number': '2'}"
-"For example, the left mention in Figure 1(a) has a proper head property, denoted NAM-HEAD, with value “Obama.” The set of properties we consider, denoted R, includes several varieties of heads, modifiers, and governors (see Section 5.2 for details).","{'title': '2 Key Abstractions', 'number': '2'}"
-Not every mention has a value for every property.,"{'title': '2 Key Abstractions', 'number': '2'}"
-Entities: An entity is a specific individual or object in the world.,"{'title': '2 Key Abstractions', 'number': '2'}"
-Entities are always latent in text.,"{'title': '2 Key Abstractions', 'number': '2'}"
-"Where a mention has a single word for each property, an entity has a list of signature words.","{'title': '2 Key Abstractions', 'number': '2'}"
-"Formally, entities are mappings from properties r E R to lists Lr of “canonical” words which that entity uses for that property.","{'title': '2 Key Abstractions', 'number': '2'}"
-"For instance in Figure 1(b), the list of nominal heads for the Barack Obama entity includes “president.” Types: Coreference systems often make a mention / entity distinction.","{'title': '2 Key Abstractions', 'number': '2'}"
-"We extend this hierarchy to include types, which represent classes of entities (PERSON, ORGANIZATION, and so on).","{'title': '2 Key Abstractions', 'number': '2'}"
-Types allow the sharing of properties across entities and mediate the generation of entities in our model (Section 3.1).,"{'title': '2 Key Abstractions', 'number': '2'}"
-See Figure 1(c) for a concrete example.,"{'title': '2 Key Abstractions', 'number': '2'}"
-"We represent each type T as a mapping between properties r and pairs of multinomials (Br, fr).","{'title': '2 Key Abstractions', 'number': '2'}"
-"Together, these distributions control the lists Lr for entities of that type.","{'title': '2 Key Abstractions', 'number': '2'}"
-Br is a unigram distribution of words that are semantically licensed for property r. fr is a “fertility” distribution over the integers that characterizes entity list lengths.,"{'title': '2 Key Abstractions', 'number': '2'}"
-"For example, for the type PERSON, Br for proper heads is quite flat (there are many last names) but fr is peaked at 1 (people have a single last name).","{'title': '2 Key Abstractions', 'number': '2'}"
-We now describe our generative model.,"{'title': '3 Generative Model', 'number': '3'}"
-"At the parameter level, we have one parameter group for the types τ = (0, T1, ... , Tt), where 0 is a multinomial prior over a fixed number t of types and the {TZ} are the parameters for each individual type, described in greater detail below.","{'title': '3 Generative Model', 'number': '3'}"
-"A second group comprises loglinear parameters π over discourse choices, also described below.","{'title': '3 Generative Model', 'number': '3'}"
-"Together, these two groups are drawn according to P(τ|λ)P(π|Q2), where λ and Q2 are a small number of scalar hyper-parameters described in Section 4.","{'title': '3 Generative Model', 'number': '3'}"
-"Conditioned on the parameters (τ, π), a document is generated as follows: A semantic module generates a sequence E of entities.","{'title': '3 Generative Model', 'number': '3'}"
-"E is in principle infinite, though during inference only a finite number are ever instantiated.","{'title': '3 Generative Model', 'number': '3'}"
-A discourse module generates a vector Z which assigns an entity index ZZ to each mention position i.,"{'title': '3 Generative Model', 'number': '3'}"
-"Finally, a mention generation module independently renders the sequence of mentions (M) from their underlying entities.","{'title': '3 Generative Model', 'number': '3'}"
-"The syntactic position and structure of mentions are treated as observed, including the mention forms (pronominal, etc.).","{'title': '3 Generative Model', 'number': '3'}"
-We use X to refer to this ungenenerated information.,"{'title': '3 Generative Model', 'number': '3'}"
-Our model decomposes as follows: We detail each of these components in subsequent sections.,"{'title': '3 Generative Model', 'number': '3'}"
-The semantic module is responsible for generating a sequence of entities.,"{'title': '3 Generative Model', 'number': '3'}"
-"Each entity E is generated independently and consists of a type indicator T, as well as a collection {Lr}rE7Z of word lists for each property.","{'title': '3 Generative Model', 'number': '3'}"
-"These elements are generated as follows: Draw entity type T — 0 For each mention property r E R, Fetch {(fr, Br)} for TT Draw word list length |Lr |— fr Draw |Lr |words from w — Br See Figure 2 for an illustration of this process.","{'title': '3 Generative Model', 'number': '3'}"
-"Each word list Lr is generated by first drawing a list length from fr and then independently populating that list from the property’s word distribution Br.1 Past work has employed broadly similar distributional models for unsupervised NER of proper men1There is one exception: the sizes of the proper and nominal head property lists are jointly generated, but their word lists are still independently populated. tions (Collins and Singer, 1999; Elsner et al., 2009).","{'title': '3 Generative Model', 'number': '3'}"
-"However, to our knowledge, this is the first work to incorporate such a model into an entity reference process.","{'title': '3 Generative Model', 'number': '3'}"
-The discourse module is responsible for choosing an entity to evoke at each of the n mention positions.,"{'title': '3 Generative Model', 'number': '3'}"
-"Formally, this module generates an entity assignment vector Z = (Zl, ... , Zn), where Zi indicates the entity index for the ith mention position.","{'title': '3 Generative Model', 'number': '3'}"
-"Most linguistic inquiry characterizes NP anaphora by the pairwise relations that hold between a mention and its antecedent (Hobbs, 1979; Kehler et al., 2008).","{'title': '3 Generative Model', 'number': '3'}"
-Our discourse module utilizes this pairwise perspective to define each Zi in terms of an intermediate “antecedent” variable Ai.,"{'title': '3 Generative Model', 'number': '3'}"
-Ai either points to a previous antecedent mention position (Ai < i) and “steals” its entity assignment or begins a new entity (Ai = i).,"{'title': '3 Generative Model', 'number': '3'}"
-"The choice of Ai is parametrized by affinities s7r(i, j; X) between mention positions i and j.","{'title': '3 Generative Model', 'number': '3'}"
-"Formally, this process is described as: For each mention position, i = 1, ... , n, Draw antecedent position Ai E {1, ... , i}: Here, K denotes the number of entities allocated in the first i-1 mention positions.","{'title': '3 Generative Model', 'number': '3'}"
-This process is an instance of the sequential distance-dependent Chinese Restaurant Process (DD-CRP) of Blei and Frazier (2009).,"{'title': '3 Generative Model', 'number': '3'}"
-"During inference, we variously exploit both the A and Z representations (Section 4).","{'title': '3 Generative Model', 'number': '3'}"
-"For nominal and pronoun mentions, there are several well-studied anaphora cues, including centering (Grosz et al., 1995), nearness (Hobbs, 1978), and deterministic constraints, which have all been utilized in prior coreference work (Soon et al., 1999; Ng and Cardie, 2002).","{'title': '3 Generative Model', 'number': '3'}"
-"In order to combine these cues, we take a log-linear, feature-based approach and parametrize s7r(i, j; X) = exp{7rTfX(i, j)}, where fX(i, j) is a feature vector over mention positions i and j, and 7r is a parameter vector; the features may freely condition on X.","{'title': '3 Generative Model', 'number': '3'}"
-"We utilize the following features between a mention and an antecedent: tree distance, sentence distance, and the syntactic positions (subject, object, and oblique) of the mention and antecedent.","{'title': '3 Generative Model', 'number': '3'}"
-"Features for starting a new entity include: a definiteness feature (extracted from the mention’s determiner), the top CFG rule of the mention parse node, its syntactic role, and a bias feature.","{'title': '3 Generative Model', 'number': '3'}"
-These features are conjoined with the mention form (nominal or pronoun).,"{'title': '3 Generative Model', 'number': '3'}"
-"Additionally, we restrict pronoun antecedents to the current and last two sentences, and the current and last three sentences for nominals.","{'title': '3 Generative Model', 'number': '3'}"
-"Additionally, we disallow nominals from having direct pronoun antecedents.","{'title': '3 Generative Model', 'number': '3'}"
-"In addition to the above, if a mention is in a deterministic coreference configuration, as defined in Haghighi and Klein (2009), we force it to take the required antecedent.","{'title': '3 Generative Model', 'number': '3'}"
-"In general, antecedent affinities learn to prefer close antecedents in prominent syntactic positions.","{'title': '3 Generative Model', 'number': '3'}"
-We also learn that new entity nominals are typically indefinite or have SBAR complements (captured by the CFG feature).,"{'title': '3 Generative Model', 'number': '3'}"
-"In contrast to nominals and pronouns, the choice of entity for a proper mention is governed more by entity frequency than antecedent distance.","{'title': '3 Generative Model', 'number': '3'}"
-"We capture this by setting s,7r(i, j; X) in the proper case to 1 for past positions and to a fixed α otherwise.","{'title': '3 Generative Model', 'number': '3'}"
-"2 Once the semantic module has generated entities and the discourse model selects entity assignments, each mention Mi generates word values for a set of observed properties Ri: Mention Generation For each mention Mi, i = 1, ... , n For each property r, there is a hyper-parameter αr which interpolates between selecting a word from the entity list Lr and drawing from the underlying type property distribution Br.","{'title': '3 Generative Model', 'number': '3'}"
-"Intuitively, a small value of αr indicates that an entity prefers to re-use a small number of words for property r. This is typically the case for proper and nominal heads as well as modifiers.","{'title': '3 Generative Model', 'number': '3'}"
-"At the other extreme, setting αr to 1 indicates the property isn’t particular to the entity itself, but rather only on its type.","{'title': '3 Generative Model', 'number': '3'}"
-We set αr to 1 for pronoun heads as well as for the governor of the head properties.,"{'title': '3 Generative Model', 'number': '3'}"
-"Our learning procedure involves finding parameters and assignments which are likely under our model’s posterior distribution P(E, Z, T, 9C|M, X).","{'title': '4 Learning and Inference', 'number': '4'}"
-The model is modularized in such a way that running EM on all variables simultaneously would be very difficult.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"Therefore, we adopt a variational approach which optimizes various subgroups of the variables in a round-robin fashion, holding approximations to the others fixed.","{'title': '4 Learning and Inference', 'number': '4'}"
-"We first describe the variable groups, then the updates which optimize them in turn.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Decomposition: We decompose the entity variables E into types, T, one for each entity, and word lists, L, one for each entity and property.","{'title': '4 Learning and Inference', 'number': '4'}"
-"We decompose the mentions M into referring mentions (propers and nominals), Mr, and pronominal mentions, Mp (with sizes nr and np respectively).","{'title': '4 Learning and Inference', 'number': '4'}"
-The entity assignments Z are similarly divided into Zr and Zp components.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"For pronouns, rather than use Zp, we instead work with the corresponding antecedent variables, denoted Ap, and marginalize over antecedents to obtain Zp.","{'title': '4 Learning and Inference', 'number': '4'}"
-"With these variable groups, we would like to approximation our model posterior P(T, L, Zr, Ap, -r, 7rJM, X) using a simple factored representation.","{'title': '4 Learning and Inference', 'number': '4'}"
-Our variational approximation takes the following form: We use a mean field approach to update each of the RHS factors in turn to minimize the KL-divergence between the current variational posterior and the true model posterior.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"The δr, δs, and δd factors place point estimates on a single value, just as in hard EM.","{'title': '4 Learning and Inference', 'number': '4'}"
-Updating these factors involves finding the value which maximizes the model (expected) loglikelihood under the other factors.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"For instance, the δs factor is a point estimate of the type parameters, and is updated with:3 where Q_63 denotes all factors of the variational approximation except for the factor being updated.","{'title': '4 Learning and Inference', 'number': '4'}"
-The ri (pronoun antecedents) and qk (type indicator) factors maintain a soft approximation and so are slightly more complex.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"For example, the ri factor update takes the standard mean field form: ri(Api ) a exp{EQ_r, lnP(E, Z, M, -r, 7r)} (2) We briefly describe the update for each additional factor, omitting details for space.","{'title': '4 Learning and Inference', 'number': '4'}"
-Updating type parameters δs(-r): The type parameters -r consist of several multinomial distributions which can be updated by normalizing expected counts as in the EM algorithm.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"The prior 3Of course during learning, the argmax is performed over the entire document collection, rather than a single document.","{'title': '4 Learning and Inference', 'number': '4'}"
-"P(-r JA) consists of several finite Dirichlet draws for each multinomial, which are incorporated as pseudocounts.4 Given the entity type variational posteriors {qk(·)}, as well as the point estimates of the L and Zr elements, we obtain expected counts from each entity’s attribute word lists and referring mention usages.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Updating discourse parameters δd(7r): The learned parameters for the discourse module rely on pairwise antecedent counts for assignments to nominal and pronominal mentions.5 Given these expected counts, which can be easily obtained from other factors, the update reduces to a weighted maximum entropy problem, which we optimize using LBFGS.","{'title': '4 Learning and Inference', 'number': '4'}"
-"The prior P(7rJσ2) is a zero-centered normal distribution with shared diagonal variance σ2, which is incorporated via L2 regularization during optimization.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Updating referring assignments and word lists δr(Zr, L): The word lists are usually concatenations of the words used in nominal and proper mentions and so are updated together with the assignments for those mentions.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Updating the δr(Zr, L) factor involves finding the referring mention entity assignments, Zr, and property word lists L for instantiated entities which maximize ]EQ_ar ln P(T, L, Zr, Ap, M, -r, 7r).","{'title': '4 Learning and Inference', 'number': '4'}"
-"We actually only need to optimize over Zr, since for any Zr, we can compute the optimal set of property word lists L. Essentially, for each entity we can compute the Lr which optimizes the probability of the referring mentions assigned to the entity (indicated by Zr).","{'title': '4 Learning and Inference', 'number': '4'}"
-"In practice, the optimal Lr is just the set of property words in the assigned mentions.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Of course enumerating and scoring all Zr hypotheses is intractable, so we instead utilize a left-to-right sequential beam search.","{'title': '4 Learning and Inference', 'number': '4'}"
-Each partial hypothesis is an assignment to a prefix of mention positions and is scored as though it were a complete hypothesis.,"{'title': '4 Learning and Inference', 'number': '4'}"
-Hypotheses are extended via adding a new mention to an existing entity or creating a new one.,"{'title': '4 Learning and Inference', 'number': '4'}"
-"For our experiments, we limited the number of hypotheses on the beam to the top fifty and did not notice an improvement in model score from increasing beam size.","{'title': '4 Learning and Inference', 'number': '4'}"
-Updating pronominal antecedents ri(A?,"{'title': '4 Learning and Inference', 'number': '4'}"
-'i ) and entity types qk(Tk): These updates are straightforward instantiations of the mean-field update (2).,"{'title': '4 Learning and Inference', 'number': '4'}"
-"To produce our final coreference partitions, we assign each referring mention to the entity given by the δr factor and each pronoun to the most likely entity given by the ri.","{'title': '4 Learning and Inference', 'number': '4'}"
-"In order to facilitate learning, some factors are initially set to fixed heuristic values and only learned in later iterations.","{'title': '4 Learning and Inference', 'number': '4'}"
-"Initially, the assignment factors δr and {ri} are fixed.","{'title': '4 Learning and Inference', 'number': '4'}"
-"For δr, we use a deterministic entity assignment Zr, similar to the Haghighi and Klein (2009)’s SYN-CONSTR setting: each referring mention is coreferent with any past mention with the same head or in a deterministic syntactic configuration (appositives or predicative nominatives constructions).6 The {ri} factors are heuristically set to place most of their mass on the closest antecedent by tree distance.","{'title': '4 Learning and Inference', 'number': '4'}"
-"During training, we proceed in stages, each consisting of 5 iterations: We evaluate our system at the end of stage using the B3All metric on the A05CU development set (see Section 5 for details).","{'title': '4 Learning and Inference', 'number': '4'}"
-"We considered the challenging end-to-end system mention setting, where in addition to predicting mention partitions, a system must identify the mentions themselves and their boundaries automatically.","{'title': '5 Experiments', 'number': '5'}"
-Our system deterministically extracts mention boundaries from parse trees (Section 5.2).,"{'title': '5 Experiments', 'number': '5'}"
-"We utilized no coreference annotation during training, but did use minimal prototype information to prime the learning of entity types (Section 5.3).","{'title': '5 Experiments', 'number': '5'}"
-"For evaluation, we used standard coreference data sets derived from the ACE corpora: For all experiments, we evaluated on the dev and test sets above.","{'title': '5 Experiments', 'number': '5'}"
-"To train, we included the text of all documents above, though of course not looking at either their mention boundaries or reference annotations in any way.","{'title': '5 Experiments', 'number': '5'}"
-"We also trained on the following much larger unlabeled datasets utilized in Haghighi and Klein (2009): Mention boundaries were automatically detected as follows: For each noun or pronoun (determined by parser POS tag), we associated a mention with the maximal NP projection of that head or that word itself if no NP can be found.","{'title': '5 Experiments', 'number': '5'}"
-"This procedure recovers over 90% of annotated mentions on the A05CU dev set, but also extracts many unannotated “spurious” mentions (for instance events, times, dates, or abstract nouns) which are not deemed to be of interest by the ACE annotation conventions.","{'title': '5 Experiments', 'number': '5'}"
-"Mention properties were obtained from parse trees using the the Stanford typed dependency extractor (de Marneffe et al., 2006).","{'title': '5 Experiments', 'number': '5'}"
-"The mention properties we considered are the mention head (annotated with mention type), the typed modifiers of the head, and the governor of the head (conjoined with the mention’s syntactic position).","{'title': '5 Experiments', 'number': '5'}"
-"We discard determiners, but make use of them in the discourse component (Section 3.2) for NP definiteness.","{'title': '5 Experiments', 'number': '5'}"
-"While it is possible to learn type distributions in a completely unsupervised fashion, we found it useful to prime the system with a handful of important types.","{'title': '5 Experiments', 'number': '5'}"
-"Rather than relying on fully supervised data, we took the approach of Haghighi and Klein (2006).","{'title': '5 Experiments', 'number': '5'}"
-"For each type of interest, we provided a (possiblyempty) prototype list of proper and nominal head words, as well as a list of allowed pronouns.","{'title': '5 Experiments', 'number': '5'}"
-"For instance, for the PERSON type we might provide: Bush, Gore, Hussein president, minister, official he, his, she, him, her, you, ...","{'title': '5 Experiments', 'number': '5'}"
-The prototypes were used as follows: Any entity with a prototype on any proper or nominal head word attribute list (Section 3.1) was constrained to have the specified type; i.e. the qk factor (Section 4) places probability one on that single type.,"{'title': '5 Experiments', 'number': '5'}"
-"Similarly to Haghighi and Klein (2007) and Elsner et al. (2009), we biased these types’ pronoun distributions to the allowed set of pronouns.","{'title': '5 Experiments', 'number': '5'}"
-"In general, the choice of entity types to prime with prototypes is a domain-specific question.","{'title': '5 Experiments', 'number': '5'}"
-"For experiments here, we utilized the types which are annotated in the ACE coreference data: person (PERS), organization (ORG), geo-political entity (GPE), weapon (WEA), vehicle (VEH), location (LOC), and facility (FAC).","{'title': '5 Experiments', 'number': '5'}"
-"Since the person type in ACE conflates individual persons with groups of people (e.g., soldier vs. soldiers), we added the group (GROUP) type and generated a prototype specification.","{'title': '5 Experiments', 'number': '5'}"
-"We obtained our prototype list by extracting at most four common proper and nominal head words from the newswire portions of the 2004 and 2005 ACE training sets (A04CU and A05ST); we chose prototype words to be minimally ambiguous with respect to type.8 When there are not at least three proper heads for a type (WEA for instance), we did not provide any proper prototypes and instead strongly biased the type fertility parameters to generate empty NAM-HEAD lists.","{'title': '5 Experiments', 'number': '5'}"
-"Because only certain semantic types were annotated under the arbitrary ACE guidelines, there are many mentions which do not fall into those limited categories.","{'title': '5 Experiments', 'number': '5'}"
-We therefore prototype (refinements of) the ACE types and then add an equal number of unconstrained “other” types which are automatically induced.,"{'title': '5 Experiments', 'number': '5'}"
-"A nice consequence of this approach is that we can simply run our model on all mentions, discarding at evaluation time any which are of nonprototyped types.","{'title': '5 Experiments', 'number': '5'}"
-"We evaluated on multiple coreference resolution metrics, as no single one is clearly superior, partic8Meaning those headwords were assigned to the target type for more than 75% of their usages.","{'title': '5 Experiments', 'number': '5'}"
-NAM NOM PRO ularly in dealing with the system mention setting.,"{'title': '5 Experiments', 'number': '5'}"
-"We utilized MUC (Vilain et al., 1995), B3All (Stoyanov et al., 2009), B3None (Stoyanov et al., 2009), and Pairwise F1.","{'title': '5 Experiments', 'number': '5'}"
-"The B3All and B3None are B3 variants (Bagga and Baldwin, 1998) that differ in their treatment of spurious mentions.","{'title': '5 Experiments', 'number': '5'}"
-"For Pairwise F1, precision measures how often pairs of predicted coreferent mentions are in the same annotated entity.","{'title': '5 Experiments', 'number': '5'}"
-We eliminated any mention pair from this calculation where both mentions were spurious.9,"{'title': '5 Experiments', 'number': '5'}"
-Table 1 shows our results.,"{'title': '5.5 Results', 'number': '6'}"
-We compared to two state-of-the-art supervised coreference systems.,"{'title': '5.5 Results', 'number': '6'}"
-The Stoyanov et al. (2009) numbers represent their THRESHOLD ESTIMATION setting and the Rahman and Ng (2009) numbers represent their highestperforming cluster ranking model.,"{'title': '5.5 Results', 'number': '6'}"
-"We also compared to the strong deterministic system of Haghighi and Klein (2009).10 Across all data sets, our model, despite being largely unsupervised, consistently outperforms these systems, which are the best previously reported results on end-to-end coreference resolution (i.e. including mention detection).","{'title': '5.5 Results', 'number': '6'}"
-Performance on the A05RA dataset is generally lower because it includes articles from blogs and web forums where parser quality is significantly degraded.,"{'title': '5.5 Results', 'number': '6'}"
-"While Bengston and Roth (2008) do not report on the full system mention task, they do report on the more optimistic setting where mention detection is performed but non-gold mentions are removed for evaluation using an oracle.","{'title': '5.5 Results', 'number': '6'}"
-"On this more lenient setting, they report 78.4 B3 on the A04CU test set.","{'title': '5.5 Results', 'number': '6'}"
-Our model yields 80.3.,"{'title': '5.5 Results', 'number': '6'}"
-We now discuss errors and improvements made by our system.,"{'title': '6 Analysis', 'number': '7'}"
-"One frequent source of error is the merging of mentions with explicitly contrasting modifiers, such as new president and old president.","{'title': '6 Analysis', 'number': '7'}"
-"While it is not unusual for a single entity to admit multiple modifiers, the particular modifiers new and old are incompatible in a way that new and popular 9Note that we are still penalized for marking a spurious mention coreferent with an annotated one.","{'title': '6 Analysis', 'number': '7'}"
-"10Haghighi and Klein (2009) reports on true mentions; here, we report performance on automatically detected mentions. are not.","{'title': '6 Analysis', 'number': '7'}"
-Our model does not represent the negative covariance between these modifiers.,"{'title': '6 Analysis', 'number': '7'}"
-We compared our output to the deterministic system of Haghighi and Klein (2009).,"{'title': '6 Analysis', 'number': '7'}"
-Many improvements arise from correctly identifying mentions which are semantically compatible but which do not explicitly appear in an appositive or predicatenominative configuration in the data.,"{'title': '6 Analysis', 'number': '7'}"
-"For example, analyst and it cannot corefer in our system because it is not a likely pronoun for the type PERSON.","{'title': '6 Analysis', 'number': '7'}"
-"While the focus of our model is coreference resolution, we can also isolate and evaluate the type component of our model as an NER system.","{'title': '6 Analysis', 'number': '7'}"
-We test this component by presenting our learned model with boundary-annotated non-pronominal entities from the A05ST dev set and querying their predicted type variable T. Doing so yields 83.2 entity classification accuracy under the mapping between our prototyped types and the coarse ACE types.,"{'title': '6 Analysis', 'number': '7'}"
-Note that this task is substantially more difficult than the unsupervised NER in Elsner et al. (2009) because the inventory of named entities is larger (7 vs. 3) and because we predict types over nominal mentions that are more difficult to judge from surface forms.,"{'title': '6 Analysis', 'number': '7'}"
-"In this task, the plurality of errors are confusions between the GPE (geo-political entity) and ORG entity types, which have very similar distributions.","{'title': '6 Analysis', 'number': '7'}"
-Our model is able to acquire and exploit knowledge at either the level of individual entities (“Obama” is a “president”) and entity types (“company” can refer to a corporation).,"{'title': '7 Conclusion', 'number': '8'}"
-"As a result, it leverages semantic constraints more effectively than systems operating at either level alone.","{'title': '7 Conclusion', 'number': '8'}"
-"In conjunction with reasonable, but simple, factors capturing discourse and syntactic configurational preferences, our entity-centric semantic model lowers coreference error rate substantially, particularly on semantically disambiguated references, giving a sizable improvement over the state-of-the-art.11 Acknowledgements: This project is funded in part by the Office of Naval Research under MURI Grant No.","{'title': '7 Conclusion', 'number': '8'}"
-N000140911081.,"{'title': '7 Conclusion', 'number': '8'}"
-11See nlp.cs.berkeley.edu and aria42.com/software.html for software release.,"{'title': '7 Conclusion', 'number': '8'}"
+"Coreference resolution is governed by syntactic, semantic, and discourse constraints.",Introduction
+"We present a generative, model-based approach in which each of these factors is modularly encapsulated and learned in a primarily unsupervised manner.",Introduction
+Our semantic representation first hypothesizes an underlying set of latent which generate specific entities that in turn render individual mentions.,Introduction
+"By sharing lexical statistics at the level of abstract entity types, our model is able to substantially reduce semantic compatibility errors, resulting in the best results to date on the complete end-to-end coreference task.",Introduction
+"Coreference systems exploit a variety of information sources, ranging from syntactic and discourse constraints, which are highly configurational, to semantic constraints, which are highly contingent on lexical meaning and world knowledge.",Experiment/Discussion
+"Perhaps because configurational features are inherently easier to learn from small data sets, past work has often emphasized them over semantic knowledge.",Experiment/Discussion
+"Of course, all state-of-the-art coreference systems have needed to capture semantic compatibility to some degree.",Experiment/Discussion
+"As an example of nominal headword compatibility, a “president” can be a “leader” but cannot be not an “increase.” Past systems have often computed the compatibility of specific headword pairs, extracted either from lexical resources (Ng, 2007; Bengston and Roth, 2008; Rahman and Ng, 2009), web statistics (Yang et al., 2005), or surface syntactic patterns (Haghighi and Klein, 2009).",Experiment/Discussion
+"While the pairwise approach has high precision, it is neither realistic nor scalable to explicitly enumerate all pairs of compatible word pairs.",Experiment/Discussion
+"A more compact approach has been to rely on named-entity recognition (NER) systems to give coarse-grained entity types for each mention (Soon et al., 1999; Ng and Cardie, 2002).",Experiment/Discussion
+"Unfortunately, current systems use small inventories of types and so provide little constraint.",Experiment/Discussion
+"In general, coreference errors in state-of-theart systems are frequently due to poor models of semantic compatibility (Haghighi and Klein, 2009).",Experiment/Discussion
+"In this work, we take a primarily unsupervised approach to coreference resolution, broadly similar to Haghighi and Klein (2007), which addresses this issue.",Experiment/Discussion
+"Our generative model exploits a large inventory of distributional entity types, including standard NER types like PERSON and ORG, as well as more refined types like WEAPON and VEHICLE.",Experiment/Discussion
+"For each type, distributions over typical heads, modifiers, and governors are learned from large amounts of unlabeled data, capturing type-level semantic information (e.g.",Experiment/Discussion
+“spokesman” is a likely head for a PERSON).,Experiment/Discussion
+Each entity inherits from a type but captures entity-level semantic information (e.g.,Experiment/Discussion
+“giant” may be a likely head for the Microsoft entity but not all ORGs).,Experiment/Discussion
+"Separately from the type-entity semantic module, a log-linear discourse model captures configurational effects.",Experiment/Discussion
+"Finally, a mention model assembles each textual mention by selecting semantically appropriate words from the entities and types.",Experiment/Discussion
+"Despite being almost entirely unsupervised, our model yields the best reported end-to-end results on a range of standard coreference data sets.",Experiment/Discussion
+sociated with nodes in a parse tree and are typically realized as NPs.,Experiment/Discussion
+"There are three basic forms of mentions: proper (denoted NAM), nominal (NOM), and pronominal (PRO).",Experiment/Discussion
+We will often describe proper and nominal mentions together as referring mentions.,Experiment/Discussion
+We represent each mention M as a collection of key-value pairs.,Experiment/Discussion
+The keys are called properties and the values are words.,Experiment/Discussion
+"For example, the left mention in Figure 1(a) has a proper head property, denoted NAM-HEAD, with value “Obama.” The set of properties we consider, denoted R, includes several varieties of heads, modifiers, and governors (see Section 5.2 for details).",Experiment/Discussion
+Not every mention has a value for every property.,Experiment/Discussion
+Entities: An entity is a specific individual or object in the world.,Experiment/Discussion
+Entities are always latent in text.,Experiment/Discussion
+"Where a mention has a single word for each property, an entity has a list of signature words.",Experiment/Discussion
+"Formally, entities are mappings from properties r E R to lists Lr of “canonical” words which that entity uses for that property.",Experiment/Discussion
+"For instance in Figure 1(b), the list of nominal heads for the Barack Obama entity includes “president.” Types: Coreference systems often make a mention / entity distinction.",Experiment/Discussion
+"We extend this hierarchy to include types, which represent classes of entities (PERSON, ORGANIZATION, and so on).",Experiment/Discussion
+Types allow the sharing of properties across entities and mediate the generation of entities in our model (Section 3.1).,Experiment/Discussion
+See Figure 1(c) for a concrete example.,Experiment/Discussion
+"We represent each type T as a mapping between properties r and pairs of multinomials (Br, fr).",Experiment/Discussion
+"Together, these distributions control the lists Lr for entities of that type.",Experiment/Discussion
+Br is a unigram distribution of words that are semantically licensed for property r. fr is a “fertility” distribution over the integers that characterizes entity list lengths.,Experiment/Discussion
+"For example, for the type PERSON, Br for proper heads is quite flat (there are many last names) but fr is peaked at 1 (people have a single last name).",Experiment/Discussion
+We now describe our generative model.,Experiment/Discussion
+"At the parameter level, we have one parameter group for the types τ = (0, T1, ... , Tt), where 0 is a multinomial prior over a fixed number t of types and the {TZ} are the parameters for each individual type, described in greater detail below.",Experiment/Discussion
+"A second group comprises loglinear parameters π over discourse choices, also described below.",Experiment/Discussion
+"Together, these two groups are drawn according to P(τ|λ)P(π|Q2), where λ and Q2 are a small number of scalar hyper-parameters described in Section 4.",Experiment/Discussion
+"Conditioned on the parameters (τ, π), a document is generated as follows: A semantic module generates a sequence E of entities.",Experiment/Discussion
+"E is in principle infinite, though during inference only a finite number are ever instantiated.",Experiment/Discussion
+A discourse module generates a vector Z which assigns an entity index ZZ to each mention position i.,Experiment/Discussion
+"Finally, a mention generation module independently renders the sequence of mentions (M) from their underlying entities.",Experiment/Discussion
+"The syntactic position and structure of mentions are treated as observed, including the mention forms (pronominal, etc.).",Experiment/Discussion
+We use X to refer to this ungenenerated information.,Experiment/Discussion
+Our model decomposes as follows: We detail each of these components in subsequent sections.,Experiment/Discussion
+The semantic module is responsible for generating a sequence of entities.,Experiment/Discussion
+"Each entity E is generated independently and consists of a type indicator T, as well as a collection {Lr}rE7Z of word lists for each property.",Experiment/Discussion
+"These elements are generated as follows: Draw entity type T — 0 For each mention property r E R, Fetch {(fr, Br)} for TT Draw word list length |Lr |— fr Draw |Lr |words from w — Br See Figure 2 for an illustration of this process.",Experiment/Discussion
+"Each word list Lr is generated by first drawing a list length from fr and then independently populating that list from the property’s word distribution Br.1 Past work has employed broadly similar distributional models for unsupervised NER of proper men1There is one exception: the sizes of the proper and nominal head property lists are jointly generated, but their word lists are still independently populated. tions (Collins and Singer, 1999; Elsner et al., 2009).",Experiment/Discussion
+"However, to our knowledge, this is the first work to incorporate such a model into an entity reference process.",Experiment/Discussion
+The discourse module is responsible for choosing an entity to evoke at each of the n mention positions.,Experiment/Discussion
+"Formally, this module generates an entity assignment vector Z = (Zl, ... , Zn), where Zi indicates the entity index for the ith mention position.",Experiment/Discussion
+"Most linguistic inquiry characterizes NP anaphora by the pairwise relations that hold between a mention and its antecedent (Hobbs, 1979; Kehler et al., 2008).",Experiment/Discussion
+Our discourse module utilizes this pairwise perspective to define each Zi in terms of an intermediate “antecedent” variable Ai.,Experiment/Discussion
+Ai either points to a previous antecedent mention position (Ai < i) and “steals” its entity assignment or begins a new entity (Ai = i).,Experiment/Discussion
+"The choice of Ai is parametrized by affinities s7r(i, j; X) between mention positions i and j.",Experiment/Discussion
+"Formally, this process is described as: For each mention position, i = 1, ... , n, Draw antecedent position Ai E {1, ... , i}: Here, K denotes the number of entities allocated in the first i-1 mention positions.",Experiment/Discussion
+This process is an instance of the sequential distance-dependent Chinese Restaurant Process (DD-CRP) of Blei and Frazier (2009).,Experiment/Discussion
+"During inference, we variously exploit both the A and Z representations (Section 4).",Experiment/Discussion
+"For nominal and pronoun mentions, there are several well-studied anaphora cues, including centering (Grosz et al., 1995), nearness (Hobbs, 1978), and deterministic constraints, which have all been utilized in prior coreference work (Soon et al., 1999; Ng and Cardie, 2002).",Experiment/Discussion
+"In order to combine these cues, we take a log-linear, feature-based approach and parametrize s7r(i, j; X) = exp{7rTfX(i, j)}, where fX(i, j) is a feature vector over mention positions i and j, and 7r is a parameter vector; the features may freely condition on X.",Experiment/Discussion
+"We utilize the following features between a mention and an antecedent: tree distance, sentence distance, and the syntactic positions (subject, object, and oblique) of the mention and antecedent.",Experiment/Discussion
+"Features for starting a new entity include: a definiteness feature (extracted from the mention’s determiner), the top CFG rule of the mention parse node, its syntactic role, and a bias feature.",Experiment/Discussion
+These features are conjoined with the mention form (nominal or pronoun).,Experiment/Discussion
+"Additionally, we restrict pronoun antecedents to the current and last two sentences, and the current and last three sentences for nominals.",Experiment/Discussion
+"Additionally, we disallow nominals from having direct pronoun antecedents.",Experiment/Discussion
+"In addition to the above, if a mention is in a deterministic coreference configuration, as defined in Haghighi and Klein (2009), we force it to take the required antecedent.",Experiment/Discussion
+"In general, antecedent affinities learn to prefer close antecedents in prominent syntactic positions.",Experiment/Discussion
+We also learn that new entity nominals are typically indefinite or have SBAR complements (captured by the CFG feature).,Experiment/Discussion
+"In contrast to nominals and pronouns, the choice of entity for a proper mention is governed more by entity frequency than antecedent distance.",Experiment/Discussion
+"We capture this by setting s,7r(i, j; X) in the proper case to 1 for past positions and to a fixed α otherwise.",Experiment/Discussion
+"2 Once the semantic module has generated entities and the discourse model selects entity assignments, each mention Mi generates word values for a set of observed properties Ri: Mention Generation For each mention Mi, i = 1, ... , n For each property r, there is a hyper-parameter αr which interpolates between selecting a word from the entity list Lr and drawing from the underlying type property distribution Br.",Experiment/Discussion
+"Intuitively, a small value of αr indicates that an entity prefers to re-use a small number of words for property r. This is typically the case for proper and nominal heads as well as modifiers.",Experiment/Discussion
+"At the other extreme, setting αr to 1 indicates the property isn’t particular to the entity itself, but rather only on its type.",Experiment/Discussion
+We set αr to 1 for pronoun heads as well as for the governor of the head properties.,Experiment/Discussion
+"Our learning procedure involves finding parameters and assignments which are likely under our model’s posterior distribution P(E, Z, T, 9C|M, X).",Experiment/Discussion
+The model is modularized in such a way that running EM on all variables simultaneously would be very difficult.,Experiment/Discussion
+"Therefore, we adopt a variational approach which optimizes various subgroups of the variables in a round-robin fashion, holding approximations to the others fixed.",Experiment/Discussion
+"We first describe the variable groups, then the updates which optimize them in turn.",Experiment/Discussion
+"Decomposition: We decompose the entity variables E into types, T, one for each entity, and word lists, L, one for each entity and property.",Experiment/Discussion
+"We decompose the mentions M into referring mentions (propers and nominals), Mr, and pronominal mentions, Mp (with sizes nr and np respectively).",Experiment/Discussion
+The entity assignments Z are similarly divided into Zr and Zp components.,Experiment/Discussion
+"For pronouns, rather than use Zp, we instead work with the corresponding antecedent variables, denoted Ap, and marginalize over antecedents to obtain Zp.",Experiment/Discussion
+"With these variable groups, we would like to approximation our model posterior P(T, L, Zr, Ap, -r, 7rJM, X) using a simple factored representation.",Experiment/Discussion
+Our variational approximation takes the following form: We use a mean field approach to update each of the RHS factors in turn to minimize the KL-divergence between the current variational posterior and the true model posterior.,Experiment/Discussion
+"The δr, δs, and δd factors place point estimates on a single value, just as in hard EM.",Experiment/Discussion
+Updating these factors involves finding the value which maximizes the model (expected) loglikelihood under the other factors.,Experiment/Discussion
+"For instance, the δs factor is a point estimate of the type parameters, and is updated with:3 where Q_63 denotes all factors of the variational approximation except for the factor being updated.",Experiment/Discussion
+The ri (pronoun antecedents) and qk (type indicator) factors maintain a soft approximation and so are slightly more complex.,Experiment/Discussion
+"For example, the ri factor update takes the standard mean field form: ri(Api ) a exp{EQ_r, lnP(E, Z, M, -r, 7r)} (2) We briefly describe the update for each additional factor, omitting details for space.",Experiment/Discussion
+Updating type parameters δs(-r): The type parameters -r consist of several multinomial distributions which can be updated by normalizing expected counts as in the EM algorithm.,Experiment/Discussion
+"The prior 3Of course during learning, the argmax is performed over the entire document collection, rather than a single document.",Experiment/Discussion
+"P(-r JA) consists of several finite Dirichlet draws for each multinomial, which are incorporated as pseudocounts.4 Given the entity type variational posteriors {qk(·)}, as well as the point estimates of the L and Zr elements, we obtain expected counts from each entity’s attribute word lists and referring mention usages.",Experiment/Discussion
+"Updating discourse parameters δd(7r): The learned parameters for the discourse module rely on pairwise antecedent counts for assignments to nominal and pronominal mentions.5 Given these expected counts, which can be easily obtained from other factors, the update reduces to a weighted maximum entropy problem, which we optimize using LBFGS.",Experiment/Discussion
+"The prior P(7rJσ2) is a zero-centered normal distribution with shared diagonal variance σ2, which is incorporated via L2 regularization during optimization.",Experiment/Discussion
+"Updating referring assignments and word lists δr(Zr, L): The word lists are usually concatenations of the words used in nominal and proper mentions and so are updated together with the assignments for those mentions.",Experiment/Discussion
+"Updating the δr(Zr, L) factor involves finding the referring mention entity assignments, Zr, and property word lists L for instantiated entities which maximize ]EQ_ar ln P(T, L, Zr, Ap, M, -r, 7r).",Experiment/Discussion
+"We actually only need to optimize over Zr, since for any Zr, we can compute the optimal set of property word lists L. Essentially, for each entity we can compute the Lr which optimizes the probability of the referring mentions assigned to the entity (indicated by Zr).",Experiment/Discussion
+"In practice, the optimal Lr is just the set of property words in the assigned mentions.",Experiment/Discussion
+"Of course enumerating and scoring all Zr hypotheses is intractable, so we instead utilize a left-to-right sequential beam search.",Experiment/Discussion
+Each partial hypothesis is an assignment to a prefix of mention positions and is scored as though it were a complete hypothesis.,Experiment/Discussion
+Hypotheses are extended via adding a new mention to an existing entity or creating a new one.,Experiment/Discussion
+"For our experiments, we limited the number of hypotheses on the beam to the top fifty and did not notice an improvement in model score from increasing beam size.",Experiment/Discussion
+Updating pronominal antecedents ri(A?,Experiment/Discussion
+'i ) and entity types qk(Tk): These updates are straightforward instantiations of the mean-field update (2).,Experiment/Discussion
+"To produce our final coreference partitions, we assign each referring mention to the entity given by the δr factor and each pronoun to the most likely entity given by the ri.",Experiment/Discussion
+"In order to facilitate learning, some factors are initially set to fixed heuristic values and only learned in later iterations.",Experiment/Discussion
+"Initially, the assignment factors δr and {ri} are fixed.",Experiment/Discussion
+"For δr, we use a deterministic entity assignment Zr, similar to the Haghighi and Klein (2009)’s SYN-CONSTR setting: each referring mention is coreferent with any past mention with the same head or in a deterministic syntactic configuration (appositives or predicative nominatives constructions).6 The {ri} factors are heuristically set to place most of their mass on the closest antecedent by tree distance.",Experiment/Discussion
+"During training, we proceed in stages, each consisting of 5 iterations: We evaluate our system at the end of stage using the B3All metric on the A05CU development set (see Section 5 for details).",Experiment/Discussion
+"We considered the challenging end-to-end system mention setting, where in addition to predicting mention partitions, a system must identify the mentions themselves and their boundaries automatically.",Experiment/Discussion
+Our system deterministically extracts mention boundaries from parse trees (Section 5.2).,Experiment/Discussion
+"We utilized no coreference annotation during training, but did use minimal prototype information to prime the learning of entity types (Section 5.3).",Experiment/Discussion
+"For evaluation, we used standard coreference data sets derived from the ACE corpora: For all experiments, we evaluated on the dev and test sets above.",Experiment/Discussion
+"To train, we included the text of all documents above, though of course not looking at either their mention boundaries or reference annotations in any way.",Experiment/Discussion
+"We also trained on the following much larger unlabeled datasets utilized in Haghighi and Klein (2009): Mention boundaries were automatically detected as follows: For each noun or pronoun (determined by parser POS tag), we associated a mention with the maximal NP projection of that head or that word itself if no NP can be found.",Experiment/Discussion
+"This procedure recovers over 90% of annotated mentions on the A05CU dev set, but also extracts many unannotated “spurious” mentions (for instance events, times, dates, or abstract nouns) which are not deemed to be of interest by the ACE annotation conventions.",Experiment/Discussion
+"Mention properties were obtained from parse trees using the the Stanford typed dependency extractor (de Marneffe et al., 2006).",Experiment/Discussion
+"The mention properties we considered are the mention head (annotated with mention type), the typed modifiers of the head, and the governor of the head (conjoined with the mention’s syntactic position).",Experiment/Discussion
+"We discard determiners, but make use of them in the discourse component (Section 3.2) for NP definiteness.",Experiment/Discussion
+"While it is possible to learn type distributions in a completely unsupervised fashion, we found it useful to prime the system with a handful of important types.",Experiment/Discussion
+"Rather than relying on fully supervised data, we took the approach of Haghighi and Klein (2006).",Experiment/Discussion
+"For each type of interest, we provided a (possiblyempty) prototype list of proper and nominal head words, as well as a list of allowed pronouns.",Experiment/Discussion
+"For instance, for the PERSON type we might provide: Bush, Gore, Hussein president, minister, official he, his, she, him, her, you, ...",Experiment/Discussion
+The prototypes were used as follows: Any entity with a prototype on any proper or nominal head word attribute list (Section 3.1) was constrained to have the specified type; i.e. the qk factor (Section 4) places probability one on that single type.,Experiment/Discussion
+"Similarly to Haghighi and Klein (2007) and Elsner et al. (2009), we biased these types’ pronoun distributions to the allowed set of pronouns.",Experiment/Discussion
+"In general, the choice of entity types to prime with prototypes is a domain-specific question.",Experiment/Discussion
+"For experiments here, we utilized the types which are annotated in the ACE coreference data: person (PERS), organization (ORG), geo-political entity (GPE), weapon (WEA), vehicle (VEH), location (LOC), and facility (FAC).",Experiment/Discussion
+"Since the person type in ACE conflates individual persons with groups of people (e.g., soldier vs. soldiers), we added the group (GROUP) type and generated a prototype specification.",Experiment/Discussion
+"We obtained our prototype list by extracting at most four common proper and nominal head words from the newswire portions of the 2004 and 2005 ACE training sets (A04CU and A05ST); we chose prototype words to be minimally ambiguous with respect to type.8 When there are not at least three proper heads for a type (WEA for instance), we did not provide any proper prototypes and instead strongly biased the type fertility parameters to generate empty NAM-HEAD lists.",Experiment/Discussion
+"Because only certain semantic types were annotated under the arbitrary ACE guidelines, there are many mentions which do not fall into those limited categories.",Experiment/Discussion
+We therefore prototype (refinements of) the ACE types and then add an equal number of unconstrained “other” types which are automatically induced.,Experiment/Discussion
+"A nice consequence of this approach is that we can simply run our model on all mentions, discarding at evaluation time any which are of nonprototyped types.",Experiment/Discussion
+"We evaluated on multiple coreference resolution metrics, as no single one is clearly superior, partic8Meaning those headwords were assigned to the target type for more than 75% of their usages.",Experiment/Discussion
+NAM NOM PRO ularly in dealing with the system mention setting.,Experiment/Discussion
+"We utilized MUC (Vilain et al., 1995), B3All (Stoyanov et al., 2009), B3None (Stoyanov et al., 2009), and Pairwise F1.",Experiment/Discussion
+"The B3All and B3None are B3 variants (Bagga and Baldwin, 1998) that differ in their treatment of spurious mentions.",Experiment/Discussion
+"For Pairwise F1, precision measures how often pairs of predicted coreferent mentions are in the same annotated entity.",Experiment/Discussion
+We eliminated any mention pair from this calculation where both mentions were spurious.9,Experiment/Discussion
+Table 1 shows our results.,Experiment/Discussion
+We compared to two state-of-the-art supervised coreference systems.,Experiment/Discussion
+The Stoyanov et al. (2009) numbers represent their THRESHOLD ESTIMATION setting and the Rahman and Ng (2009) numbers represent their highestperforming cluster ranking model.,Experiment/Discussion
+"We also compared to the strong deterministic system of Haghighi and Klein (2009).10 Across all data sets, our model, despite being largely unsupervised, consistently outperforms these systems, which are the best previously reported results on end-to-end coreference resolution (i.e. including mention detection).",Experiment/Discussion
+Performance on the A05RA dataset is generally lower because it includes articles from blogs and web forums where parser quality is significantly degraded.,Experiment/Discussion
+"While Bengston and Roth (2008) do not report on the full system mention task, they do report on the more optimistic setting where mention detection is performed but non-gold mentions are removed for evaluation using an oracle.",Experiment/Discussion
+"On this more lenient setting, they report 78.4 B3 on the A04CU test set.",Experiment/Discussion
+Our model yields 80.3.,Experiment/Discussion
+We now discuss errors and improvements made by our system.,Results/Conclusion
+"One frequent source of error is the merging of mentions with explicitly contrasting modifiers, such as new president and old president.",Results/Conclusion
+"While it is not unusual for a single entity to admit multiple modifiers, the particular modifiers new and old are incompatible in a way that new and popular 9Note that we are still penalized for marking a spurious mention coreferent with an annotated one.",Results/Conclusion
+"10Haghighi and Klein (2009) reports on true mentions; here, we report performance on automatically detected mentions. are not.",Results/Conclusion
+Our model does not represent the negative covariance between these modifiers.,Results/Conclusion
+We compared our output to the deterministic system of Haghighi and Klein (2009).,Results/Conclusion
+Many improvements arise from correctly identifying mentions which are semantically compatible but which do not explicitly appear in an appositive or predicatenominative configuration in the data.,Results/Conclusion
+"For example, analyst and it cannot corefer in our system because it is not a likely pronoun for the type PERSON.",Results/Conclusion
+"While the focus of our model is coreference resolution, we can also isolate and evaluate the type component of our model as an NER system.",Results/Conclusion
+We test this component by presenting our learned model with boundary-annotated non-pronominal entities from the A05ST dev set and querying their predicted type variable T. Doing so yields 83.2 entity classification accuracy under the mapping between our prototyped types and the coarse ACE types.,Results/Conclusion
+Note that this task is substantially more difficult than the unsupervised NER in Elsner et al. (2009) because the inventory of named entities is larger (7 vs. 3) and because we predict types over nominal mentions that are more difficult to judge from surface forms.,Results/Conclusion
+"In this task, the plurality of errors are confusions between the GPE (geo-political entity) and ORG entity types, which have very similar distributions.",Results/Conclusion
+Our model is able to acquire and exploit knowledge at either the level of individual entities (“Obama” is a “president”) and entity types (“company” can refer to a corporation).,Results/Conclusion
+"As a result, it leverages semantic constraints more effectively than systems operating at either level alone.",Results/Conclusion
+"In conjunction with reasonable, but simple, factors capturing discourse and syntactic configurational preferences, our entity-centric semantic model lowers coreference error rate substantially, particularly on semantically disambiguated references, giving a sizable improvement over the state-of-the-art.11 Acknowledgements: This project is funded in part by the Office of Naval Research under MURI Grant No.",Results/Conclusion
+N000140911081.,Results/Conclusion
+11See nlp.cs.berkeley.edu and aria42.com/software.html for software release.,Results/Conclusion

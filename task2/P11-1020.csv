@@ -1,226 +1,226 @@
 col1,col2
-A lack of standard datasets and evaluation has prevented the field of paraphrasmaking the kind of rapid progress enjoyed by the machine translation community over the last 15 years.,{}
-We address both problems by presenting a novel data collection framework that produces highly parallel text data relatively inexpensively and on a large scale.,{}
-The highly parallel nature of this data allows us to use simple n-gram comparisons to measure both the semantic adequacy and lexical dissimilarity of paraphrase candidates.,{}
-"In addition to being simple and efficient to compute, experiments show that these metrics correlate highly with human judgments.",{}
-"Machine paraphrasing has many applications for natural language processing tasks, including machine translation (MT), MT evaluation, summary evaluation, question answering, and natural language generation.","{'title': '1 Introduction', 'number': '1'}"
-"However, a lack of standard datasets and automatic evaluation metrics has impeded progress in the field.","{'title': '1 Introduction', 'number': '1'}"
-"Without these resources, researchers have resorted to developing their own small, ad hoc datasets (Barzilay and McKeown, 2001; Shinyama et al., 2002; Barzilay and Lee, 2003; Quirk et al., 2004; Dolan et al., 2004), and have often relied on human judgments to evaluate their results (Barzilay and McKeown, 2001; Ibrahim et al., 2003; Bannard and Callison-Burch, 2005).","{'title': '1 Introduction', 'number': '1'}"
-"Consequently, it is difficult to compare different systems and assess the progress of the field as a whole.","{'title': '1 Introduction', 'number': '1'}"
-"Despite the similarities between paraphrasing and translation, several major differences have prevented researchers from simply following standards that have been established for machine translation.","{'title': '1 Introduction', 'number': '1'}"
-"Professional translators produce large volumes of bilingual data according to a more or less consistent specification, indirectly fueling work on machine translation algorithms.","{'title': '1 Introduction', 'number': '1'}"
-"In contrast, there are no “professional paraphrasers”, with the result that there are no readily available large corpora and no consistent standards for what constitutes a high-quality paraphrase.","{'title': '1 Introduction', 'number': '1'}"
-"In addition to the lack of standard datasets for training and testing, there are also no standard metrics like BLEU (Papineni et al., 2002) for evaluating paraphrase systems.","{'title': '1 Introduction', 'number': '1'}"
-"Paraphrase evaluation is inherently difficult because the range of potential paraphrases for a given input is both large and unpredictable; in addition to being meaning-preserving, an ideal paraphrase must also diverge as sharply as possible in form from the original while still sounding natural and fluent.","{'title': '1 Introduction', 'number': '1'}"
-Our work introduces two novel contributions which combine to address the challenges posed by paraphrase evaluation.,"{'title': '1 Introduction', 'number': '1'}"
-"First, we describe a framework for easily and inexpensively crowdsourcing arbitrarily large training and test sets of independent, redundant linguistic descriptions of the same semantic content.","{'title': '1 Introduction', 'number': '1'}"
-"Second, we define a new evaluation metric, PINC (Paraphrase In N-gram Changes), that relies on simple BLEU-like n-gram comparisons to measure the degree of novelty of automatically generated paraphrases.","{'title': '1 Introduction', 'number': '1'}"
-"We believe that this metric, along with the sentence-level paraphrases provided by our data collection approach, will make it possible for researchers working on paraphrasing to compare system performance and exploit the kind of automated, rapid training-test cycle that has driven work on Statistical Machine Translation.","{'title': '1 Introduction', 'number': '1'}"
-"In addition to describing a mechanism for collecting large-scale sentence-level paraphrases, we are also making available to the research community 85K parallel English sentences as part of the Microsoft Research Video Description Corpus 1.","{'title': '1 Introduction', 'number': '1'}"
-The rest of the paper is organized as follows.,"{'title': '1 Introduction', 'number': '1'}"
-We first review relevant work in Section 2.,"{'title': '1 Introduction', 'number': '1'}"
-Section 3 then describes our data collection framework and the resulting data.,"{'title': '1 Introduction', 'number': '1'}"
-Section 4 discusses automatic evaluations of paraphrases and introduces the novel metric PINC.,"{'title': '1 Introduction', 'number': '1'}"
-Section 5 presents experimental results establishing a correlation between our automatic metric and human judgments.,"{'title': '1 Introduction', 'number': '1'}"
-Sections 6 and 7 discuss possible directions for future research and conclude.,"{'title': '1 Introduction', 'number': '1'}"
-"Since paraphrase data are not readily available, various methods have been used to extract parallel text from other sources.","{'title': '2 Related Work', 'number': '2'}"
-"One popular approach exploits multiple translations of the same data (Barzilay and McKeown, 2001; Pang et al., 2003).","{'title': '2 Related Work', 'number': '2'}"
-"Examples of this kind of data include the Multiple-Translation Chinese (MTC) Corpus 2 which consists of Chinese news stories translated into English by 11 translation agencies, and literary works with multiple translations into English (e.g.","{'title': '2 Related Work', 'number': '2'}"
-Flaubert’s Madame Bovary.),"{'title': '2 Related Work', 'number': '2'}"
-"Another method for collecting monolingual paraphrase data involves aligning semantically parallel sentences from different news articles describing the same event (Shinyama et al., 2002; Barzilay and Lee, 2003; Dolan et al., 2004).","{'title': '2 Related Work', 'number': '2'}"
-"While utilizing multiple translations of literary work or multiple news stories of the same event can yield significant numbers of parallel sentences, this data tend to be noisy, and reliably identifying good paraphrases among all possible sentence pairs remains an open problem.","{'title': '2 Related Work', 'number': '2'}"
-"On the other hand, multiple translations on the sentence level such as the MTC Corpus provide good, natural paraphrases, but relatively little data of this type exists.","{'title': '2 Related Work', 'number': '2'}"
-"Finally, some approaches avoid the need for monolingual paraphrase data altogether by using a second language as the pivot language (Bannard and Callison-Burch, 2005; Callison-Burch, 2008; Kok and Brockett, 2010).","{'title': '2 Related Work', 'number': '2'}"
-Phrases that are aligned to the same phrase in the pivot language are treated as potential paraphrases.,"{'title': '2 Related Work', 'number': '2'}"
-"One limitation of this approach is that only words and phrases are identified, not whole sentences.","{'title': '2 Related Work', 'number': '2'}"
-"While most work on evaluating paraphrase systems has relied on human judges (Barzilay and McKeown, 2001; Ibrahim et al., 2003; Bannard and Callison-Burch, 2005) or indirect, task-based methods (Lin and Pantel, 2001; Callison-Burch et al., 2006), there have also been a few attempts at creating automatic metrics that can be more easily replicated and used to compare different systems.","{'title': '2 Related Work', 'number': '2'}"
-"ParaMetric (Callison-Burch et al., 2008) compares the paraphrases discovered by an automatic system with ones annotated by humans, measuring precision and recall.","{'title': '2 Related Work', 'number': '2'}"
-"This approach requires additional human annotations to identify the paraphrases within parallel texts (Cohn et al., 2008) and does not evaluate the systems at the sentence level.","{'title': '2 Related Work', 'number': '2'}"
-"The more recently proposed metric PEM (Paraphrase Evaluation Metric) (Liu et al., 2010) produces a single score that captures the semantic adequacy, fluency, and lexical dissimilarity of candidate paraphrases, relying on bilingual data to learn semantic equivalences without using n-gram similarity between candidate and reference sentences.","{'title': '2 Related Work', 'number': '2'}"
-"In addition, the metric was shown to correlate well with human judgments.","{'title': '2 Related Work', 'number': '2'}"
-"However, a significant drawback of this approach is that PEM requires substantial in-domain bilingual data to train the semantic adequacy evaluator, as well as sample human judgments to train the overall metric.","{'title': '2 Related Work', 'number': '2'}"
-We designed our data collection framework for use on crowdsourcing platforms such as Amazon’s Mechanical Turk.,"{'title': '2 Related Work', 'number': '2'}"
-"Crowdsourcing can allow inexpensive and rapid data collection for various NLP tasks (Ambati and Vogel, 2010; Bloodgood and Callison-Burch, 2010a; Bloodgood and CallisonBurch, 2010b; Irvine and Klementiev, 2010), including human evaluations of NLP systems (CallisonBurch, 2009; Denkowski and Lavie, 2010; Zaidan and Callison-Burch, 2009).","{'title': '2 Related Work', 'number': '2'}"
-Of particular relevance are the paraphrasing work by Buzek et al. (2010) and Denkowski et al.,"{'title': '2 Related Work', 'number': '2'}"
-(2010).,"{'title': '2 Related Work', 'number': '2'}"
-"Buzek et al. automatically identified problem regions in a translation task and had workers attempt to paraphrase them, while Denkowski et al. asked workers to assess the validity of automatically extracted paraphrases.","{'title': '2 Related Work', 'number': '2'}"
-Our work is distinct from these earlier efforts both in terms of the task – attempting to collect linguistic descriptions using a visual stimulus – and the dramatically larger scale of the data collected.,"{'title': '2 Related Work', 'number': '2'}"
-"Since our goal was to collect large numbers of paraphrases quickly and inexpensively using a crowd, our framework was designed to make the tasks short, simple, easy, accessible and somewhat fun.","{'title': '3 Data Collection', 'number': '3'}"
-"For each task, we asked the annotators to watch a very short video clip (usually less than 10 seconds long) and describe in one sentence the main action or event that occurred in the video clip We deployed the task on Amazon’s Mechanical Turk, with video segments selected from YouTube.","{'title': '3 Data Collection', 'number': '3'}"
-A screenshot of our annotation task is shown in Figure 1.,"{'title': '3 Data Collection', 'number': '3'}"
-"On average, annotators completed each task within 80 seconds, including the time required to watch the video.","{'title': '3 Data Collection', 'number': '3'}"
-"Experienced annotators were even faster, completing the task in only 20 to 25 seconds.","{'title': '3 Data Collection', 'number': '3'}"
-"One interesting aspect of this framework is that each annotator approaches the task from a linguistically independent perspective, unbiased by the lexical or word order choices in a pre-existing description.","{'title': '3 Data Collection', 'number': '3'}"
-"The data thus has some similarities to parallel news descriptions of the same event, while avoiding much of the noise inherent in news.","{'title': '3 Data Collection', 'number': '3'}"
-It is also similar in spirit to the ‘Pear Stories’ film used by Chafe (1997).,"{'title': '3 Data Collection', 'number': '3'}"
-"Crucially, our approach allows us to gather arbitrarily many of these independent descriptions for each video, capturing nearly-exhaustive coverage of how native speakers are likely to summarize a small action.","{'title': '3 Data Collection', 'number': '3'}"
-"It might be possible to achieve similar effects using images or panels of images as the stimulus (von Ahn and Dabbish, 2004; Fei-Fei et al., 2007; Rashtchian et al., 2010), but we believed that videos would be more engaging and less ambiguous in their focus.","{'title': '3 Data Collection', 'number': '3'}"
-"In addition, videos have been shown to be more effective in prompting descriptions of motion and contact verbs, as well as verbs that are generally not imageable (Ma and Cook, 2009).","{'title': '3 Data Collection', 'number': '3'}"
-Watch and describe a short segment of a video You will be shown a segment of a video clip and asked to describe the main action/event in that segment in ONE SENTENCE.,"{'title': '3 Data Collection', 'number': '3'}"
-Things to note while completing this task: The video will play only a selected segment by default.,"{'title': '3 Data Collection', 'number': '3'}"
-You can choose to watch the entire clip and/or with sound although this is not necessary.,"{'title': '3 Data Collection', 'number': '3'}"
-Please only describe the action/event that occurred in the selected segment and not any other parts of One of the main problems with collecting data using a crowd is quality control.,"{'title': '3 Data Collection', 'number': '3'}"
-"While the cost is very low compared to traditional annotation methods, workers recruited over the Internet are often unqualified for the tasks or are incentivized to cheat in order to maximize their rewards.","{'title': '3 Data Collection', 'number': '3'}"
-"To encourage native and fluent contributions, we asked annotators to write the descriptions in the language of their choice.","{'title': '3 Data Collection', 'number': '3'}"
-"The result was a significant amount of translation data, unique in its multilingual parallelism.","{'title': '3 Data Collection', 'number': '3'}"
-"While included in our data release, we leave aside a full discussion of this multilingual data for future work.","{'title': '3 Data Collection', 'number': '3'}"
-"To ensure the quality of the annotations being produced, we used a two-tiered payment system.","{'title': '3 Data Collection', 'number': '3'}"
-The idea was to reward workers who had shown the ability to write quality descriptions and the willingness to work on our tasks consistently.,"{'title': '3 Data Collection', 'number': '3'}"
-"While everyone had access to the Tier-1 tasks, only workers who had been manually qualified could work on the Tier-2 tasks.","{'title': '3 Data Collection', 'number': '3'}"
-"The tasks were identical in the two tiers but each Tier-1 task only paid 1 cent while each Tier-2 task paid 5 cents, giving the workers a strong incentive to earn the qualification.","{'title': '3 Data Collection', 'number': '3'}"
-The qualification process was done manually by the authors.,"{'title': '3 Data Collection', 'number': '3'}"
-We periodically evaluated the workers who had submitted the most Tier-1 tasks (usually on the order of few hundred submissions) and granted them access to the Tier-2 tasks if they had performed well.,"{'title': '3 Data Collection', 'number': '3'}"
-We assessed their work mainly on the grammaticality and spelling accuracy of the submitted descriptions.,"{'title': '3 Data Collection', 'number': '3'}"
-"Since we had hundreds of submissions to base our decisions on, it was fairly easy to identify the cheaters and people with poor English skills 3.","{'title': '3 Data Collection', 'number': '3'}"
-Workers who were rejected during this process were still allowed to work on the Tier-1 tasks.,"{'title': '3 Data Collection', 'number': '3'}"
-"While this approach requires significantly more manual effort initially than other approaches such as using a qualification test or automatic postannotation filtering, it creates a much higher quality workforce.","{'title': '3 Data Collection', 'number': '3'}"
-"Moreover, the initial effort is amortized over time as these quality workers are retained over the entire duration of the data collection.","{'title': '3 Data Collection', 'number': '3'}"
-Many of them annotated all the available videos we had.,"{'title': '3 Data Collection', 'number': '3'}"
-"To find suitable videos to annotate, we deployed a separate task.","{'title': '3 Data Collection', 'number': '3'}"
-"Workers were asked to submit short (generally 4-10 seconds) video segments depicting single, unambiguous events by specifying links to YouTube videos, along with the start and end times.","{'title': '3 Data Collection', 'number': '3'}"
-We again used a tiered payment system to reward and retain workers who performed well.,"{'title': '3 Data Collection', 'number': '3'}"
-"Since the scope of this data collection effort extended beyond gathering English data alone, we 3Everyone who submitted descriptions in a foreign language was granted access to the Tier-2 tasks.","{'title': '3 Data Collection', 'number': '3'}"
-This was done to encourage more submissions in different languages and also because we could not verify the quality of those descriptions other than using online translation services (and some of the languages were not available to be translated). tried to collect videos that could be understood regardless of the annotator’s linguistic or cultural background.,"{'title': '3 Data Collection', 'number': '3'}"
-"In order to avoid biasing lexical choices in the descriptions, we muted the audio and excluded videos that contained either subtitles or overlaid text.","{'title': '3 Data Collection', 'number': '3'}"
-"Finally, we manually filtered the submitted videos to ensure that each met our criteria and was free of inappropriate content.","{'title': '3 Data Collection', 'number': '3'}"
-"We deployed our data collection framework on Mechanical Turk over a two-month period from July to September in 2010, collecting 2,089 video segments and 85,550 English descriptions.","{'title': '3 Data Collection', 'number': '3'}"
-"The rate of data collection accelerated as we built up our workforce, topping 10K descriptions a day when we ended our data collection.","{'title': '3 Data Collection', 'number': '3'}"
-"Of the descriptions, 33,855 were from Tier-2 tasks, meaning they were provided by workers who had been manually identified as good performers.","{'title': '3 Data Collection', 'number': '3'}"
-Examples of some of the descriptions collected are shown in Figure 2.,"{'title': '3 Data Collection', 'number': '3'}"
-"Overall, 688 workers submitted at least one English description.","{'title': '3 Data Collection', 'number': '3'}"
-"Of these workers, 113 submitted at least 100 descriptions and 51 submitted at least 500.","{'title': '3 Data Collection', 'number': '3'}"
-The largest number of descriptions submitted by a single worker was 3496 4.,"{'title': '3 Data Collection', 'number': '3'}"
-"Out of the 688 workers, 50 were granted access to the Tier-2 tasks.","{'title': '3 Data Collection', 'number': '3'}"
-"The success of our data collection effort was in part due to our ability to retain these good workers, building a reliable and efficient workforce.","{'title': '3 Data Collection', 'number': '3'}"
-Table 1 shows some statistics for the Tier-1 and Tier-2 tasks 5.,"{'title': '3 Data Collection', 'number': '3'}"
-"Overall, we spent under $5,000 including Amazon’s service fees, some pilot experiments and surveys.","{'title': '3 Data Collection', 'number': '3'}"
-"On average, 41 descriptions were produced for each video, with at least 27 for over 95% of the videos.","{'title': '3 Data Collection', 'number': '3'}"
-"Even limiting the set to descriptions produced from the Tier-2 tasks, there are still 16 descriptions on average for each video, with at least 12 descriptions for over 95% of the videos.","{'title': '3 Data Collection', 'number': '3'}"
-"For most clusters, then, we have a dozen or more high-quality parallel descriptions that can be paired with one another to create monolingual parallel training data.","{'title': '3 Data Collection', 'number': '3'}"
-"One of the limitations to the development of machine paraphrasing is the lack of standard metrics like BLEU, which has played a crucial role in driving progress in MT.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-Part of the issue is that a good paraphrase has the additional constraint that it should be lexically dissimilar to the source sentence while preserving the meaning.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-These can become competing goals when using n-gram overlaps to establish semantic equivalence.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Thus, researchers have been unable to rely on BLEU or some derivative: the optimal paraphrasing engine under these terms would be one that simply returns the input.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"To combat such problems, Liu et al. (2010) have proposed PEM, which uses a second language as pivot to establish semantic equivalence.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Thus, no n-gram overlaps are required to determine the semantic adequacy of the paraphrase candidates.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-PEM also separately measures lexical dissimilarity and fluency.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Finally, all three scores are combined using a support vector machine (SVM) trained on human ratings of paraphrase pairs.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"While PEM was shown to correlate well with human judgments, it has some limitations.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-It only models paraphrasing at the phrase level and not at the sentence level.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Further, while it does not need reference sentences for the evaluation dataset, PEM does require suitable bilingual data to train the metric.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"The result is that training a successful PEM becomes almost as challenging as the original paraphrasing problem, since paraphrases need to be learned from bilingual data.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-The highly parallel nature of our data suggests a simpler solution to this problem.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"To measure semantic equivalence, we simply use BLEU with multiple references.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-The large number of reference paraphrases capture a wide space of sentences with equivalent meanings.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"While the set of reference sentences can of course never be exhaustive, our data collection method provides a natural distribution of common phrases that might be used to describe an action or event.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-A tight cluster with many similar parallel descriptions suggests there are only few common ways to express that concept.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"In addition to measuring semantic adequacy and fluency using BLEU, we also need to measure lexical dissimilarity with the source sentence.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-We introduce a new scoring metric PINC that measures how many n-grams differ between the two sentences.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"In essence, it is the inverse of BLEU since we want to minimize the number of n-gram overlaps between the two sentences.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Specifically, for source sentence s and candidate sentence c: where N is the maximum n-gram considered and ngrams and n-grams are the lists of n-grams in the source and candidate sentences, respectively.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-We use N = 4 in our evaluations.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-The PINC score computes the percentage of ngrams that appear in the candidate sentence but not in the source sentence.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"This score is similar to the Jaccard distance, except that it excludes n-grams that only appear in the source sentence and not in the candidate sentence.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"In other words, it rewards candidates for introducing new n-grams but not for omitting n-grams from the original sentence.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-The results for each n are averaged arithmetically.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-PINC evaluates single sentences instead of entire documents because we can reliably measure lexical dissimilarity at the sentence level.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Also notice that we do not put additional constraints on sentence length: while extremely short and extremely long sentences are likely to score high on PINC, they still must maintain semantic adequacy as measured by BLEU.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-We use BLEU and PINC together as a 2dimensional scoring metric.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"A good paraphrase, according to our evaluation metric, has few n-gram overlaps with the source sentence but many n-gram overlaps with the reference sentences.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-This is consistent with our requirement that a good paraphrase should be lexically dissimilar from the source sentence while preserving its semantics.,"{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"Unlike Liu et al. (2010), we treat these two criteria separately, since different applications might have different preferences for each.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"For example, a paraphrase suggestion tool for a word processing software might be more concerned with semantic adequacy, since presenting a paraphrase that does not preserve the meaning would likely result in a negative user experience.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"On the other hand, a query expansion algorithm might be less concerned with preserving the precise meaning so long as additional relevant terms are added to improve search recall.","{'title': '4 Paraphrase Evaluation Metrics', 'number': '4'}"
-"To verify the usefulness of our paraphrase corpus and the BLEU/PINC metric, we built and evaluated several paraphrase systems and compared the automatic scores to human ratings of the generated paraphrases.","{'title': '5 Experiments', 'number': '5'}"
-We also investigated the pros and cons of collecting paraphrases using video annotation rather than directly eliciting them.,"{'title': '5 Experiments', 'number': '5'}"
-"We built 4 paraphrase systems by training English to English translation models using Moses (Koehn et al., 2007) with the default settings.","{'title': '5 Experiments', 'number': '5'}"
-"Using our paraphrase corpus to train and to test, we divided the sentence clusters associated with each video into 90% for training and 10% for testing.","{'title': '5 Experiments', 'number': '5'}"
-"We restricted our attention to sentences produced from the Tier-2 tasks in order to avoid excessive noise in the datasets, resulting in 28,785 training sentences and 3,367 test sentences.","{'title': '5 Experiments', 'number': '5'}"
-"To construct the training examples, we randomly paired each sentence with 1, 5, 10, or all parallel descriptions of the same video segment.","{'title': '5 Experiments', 'number': '5'}"
-"This corresponds to 28K, 143K, 287K, and 449K training pairs respectively.","{'title': '5 Experiments', 'number': '5'}"
-"For the test set, we used each sentence once as the source sentence with all parallel descriptions as references (there were 16 references on average, with a minimum of 10 and a maximum of 31.)","{'title': '5 Experiments', 'number': '5'}"
-We also included the source sentence as a reference for itself.,"{'title': '5 Experiments', 'number': '5'}"
-"Overall, all the trained models produce reasonable paraphrase systems, even the model trained on just 28K single parallel sentences.","{'title': '5 Experiments', 'number': '5'}"
-Examples of the outputs produced by the models trained on single parallel sentences and on all parallel sentences are shown in Table 2.,"{'title': '5 Experiments', 'number': '5'}"
-"Some of the changes are simple word substitutions, e.g. rabbit for bunny or gun for revolver, while others are phrasal, e.g. frying meat for browning pork or made a basket for scores in a basketball game.","{'title': '5 Experiments', 'number': '5'}"
-"One interesting result of using videos as the stimulus to collect training data is that sometimes the learned paraphrases are not based on linguistic closeness, but rather on visual similarity, e.g. substituting cricket for baseball.","{'title': '5 Experiments', 'number': '5'}"
-"To evaluate the results quantitatively, we used the BLEU/PINC metric.","{'title': '5 Experiments', 'number': '5'}"
-The performance of all the trained models is shown in Figure 3.,"{'title': '5 Experiments', 'number': '5'}"
-"Unsurprisingly, there is a tradeoff between preserving the meaning and producing more varied paraphrases.","{'title': '5 Experiments', 'number': '5'}"
-Systems trained on fewer parallel sentences are more conservative and make fewer mistakes.,"{'title': '5 Experiments', 'number': '5'}"
-"On the other hand, systems trained on more parallel sentences often produce very good paraphrases but are also more likely to diverge from the original meaning.","{'title': '5 Experiments', 'number': '5'}"
-"As a comparison, evaluating each human description as a paraphrase for the other descriptions in the same cluster resulted in a BLEU score of 52.9 and a PINC score of 77.2.","{'title': '5 Experiments', 'number': '5'}"
-"Thus, all the systems performed very well in terms of retaining semantic content, although not as well in producing novel sentences.","{'title': '5 Experiments', 'number': '5'}"
-"To validate the results suggested by the automatic metrics, we asked two fluent English speakers to rate the generated paraphrases on the following categories: semantic, dissimilarity, and overall.","{'title': '5 Experiments', 'number': '5'}"
-Semantic measures how well the paraphrase preserves the original meaning while dissimilarity measures how much the paraphrase differs from the source sentence.,"{'title': '5 Experiments', 'number': '5'}"
-"Each category is rated from 1 to 4, with 4 being the best.","{'title': '5 Experiments', 'number': '5'}"
-A paraphrase identical to the source sentence would receive a score of 4 for meaning and 1 for dissimilarity and overall.,"{'title': '5 Experiments', 'number': '5'}"
-"We randomly selected 200 source sentences and generated 2 paraphrases for each, representing the two extremes: one paraphrase produced by the model trained with single parallel sentences, and the other by the model trained with all parallel sentences.","{'title': '5 Experiments', 'number': '5'}"
-The average scores of the two human judges are shown in Table 3.,"{'title': '5 Experiments', 'number': '5'}"
-The results confirm our finding that the system trained with single parallel sentences preserves the meaning better but is also more conservative.,"{'title': '5 Experiments', 'number': '5'}"
-"Having established rough correspondences between BLEU/PINC scores and human judgments of semantic equivalence and lexical dissimilarity, we quantified the correlation between these automatic metrics and human ratings using Pearson’s correlation coefficient, a measure of linear dependence between two random variables.","{'title': '5 Experiments', 'number': '5'}"
-"We computed the inter-annotator agreement as well as the correlation between BLEU, PINC, PEM (Liu et al., 2010) and the average human ratings on the sentence level.","{'title': '5 Experiments', 'number': '5'}"
-Results are shown in Table 4.,"{'title': '5 Experiments', 'number': '5'}"
-"In order to measure correlation, we need to score each paraphrase individually.","{'title': '5 Experiments', 'number': '5'}"
-"Thus, we recomputed BLEU on the sentence level and left the PINC scores unchanged.","{'title': '5 Experiments', 'number': '5'}"
-"While BLEU is typically not reliable at the single sentence level, our large number of reference sentences makes BLEU more stable even at this granularity.","{'title': '5 Experiments', 'number': '5'}"
-"Empirically, BLEU correlates fairly well with human judgments of semantic equivalence, although still not as well as the inter-annotator agreement.","{'title': '5 Experiments', 'number': '5'}"
-"On the other hand, PINC correlates as well as humans agree with each other in assessing lexical dissimilarity.","{'title': '5 Experiments', 'number': '5'}"
-"We also computed each metric’s correlation with the overall ratings, although neither should be used alone to assess the overall quality of paraphrases.","{'title': '5 Experiments', 'number': '5'}"
-PEM had the worst correlation with human judgments of all the metrics.,"{'title': '5 Experiments', 'number': '5'}"
-"Since PEM was trained on newswire data, its poor adaptation to this domain is expected.","{'title': '5 Experiments', 'number': '5'}"
-"However, given the large amount of training data needed (PEM was trained on 250K ChineseEnglish sentence pairs and 2400 human ratings of paraphrase pairs), it is difficult to use PEM as a general metric.","{'title': '5 Experiments', 'number': '5'}"
-Adapting PEM to a new domain would require sufficient in-domain bilingual data to support paraphrase extraction.,"{'title': '5 Experiments', 'number': '5'}"
-"In contrast, our approach only requires monolingual data, and evaluation can be performed using arbitrarily small, highly-parallel datasets.","{'title': '5 Experiments', 'number': '5'}"
-"Moreover, PEM requires sample human ratings in training, thereby lessening the advantage of having automatic metrics.","{'title': '5 Experiments', 'number': '5'}"
-"Since lexical dissimilarity is only desirable when the semantics of the original sentence is unchanged, we also computed correlation between PINC and the human ratings when BLEU is above certain thresholds.","{'title': '5 Experiments', 'number': '5'}"
-"As we restrict our attention to the set of paraphrases with higher BLEU scores, we see an increase in correlation between PINC and the human assessments.","{'title': '5 Experiments', 'number': '5'}"
-This confirms our intuition that PINC is a more useful measure when semantic content has been preserved.,"{'title': '5 Experiments', 'number': '5'}"
-"Finally, while we do not believe any single score could adequately describe the quality of a paraphrase outside of a specific application, we experimented with different ways of combining BLEU and PINC into a single score.","{'title': '5 Experiments', 'number': '5'}"
-"Almost any simple combination, such as taking the average of the two, yielded decent correlation with the human ratings.","{'title': '5 Experiments', 'number': '5'}"
-The best correlation was achieved by taking the product of PINC and a sigmoid function of BLEU.,"{'title': '5 Experiments', 'number': '5'}"
-"This follows the intuition that semantic preservation is closer to a binary decision (i.e. a paraphrase either preserves the meaning or it does not, in which case PINC does not matter at all) than a linear function.","{'title': '5 Experiments', 'number': '5'}"
-We used an oracle to pick the best logistic function in our experiment.,"{'title': '5 Experiments', 'number': '5'}"
-"In practice, some sample human ratings would be required to tune this function.","{'title': '5 Experiments', 'number': '5'}"
-"Other more complicated methods for combining BLEU and PINC are also possible with sample human ratings, such as using a SVM as was done in PEM.","{'title': '5 Experiments', 'number': '5'}"
-We quantified the utility of our highly parallel data by computing the correlation between BLEU and human ratings when different numbers of references were available.,"{'title': '5 Experiments', 'number': '5'}"
-The results are shown in Figure 4.,"{'title': '5 Experiments', 'number': '5'}"
-"As the number of references increases, the correlation with human ratings also increases.","{'title': '5 Experiments', 'number': '5'}"
-The graph also shows the effect of adding the source sentence as a reference.,"{'title': '5 Experiments', 'number': '5'}"
-"If our goal is to assess semantic equivalence only, then it is better to include the source sentence.","{'title': '5 Experiments', 'number': '5'}"
-"If we are trying to assess the overall quality of the paraphrase, it is better to exclude the source sentence, since otherwise the metric will tend to favor paraphrases that introduce fewer changes.","{'title': '5 Experiments', 'number': '5'}"
-"In addition to collecting paraphrases through video annotations, we also experimented with the more traditional task of presenting a sentence to an annotator and explicitly asking for a paraphrase.","{'title': '5 Experiments', 'number': '5'}"
-We randomly selected a thousand sentences from our data and collected two paraphrases of each using Mechanical Turk.,"{'title': '5 Experiments', 'number': '5'}"
-"We conducted a post-annotation survey of workers who had completed both the video description and the direct paraphrasing tasks, and found that paraphrasing was considered more difficult and less enjoyable than describing videos.","{'title': '5 Experiments', 'number': '5'}"
-"Of those surveyed, 92% found video annotations more enjoyable, and 75% found them easier.","{'title': '5 Experiments', 'number': '5'}"
-"Based on the comments, the only drawback of the video annotation task is the time required to load and watch the videos.","{'title': '5 Experiments', 'number': '5'}"
-"Overall, half of the workers preferred the video annotation task while only 16% of the workers preferred the paraphrasing task.","{'title': '5 Experiments', 'number': '5'}"
-"The data produced by the direct paraphrasing task also diverged less, since the annotators were inevitably biased by lexical choices and word order in the original sentences.","{'title': '5 Experiments', 'number': '5'}"
-"On average, a direct paraphrase had a PINC score of 70.08, while a parallel description of the same video had a score of 78.75.","{'title': '5 Experiments', 'number': '5'}"
-"While our data collection framework yields useful parallel data, it also has some limitations.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-Finding appropriate videos is time-consuming and remains a bottleneck in the process.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-"Also, more abstract actions such as reducing the deficit or fighting for justice cannot be easily captured by our method.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"One possible solution is to use longer video snippets or other visual stimuli such as graphs, schemas, or illustrated storybooks to convey more complicated information.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"However, the increased complexity is also likely to reduce the semantic closeness of the parallel descriptions.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-Another limitation is that sentences produced by our framework tend to be short and follow similar syntactic structures.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-Asking annotators to write multiple descriptions or longer descriptions would result in more varied data but at the cost of more noise in the alignments.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-"Other than descriptions, we could also ask the annotators for more complicated responses such as “fill in the blanks” in a dialogue (e.g.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"“If you were this person in the video, what would you say at this point?”), their opinion of the event shown, or the moral of the story.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"However, as with the difficulty of aligning news stories, finding paraphrases within these more complex responses could require additional annotation efforts.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"In our experiments, we only used a subset of our corpus to avoid dealing with excessive noise.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"However, a significant portion of the remaining data is useful.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"Thus, an automatic method for filtering those sentences could allow us to utilize even more of the data.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"For example, sentences from the Tier-2 tasks could be used as positive examples to train a string classifier to determine whether a noisy sentence belongs in the same cluster or not.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-We have so far used BLEU to measure semantic adequacy since it is the most common MT metric.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-"However, other more advanced MT metrics that have shown higher correlation with human judgments could also be used.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"In addition to paraphrasing, our data collection framework could also be used to produces useful data for machine translation and computer vision.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-"By pairing up descriptions of the same video in different languages, we obtain parallel data without requiring any bilingual skills.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-Another application for our data is to apply it to computer vision tasks such as video retrieval.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-The dataset can be readily used to train and evaluate systems that can automatically generate full descriptions of unseen videos.,"{'title': '6 Discussions and Future Work', 'number': '6'}"
-"As far as we know, there are currently no datasets that contain whole-sentence descriptions of open-domain video segments.","{'title': '6 Discussions and Future Work', 'number': '6'}"
-We introduced a data collection framework that produces highly parallel data by asking different annotators to describe the same video segments.,"{'title': '7 Conclusion', 'number': '7'}"
-"Deploying the framework on Mechanical Turk over a two-month period yielded 85K English descriptions for 2K videos, one of the largest paraphrase data resources publicly available.","{'title': '7 Conclusion', 'number': '7'}"
-"In addition, the highly parallel nature of the data allows us to use standard MT metrics such as BLEU to evaluate semantic adequacy reliably.","{'title': '7 Conclusion', 'number': '7'}"
-"Finally, we also introduced a new metric, PINC, to measure the lexical dissimilarity between the source sentence and the paraphrase.","{'title': '7 Conclusion', 'number': '7'}"
-We are grateful to everyone in the NLP group at Microsoft Research and Natural Language Learning group at UT Austin for helpful discussions and feedback.,"{'title': 'Acknowledgments', 'number': '8'}"
-"We thank Chris Brockett, Raymond Mooney, Katrin Erk, Jason Baldridge and the anonymous reviewers for helpful comments on a previous draft.","{'title': 'Acknowledgments', 'number': '8'}"
+A lack of standard datasets and evaluation has prevented the field of paraphrasmaking the kind of rapid progress enjoyed by the machine translation community over the last 15 years.,Introduction
+We address both problems by presenting a novel data collection framework that produces highly parallel text data relatively inexpensively and on a large scale.,Introduction
+The highly parallel nature of this data allows us to use simple n-gram comparisons to measure both the semantic adequacy and lexical dissimilarity of paraphrase candidates.,Introduction
+"In addition to being simple and efficient to compute, experiments show that these metrics correlate highly with human judgments.",Introduction
+"Machine paraphrasing has many applications for natural language processing tasks, including machine translation (MT), MT evaluation, summary evaluation, question answering, and natural language generation.",Experiment/Discussion
+"However, a lack of standard datasets and automatic evaluation metrics has impeded progress in the field.",Experiment/Discussion
+"Without these resources, researchers have resorted to developing their own small, ad hoc datasets (Barzilay and McKeown, 2001; Shinyama et al., 2002; Barzilay and Lee, 2003; Quirk et al., 2004; Dolan et al., 2004), and have often relied on human judgments to evaluate their results (Barzilay and McKeown, 2001; Ibrahim et al., 2003; Bannard and Callison-Burch, 2005).",Experiment/Discussion
+"Consequently, it is difficult to compare different systems and assess the progress of the field as a whole.",Experiment/Discussion
+"Despite the similarities between paraphrasing and translation, several major differences have prevented researchers from simply following standards that have been established for machine translation.",Experiment/Discussion
+"Professional translators produce large volumes of bilingual data according to a more or less consistent specification, indirectly fueling work on machine translation algorithms.",Experiment/Discussion
+"In contrast, there are no “professional paraphrasers”, with the result that there are no readily available large corpora and no consistent standards for what constitutes a high-quality paraphrase.",Experiment/Discussion
+"In addition to the lack of standard datasets for training and testing, there are also no standard metrics like BLEU (Papineni et al., 2002) for evaluating paraphrase systems.",Experiment/Discussion
+"Paraphrase evaluation is inherently difficult because the range of potential paraphrases for a given input is both large and unpredictable; in addition to being meaning-preserving, an ideal paraphrase must also diverge as sharply as possible in form from the original while still sounding natural and fluent.",Experiment/Discussion
+Our work introduces two novel contributions which combine to address the challenges posed by paraphrase evaluation.,Experiment/Discussion
+"First, we describe a framework for easily and inexpensively crowdsourcing arbitrarily large training and test sets of independent, redundant linguistic descriptions of the same semantic content.",Experiment/Discussion
+"Second, we define a new evaluation metric, PINC (Paraphrase In N-gram Changes), that relies on simple BLEU-like n-gram comparisons to measure the degree of novelty of automatically generated paraphrases.",Experiment/Discussion
+"We believe that this metric, along with the sentence-level paraphrases provided by our data collection approach, will make it possible for researchers working on paraphrasing to compare system performance and exploit the kind of automated, rapid training-test cycle that has driven work on Statistical Machine Translation.",Experiment/Discussion
+"In addition to describing a mechanism for collecting large-scale sentence-level paraphrases, we are also making available to the research community 85K parallel English sentences as part of the Microsoft Research Video Description Corpus 1.",Experiment/Discussion
+The rest of the paper is organized as follows.,Experiment/Discussion
+We first review relevant work in Section 2.,Experiment/Discussion
+Section 3 then describes our data collection framework and the resulting data.,Experiment/Discussion
+Section 4 discusses automatic evaluations of paraphrases and introduces the novel metric PINC.,Experiment/Discussion
+Section 5 presents experimental results establishing a correlation between our automatic metric and human judgments.,Experiment/Discussion
+Sections 6 and 7 discuss possible directions for future research and conclude.,Experiment/Discussion
+"Since paraphrase data are not readily available, various methods have been used to extract parallel text from other sources.",Experiment/Discussion
+"One popular approach exploits multiple translations of the same data (Barzilay and McKeown, 2001; Pang et al., 2003).",Experiment/Discussion
+"Examples of this kind of data include the Multiple-Translation Chinese (MTC) Corpus 2 which consists of Chinese news stories translated into English by 11 translation agencies, and literary works with multiple translations into English (e.g.",Experiment/Discussion
+Flaubert’s Madame Bovary.),Experiment/Discussion
+"Another method for collecting monolingual paraphrase data involves aligning semantically parallel sentences from different news articles describing the same event (Shinyama et al., 2002; Barzilay and Lee, 2003; Dolan et al., 2004).",Experiment/Discussion
+"While utilizing multiple translations of literary work or multiple news stories of the same event can yield significant numbers of parallel sentences, this data tend to be noisy, and reliably identifying good paraphrases among all possible sentence pairs remains an open problem.",Experiment/Discussion
+"On the other hand, multiple translations on the sentence level such as the MTC Corpus provide good, natural paraphrases, but relatively little data of this type exists.",Experiment/Discussion
+"Finally, some approaches avoid the need for monolingual paraphrase data altogether by using a second language as the pivot language (Bannard and Callison-Burch, 2005; Callison-Burch, 2008; Kok and Brockett, 2010).",Experiment/Discussion
+Phrases that are aligned to the same phrase in the pivot language are treated as potential paraphrases.,Experiment/Discussion
+"One limitation of this approach is that only words and phrases are identified, not whole sentences.",Experiment/Discussion
+"While most work on evaluating paraphrase systems has relied on human judges (Barzilay and McKeown, 2001; Ibrahim et al., 2003; Bannard and Callison-Burch, 2005) or indirect, task-based methods (Lin and Pantel, 2001; Callison-Burch et al., 2006), there have also been a few attempts at creating automatic metrics that can be more easily replicated and used to compare different systems.",Experiment/Discussion
+"ParaMetric (Callison-Burch et al., 2008) compares the paraphrases discovered by an automatic system with ones annotated by humans, measuring precision and recall.",Experiment/Discussion
+"This approach requires additional human annotations to identify the paraphrases within parallel texts (Cohn et al., 2008) and does not evaluate the systems at the sentence level.",Experiment/Discussion
+"The more recently proposed metric PEM (Paraphrase Evaluation Metric) (Liu et al., 2010) produces a single score that captures the semantic adequacy, fluency, and lexical dissimilarity of candidate paraphrases, relying on bilingual data to learn semantic equivalences without using n-gram similarity between candidate and reference sentences.",Experiment/Discussion
+"In addition, the metric was shown to correlate well with human judgments.",Experiment/Discussion
+"However, a significant drawback of this approach is that PEM requires substantial in-domain bilingual data to train the semantic adequacy evaluator, as well as sample human judgments to train the overall metric.",Experiment/Discussion
+We designed our data collection framework for use on crowdsourcing platforms such as Amazon’s Mechanical Turk.,Experiment/Discussion
+"Crowdsourcing can allow inexpensive and rapid data collection for various NLP tasks (Ambati and Vogel, 2010; Bloodgood and Callison-Burch, 2010a; Bloodgood and CallisonBurch, 2010b; Irvine and Klementiev, 2010), including human evaluations of NLP systems (CallisonBurch, 2009; Denkowski and Lavie, 2010; Zaidan and Callison-Burch, 2009).",Experiment/Discussion
+Of particular relevance are the paraphrasing work by Buzek et al. (2010) and Denkowski et al.,Experiment/Discussion
+(2010).,Experiment/Discussion
+"Buzek et al. automatically identified problem regions in a translation task and had workers attempt to paraphrase them, while Denkowski et al. asked workers to assess the validity of automatically extracted paraphrases.",Experiment/Discussion
+Our work is distinct from these earlier efforts both in terms of the task – attempting to collect linguistic descriptions using a visual stimulus – and the dramatically larger scale of the data collected.,Experiment/Discussion
+"Since our goal was to collect large numbers of paraphrases quickly and inexpensively using a crowd, our framework was designed to make the tasks short, simple, easy, accessible and somewhat fun.",Experiment/Discussion
+"For each task, we asked the annotators to watch a very short video clip (usually less than 10 seconds long) and describe in one sentence the main action or event that occurred in the video clip We deployed the task on Amazon’s Mechanical Turk, with video segments selected from YouTube.",Experiment/Discussion
+A screenshot of our annotation task is shown in Figure 1.,Experiment/Discussion
+"On average, annotators completed each task within 80 seconds, including the time required to watch the video.",Experiment/Discussion
+"Experienced annotators were even faster, completing the task in only 20 to 25 seconds.",Experiment/Discussion
+"One interesting aspect of this framework is that each annotator approaches the task from a linguistically independent perspective, unbiased by the lexical or word order choices in a pre-existing description.",Experiment/Discussion
+"The data thus has some similarities to parallel news descriptions of the same event, while avoiding much of the noise inherent in news.",Experiment/Discussion
+It is also similar in spirit to the ‘Pear Stories’ film used by Chafe (1997).,Experiment/Discussion
+"Crucially, our approach allows us to gather arbitrarily many of these independent descriptions for each video, capturing nearly-exhaustive coverage of how native speakers are likely to summarize a small action.",Experiment/Discussion
+"It might be possible to achieve similar effects using images or panels of images as the stimulus (von Ahn and Dabbish, 2004; Fei-Fei et al., 2007; Rashtchian et al., 2010), but we believed that videos would be more engaging and less ambiguous in their focus.",Experiment/Discussion
+"In addition, videos have been shown to be more effective in prompting descriptions of motion and contact verbs, as well as verbs that are generally not imageable (Ma and Cook, 2009).",Experiment/Discussion
+Watch and describe a short segment of a video You will be shown a segment of a video clip and asked to describe the main action/event in that segment in ONE SENTENCE.,Experiment/Discussion
+Things to note while completing this task: The video will play only a selected segment by default.,Experiment/Discussion
+You can choose to watch the entire clip and/or with sound although this is not necessary.,Experiment/Discussion
+Please only describe the action/event that occurred in the selected segment and not any other parts of One of the main problems with collecting data using a crowd is quality control.,Experiment/Discussion
+"While the cost is very low compared to traditional annotation methods, workers recruited over the Internet are often unqualified for the tasks or are incentivized to cheat in order to maximize their rewards.",Experiment/Discussion
+"To encourage native and fluent contributions, we asked annotators to write the descriptions in the language of their choice.",Experiment/Discussion
+"The result was a significant amount of translation data, unique in its multilingual parallelism.",Experiment/Discussion
+"While included in our data release, we leave aside a full discussion of this multilingual data for future work.",Experiment/Discussion
+"To ensure the quality of the annotations being produced, we used a two-tiered payment system.",Experiment/Discussion
+The idea was to reward workers who had shown the ability to write quality descriptions and the willingness to work on our tasks consistently.,Experiment/Discussion
+"While everyone had access to the Tier-1 tasks, only workers who had been manually qualified could work on the Tier-2 tasks.",Experiment/Discussion
+"The tasks were identical in the two tiers but each Tier-1 task only paid 1 cent while each Tier-2 task paid 5 cents, giving the workers a strong incentive to earn the qualification.",Experiment/Discussion
+The qualification process was done manually by the authors.,Experiment/Discussion
+We periodically evaluated the workers who had submitted the most Tier-1 tasks (usually on the order of few hundred submissions) and granted them access to the Tier-2 tasks if they had performed well.,Experiment/Discussion
+We assessed their work mainly on the grammaticality and spelling accuracy of the submitted descriptions.,Experiment/Discussion
+"Since we had hundreds of submissions to base our decisions on, it was fairly easy to identify the cheaters and people with poor English skills 3.",Experiment/Discussion
+Workers who were rejected during this process were still allowed to work on the Tier-1 tasks.,Experiment/Discussion
+"While this approach requires significantly more manual effort initially than other approaches such as using a qualification test or automatic postannotation filtering, it creates a much higher quality workforce.",Experiment/Discussion
+"Moreover, the initial effort is amortized over time as these quality workers are retained over the entire duration of the data collection.",Experiment/Discussion
+Many of them annotated all the available videos we had.,Experiment/Discussion
+"To find suitable videos to annotate, we deployed a separate task.",Experiment/Discussion
+"Workers were asked to submit short (generally 4-10 seconds) video segments depicting single, unambiguous events by specifying links to YouTube videos, along with the start and end times.",Experiment/Discussion
+We again used a tiered payment system to reward and retain workers who performed well.,Experiment/Discussion
+"Since the scope of this data collection effort extended beyond gathering English data alone, we 3Everyone who submitted descriptions in a foreign language was granted access to the Tier-2 tasks.",Experiment/Discussion
+This was done to encourage more submissions in different languages and also because we could not verify the quality of those descriptions other than using online translation services (and some of the languages were not available to be translated). tried to collect videos that could be understood regardless of the annotator’s linguistic or cultural background.,Experiment/Discussion
+"In order to avoid biasing lexical choices in the descriptions, we muted the audio and excluded videos that contained either subtitles or overlaid text.",Experiment/Discussion
+"Finally, we manually filtered the submitted videos to ensure that each met our criteria and was free of inappropriate content.",Experiment/Discussion
+"We deployed our data collection framework on Mechanical Turk over a two-month period from July to September in 2010, collecting 2,089 video segments and 85,550 English descriptions.",Experiment/Discussion
+"The rate of data collection accelerated as we built up our workforce, topping 10K descriptions a day when we ended our data collection.",Experiment/Discussion
+"Of the descriptions, 33,855 were from Tier-2 tasks, meaning they were provided by workers who had been manually identified as good performers.",Experiment/Discussion
+Examples of some of the descriptions collected are shown in Figure 2.,Experiment/Discussion
+"Overall, 688 workers submitted at least one English description.",Experiment/Discussion
+"Of these workers, 113 submitted at least 100 descriptions and 51 submitted at least 500.",Experiment/Discussion
+The largest number of descriptions submitted by a single worker was 3496 4.,Experiment/Discussion
+"Out of the 688 workers, 50 were granted access to the Tier-2 tasks.",Experiment/Discussion
+"The success of our data collection effort was in part due to our ability to retain these good workers, building a reliable and efficient workforce.",Experiment/Discussion
+Table 1 shows some statistics for the Tier-1 and Tier-2 tasks 5.,Experiment/Discussion
+"Overall, we spent under $5,000 including Amazon’s service fees, some pilot experiments and surveys.",Experiment/Discussion
+"On average, 41 descriptions were produced for each video, with at least 27 for over 95% of the videos.",Experiment/Discussion
+"Even limiting the set to descriptions produced from the Tier-2 tasks, there are still 16 descriptions on average for each video, with at least 12 descriptions for over 95% of the videos.",Experiment/Discussion
+"For most clusters, then, we have a dozen or more high-quality parallel descriptions that can be paired with one another to create monolingual parallel training data.",Experiment/Discussion
+"One of the limitations to the development of machine paraphrasing is the lack of standard metrics like BLEU, which has played a crucial role in driving progress in MT.",Experiment/Discussion
+Part of the issue is that a good paraphrase has the additional constraint that it should be lexically dissimilar to the source sentence while preserving the meaning.,Experiment/Discussion
+These can become competing goals when using n-gram overlaps to establish semantic equivalence.,Experiment/Discussion
+"Thus, researchers have been unable to rely on BLEU or some derivative: the optimal paraphrasing engine under these terms would be one that simply returns the input.",Experiment/Discussion
+"To combat such problems, Liu et al. (2010) have proposed PEM, which uses a second language as pivot to establish semantic equivalence.",Experiment/Discussion
+"Thus, no n-gram overlaps are required to determine the semantic adequacy of the paraphrase candidates.",Experiment/Discussion
+PEM also separately measures lexical dissimilarity and fluency.,Experiment/Discussion
+"Finally, all three scores are combined using a support vector machine (SVM) trained on human ratings of paraphrase pairs.",Experiment/Discussion
+"While PEM was shown to correlate well with human judgments, it has some limitations.",Experiment/Discussion
+It only models paraphrasing at the phrase level and not at the sentence level.,Experiment/Discussion
+"Further, while it does not need reference sentences for the evaluation dataset, PEM does require suitable bilingual data to train the metric.",Experiment/Discussion
+"The result is that training a successful PEM becomes almost as challenging as the original paraphrasing problem, since paraphrases need to be learned from bilingual data.",Experiment/Discussion
+The highly parallel nature of our data suggests a simpler solution to this problem.,Experiment/Discussion
+"To measure semantic equivalence, we simply use BLEU with multiple references.",Experiment/Discussion
+The large number of reference paraphrases capture a wide space of sentences with equivalent meanings.,Experiment/Discussion
+"While the set of reference sentences can of course never be exhaustive, our data collection method provides a natural distribution of common phrases that might be used to describe an action or event.",Experiment/Discussion
+A tight cluster with many similar parallel descriptions suggests there are only few common ways to express that concept.,Experiment/Discussion
+"In addition to measuring semantic adequacy and fluency using BLEU, we also need to measure lexical dissimilarity with the source sentence.",Experiment/Discussion
+We introduce a new scoring metric PINC that measures how many n-grams differ between the two sentences.,Experiment/Discussion
+"In essence, it is the inverse of BLEU since we want to minimize the number of n-gram overlaps between the two sentences.",Experiment/Discussion
+"Specifically, for source sentence s and candidate sentence c: where N is the maximum n-gram considered and ngrams and n-grams are the lists of n-grams in the source and candidate sentences, respectively.",Experiment/Discussion
+We use N = 4 in our evaluations.,Experiment/Discussion
+The PINC score computes the percentage of ngrams that appear in the candidate sentence but not in the source sentence.,Experiment/Discussion
+"This score is similar to the Jaccard distance, except that it excludes n-grams that only appear in the source sentence and not in the candidate sentence.",Experiment/Discussion
+"In other words, it rewards candidates for introducing new n-grams but not for omitting n-grams from the original sentence.",Experiment/Discussion
+The results for each n are averaged arithmetically.,Experiment/Discussion
+PINC evaluates single sentences instead of entire documents because we can reliably measure lexical dissimilarity at the sentence level.,Experiment/Discussion
+"Also notice that we do not put additional constraints on sentence length: while extremely short and extremely long sentences are likely to score high on PINC, they still must maintain semantic adequacy as measured by BLEU.",Experiment/Discussion
+We use BLEU and PINC together as a 2dimensional scoring metric.,Experiment/Discussion
+"A good paraphrase, according to our evaluation metric, has few n-gram overlaps with the source sentence but many n-gram overlaps with the reference sentences.",Experiment/Discussion
+This is consistent with our requirement that a good paraphrase should be lexically dissimilar from the source sentence while preserving its semantics.,Experiment/Discussion
+"Unlike Liu et al. (2010), we treat these two criteria separately, since different applications might have different preferences for each.",Experiment/Discussion
+"For example, a paraphrase suggestion tool for a word processing software might be more concerned with semantic adequacy, since presenting a paraphrase that does not preserve the meaning would likely result in a negative user experience.",Experiment/Discussion
+"On the other hand, a query expansion algorithm might be less concerned with preserving the precise meaning so long as additional relevant terms are added to improve search recall.",Experiment/Discussion
+"To verify the usefulness of our paraphrase corpus and the BLEU/PINC metric, we built and evaluated several paraphrase systems and compared the automatic scores to human ratings of the generated paraphrases.",Experiment/Discussion
+We also investigated the pros and cons of collecting paraphrases using video annotation rather than directly eliciting them.,Experiment/Discussion
+"We built 4 paraphrase systems by training English to English translation models using Moses (Koehn et al., 2007) with the default settings.",Experiment/Discussion
+"Using our paraphrase corpus to train and to test, we divided the sentence clusters associated with each video into 90% for training and 10% for testing.",Experiment/Discussion
+"We restricted our attention to sentences produced from the Tier-2 tasks in order to avoid excessive noise in the datasets, resulting in 28,785 training sentences and 3,367 test sentences.",Experiment/Discussion
+"To construct the training examples, we randomly paired each sentence with 1, 5, 10, or all parallel descriptions of the same video segment.",Experiment/Discussion
+"This corresponds to 28K, 143K, 287K, and 449K training pairs respectively.",Experiment/Discussion
+"For the test set, we used each sentence once as the source sentence with all parallel descriptions as references (there were 16 references on average, with a minimum of 10 and a maximum of 31.)",Experiment/Discussion
+We also included the source sentence as a reference for itself.,Experiment/Discussion
+"Overall, all the trained models produce reasonable paraphrase systems, even the model trained on just 28K single parallel sentences.",Experiment/Discussion
+Examples of the outputs produced by the models trained on single parallel sentences and on all parallel sentences are shown in Table 2.,Experiment/Discussion
+"Some of the changes are simple word substitutions, e.g. rabbit for bunny or gun for revolver, while others are phrasal, e.g. frying meat for browning pork or made a basket for scores in a basketball game.",Experiment/Discussion
+"One interesting result of using videos as the stimulus to collect training data is that sometimes the learned paraphrases are not based on linguistic closeness, but rather on visual similarity, e.g. substituting cricket for baseball.",Experiment/Discussion
+"To evaluate the results quantitatively, we used the BLEU/PINC metric.",Experiment/Discussion
+The performance of all the trained models is shown in Figure 3.,Experiment/Discussion
+"Unsurprisingly, there is a tradeoff between preserving the meaning and producing more varied paraphrases.",Experiment/Discussion
+Systems trained on fewer parallel sentences are more conservative and make fewer mistakes.,Experiment/Discussion
+"On the other hand, systems trained on more parallel sentences often produce very good paraphrases but are also more likely to diverge from the original meaning.",Experiment/Discussion
+"As a comparison, evaluating each human description as a paraphrase for the other descriptions in the same cluster resulted in a BLEU score of 52.9 and a PINC score of 77.2.",Experiment/Discussion
+"Thus, all the systems performed very well in terms of retaining semantic content, although not as well in producing novel sentences.",Experiment/Discussion
+"To validate the results suggested by the automatic metrics, we asked two fluent English speakers to rate the generated paraphrases on the following categories: semantic, dissimilarity, and overall.",Experiment/Discussion
+Semantic measures how well the paraphrase preserves the original meaning while dissimilarity measures how much the paraphrase differs from the source sentence.,Experiment/Discussion
+"Each category is rated from 1 to 4, with 4 being the best.",Experiment/Discussion
+A paraphrase identical to the source sentence would receive a score of 4 for meaning and 1 for dissimilarity and overall.,Experiment/Discussion
+"We randomly selected 200 source sentences and generated 2 paraphrases for each, representing the two extremes: one paraphrase produced by the model trained with single parallel sentences, and the other by the model trained with all parallel sentences.",Experiment/Discussion
+The average scores of the two human judges are shown in Table 3.,Experiment/Discussion
+The results confirm our finding that the system trained with single parallel sentences preserves the meaning better but is also more conservative.,Experiment/Discussion
+"Having established rough correspondences between BLEU/PINC scores and human judgments of semantic equivalence and lexical dissimilarity, we quantified the correlation between these automatic metrics and human ratings using Pearson’s correlation coefficient, a measure of linear dependence between two random variables.",Experiment/Discussion
+"We computed the inter-annotator agreement as well as the correlation between BLEU, PINC, PEM (Liu et al., 2010) and the average human ratings on the sentence level.",Experiment/Discussion
+Results are shown in Table 4.,Experiment/Discussion
+"In order to measure correlation, we need to score each paraphrase individually.",Experiment/Discussion
+"Thus, we recomputed BLEU on the sentence level and left the PINC scores unchanged.",Experiment/Discussion
+"While BLEU is typically not reliable at the single sentence level, our large number of reference sentences makes BLEU more stable even at this granularity.",Experiment/Discussion
+"Empirically, BLEU correlates fairly well with human judgments of semantic equivalence, although still not as well as the inter-annotator agreement.",Experiment/Discussion
+"On the other hand, PINC correlates as well as humans agree with each other in assessing lexical dissimilarity.",Experiment/Discussion
+"We also computed each metric’s correlation with the overall ratings, although neither should be used alone to assess the overall quality of paraphrases.",Experiment/Discussion
+PEM had the worst correlation with human judgments of all the metrics.,Experiment/Discussion
+"Since PEM was trained on newswire data, its poor adaptation to this domain is expected.",Experiment/Discussion
+"However, given the large amount of training data needed (PEM was trained on 250K ChineseEnglish sentence pairs and 2400 human ratings of paraphrase pairs), it is difficult to use PEM as a general metric.",Experiment/Discussion
+Adapting PEM to a new domain would require sufficient in-domain bilingual data to support paraphrase extraction.,Experiment/Discussion
+"In contrast, our approach only requires monolingual data, and evaluation can be performed using arbitrarily small, highly-parallel datasets.",Experiment/Discussion
+"Moreover, PEM requires sample human ratings in training, thereby lessening the advantage of having automatic metrics.",Experiment/Discussion
+"Since lexical dissimilarity is only desirable when the semantics of the original sentence is unchanged, we also computed correlation between PINC and the human ratings when BLEU is above certain thresholds.",Experiment/Discussion
+"As we restrict our attention to the set of paraphrases with higher BLEU scores, we see an increase in correlation between PINC and the human assessments.",Experiment/Discussion
+This confirms our intuition that PINC is a more useful measure when semantic content has been preserved.,Experiment/Discussion
+"Finally, while we do not believe any single score could adequately describe the quality of a paraphrase outside of a specific application, we experimented with different ways of combining BLEU and PINC into a single score.",Experiment/Discussion
+"Almost any simple combination, such as taking the average of the two, yielded decent correlation with the human ratings.",Experiment/Discussion
+The best correlation was achieved by taking the product of PINC and a sigmoid function of BLEU.,Experiment/Discussion
+"This follows the intuition that semantic preservation is closer to a binary decision (i.e. a paraphrase either preserves the meaning or it does not, in which case PINC does not matter at all) than a linear function.",Experiment/Discussion
+We used an oracle to pick the best logistic function in our experiment.,Experiment/Discussion
+"In practice, some sample human ratings would be required to tune this function.",Experiment/Discussion
+"Other more complicated methods for combining BLEU and PINC are also possible with sample human ratings, such as using a SVM as was done in PEM.",Experiment/Discussion
+We quantified the utility of our highly parallel data by computing the correlation between BLEU and human ratings when different numbers of references were available.,Experiment/Discussion
+The results are shown in Figure 4.,Experiment/Discussion
+"As the number of references increases, the correlation with human ratings also increases.",Experiment/Discussion
+The graph also shows the effect of adding the source sentence as a reference.,Experiment/Discussion
+"If our goal is to assess semantic equivalence only, then it is better to include the source sentence.",Experiment/Discussion
+"If we are trying to assess the overall quality of the paraphrase, it is better to exclude the source sentence, since otherwise the metric will tend to favor paraphrases that introduce fewer changes.",Experiment/Discussion
+"In addition to collecting paraphrases through video annotations, we also experimented with the more traditional task of presenting a sentence to an annotator and explicitly asking for a paraphrase.",Experiment/Discussion
+We randomly selected a thousand sentences from our data and collected two paraphrases of each using Mechanical Turk.,Experiment/Discussion
+"We conducted a post-annotation survey of workers who had completed both the video description and the direct paraphrasing tasks, and found that paraphrasing was considered more difficult and less enjoyable than describing videos.",Experiment/Discussion
+"Of those surveyed, 92% found video annotations more enjoyable, and 75% found them easier.",Experiment/Discussion
+"Based on the comments, the only drawback of the video annotation task is the time required to load and watch the videos.",Experiment/Discussion
+"Overall, half of the workers preferred the video annotation task while only 16% of the workers preferred the paraphrasing task.",Experiment/Discussion
+"The data produced by the direct paraphrasing task also diverged less, since the annotators were inevitably biased by lexical choices and word order in the original sentences.",Experiment/Discussion
+"On average, a direct paraphrase had a PINC score of 70.08, while a parallel description of the same video had a score of 78.75.",Experiment/Discussion
+"While our data collection framework yields useful parallel data, it also has some limitations.",Experiment/Discussion
+Finding appropriate videos is time-consuming and remains a bottleneck in the process.,Experiment/Discussion
+"Also, more abstract actions such as reducing the deficit or fighting for justice cannot be easily captured by our method.",Experiment/Discussion
+"One possible solution is to use longer video snippets or other visual stimuli such as graphs, schemas, or illustrated storybooks to convey more complicated information.",Experiment/Discussion
+"However, the increased complexity is also likely to reduce the semantic closeness of the parallel descriptions.",Experiment/Discussion
+Another limitation is that sentences produced by our framework tend to be short and follow similar syntactic structures.,Experiment/Discussion
+Asking annotators to write multiple descriptions or longer descriptions would result in more varied data but at the cost of more noise in the alignments.,Experiment/Discussion
+"Other than descriptions, we could also ask the annotators for more complicated responses such as “fill in the blanks” in a dialogue (e.g.",Experiment/Discussion
+"“If you were this person in the video, what would you say at this point?”), their opinion of the event shown, or the moral of the story.",Experiment/Discussion
+"However, as with the difficulty of aligning news stories, finding paraphrases within these more complex responses could require additional annotation efforts.",Experiment/Discussion
+"In our experiments, we only used a subset of our corpus to avoid dealing with excessive noise.",Experiment/Discussion
+"However, a significant portion of the remaining data is useful.",Experiment/Discussion
+"Thus, an automatic method for filtering those sentences could allow us to utilize even more of the data.",Experiment/Discussion
+"For example, sentences from the Tier-2 tasks could be used as positive examples to train a string classifier to determine whether a noisy sentence belongs in the same cluster or not.",Experiment/Discussion
+We have so far used BLEU to measure semantic adequacy since it is the most common MT metric.,Experiment/Discussion
+"However, other more advanced MT metrics that have shown higher correlation with human judgments could also be used.",Experiment/Discussion
+"In addition to paraphrasing, our data collection framework could also be used to produces useful data for machine translation and computer vision.",Experiment/Discussion
+"By pairing up descriptions of the same video in different languages, we obtain parallel data without requiring any bilingual skills.",Experiment/Discussion
+Another application for our data is to apply it to computer vision tasks such as video retrieval.,Experiment/Discussion
+The dataset can be readily used to train and evaluate systems that can automatically generate full descriptions of unseen videos.,Experiment/Discussion
+"As far as we know, there are currently no datasets that contain whole-sentence descriptions of open-domain video segments.",Experiment/Discussion
+We introduced a data collection framework that produces highly parallel data by asking different annotators to describe the same video segments.,Results/Conclusion
+"Deploying the framework on Mechanical Turk over a two-month period yielded 85K English descriptions for 2K videos, one of the largest paraphrase data resources publicly available.",Results/Conclusion
+"In addition, the highly parallel nature of the data allows us to use standard MT metrics such as BLEU to evaluate semantic adequacy reliably.",Results/Conclusion
+"Finally, we also introduced a new metric, PINC, to measure the lexical dissimilarity between the source sentence and the paraphrase.",Results/Conclusion
+We are grateful to everyone in the NLP group at Microsoft Research and Natural Language Learning group at UT Austin for helpful discussions and feedback.,Results/Conclusion
+"We thank Chris Brockett, Raymond Mooney, Katrin Erk, Jason Baldridge and the anonymous reviewers for helpful comments on a previous draft.",Results/Conclusion

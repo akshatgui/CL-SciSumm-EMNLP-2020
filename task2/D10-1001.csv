@@ -1,235 +1,235 @@
 col1,col2
-paper introduces decomposition a framework for deriving inference algorithms for NLP problems.,{}
-"The approach relies on standard dynamic-programming algorithms as oracle solvers for sub-problems, together with a simple method for forcing agreement between the different oracles.",{}
-The approach provably solves a linear programming (LP) relaxation of the global inference problem.,{}
-It to algorithms that are in that they existing decoding algorithms; in that they avoid exact algorithms for the full and often in that empirically they often recover the correct solution in spite of using an LP relaxation.,{}
-We give experimental results on two problems: 1) the combination of two lexicalized parsing models; and 2) the combination of a lexicalized parsing model and a trigram part-of-speech tagger.,{}
-Dynamic programming algorithms have been remarkably useful for inference in many NLP problems.,"{'title': '1 Introduction', 'number': '1'}"
-"Unfortunately, as models become more complex, for example through the addition of new features or components, dynamic programming algorithms can quickly explode in terms of computational or implementational complexity.1 As a result, efficiency of inference is a critical bottleneck for many problems in statistical NLP.","{'title': '1 Introduction', 'number': '1'}"
-"This paper introduces dual decomposition (Dantzig and Wolfe, 1960; Komodakis et al., 2007) as a framework for deriving inference algorithms in NLP.","{'title': '1 Introduction', 'number': '1'}"
-Dual decomposition leverages the observation that complex inference problems can often be decomposed into efficiently solvable sub-problems.,"{'title': '1 Introduction', 'number': '1'}"
-"The approach leads to inference algorithms with the following properties: The approach is very general, and should be applicable to a wide range of problems in NLP.","{'title': '1 Introduction', 'number': '1'}"
-"The connection to linear programming ensures that the algorithms provide a certificate of optimality when they recover the exact solution, and also opens up the possibility of methods that incrementally tighten the LP relaxation until it is exact (Sherali and Adams, 1994; Sontag et al., 2008).","{'title': '1 Introduction', 'number': '1'}"
-The structure of this paper is as follows.,"{'title': '1 Introduction', 'number': '1'}"
-We first give two examples as an illustration of the approach: 1) integrated parsing and trigram part-ofspeech (POS) tagging; and 2) combined phrasestructure and dependency parsing.,"{'title': '1 Introduction', 'number': '1'}"
-"In both settings, it is possible to solve the integrated problem through an “intersected” dynamic program (e.g., for integration of parsing and tagging, the construction from Bar-Hillel et al. (1964) can be used).","{'title': '1 Introduction', 'number': '1'}"
-"However, these methods, although polynomial time, are substantially less efficient than our algorithms, and are considerably more complex to implement.","{'title': '1 Introduction', 'number': '1'}"
-"Next, we describe exact polyhedral formulations for the two problems, building on connections between dynamic programming algorithms and marginal polytopes, as described in Martin et al. (1990).","{'title': '1 Introduction', 'number': '1'}"
-These allow us to precisely characterize the relationship between the exact formulations and the LP relaxations that we solve.,"{'title': '1 Introduction', 'number': '1'}"
-"We then give guarantees of convergence for our algorithms by showing that they are instantiations of Lagrangian relaxation, a general method for solving linear programs of a particular form.","{'title': '1 Introduction', 'number': '1'}"
-"Finally, we describe experiments that demonstrate the effectiveness of our approach.","{'title': '1 Introduction', 'number': '1'}"
-"First, we consider the integration of the generative model for phrase-structure parsing of Collins (2003), with the second-order discriminative dependency parser of Koo et al. (2008).","{'title': '1 Introduction', 'number': '1'}"
-This is an interesting problem in its own right: the goal is to inject the high performance of discriminative dependency models into phrase-structure parsing.,"{'title': '1 Introduction', 'number': '1'}"
-The method uses off-theshelf decoders for the two models.,"{'title': '1 Introduction', 'number': '1'}"
-"We find three main results: 1) in spite of solving an LP relaxation, empirically the method finds an exact solution on over 99% of the examples; 2) the method converges quickly, typically requiring fewer than 10 iterations of decoding; 3) the method gives gains over a baseline method that forces the phrase-structure parser to produce the same dependencies as the firstbest output from the dependency parser (the Collins (2003) model has an F1 score of 88.1%; the baseline method has an F1 score of 89.7%; and the dual decomposition method has an F1 score of 90.7%).","{'title': '1 Introduction', 'number': '1'}"
-"In a second set of experiments, we use dual decomposition to integrate the trigram POS tagger of Toutanova and Manning (2000) with the parser of Collins (2003).","{'title': '1 Introduction', 'number': '1'}"
-"We again find that the method finds an exact solution in almost all cases, with convergence in just a few iterations of decoding.","{'title': '1 Introduction', 'number': '1'}"
-"Although the focus of this paper is on dynamic programming algorithms—both in the experiments, and also in the formal results concerning marginal polytopes—it is straightforward to use other combinatorial algorithms within the approach.","{'title': '1 Introduction', 'number': '1'}"
-"For example, Koo et al. (2010) describe a dual decomposition approach for non-projective dependency parsing, which makes use of both dynamic programming and spanning tree inference algorithms.","{'title': '1 Introduction', 'number': '1'}"
-Dual decomposition is a classical method for solving optimization problems that can be decomposed into efficiently solvable sub-problems.,"{'title': '2 Related Work', 'number': '2'}"
-"Our work is inspired by dual decomposition methods for inference in Markov random fields (MRFs) (Wainwright et al., 2005a; Komodakis et al., 2007; Globerson and Jaakkola, 2007).","{'title': '2 Related Work', 'number': '2'}"
-"In this approach, the MRF is decomposed into sub-problems corresponding to treestructured subgraphs that together cover all edges of the original graph.","{'title': '2 Related Work', 'number': '2'}"
-"The resulting inference algorithms provably solve an LP relaxation of the MRF inference problem, often significantly faster than commercial LP solvers (Yanover et al., 2006).","{'title': '2 Related Work', 'number': '2'}"
-"Our work is also related to methods that incorporate combinatorial solvers within loopy belief propagation (LBP), either for MAP inference (Duchi et al., 2007) or for computing marginals (Smith and Eisner, 2008).","{'title': '2 Related Work', 'number': '2'}"
-Our approach similarly makes use of combinatorial algorithms to efficiently solve subproblems of the global inference problem.,"{'title': '2 Related Work', 'number': '2'}"
-"However, unlike LBP, our algorithms have strong theoretical guarantees, such as guaranteed convergence and the possibility of a certificate of optimality.","{'title': '2 Related Work', 'number': '2'}"
-These guarantees are possible because our algorithms directly solve an LP relaxation.,"{'title': '2 Related Work', 'number': '2'}"
-"Other work has considered LP or integer linear programming (ILP) formulations of inference in NLP (Martins et al., 2009; Riedel and Clarke, 2006; Roth and Yih, 2005).","{'title': '2 Related Work', 'number': '2'}"
-These approaches typically use general-purpose LP or ILP solvers.,"{'title': '2 Related Work', 'number': '2'}"
-Our method has the advantage that it leverages underlying structure arising in LP formulations of NLP problems.,"{'title': '2 Related Work', 'number': '2'}"
-We will see that dynamic programming algorithms such as CKY can be considered to be very efficient solvers for particular LPs.,"{'title': '2 Related Work', 'number': '2'}"
-"In dual decomposition, these LPs—and their efficient solvers—can be embedded within larger LPs corresponding to more complex inference problems.","{'title': '2 Related Work', 'number': '2'}"
-We now describe the type of models used throughout the paper.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-We take some care to set up notation that will allow us to make a clear connection between inference problems and linear programming.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-Our first example is weighted CFG parsing.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"We assume a context-free grammar, in Chomsky normal form, with a set of non-terminals N. The grammar contains all rules of the form A —* B C and A —* w where A, B, C E N and w E V (it is simple to relax this assumption to give a more constrained grammar).","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-For rules of the form A —* w we refer to A as the part-of-speech tag for w. We allow any non-terminal to be at the root of the tree.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"Given a sentence with n words, w1, w2,... wn, a parse tree is a set of rule productions of the form hA → B C, i, k, ji where A, B, C ∈ N, and 1 ≤ i ≤ k < j ≤ n. Each rule production represents the use of CFG rule A → B C where nonterminal A spans words wi ... wj, non-terminal B spans words wi ... wk, and non-terminal C spans words wk+1 ... wj.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-There are O(|N|3n3) such rule productions.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"Each parse tree corresponds to a subset of these rule productions, of size n − 1, that forms a well-formed parse tree.3 We now define the index set for CFG parsing as Each parse tree is a vector y = {yr : r ∈ I}, with yr = 1 if rule r is in the parse tree, and yr = 0 otherwise.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"Hence each parse tree is represented as a vector in {0,1}', where m = |I|.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"We use Y to denote the set of all valid parse-tree vectors; the set Y is a subset of {0,1}' (not all binary vectors correspond to valid parse trees).","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"In addition, we assume a vector 0 = {0r : r ∈ I} that specifies a weight for each rule production.4 Each 0r can take any value in the reals.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-The optimal parse tree is y* = arg maxyEY y · 0 where y · 0 = Er yr0r is the inner product between y and 0.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-We use yr and y(r) interchangeably (similarly for 0r and 0(r)) to refer to the r’th component of the vector y.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"For example 0(A → B C, i, k, j) is a weight for the rule hA → B C, i, k, ji.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-We will use similar notation for other problems.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"As a second example, in POS tagging the task is to map a sentence of n words w1 ... wn to a tag sequence t1 ... tn, where each ti is chosen from a set T of possible tags.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"We assume a trigram tagger, where a tag sequence is represented through decisions h(A, B) → C, ii where A, B, C ∈ T, and i ∈ {3 ... n}.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"Each production represents a transition where C is the tag of word wi, and (A, B) are the previous two tags.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"The index set for tagging is Itag = {h(A,B) → C,ii : A,B,C ∈ T, 3 ≤ i ≤ n} Note that we do not need transitions for i = 1 or i = 2, because the transition h(A, B) → C, 3i specifies the first three tags in the sentence.5 Each tag sequence is represented as a vector z = {zr : r ∈ Itag}, and we denote the set of valid tag sequences, a subset of {0,1}|z1ag|, as Z.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"Given a parameter vector 0 = {0r : r ∈ Itag}, the optimal tag sequence is arg maxzEZ z · 0.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"As a modification to the above approach, we will find it convenient to introduce extended index sets for both the CFG and POS tagging examples.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"For the CFG case we define the extended index set to be Here each pair (i, t) represents word wi being assigned the tag t. Thus each parse-tree vector y will have additional (binary) components y(i, t) specifying whether or not word i is assigned tag t. (Throughout this paper we will assume that the tagset used by the tagger, T, is a subset of the set of nonterminals considered by the parser, N.) Note that this representation is over-complete, since a parse tree determines a unique tagging for a sentence: more explicitly, for any i ∈ {1... n}, Y ∈ T, the following linear constraint holds: We apply the same extension to the tagging index set, effectively mapping trigrams down to unigram assignments, again giving an over-complete representation.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-The extended index set for tagging is referred to as Itag.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-From here on we will make exclusive use of extended index sets for CFG parsing and trigram tagging.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-We use the set Y to refer to the set of valid parse structures under the extended representation; each y ∈ Y is a binary vector of length |I0|.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-We similarly use Z to refer to the set of valid tag structures under the extended representation.,"{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-"We assume parameter vectors for the two problems, θcfg ∈ R|I'| and θtag ∈ R|I'tar|.","{'title': '3 Background: Structured Models for NLP', 'number': '3'}"
-This section describes the dual decomposition approach for two inference problems in NLP.,"{'title': '4 Two Examples', 'number': '4'}"
-We now describe the dual decomposition approach for integrated parsing and trigram tagging.,"{'title': '4 Two Examples', 'number': '4'}"
-"First, define the set Q as follows: Hence Q is the set of all (y, z) pairs that agree on their part-of-speech assignments.","{'title': '4 Two Examples', 'number': '4'}"
-The integrated parsing and trigram tagging problem is then to solve where g : Y → Z is a function that maps a parse tree y to its set of trigrams z = g(y).,"{'title': '4 Two Examples', 'number': '4'}"
-The benefit of the formulation in Eq.,"{'title': '4 Two Examples', 'number': '4'}"
-"2 is that it makes explicit the idea of maximizing over all pairs (y, z) under a set of agreement constraints y(i, t) = z(i, t)—this concept will be central to the algorithms in this paper.","{'title': '4 Two Examples', 'number': '4'}"
-"With this in mind, we note that we have efficient methods for the inference problems of tagging and parsing alone, and that our combined objective almost separates into these two independent problems.","{'title': '4 Two Examples', 'number': '4'}"
-"In fact, if we drop the y(i, t) = z(i, t) constraints from the optimization problem, the problem splits into two parts, each of which can be efficiently solved using dynamic programming: solves the harder optimization problem using an existing CFG parser and trigram tagger.","{'title': '4 Two Examples', 'number': '4'}"
-"After each iteration the algorithm adjusts the weights u(i, t); these updates modify the objective functions for the two models, encouraging them to agree on the same POS sequence.","{'title': '4 Two Examples', 'number': '4'}"
-"In section 6.1 we will show that the variables u(i, t) are Lagrange multipliers enforcing agreement constraints, and that the algorithm corresponds to a (sub)gradient method for optimization of a dual function.","{'title': '4 Two Examples', 'number': '4'}"
-"The algorithm is easy to implement: all that is required is a decoding algorithm for each of the two models, and simple additive updates to the Lagrange multipliers enforcing agreement between the two models.","{'title': '4 Two Examples', 'number': '4'}"
-Our second example problem is the integration of a phrase-structure parser with a higher-order dependency parser.,"{'title': '4 Two Examples', 'number': '4'}"
-The goal is to add higher-order features to phrase-structure parsing without greatly increasing the complexity of inference.,"{'title': '4 Two Examples', 'number': '4'}"
-"First, we define an index set for second-order unlabeled projective dependency parsing.","{'title': '4 Two Examples', 'number': '4'}"
-"The secondorder parser considers first-order dependencies, as well as grandparent and sibling second-order dependencies (e.g., see Carreras (2007)).","{'title': '4 Two Examples', 'number': '4'}"
-"We assume that Id,p is an index set containing all such dependencies (for brevity we omit the details of this index set).","{'title': '4 Two Examples', 'number': '4'}"
-For convenience we define an extended index set that makes explicit use of first-order dependeny∈Y z∈Z Dual decomposition exploits this idea; it results in the algorithm given in figure 1.,"{'title': '4 Two Examples', 'number': '4'}"
-"The algorithm optimizes the combined objective by repeatedly solving the two sub-problems separately—that is, it directly Here (i, j) represents a dependency with head wi and modifier wj (i = 0 corresponds to the root symbol in the parse).","{'title': '4 Two Examples', 'number': '4'}"
-"We use D ⊆ {0, 1}|I'dep |to denote the set of valid projective dependency parses.","{'title': '4 Two Examples', 'number': '4'}"
-The second model we use is a lexicalized CFG.,"{'title': '4 Two Examples', 'number': '4'}"
-"Each symbol in the grammar takes the form A(h) where A ∈ N is a non-terminal, and h ∈ {1... n} is an index specifying that wh is the head of the constituent.","{'title': '4 Two Examples', 'number': '4'}"
-"Rule productions take the form hA(a) → B(b) C(c), i, k, ji where b ∈ {i ... k}, c ∈ {(k + 1) ... j}, and a is equal to b or c, depending on whether A receives its head-word from its left or right child.","{'title': '4 Two Examples', 'number': '4'}"
-"Each such rule implies a dependency (a, b) if a = c, or (a, c) if a = b.","{'title': '4 Two Examples', 'number': '4'}"
-"We take Ihead to be the index set of all such rules, and I0head = Ihead ∪ Ifirst to be the extended index set.","{'title': '4 Two Examples', 'number': '4'}"
-"We define H ⊆ {0, 1}|I'head |to be the set of valid parse trees.","{'title': '4 Two Examples', 'number': '4'}"
-"The integrated parsing problem is then to find where R = {(y, d) : y ∈ H, d ∈ D, y(i, j) = d(i, j) for all (i, j) ∈ Ifirst} This problem has a very similar structure to the problem of integrated parsing and tagging, and we can derive a similar dual decomposition algorithm.","{'title': '4 Two Examples', 'number': '4'}"
-The Lagrange multipliers u are a vector in R|Ifirst| enforcing agreement between dependency assignments.,"{'title': '4 Two Examples', 'number': '4'}"
-"The algorithm (omitted for brevity) is identical to the algorithm in figure 1, but with Iuni, Y, Z, Bhead, and Ocfg, and Btag replaced with Ifirst, H, D, Bdep respectively.","{'title': '4 Two Examples', 'number': '4'}"
-"The algorithm only requires decoding algorithms for the two models, together with simple updates to the Lagrange multipliers.","{'title': '4 Two Examples', 'number': '4'}"
-"We now give formal guarantees for the algorithms in the previous section, showing that they solve LP relaxations of the problems in Eqs.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-2 and 3.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"To make the connection to linear programming, we first introduce the idea of marginal polytopes in section 5.1.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"In section 5.2, we give a precise statement of the LP relaxations that are being solved by the example algorithms, making direct use of marginal polytopes.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-In section 6 we will prove that the example algorithms solve these LP relaxations.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"For a finite set Y, define the set of all distributions over elements in Y as A = {a ∈ R|Y |: ay ≥ 0, Ey∈Y ay = 1}.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"Each a ∈ A gives a vector of marginals, µ = Ey∈Y ayy, where µr can be interpreted as the probability that yr = 1 for a y selected at random from the distribution a.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"The set of all possible marginal vectors, known as the marginal polytope, is defined as follows: M is also frequently referred to as the convex hull of Y, written as conv(Y).","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"We use the notation conv(Y) in the remainder of this paper, instead of M. For an arbitrary set Y, the marginal polytope conv(Y) can be complex to describe.6 However, Martin et al. (1990) show that for a very general class of dynamic programming problems, the corresponding marginal polytope can be expressed as where A is a p × m matrix, b is vector in Rp, and the value p is linear in the size of a hypergraph representation of the dynamic program.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-Note that A and b specify a set of p linear constraints.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"We now give an explicit description of the resulting constraints for CFG parsing:7 similar constraints arise for other dynamic programming algorithms for parsing, for example the algorithms of Eisner (2000).","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"The exact form of the constraints, and the fact that they are polynomial in number, is not essential for the formal results in this paper.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"However, a description of the constraints gives valuable intuition for the structure of the marginal polytope.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-The constraints are given in figure 2.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"To develop some intuition, consider the case where the variables µr are restricted to be binary: hence each binary vector µ specifies a parse tree.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-The second constraint in Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-5 specifies that exactly one rule must be used at the top of the tree.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-The set of constraints in Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"6 specify that for each production of the form hX → Y Z, i, k, ji in a parse tree, there must be exactly one production higher in the tree that generates (X, i, j) as one of its children.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-The constraints in Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"7 enforce consistency between the µ(i, Y ) variables and rule variables higher in the tree.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-Note that the constraints in Eqs.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"(5–7) can be written in the form Aµ = b, µ ≥ 0, as in Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-4.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"Under these definitions, we have the following: Theorem 5.1 Define Y to be the set of all CFG parses, as defined in section 4.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"Then Proof: This theorem is a special case of Martin et al. (1990), theorem 2.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"The marginal polytope for tagging, conv(Z), can also be expressed using linear constraints as in Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-4; see figure 3.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"These constraints follow from results for graphical models (Wainwright and Jordan, 2008), or from the Martin et al. (1990) construction.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"As a final point, the following theorem gives an important property of marginal polytopes, which we will use at several points in this paper: Theorem 5.2 (Korte and Vygen (2008), page 66.)","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"For any set Y ⊆ {0, 1}k, and for any vector 0 ∈ Rk, The theorem states that for a linear objective function, maximization over a discrete set Y can be replaced by maximization over the convex hull conv(Y).","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-The problem maxµEconv(Y) µ·0 is a linear programming problem.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"For parsing, this theorem implies that: Similar results apply for the POS tagging case.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-We now describe the LP relaxations that are solved by the example algorithms in section 4.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-We begin with the algorithm in Figure 1.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"The original optimization problem was to find max(y,z)EQ (y · 0cfg + z · 0tag) (see Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-2).,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"By theorem 5.2, this is equivalent to solving To formulate our approximation, we first define: Q' = {(µ, v) : µ ∈ conv(Y), v ∈ conv(Z), µ(i, t) = v(i, t) for all (i, t) ∈ Iuni} The definition of Q0 is very similar to the definition of Q (see Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"1), the only difference being that Y and Z are replaced by conv(Y) and conv(Z) respectively.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-Hence any point in Q is also in Q0.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"It follows that any point in conv(Q) is also in Q0, because Q0 is a convex set defined by linear constraints.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"The LP relaxation then corresponds to the following optimization problem: Q0 is defined by linear constraints, making this a linear program.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"Since Q0 is an outer bound on conv(Q), i.e. conv(Q) ⊆ Q0, we obtain the guarantee that the value of Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-10 always upper bounds the value of Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-9.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-In Appendix A we give an example showing that in general Q0 includes points that are not in conv(Q).,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"These points exist because the agreement between the two parts is now enforced in expectation (µ(i, t) = v(i, t) for (i, t) ∈ Iuni) rather than based on actual assignments.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-This agreement constraint is weaker since different distributions over assignments can still result in the same first order expectations.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"Thus, the solution to Eq.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-10 may be in Q0 but not in conv(Q).,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"It can be shown that all such solutions will be fractional, making them easy to distinguish from Q.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-In many applications of LP relaxations—including the examples discussed in this paper—the relaxation in Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"10 turns out to be tight, in that the solution is often integral (i.e., it is in Q).","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"In these cases, solving the LP relaxation exactly solves the original problem of interest.","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-In the next section we prove that the algorithm in Figure 1 solves the problem in Eq 10.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-A similar result holds for the algorithm in section 4.2: it solves a relaxation of Eq.,"{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-"3, where R is replaced by","{'title': '5 Marginal Polytopes and LP Relaxations', 'number': '5'}"
-We now show that the example algorithms solve their respective LP relaxations given in the previous section.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-"We do this by first introducing a general class of linear programs, together with an optimization method, Lagrangian relaxation, for solving these LPs.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-We then show that the algorithms in section 4 are special cases of the general algorithm.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-The linear programs we consider take the form The matrices E ∈ Rq×� and F ∈ Rq×l specify q linear “agreement” constraints between x1 ∈ R' and x2 ∈ Rl.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-"The sets X1, X2 are also specified by linear constraints, X1 = {x1 ∈ R1 : Ax1 = b, x1 ≥ 0} and X2 = {x2 ∈ Rl : Cx2 = d, x2 ≥ 01, hence the problem is an LP.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"Note that if we set X1 = conv(Y), X2 = conv(Z), and define E and F to specify the agreement constraints µ(i, t) = v(i, t), then we have the LP relaxation in Eq.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-10.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-"It is natural to apply Lagrangian relaxation in cases where the sub-problems maxx1∈X1 01 · x1 and maxx2∈X2 02 · x2 can be efficiently solved by combinatorial algorithms for any values of 01, 02, but where the constraints Ex1 = Fx2 “complicate” the problem.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"We introduce Lagrange multipliers u ∈ Rq that enforce the latter set of constraints, giving the Lagrangian: and the dual problem is to find minu∈R' L(u).","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"Because X1 and X2 are defined by linear constraints, by strong duality we have Hence minimizing L(u) will recover the maximum value of the original problem.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"This leaves open the question of how to recover the LP solution (i.e., the pair (x∗1, x∗2) that achieves this maximum); we discuss this point in section 6.2.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-The dual L(u) is convex.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-"However, L(u) is not differentiable, so we cannot use gradient-based methods to optimize it.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"Instead, a standard approach is to use a subgradient method.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"Subgradients are tangent lines that lower bound a function even at points of non-differentiability: formally, a subgradient of a convex function L : Rn → R at a point u is a vector gu such that for all v, L(v) ≥ L(u) + gu · (v − u).","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"By standard results, the subgradient for L at a point u takes a simple form, gu = Ex* − Fx2, where The beauty of this result is that the values of xi and x2, and by implication the value of the subgradient, can be computed using oracles for the two arg max sub-problems.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-Subgradient algorithms perform updates that are similar to gradient descent: The previous section described how the method in figure 4 can be used to minimize the dual L(u) of the original linear program.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-We now turn to the problem of recovering a primal solution of the LP.,"{'title': '6 Convergence Guarantees', 'number': '6'}"
-"The method we propose considers two cases: (Case 1) If at any stage during the algorithm, then simply take to be the primal solution.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"In this case the pair exactly solves the original LP.9 If this case arises in the algorithm in figure 1, then the resulting solution is binary (i.e., it is a member of Q), and the solution exactly solves the ori countered during the algorithm: --76 = Ek x = Ek x(2k) and Ozdaglar (2009) show that as K —* oo, these averaged solutions converge to the optimal primal solution.10 A second strategy (as given in figure 1) is to simply take as an approximation to the primal solution.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"This method is a heuristic, but previous work (e.g., Komodakis et al. (2007)) has shown that it is effective in practice; we use it in this paper.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"In our experiments we found that in the vast majority of cases, case 1 applies, after a small number of iterations; see the next section for more details.","{'title': '6 Convergence Guarantees', 'number': '6'}"
-"u(k+1) , u(k) where g(k) is the subgradient of L at u(k) and > 0 is the step size of the update.","{'title': '7 Experiments', 'number': '7'}"
-The complete subgradient algorithm is given in figure 4.,"{'title': '7 Experiments', 'number': '7'}"
-"The following convergence theorem is well-known (e.g., see page 120 of Korte and Vygen (2008)): Theorem 6.1 If limk,,,,, = 0 and = oo, then limk,,,,, L(u(k)) = L(u).","{'title': '7 Experiments', 'number': '7'}"
-"The following proposition is easily verified: Proposition 6.1 The algorithm in figure is an instantiation of the algorithm in figure 4,8 with = X2 = conv(i), and the matrices E and F defined to be binary matrices specifying the constraints µ(i, t) = v(i, t) for all (i, t) E Zuni.","{'title': '7 Experiments', 'number': '7'}"
-Under an appropriate definition of the step sizes it follows that the algorithm in figure 1 defines a sequence of Lagrange multiplers u(k) minimizing a dual of the LP relaxation in Eq.,"{'title': '7 Experiments', 'number': '7'}"
-10.,"{'title': '7 Experiments', 'number': '7'}"
-A similar result holds for the algori ginal inference problem.,"{'title': '7 Experiments', 'number': '7'}"
-"(Case 2) If case 1 does not arise, then a couple of strategies are possible.","{'title': '7 Experiments', 'number': '7'}"
-"(This situation could arise in cases where the LP is not tight—i.e., it has a fractional solution—or where K is not large enough for convergence.)","{'title': '7 Experiments', 'number': '7'}"
-"The first is to define the primal solution to be the average of the solutions enOur first set of experiments considers the integration of Model 1 of Collins (2003) (a lexicalized phrasestructure parser, fr om here on referred to as Model the last equality is because and are defined by the respective arg Thus, d Eisner, 2008; Martins et al., 2009).","{'title': '7 Experiments', 'number': '7'}"
-"1),11 and the 2nd order discriminative dependency parser of Koo et al. (2008).","{'title': '7 Experiments', 'number': '7'}"
-The inference problem for a sentence x is to find where Y is the set of all lexicalized phrase-structure trees for the sentence x; f1(y) is the score (log probability) under Model 1; f2(y) is the score under Koo et al. (2008) for the dependency structure implied by y; and γ > 0 is a parameter dictating the relative weight of the two models.12 This problem is similar to the second example in section 4; a very similar dual decomposition algorithm to that described in section 4.2 can be derived.,"{'title': '7 Experiments', 'number': '7'}"
-"We used the Penn Wall Street Treebank (Marcus et al., 1994) for the experiments, with sections 2-21 for training, section 22 for development, and section 23 for testing.","{'title': '7 Experiments', 'number': '7'}"
-The parameter γ was chosen to optimize performance on the development set.,"{'title': '7 Experiments', 'number': '7'}"
-We ran the dual decomposition algorithm with a limit of K = 50 iterations.,"{'title': '7 Experiments', 'number': '7'}"
-"The dual decomposition algorithm returns an exact solution if case 1 occurs as defined in section 6.2; we found that of 2416 sentences in section 23, case 1 occurred for 2407 (99.6%) sentences.","{'title': '7 Experiments', 'number': '7'}"
-Table 1 gives statistics showing the number of iterations required for convergence.,"{'title': '7 Experiments', 'number': '7'}"
-Over 80% of the examples converge in 5 iterations or fewer; over 90% converge in 10 iterations or fewer.,"{'title': '7 Experiments', 'number': '7'}"
-"We compare the accuracy of the dual decomposition approach to two baselines: first, Model 1; and second, a naive integration method that enforces the hard constraint that Model 1 must only consider de11We use a reimplementation that is a slight modification of Collins Model 1, with very similar performance, and which uses the TAG formalism of Carreras et al. (2008). pendencies seen in the first-best output from the dependency parser.","{'title': '7 Experiments', 'number': '7'}"
-Table 2 shows all three results.,"{'title': '7 Experiments', 'number': '7'}"
-"The dual decomposition method gives a significant gain in precision and recall over the naive combination method, and boosts the performance of Model 1 to a level that is close to some of the best single-pass parsers on the Penn treebank test set.","{'title': '7 Experiments', 'number': '7'}"
-"Dependency accuracy is also improved over the Koo et al. (2008) model, in spite of the relatively low dependency accuracy of Model 1 alone.","{'title': '7 Experiments', 'number': '7'}"
-"Figure 5 shows performance of the approach as a function of K, the maximum number of iterations of dual decomposition.","{'title': '7 Experiments', 'number': '7'}"
-"For this experiment, for cases where the method has not converged for k < K, the output from the algorithm is chosen to be the y(k) for k < K that maximizes the objective function in Eq.","{'title': '7 Experiments', 'number': '7'}"
-11.,"{'title': '7 Experiments', 'number': '7'}"
-"The graphs show that values of K less than 50 produce almost identical performance to K = 50, but with fewer cases giving certificates of optimality (with K = 10, the f-score of the method is 90.69%; with K = 5 it is 90.63%).","{'title': '7 Experiments', 'number': '7'}"
-"In a second experiment, we used dual decomposition to integrate the Model 1 parser with the Stanford max-ent trigram POS tagger (Toutanova and Manning, 2000), using a very similar algorithm to that described in section 4.1.","{'title': '7 Experiments', 'number': '7'}"
-We use the same training/dev/test split as in section 7.1.,"{'title': '7 Experiments', 'number': '7'}"
-The two models were again trained separately.,"{'title': '7 Experiments', 'number': '7'}"
-We ran the algorithm with a limit of K = 50 iterations.,"{'title': '7 Experiments', 'number': '7'}"
-"Out of 2416 test examples, the algorithm found an exact solution in 98.9% of the cases.","{'title': '7 Experiments', 'number': '7'}"
-Table 1 gives statistics showing the speed of convergence for different examples: over 94% of the examples converge to an exact solution in 10 iterations or fewer.,"{'title': '7 Experiments', 'number': '7'}"
-"In terms of accuracy, we compare to a baseline approach of using the first-best tag sequence as input to the parser.","{'title': '7 Experiments', 'number': '7'}"
-"The dual decomposition approach gives 88.3 F1 measure in recovering parsetree constituents, compared to 87.9 for the baseline.","{'title': '7 Experiments', 'number': '7'}"
-"We have introduced dual-decomposition algorithms for inference in NLP, given formal properties of the algorithms in terms of LP relaxations, and demonstrated their effectiveness on problems that would traditionally be solved using intersections of dynamic programs (Bar-Hillel et al., 1964).","{'title': '8 Conclusions', 'number': '8'}"
-"Given the widespread use of dynamic programming in NLP, there should be many applications for the approach.","{'title': '8 Conclusions', 'number': '8'}"
-There are several possible extensions of the method we have described.,"{'title': '8 Conclusions', 'number': '8'}"
-"We have focused on cases where two models are being combined; the extension to more than two models is straightforward (e.g., see Komodakis et al. (2007)).","{'title': '8 Conclusions', 'number': '8'}"
-"This paper has considered approaches for MAP inference; for closely related methods that compute approximate marginals, see Wainwright et al. (2005b).","{'title': '8 Conclusions', 'number': '8'}"
-"We now give an example of a point (µ, v) E 20\conv(2) that demonstrates that the relaxation 20 is strictly larger than conv(2).","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Fractional points such as this one can arise as solutions of the LP relaxation for worst case instances, preventing us from finding an exact solution.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Recall that the constraints for 20 specify that µ E conv(Y), v E conv(i), and µ(i, t) = v(i, t) for all (i, t) E Zuni.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Since µ E conv(Y), µ must be a convex combination of 1 or more members of Y; a similar property holds for v. The example is as follows.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"There are two possible parts of speech, A and B, and an additional non-terminal symbol X.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"The sentence is of length 3, w1 w2 w3.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Let v be the convex combination of the following two tag sequences, each with probability 0.5: w1/A w2/A w3/A and w1/A w2/B w3/B.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Let µ be the convex combination of the following two parses, each with probability 0.5: (X(A w1)(X(A w2)(B w3))) and (X(A w1)(X(B w2)(A w3))).","{'title': 'A Fractional Solutions', 'number': '9'}"
-"It can be verified that µ(i, t) = v(i, t) for all (i, t), i.e., the marginals for single tags for µ and v agree.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Thus, (µ, v) E 20.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"To demonstrate that this fractional point is not in conv(2), we give parameter values such that this fractional point is optimal and all integral points (i.e., actual parses) are suboptimal.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"For the tagging model, set 0(AA → A, 3) = 0(AB → B, 3) = 0, with all other parameters having a negative value.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"For the parsing model, set 0(X → A X,1,1, 3) = 0(X → A B, 2, 2, 3) = 0(X → B A, 2, 2, 3) = 0, with all other rule parameters being negative.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"For this objective, the fractional solution has value 0, while all integral points (i.e., all points in 2) have a negative value.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"By Theorem 5.2, the maximum of any linear objective over conv(2) is equal to the maximum over 2.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Thus, (µ, v) E� conv(2).","{'title': 'A Fractional Solutions', 'number': '9'}"
-We used the following step size in our experiments.,"{'title': 'A Fractional Solutions', 'number': '9'}"
-"First, we initialized α0 to equal 0.5, a relatively large value.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"Then we defined αk = α0 * 2−7k, where 77k is the number of times that L(u(k')) > L(u(k'−1)) for k0 < k. This learning rate drops at a rate of 1/21, where t is the number of times that the dual increases from one iteration to the next.","{'title': 'A Fractional Solutions', 'number': '9'}"
-"See Koo et al. (2010) for a similar, but less aggressive step size used to solve a different task.","{'title': 'A Fractional Solutions', 'number': '9'}"
+paper introduces decomposition a framework for deriving inference algorithms for NLP problems.,Introduction
+"The approach relies on standard dynamic-programming algorithms as oracle solvers for sub-problems, together with a simple method for forcing agreement between the different oracles.",Introduction
+The approach provably solves a linear programming (LP) relaxation of the global inference problem.,Introduction
+It to algorithms that are in that they existing decoding algorithms; in that they avoid exact algorithms for the full and often in that empirically they often recover the correct solution in spite of using an LP relaxation.,Introduction
+We give experimental results on two problems: 1) the combination of two lexicalized parsing models; and 2) the combination of a lexicalized parsing model and a trigram part-of-speech tagger.,Introduction
+Dynamic programming algorithms have been remarkably useful for inference in many NLP problems.,Experiment/Discussion
+"Unfortunately, as models become more complex, for example through the addition of new features or components, dynamic programming algorithms can quickly explode in terms of computational or implementational complexity.1 As a result, efficiency of inference is a critical bottleneck for many problems in statistical NLP.",Experiment/Discussion
+"This paper introduces dual decomposition (Dantzig and Wolfe, 1960; Komodakis et al., 2007) as a framework for deriving inference algorithms in NLP.",Experiment/Discussion
+Dual decomposition leverages the observation that complex inference problems can often be decomposed into efficiently solvable sub-problems.,Experiment/Discussion
+"The approach leads to inference algorithms with the following properties: The approach is very general, and should be applicable to a wide range of problems in NLP.",Experiment/Discussion
+"The connection to linear programming ensures that the algorithms provide a certificate of optimality when they recover the exact solution, and also opens up the possibility of methods that incrementally tighten the LP relaxation until it is exact (Sherali and Adams, 1994; Sontag et al., 2008).",Experiment/Discussion
+The structure of this paper is as follows.,Experiment/Discussion
+We first give two examples as an illustration of the approach: 1) integrated parsing and trigram part-ofspeech (POS) tagging; and 2) combined phrasestructure and dependency parsing.,Experiment/Discussion
+"In both settings, it is possible to solve the integrated problem through an “intersected” dynamic program (e.g., for integration of parsing and tagging, the construction from Bar-Hillel et al. (1964) can be used).",Experiment/Discussion
+"However, these methods, although polynomial time, are substantially less efficient than our algorithms, and are considerably more complex to implement.",Experiment/Discussion
+"Next, we describe exact polyhedral formulations for the two problems, building on connections between dynamic programming algorithms and marginal polytopes, as described in Martin et al. (1990).",Experiment/Discussion
+These allow us to precisely characterize the relationship between the exact formulations and the LP relaxations that we solve.,Experiment/Discussion
+"We then give guarantees of convergence for our algorithms by showing that they are instantiations of Lagrangian relaxation, a general method for solving linear programs of a particular form.",Experiment/Discussion
+"Finally, we describe experiments that demonstrate the effectiveness of our approach.",Experiment/Discussion
+"First, we consider the integration of the generative model for phrase-structure parsing of Collins (2003), with the second-order discriminative dependency parser of Koo et al. (2008).",Experiment/Discussion
+This is an interesting problem in its own right: the goal is to inject the high performance of discriminative dependency models into phrase-structure parsing.,Experiment/Discussion
+The method uses off-theshelf decoders for the two models.,Experiment/Discussion
+"We find three main results: 1) in spite of solving an LP relaxation, empirically the method finds an exact solution on over 99% of the examples; 2) the method converges quickly, typically requiring fewer than 10 iterations of decoding; 3) the method gives gains over a baseline method that forces the phrase-structure parser to produce the same dependencies as the firstbest output from the dependency parser (the Collins (2003) model has an F1 score of 88.1%; the baseline method has an F1 score of 89.7%; and the dual decomposition method has an F1 score of 90.7%).",Experiment/Discussion
+"In a second set of experiments, we use dual decomposition to integrate the trigram POS tagger of Toutanova and Manning (2000) with the parser of Collins (2003).",Experiment/Discussion
+"We again find that the method finds an exact solution in almost all cases, with convergence in just a few iterations of decoding.",Experiment/Discussion
+"Although the focus of this paper is on dynamic programming algorithms—both in the experiments, and also in the formal results concerning marginal polytopes—it is straightforward to use other combinatorial algorithms within the approach.",Experiment/Discussion
+"For example, Koo et al. (2010) describe a dual decomposition approach for non-projective dependency parsing, which makes use of both dynamic programming and spanning tree inference algorithms.",Experiment/Discussion
+Dual decomposition is a classical method for solving optimization problems that can be decomposed into efficiently solvable sub-problems.,Experiment/Discussion
+"Our work is inspired by dual decomposition methods for inference in Markov random fields (MRFs) (Wainwright et al., 2005a; Komodakis et al., 2007; Globerson and Jaakkola, 2007).",Experiment/Discussion
+"In this approach, the MRF is decomposed into sub-problems corresponding to treestructured subgraphs that together cover all edges of the original graph.",Experiment/Discussion
+"The resulting inference algorithms provably solve an LP relaxation of the MRF inference problem, often significantly faster than commercial LP solvers (Yanover et al., 2006).",Experiment/Discussion
+"Our work is also related to methods that incorporate combinatorial solvers within loopy belief propagation (LBP), either for MAP inference (Duchi et al., 2007) or for computing marginals (Smith and Eisner, 2008).",Experiment/Discussion
+Our approach similarly makes use of combinatorial algorithms to efficiently solve subproblems of the global inference problem.,Experiment/Discussion
+"However, unlike LBP, our algorithms have strong theoretical guarantees, such as guaranteed convergence and the possibility of a certificate of optimality.",Experiment/Discussion
+These guarantees are possible because our algorithms directly solve an LP relaxation.,Experiment/Discussion
+"Other work has considered LP or integer linear programming (ILP) formulations of inference in NLP (Martins et al., 2009; Riedel and Clarke, 2006; Roth and Yih, 2005).",Experiment/Discussion
+These approaches typically use general-purpose LP or ILP solvers.,Experiment/Discussion
+Our method has the advantage that it leverages underlying structure arising in LP formulations of NLP problems.,Experiment/Discussion
+We will see that dynamic programming algorithms such as CKY can be considered to be very efficient solvers for particular LPs.,Experiment/Discussion
+"In dual decomposition, these LPs—and their efficient solvers—can be embedded within larger LPs corresponding to more complex inference problems.",Experiment/Discussion
+We now describe the type of models used throughout the paper.,Experiment/Discussion
+We take some care to set up notation that will allow us to make a clear connection between inference problems and linear programming.,Experiment/Discussion
+Our first example is weighted CFG parsing.,Experiment/Discussion
+"We assume a context-free grammar, in Chomsky normal form, with a set of non-terminals N. The grammar contains all rules of the form A —* B C and A —* w where A, B, C E N and w E V (it is simple to relax this assumption to give a more constrained grammar).",Experiment/Discussion
+For rules of the form A —* w we refer to A as the part-of-speech tag for w. We allow any non-terminal to be at the root of the tree.,Experiment/Discussion
+"Given a sentence with n words, w1, w2,... wn, a parse tree is a set of rule productions of the form hA → B C, i, k, ji where A, B, C ∈ N, and 1 ≤ i ≤ k < j ≤ n. Each rule production represents the use of CFG rule A → B C where nonterminal A spans words wi ... wj, non-terminal B spans words wi ... wk, and non-terminal C spans words wk+1 ... wj.",Experiment/Discussion
+There are O(|N|3n3) such rule productions.,Experiment/Discussion
+"Each parse tree corresponds to a subset of these rule productions, of size n − 1, that forms a well-formed parse tree.3 We now define the index set for CFG parsing as Each parse tree is a vector y = {yr : r ∈ I}, with yr = 1 if rule r is in the parse tree, and yr = 0 otherwise.",Experiment/Discussion
+"Hence each parse tree is represented as a vector in {0,1}', where m = |I|.",Experiment/Discussion
+"We use Y to denote the set of all valid parse-tree vectors; the set Y is a subset of {0,1}' (not all binary vectors correspond to valid parse trees).",Experiment/Discussion
+"In addition, we assume a vector 0 = {0r : r ∈ I} that specifies a weight for each rule production.4 Each 0r can take any value in the reals.",Experiment/Discussion
+The optimal parse tree is y* = arg maxyEY y · 0 where y · 0 = Er yr0r is the inner product between y and 0.,Experiment/Discussion
+We use yr and y(r) interchangeably (similarly for 0r and 0(r)) to refer to the r’th component of the vector y.,Experiment/Discussion
+"For example 0(A → B C, i, k, j) is a weight for the rule hA → B C, i, k, ji.",Experiment/Discussion
+We will use similar notation for other problems.,Experiment/Discussion
+"As a second example, in POS tagging the task is to map a sentence of n words w1 ... wn to a tag sequence t1 ... tn, where each ti is chosen from a set T of possible tags.",Experiment/Discussion
+"We assume a trigram tagger, where a tag sequence is represented through decisions h(A, B) → C, ii where A, B, C ∈ T, and i ∈ {3 ... n}.",Experiment/Discussion
+"Each production represents a transition where C is the tag of word wi, and (A, B) are the previous two tags.",Experiment/Discussion
+"The index set for tagging is Itag = {h(A,B) → C,ii : A,B,C ∈ T, 3 ≤ i ≤ n} Note that we do not need transitions for i = 1 or i = 2, because the transition h(A, B) → C, 3i specifies the first three tags in the sentence.5 Each tag sequence is represented as a vector z = {zr : r ∈ Itag}, and we denote the set of valid tag sequences, a subset of {0,1}|z1ag|, as Z.",Experiment/Discussion
+"Given a parameter vector 0 = {0r : r ∈ Itag}, the optimal tag sequence is arg maxzEZ z · 0.",Experiment/Discussion
+"As a modification to the above approach, we will find it convenient to introduce extended index sets for both the CFG and POS tagging examples.",Experiment/Discussion
+"For the CFG case we define the extended index set to be Here each pair (i, t) represents word wi being assigned the tag t. Thus each parse-tree vector y will have additional (binary) components y(i, t) specifying whether or not word i is assigned tag t. (Throughout this paper we will assume that the tagset used by the tagger, T, is a subset of the set of nonterminals considered by the parser, N.) Note that this representation is over-complete, since a parse tree determines a unique tagging for a sentence: more explicitly, for any i ∈ {1... n}, Y ∈ T, the following linear constraint holds: We apply the same extension to the tagging index set, effectively mapping trigrams down to unigram assignments, again giving an over-complete representation.",Experiment/Discussion
+The extended index set for tagging is referred to as Itag.,Experiment/Discussion
+From here on we will make exclusive use of extended index sets for CFG parsing and trigram tagging.,Experiment/Discussion
+We use the set Y to refer to the set of valid parse structures under the extended representation; each y ∈ Y is a binary vector of length |I0|.,Experiment/Discussion
+We similarly use Z to refer to the set of valid tag structures under the extended representation.,Experiment/Discussion
+"We assume parameter vectors for the two problems, θcfg ∈ R|I'| and θtag ∈ R|I'tar|.",Experiment/Discussion
+This section describes the dual decomposition approach for two inference problems in NLP.,Experiment/Discussion
+We now describe the dual decomposition approach for integrated parsing and trigram tagging.,Experiment/Discussion
+"First, define the set Q as follows: Hence Q is the set of all (y, z) pairs that agree on their part-of-speech assignments.",Experiment/Discussion
+The integrated parsing and trigram tagging problem is then to solve where g : Y → Z is a function that maps a parse tree y to its set of trigrams z = g(y).,Experiment/Discussion
+The benefit of the formulation in Eq.,Experiment/Discussion
+"2 is that it makes explicit the idea of maximizing over all pairs (y, z) under a set of agreement constraints y(i, t) = z(i, t)—this concept will be central to the algorithms in this paper.",Experiment/Discussion
+"With this in mind, we note that we have efficient methods for the inference problems of tagging and parsing alone, and that our combined objective almost separates into these two independent problems.",Experiment/Discussion
+"In fact, if we drop the y(i, t) = z(i, t) constraints from the optimization problem, the problem splits into two parts, each of which can be efficiently solved using dynamic programming: solves the harder optimization problem using an existing CFG parser and trigram tagger.",Experiment/Discussion
+"After each iteration the algorithm adjusts the weights u(i, t); these updates modify the objective functions for the two models, encouraging them to agree on the same POS sequence.",Experiment/Discussion
+"In section 6.1 we will show that the variables u(i, t) are Lagrange multipliers enforcing agreement constraints, and that the algorithm corresponds to a (sub)gradient method for optimization of a dual function.",Experiment/Discussion
+"The algorithm is easy to implement: all that is required is a decoding algorithm for each of the two models, and simple additive updates to the Lagrange multipliers enforcing agreement between the two models.",Experiment/Discussion
+Our second example problem is the integration of a phrase-structure parser with a higher-order dependency parser.,Experiment/Discussion
+The goal is to add higher-order features to phrase-structure parsing without greatly increasing the complexity of inference.,Experiment/Discussion
+"First, we define an index set for second-order unlabeled projective dependency parsing.",Experiment/Discussion
+"The secondorder parser considers first-order dependencies, as well as grandparent and sibling second-order dependencies (e.g., see Carreras (2007)).",Experiment/Discussion
+"We assume that Id,p is an index set containing all such dependencies (for brevity we omit the details of this index set).",Experiment/Discussion
+For convenience we define an extended index set that makes explicit use of first-order dependeny∈Y z∈Z Dual decomposition exploits this idea; it results in the algorithm given in figure 1.,Experiment/Discussion
+"The algorithm optimizes the combined objective by repeatedly solving the two sub-problems separately—that is, it directly Here (i, j) represents a dependency with head wi and modifier wj (i = 0 corresponds to the root symbol in the parse).",Experiment/Discussion
+"We use D ⊆ {0, 1}|I'dep |to denote the set of valid projective dependency parses.",Experiment/Discussion
+The second model we use is a lexicalized CFG.,Experiment/Discussion
+"Each symbol in the grammar takes the form A(h) where A ∈ N is a non-terminal, and h ∈ {1... n} is an index specifying that wh is the head of the constituent.",Experiment/Discussion
+"Rule productions take the form hA(a) → B(b) C(c), i, k, ji where b ∈ {i ... k}, c ∈ {(k + 1) ... j}, and a is equal to b or c, depending on whether A receives its head-word from its left or right child.",Experiment/Discussion
+"Each such rule implies a dependency (a, b) if a = c, or (a, c) if a = b.",Experiment/Discussion
+"We take Ihead to be the index set of all such rules, and I0head = Ihead ∪ Ifirst to be the extended index set.",Experiment/Discussion
+"We define H ⊆ {0, 1}|I'head |to be the set of valid parse trees.",Experiment/Discussion
+"The integrated parsing problem is then to find where R = {(y, d) : y ∈ H, d ∈ D, y(i, j) = d(i, j) for all (i, j) ∈ Ifirst} This problem has a very similar structure to the problem of integrated parsing and tagging, and we can derive a similar dual decomposition algorithm.",Experiment/Discussion
+The Lagrange multipliers u are a vector in R|Ifirst| enforcing agreement between dependency assignments.,Experiment/Discussion
+"The algorithm (omitted for brevity) is identical to the algorithm in figure 1, but with Iuni, Y, Z, Bhead, and Ocfg, and Btag replaced with Ifirst, H, D, Bdep respectively.",Experiment/Discussion
+"The algorithm only requires decoding algorithms for the two models, together with simple updates to the Lagrange multipliers.",Experiment/Discussion
+"We now give formal guarantees for the algorithms in the previous section, showing that they solve LP relaxations of the problems in Eqs.",Experiment/Discussion
+2 and 3.,Experiment/Discussion
+"To make the connection to linear programming, we first introduce the idea of marginal polytopes in section 5.1.",Experiment/Discussion
+"In section 5.2, we give a precise statement of the LP relaxations that are being solved by the example algorithms, making direct use of marginal polytopes.",Experiment/Discussion
+In section 6 we will prove that the example algorithms solve these LP relaxations.,Experiment/Discussion
+"For a finite set Y, define the set of all distributions over elements in Y as A = {a ∈ R|Y |: ay ≥ 0, Ey∈Y ay = 1}.",Experiment/Discussion
+"Each a ∈ A gives a vector of marginals, µ = Ey∈Y ayy, where µr can be interpreted as the probability that yr = 1 for a y selected at random from the distribution a.",Experiment/Discussion
+"The set of all possible marginal vectors, known as the marginal polytope, is defined as follows: M is also frequently referred to as the convex hull of Y, written as conv(Y).",Experiment/Discussion
+"We use the notation conv(Y) in the remainder of this paper, instead of M. For an arbitrary set Y, the marginal polytope conv(Y) can be complex to describe.6 However, Martin et al. (1990) show that for a very general class of dynamic programming problems, the corresponding marginal polytope can be expressed as where A is a p × m matrix, b is vector in Rp, and the value p is linear in the size of a hypergraph representation of the dynamic program.",Experiment/Discussion
+Note that A and b specify a set of p linear constraints.,Experiment/Discussion
+"We now give an explicit description of the resulting constraints for CFG parsing:7 similar constraints arise for other dynamic programming algorithms for parsing, for example the algorithms of Eisner (2000).",Experiment/Discussion
+"The exact form of the constraints, and the fact that they are polynomial in number, is not essential for the formal results in this paper.",Experiment/Discussion
+"However, a description of the constraints gives valuable intuition for the structure of the marginal polytope.",Experiment/Discussion
+The constraints are given in figure 2.,Experiment/Discussion
+"To develop some intuition, consider the case where the variables µr are restricted to be binary: hence each binary vector µ specifies a parse tree.",Experiment/Discussion
+The second constraint in Eq.,Experiment/Discussion
+5 specifies that exactly one rule must be used at the top of the tree.,Experiment/Discussion
+The set of constraints in Eq.,Experiment/Discussion
+"6 specify that for each production of the form hX → Y Z, i, k, ji in a parse tree, there must be exactly one production higher in the tree that generates (X, i, j) as one of its children.",Experiment/Discussion
+The constraints in Eq.,Experiment/Discussion
+"7 enforce consistency between the µ(i, Y ) variables and rule variables higher in the tree.",Experiment/Discussion
+Note that the constraints in Eqs.,Experiment/Discussion
+"(5–7) can be written in the form Aµ = b, µ ≥ 0, as in Eq.",Experiment/Discussion
+4.,Experiment/Discussion
+"Under these definitions, we have the following: Theorem 5.1 Define Y to be the set of all CFG parses, as defined in section 4.",Experiment/Discussion
+"Then Proof: This theorem is a special case of Martin et al. (1990), theorem 2.",Experiment/Discussion
+"The marginal polytope for tagging, conv(Z), can also be expressed using linear constraints as in Eq.",Experiment/Discussion
+4; see figure 3.,Experiment/Discussion
+"These constraints follow from results for graphical models (Wainwright and Jordan, 2008), or from the Martin et al. (1990) construction.",Experiment/Discussion
+"As a final point, the following theorem gives an important property of marginal polytopes, which we will use at several points in this paper: Theorem 5.2 (Korte and Vygen (2008), page 66.)",Experiment/Discussion
+"For any set Y ⊆ {0, 1}k, and for any vector 0 ∈ Rk, The theorem states that for a linear objective function, maximization over a discrete set Y can be replaced by maximization over the convex hull conv(Y).",Experiment/Discussion
+The problem maxµEconv(Y) µ·0 is a linear programming problem.,Experiment/Discussion
+"For parsing, this theorem implies that: Similar results apply for the POS tagging case.",Experiment/Discussion
+We now describe the LP relaxations that are solved by the example algorithms in section 4.,Experiment/Discussion
+We begin with the algorithm in Figure 1.,Experiment/Discussion
+"The original optimization problem was to find max(y,z)EQ (y · 0cfg + z · 0tag) (see Eq.",Experiment/Discussion
+2).,Experiment/Discussion
+"By theorem 5.2, this is equivalent to solving To formulate our approximation, we first define: Q' = {(µ, v) : µ ∈ conv(Y), v ∈ conv(Z), µ(i, t) = v(i, t) for all (i, t) ∈ Iuni} The definition of Q0 is very similar to the definition of Q (see Eq.",Experiment/Discussion
+"1), the only difference being that Y and Z are replaced by conv(Y) and conv(Z) respectively.",Experiment/Discussion
+Hence any point in Q is also in Q0.,Experiment/Discussion
+"It follows that any point in conv(Q) is also in Q0, because Q0 is a convex set defined by linear constraints.",Experiment/Discussion
+"The LP relaxation then corresponds to the following optimization problem: Q0 is defined by linear constraints, making this a linear program.",Experiment/Discussion
+"Since Q0 is an outer bound on conv(Q), i.e. conv(Q) ⊆ Q0, we obtain the guarantee that the value of Eq.",Experiment/Discussion
+10 always upper bounds the value of Eq.,Experiment/Discussion
+9.,Experiment/Discussion
+In Appendix A we give an example showing that in general Q0 includes points that are not in conv(Q).,Experiment/Discussion
+"These points exist because the agreement between the two parts is now enforced in expectation (µ(i, t) = v(i, t) for (i, t) ∈ Iuni) rather than based on actual assignments.",Experiment/Discussion
+This agreement constraint is weaker since different distributions over assignments can still result in the same first order expectations.,Experiment/Discussion
+"Thus, the solution to Eq.",Experiment/Discussion
+10 may be in Q0 but not in conv(Q).,Experiment/Discussion
+"It can be shown that all such solutions will be fractional, making them easy to distinguish from Q.",Experiment/Discussion
+In many applications of LP relaxations—including the examples discussed in this paper—the relaxation in Eq.,Experiment/Discussion
+"10 turns out to be tight, in that the solution is often integral (i.e., it is in Q).",Experiment/Discussion
+"In these cases, solving the LP relaxation exactly solves the original problem of interest.",Experiment/Discussion
+In the next section we prove that the algorithm in Figure 1 solves the problem in Eq 10.,Experiment/Discussion
+A similar result holds for the algorithm in section 4.2: it solves a relaxation of Eq.,Experiment/Discussion
+"3, where R is replaced by",Experiment/Discussion
+We now show that the example algorithms solve their respective LP relaxations given in the previous section.,Experiment/Discussion
+"We do this by first introducing a general class of linear programs, together with an optimization method, Lagrangian relaxation, for solving these LPs.",Experiment/Discussion
+We then show that the algorithms in section 4 are special cases of the general algorithm.,Experiment/Discussion
+The linear programs we consider take the form The matrices E ∈ Rq×� and F ∈ Rq×l specify q linear “agreement” constraints between x1 ∈ R' and x2 ∈ Rl.,Experiment/Discussion
+"The sets X1, X2 are also specified by linear constraints, X1 = {x1 ∈ R1 : Ax1 = b, x1 ≥ 0} and X2 = {x2 ∈ Rl : Cx2 = d, x2 ≥ 01, hence the problem is an LP.",Experiment/Discussion
+"Note that if we set X1 = conv(Y), X2 = conv(Z), and define E and F to specify the agreement constraints µ(i, t) = v(i, t), then we have the LP relaxation in Eq.",Experiment/Discussion
+10.,Experiment/Discussion
+"It is natural to apply Lagrangian relaxation in cases where the sub-problems maxx1∈X1 01 · x1 and maxx2∈X2 02 · x2 can be efficiently solved by combinatorial algorithms for any values of 01, 02, but where the constraints Ex1 = Fx2 “complicate” the problem.",Experiment/Discussion
+"We introduce Lagrange multipliers u ∈ Rq that enforce the latter set of constraints, giving the Lagrangian: and the dual problem is to find minu∈R' L(u).",Experiment/Discussion
+"Because X1 and X2 are defined by linear constraints, by strong duality we have Hence minimizing L(u) will recover the maximum value of the original problem.",Experiment/Discussion
+"This leaves open the question of how to recover the LP solution (i.e., the pair (x∗1, x∗2) that achieves this maximum); we discuss this point in section 6.2.",Experiment/Discussion
+The dual L(u) is convex.,Experiment/Discussion
+"However, L(u) is not differentiable, so we cannot use gradient-based methods to optimize it.",Experiment/Discussion
+"Instead, a standard approach is to use a subgradient method.",Experiment/Discussion
+"Subgradients are tangent lines that lower bound a function even at points of non-differentiability: formally, a subgradient of a convex function L : Rn → R at a point u is a vector gu such that for all v, L(v) ≥ L(u) + gu · (v − u).",Experiment/Discussion
+"By standard results, the subgradient for L at a point u takes a simple form, gu = Ex* − Fx2, where The beauty of this result is that the values of xi and x2, and by implication the value of the subgradient, can be computed using oracles for the two arg max sub-problems.",Experiment/Discussion
+Subgradient algorithms perform updates that are similar to gradient descent: The previous section described how the method in figure 4 can be used to minimize the dual L(u) of the original linear program.,Experiment/Discussion
+We now turn to the problem of recovering a primal solution of the LP.,Experiment/Discussion
+"The method we propose considers two cases: (Case 1) If at any stage during the algorithm, then simply take to be the primal solution.",Experiment/Discussion
+"In this case the pair exactly solves the original LP.9 If this case arises in the algorithm in figure 1, then the resulting solution is binary (i.e., it is a member of Q), and the solution exactly solves the ori countered during the algorithm: --76 = Ek x = Ek x(2k) and Ozdaglar (2009) show that as K —* oo, these averaged solutions converge to the optimal primal solution.10 A second strategy (as given in figure 1) is to simply take as an approximation to the primal solution.",Experiment/Discussion
+"This method is a heuristic, but previous work (e.g., Komodakis et al. (2007)) has shown that it is effective in practice; we use it in this paper.",Experiment/Discussion
+"In our experiments we found that in the vast majority of cases, case 1 applies, after a small number of iterations; see the next section for more details.",Experiment/Discussion
+"u(k+1) , u(k) where g(k) is the subgradient of L at u(k) and > 0 is the step size of the update.",Experiment/Discussion
+The complete subgradient algorithm is given in figure 4.,Experiment/Discussion
+"The following convergence theorem is well-known (e.g., see page 120 of Korte and Vygen (2008)): Theorem 6.1 If limk,,,,, = 0 and = oo, then limk,,,,, L(u(k)) = L(u).",Experiment/Discussion
+"The following proposition is easily verified: Proposition 6.1 The algorithm in figure is an instantiation of the algorithm in figure 4,8 with = X2 = conv(i), and the matrices E and F defined to be binary matrices specifying the constraints µ(i, t) = v(i, t) for all (i, t) E Zuni.",Experiment/Discussion
+Under an appropriate definition of the step sizes it follows that the algorithm in figure 1 defines a sequence of Lagrange multiplers u(k) minimizing a dual of the LP relaxation in Eq.,Experiment/Discussion
+10.,Experiment/Discussion
+A similar result holds for the algori ginal inference problem.,Experiment/Discussion
+"(Case 2) If case 1 does not arise, then a couple of strategies are possible.",Experiment/Discussion
+"(This situation could arise in cases where the LP is not tight—i.e., it has a fractional solution—or where K is not large enough for convergence.)",Experiment/Discussion
+"The first is to define the primal solution to be the average of the solutions enOur first set of experiments considers the integration of Model 1 of Collins (2003) (a lexicalized phrasestructure parser, fr om here on referred to as Model the last equality is because and are defined by the respective arg Thus, d Eisner, 2008; Martins et al., 2009).",Experiment/Discussion
+"1),11 and the 2nd order discriminative dependency parser of Koo et al. (2008).",Experiment/Discussion
+The inference problem for a sentence x is to find where Y is the set of all lexicalized phrase-structure trees for the sentence x; f1(y) is the score (log probability) under Model 1; f2(y) is the score under Koo et al. (2008) for the dependency structure implied by y; and γ > 0 is a parameter dictating the relative weight of the two models.12 This problem is similar to the second example in section 4; a very similar dual decomposition algorithm to that described in section 4.2 can be derived.,Experiment/Discussion
+"We used the Penn Wall Street Treebank (Marcus et al., 1994) for the experiments, with sections 2-21 for training, section 22 for development, and section 23 for testing.",Experiment/Discussion
+The parameter γ was chosen to optimize performance on the development set.,Experiment/Discussion
+We ran the dual decomposition algorithm with a limit of K = 50 iterations.,Experiment/Discussion
+"The dual decomposition algorithm returns an exact solution if case 1 occurs as defined in section 6.2; we found that of 2416 sentences in section 23, case 1 occurred for 2407 (99.6%) sentences.",Experiment/Discussion
+Table 1 gives statistics showing the number of iterations required for convergence.,Experiment/Discussion
+Over 80% of the examples converge in 5 iterations or fewer; over 90% converge in 10 iterations or fewer.,Experiment/Discussion
+"We compare the accuracy of the dual decomposition approach to two baselines: first, Model 1; and second, a naive integration method that enforces the hard constraint that Model 1 must only consider de11We use a reimplementation that is a slight modification of Collins Model 1, with very similar performance, and which uses the TAG formalism of Carreras et al. (2008). pendencies seen in the first-best output from the dependency parser.",Experiment/Discussion
+Table 2 shows all three results.,Experiment/Discussion
+"The dual decomposition method gives a significant gain in precision and recall over the naive combination method, and boosts the performance of Model 1 to a level that is close to some of the best single-pass parsers on the Penn treebank test set.",Experiment/Discussion
+"Dependency accuracy is also improved over the Koo et al. (2008) model, in spite of the relatively low dependency accuracy of Model 1 alone.",Experiment/Discussion
+"Figure 5 shows performance of the approach as a function of K, the maximum number of iterations of dual decomposition.",Experiment/Discussion
+"For this experiment, for cases where the method has not converged for k < K, the output from the algorithm is chosen to be the y(k) for k < K that maximizes the objective function in Eq.",Experiment/Discussion
+11.,Experiment/Discussion
+"The graphs show that values of K less than 50 produce almost identical performance to K = 50, but with fewer cases giving certificates of optimality (with K = 10, the f-score of the method is 90.69%; with K = 5 it is 90.63%).",Experiment/Discussion
+"In a second experiment, we used dual decomposition to integrate the Model 1 parser with the Stanford max-ent trigram POS tagger (Toutanova and Manning, 2000), using a very similar algorithm to that described in section 4.1.",Experiment/Discussion
+We use the same training/dev/test split as in section 7.1.,Experiment/Discussion
+The two models were again trained separately.,Experiment/Discussion
+We ran the algorithm with a limit of K = 50 iterations.,Experiment/Discussion
+"Out of 2416 test examples, the algorithm found an exact solution in 98.9% of the cases.",Experiment/Discussion
+Table 1 gives statistics showing the speed of convergence for different examples: over 94% of the examples converge to an exact solution in 10 iterations or fewer.,Experiment/Discussion
+"In terms of accuracy, we compare to a baseline approach of using the first-best tag sequence as input to the parser.",Experiment/Discussion
+"The dual decomposition approach gives 88.3 F1 measure in recovering parsetree constituents, compared to 87.9 for the baseline.",Experiment/Discussion
+"We have introduced dual-decomposition algorithms for inference in NLP, given formal properties of the algorithms in terms of LP relaxations, and demonstrated their effectiveness on problems that would traditionally be solved using intersections of dynamic programs (Bar-Hillel et al., 1964).",Results/Conclusion
+"Given the widespread use of dynamic programming in NLP, there should be many applications for the approach.",Results/Conclusion
+There are several possible extensions of the method we have described.,Results/Conclusion
+"We have focused on cases where two models are being combined; the extension to more than two models is straightforward (e.g., see Komodakis et al. (2007)).",Results/Conclusion
+"This paper has considered approaches for MAP inference; for closely related methods that compute approximate marginals, see Wainwright et al. (2005b).",Results/Conclusion
+"We now give an example of a point (µ, v) E 20\conv(2) that demonstrates that the relaxation 20 is strictly larger than conv(2).",Results/Conclusion
+"Fractional points such as this one can arise as solutions of the LP relaxation for worst case instances, preventing us from finding an exact solution.",Results/Conclusion
+"Recall that the constraints for 20 specify that µ E conv(Y), v E conv(i), and µ(i, t) = v(i, t) for all (i, t) E Zuni.",Results/Conclusion
+"Since µ E conv(Y), µ must be a convex combination of 1 or more members of Y; a similar property holds for v. The example is as follows.",Results/Conclusion
+"There are two possible parts of speech, A and B, and an additional non-terminal symbol X.",Results/Conclusion
+"The sentence is of length 3, w1 w2 w3.",Results/Conclusion
+"Let v be the convex combination of the following two tag sequences, each with probability 0.5: w1/A w2/A w3/A and w1/A w2/B w3/B.",Results/Conclusion
+"Let µ be the convex combination of the following two parses, each with probability 0.5: (X(A w1)(X(A w2)(B w3))) and (X(A w1)(X(B w2)(A w3))).",Results/Conclusion
+"It can be verified that µ(i, t) = v(i, t) for all (i, t), i.e., the marginals for single tags for µ and v agree.",Results/Conclusion
+"Thus, (µ, v) E 20.",Results/Conclusion
+"To demonstrate that this fractional point is not in conv(2), we give parameter values such that this fractional point is optimal and all integral points (i.e., actual parses) are suboptimal.",Results/Conclusion
+"For the tagging model, set 0(AA → A, 3) = 0(AB → B, 3) = 0, with all other parameters having a negative value.",Results/Conclusion
+"For the parsing model, set 0(X → A X,1,1, 3) = 0(X → A B, 2, 2, 3) = 0(X → B A, 2, 2, 3) = 0, with all other rule parameters being negative.",Results/Conclusion
+"For this objective, the fractional solution has value 0, while all integral points (i.e., all points in 2) have a negative value.",Results/Conclusion
+"By Theorem 5.2, the maximum of any linear objective over conv(2) is equal to the maximum over 2.",Results/Conclusion
+"Thus, (µ, v) E� conv(2).",Results/Conclusion
+We used the following step size in our experiments.,Results/Conclusion
+"First, we initialized α0 to equal 0.5, a relatively large value.",Results/Conclusion
+"Then we defined αk = α0 * 2−7k, where 77k is the number of times that L(u(k')) > L(u(k'−1)) for k0 < k. This learning rate drops at a rate of 1/21, where t is the number of times that the dual increases from one iteration to the next.",Results/Conclusion
+"See Koo et al. (2010) for a similar, but less aggressive step size used to solve a different task.",Results/Conclusion

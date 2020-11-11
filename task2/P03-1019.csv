@@ -1,232 +1,232 @@
 col1,col2
-"In statistical machine translation, the generation of a translation hypothesis is computationally expensive.",{}
-"If arbitrary wordreorderings are permitted, the search problem is NP-hard.",{}
-"On the other hand, if we restrict the possible word-reorderings in an appropriate way, we obtain a polynomial-time search algorithm.",{}
-"In this paper, we compare two different reordering constraints, namely the ITG constraints and the IBM constraints.",{}
-This comparison includes a theoretical discussion on the permitted number of reorderings for each of these constraints.,{}
-We show a connection between the ITG constraints and the since 1870 known We evaluate these constraints on two tasks: the Verbmobil task and the Canadian Hansards task.,{}
-"The evaluation consists of two parts: First, we check how many of the Viterbi alignments of the training corpus satisfy each of these constraints.",{}
-"Second, we restrict the search to each of these constraints and compare the resulting translation hypotheses.",{}
-The experiments will show that the baseline ITG constraints are not sufficient on the Canadian Hansards task.,{}
-"Therefore, we present an extension to the ITG constraints.",{}
-These extended ITG constraints increase the alignment coverage from about 87% to 96%.,{}
-"In statistical machine translation, we are given a source language (‘French’) sentence fJ1 = f1 ... fj ... fJ, which is to be translated into a target language (‘English’) sentence eI1 = e1 ... ei ... eI.","{'title': '1 Introduction', 'number': '1'}"
-"Among all possible target language sentences, we will choose the sentence with the highest probability: The decomposition into two knowledge sources in Eq.","{'title': '1 Introduction', 'number': '1'}"
-"2 is the so-called source-channel approach to statistical machine translation (Brown et al., 1990).","{'title': '1 Introduction', 'number': '1'}"
-It allows an independent modeling of target language model Pr(eI1) and translation model Pr(fJ1 |eI1).,"{'title': '1 Introduction', 'number': '1'}"
-The target language model describes the well-formedness of the target language sentence.,"{'title': '1 Introduction', 'number': '1'}"
-The translation model links the source language sentence to the target language sentence.,"{'title': '1 Introduction', 'number': '1'}"
-It can be further decomposed into alignment and lexicon model.,"{'title': '1 Introduction', 'number': '1'}"
-"The argmax operation denotes the search problem, i.e. the generation of the output sentence in the target language.","{'title': '1 Introduction', 'number': '1'}"
-We have to maximize over all possible target language sentences.,"{'title': '1 Introduction', 'number': '1'}"
-"In this paper, we will focus on the alignment problem, i.e. the mapping between source sentence positions and target sentence positions.","{'title': '1 Introduction', 'number': '1'}"
-"As the word order in source and target language may differ, the search algorithm has to allow certain word-reorderings.","{'title': '1 Introduction', 'number': '1'}"
-"If arbitrary word-reorderings are allowed, the search problem is NP-hard (Knight, 1999).","{'title': '1 Introduction', 'number': '1'}"
-"Therefore, we have to restrict the possible reorderings in some way to make the search problem feasible.","{'title': '1 Introduction', 'number': '1'}"
-"Here, we will discuss two such constraints in detail.","{'title': '1 Introduction', 'number': '1'}"
-"The first constraints are based on inversion transduction grammars (ITG) (Wu, 1995; Wu, 1997).","{'title': '1 Introduction', 'number': '1'}"
-"In the following, we will call these the ITG constraints.","{'title': '1 Introduction', 'number': '1'}"
-"The second constraints are the IBM constraints (Berger et al., 1996).","{'title': '1 Introduction', 'number': '1'}"
-"In the next section, we will describe these constraints from a theoretical point of view.","{'title': '1 Introduction', 'number': '1'}"
-"Then, we will describe the resulting search algorithm and its extension for word graph generation.","{'title': '1 Introduction', 'number': '1'}"
-"Afterwards, we will analyze the Viterbi alignments produced during the training of the alignment models.","{'title': '1 Introduction', 'number': '1'}"
-"Then, we will compare the translation results when restricting the search to either of these constraints.","{'title': '1 Introduction', 'number': '1'}"
-"In this section, we will discuss the reordering constraints from a theoretical point of view.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-We will answer the question of how many word-reorderings are permitted for the ITG constraints as well as for the IBM constraints.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Since we are only interested in the number of possible reorderings, the specific word identities are of no importance here.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Furthermore, we assume a one-to-one correspondence between source and target words.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Thus, we are interested in the number of word-reorderings, i.e. permutations, that satisfy the chosen constraints.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"First, we will consider the ITG constraints.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Afterwards, we will describe the IBM constraints.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-Let us now consider the ITG constraints.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Here, we interpret the input sentence as a sequence of blocks.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In the beginning, each position is a block of its own.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Then, the permutation process can be seen as follows: we select two consecutive blocks and merge them to a single block by choosing between two options: either keep them in monotone order or invert the order.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-This idea is illustrated in Fig.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-1.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-The white boxes represent the two blocks to be merged.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Now, we investigate, how many permutations are obtainable with this method.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-A permutation derived by the above method can be represented as a binary tree where the inner nodes are colored either black or white.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-At black nodes the resulting sequences of the children are inverted.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-At white nodes they are kept in monotone order.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"This representation is equivalent to the parse trees of the simple grammar in (Wu, 1997).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-We observe that a given permutation may be constructed in several ways by the above method.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"For instance, let us consider the identity permutation of 1, 2,..., n. Any binary tree with n nodes and all inner nodes colored white (monotone order) is a possible representation of this permutation.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"To obtain a unique representation, we pose an additional constraint on the binary trees: if the right son of a node is an inner node, it has to be colored with the opposite color.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"With this constraint, each of these binary trees is unique and equivalent to a parse tree of the ’canonical-form’ grammar in (Wu, 1997).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In (Shapiro and Stephens, 1991), it is shown that the number of such binary trees with n nodes is the (n − 1)th large Schr¨oder number Sn−1.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"The (small) Schr¨oder numbers have been first described in (Schr¨oder, 1870) as the number of bracketings of a given sequence (Schr¨oder’s second problem).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-The large Schr¨oder numbers are just twice the Schr¨oder numbers.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Schr¨oder remarked that the ratio between two consecutive Schr¨oder numbers approaches 3 + 2.\/2 = 5.8284.... A second-order recurrence for the large Schr¨oder numbers is: with n > 2 and S0 = 1, S1 = 2.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-The Schr¨oder numbers have many combinatorical interpretations.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Here, we will mention only two of them.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-The first one is another way of viewing at the ITG constraints.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"The number of permutations of the sequence 1, 2, ..., n, which avoid the subsequences (3, 1, 4, 2) and (2, 4, 1, 3), is the large Schr¨oder number Sn−1.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"More details on forbidden subsequences can be found in (West, 1995).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-The interesting point is that a search with the ITG constraints cannot generate a word-reordering that contains one of these two subsequences.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In (Wu, 1997), these forbidden subsequences are called ’inside-out’ transpositions.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Another interpretation of the Schr¨oder numbers is given in (Knuth, 1973): The number of permutations that can be sorted with an output-restricted doubleended queue (deque) is exactly the large Schr¨oder number.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Additionally, Knuth presents an approximation for the large Schr¨oder numbers: where c is set to 2 �(3√2 − 4)/π.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"This approximation function confirms the result of Schr¨oder, and we obtain Sn ∈ o((3 + √8)n), i.e. the Schr¨oder numbers grow like (3 + √8)n ≈ 5.83n.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In this section, we will describe the IBM constraints (Berger et al., 1996).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Here, we mark each position in the source sentence either as covered or uncovered.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In the beginning, all source positions are uncovered.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Now, the target sentence is produced from bottom to top.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-A target position must be aligned to one of the first k uncovered source positions.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-The IBM constraints are illustrated in Fig.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-2.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-For most of the target positions there are k permitted source positions.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-Only towards the end of the sentence this is reduced to the number of remaining uncovered source positions.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-Let n denote the length of the input sequence and let rn denote the permitted number of permutations with the IBM constraints.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Then, we obtain: Typically, k is set to 4.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"In this case, we obtain an asymptotic upper and lower bound of 4n, i.e. rn ∈ o(4n).","{'title': '2 Theoretical Discussion', 'number': '2'}"
-In Tab.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"1, the ratio of the number of permitted reorderings for the discussed constraints is listed as a function of the sentence length.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-We see that for longer sentences the ITG constraints allow for more reorderings than the IBM constraints.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"For sentences of length 10 words, there are about twice as many reorderings for the ITG constraints than for the IBM constraints.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-This ratio steadily increases.,"{'title': '2 Theoretical Discussion', 'number': '2'}"
-"For longer sentences, the ITG constraints allow for much more flexibility than the IBM constraints.","{'title': '2 Theoretical Discussion', 'number': '2'}"
-"Now, let us get back to more practical aspects.","{'title': '3 Search', 'number': '3'}"
-"Reordering constraints are more or less useless, if they do not allow the maximization of Eq.","{'title': '3 Search', 'number': '3'}"
-2 to be performed in an efficient way.,"{'title': '3 Search', 'number': '3'}"
-"Therefore, in this section, we will describe different aspects of the search algorithm for the ITG constraints.","{'title': '3 Search', 'number': '3'}"
-"First, we will present the dynamic programming equations and the resulting complexity.","{'title': '3 Search', 'number': '3'}"
-"Then, we will describe pruning techniques to accelerate the search.","{'title': '3 Search', 'number': '3'}"
-"Finally, we will extend the basic algorithm for the generation of word graphs.","{'title': '3 Search', 'number': '3'}"
-The ITG constraints allow for a polynomial-time search algorithm.,"{'title': '3 Search', 'number': '3'}"
-It is based on the following dynamic programming recursion equations.,"{'title': '3 Search', 'number': '3'}"
-"During the search a table Qjl,jr,eb,et is constructed.","{'title': '3 Search', 'number': '3'}"
-"Here, Qjl,jr,eb,et denotes the probability of the best hypothesis translating the source words from position jl (left) to position jr (right) which begins with the target language word eb (bottom) and ends with the word et (top).","{'title': '3 Search', 'number': '3'}"
-This is illustrated in Fig.,"{'title': '3 Search', 'number': '3'}"
-3.,"{'title': '3 Search', 'number': '3'}"
-"Here, we initialize this table with monotone translations of IBM Model 4.","{'title': '3 Search', 'number': '3'}"
-"Therefore, Q0jl jr eb et denotes the probability of the best monotone hypothesis of IBM Model 4.","{'title': '3 Search', 'number': '3'}"
-"Alternatively, we could use any other single-word based lexicon as well as phrasebased models for this initialization.","{'title': '3 Search', 'number': '3'}"
-Our choice is the IBM Model4 to make the results as comparable as possible to the search with the IBM constraints.,"{'title': '3 Search', 'number': '3'}"
-"We introduce a new parameter pm (m=ˆ monotone), which denotes the probability of a monotone combination of two partial hypotheses.","{'title': '3 Search', 'number': '3'}"
-"We formulated this equation for a bigram language model, but of course, the same method can also be applied for a trigram language model.","{'title': '3 Search', 'number': '3'}"
-The resulting algorithm is similar to the CYK-parsing algorithm.,"{'title': '3 Search', 'number': '3'}"
-It has a worst-case complexity of O(J3 ' E4).,"{'title': '3 Search', 'number': '3'}"
-"Here, J is the length of the source sentence and E is the vocabulary size of the target language.","{'title': '3 Search', 'number': '3'}"
-"Although the described search algorithm has a polynomial-time complexity, even with a bigram language model the search space is very large.","{'title': '3 Search', 'number': '3'}"
-A full search is possible but time consuming.,"{'title': '3 Search', 'number': '3'}"
-The situation gets even worse when a trigram language model is used.,"{'title': '3 Search', 'number': '3'}"
-"Therefore, pruning techniques are obligatory to reduce the translation time.","{'title': '3 Search', 'number': '3'}"
-Pruning is applied to hypotheses that translate the same subsequence fjr jl of the source sentence.,"{'title': '3 Search', 'number': '3'}"
-We use pruning in the following two ways.,"{'title': '3 Search', 'number': '3'}"
-The first pruning technique is histogram pruning: we restrict the number of translation hypotheses per sequence fjr jl .,"{'title': '3 Search', 'number': '3'}"
-"For each sequence fjr jl , we keep only a fixed number of translation hypotheses.","{'title': '3 Search', 'number': '3'}"
-The second pruning technique is threshold pruning: the idea is to remove all hypotheses that have a low probability relative to the best hypothesis.,"{'title': '3 Search', 'number': '3'}"
-"Therefore, we introduce a threshold pruning parameter q, with 0 < q < 1.","{'title': '3 Search', 'number': '3'}"
-"Let Q3�l,jr denote the maximum probability of all translation hypotheses for fjr Applying these pruning techniques the computational costs can be reduced significantly with almost no loss in translation quality.","{'title': '3 Search', 'number': '3'}"
-"The generation of word graphs for a bottom-top search with the IBM constraints is described in (Ueffing et al., 2002).","{'title': '3 Search', 'number': '3'}"
-These methods cannot be applied to the CYK-style search for the ITG constraints.,"{'title': '3 Search', 'number': '3'}"
-"Here, the idea for the generation of word graphs is the following: assuming we already have word graphs for the source sequences fkjl and fjr in monotone or inverted order.","{'title': '3 Search', 'number': '3'}"
-"Now, we describe this idea in a more formal way.","{'title': '3 Search', 'number': '3'}"
-A word graph is a directed acyclic graph (dag) with one start and one end node.,"{'title': '3 Search', 'number': '3'}"
-The edges are annotated with target language words or phrases.,"{'title': '3 Search', 'number': '3'}"
-We also allow 2-transitions.,"{'title': '3 Search', 'number': '3'}"
-These are edges annotated with the empty word.,"{'title': '3 Search', 'number': '3'}"
-"Additionally, edges may be annotated with probabilities of the language or translation model.","{'title': '3 Search', 'number': '3'}"
-Each path from start node to end node represents one translation hypothesis.,"{'title': '3 Search', 'number': '3'}"
-The probability of this hypothesis is calculated by multiplying the probabilities along the path.,"{'title': '3 Search', 'number': '3'}"
-"During the search, we have to combine two word graphs in either monotone or inverted order.","{'title': '3 Search', 'number': '3'}"
-"This is done in the following way: we are given two word graphs w1 and w2 with start and end nodes (s1, g1) and (s2,g2), respectively.","{'title': '3 Search', 'number': '3'}"
-"First, we add an 2-transition (g1, s2) from the end node of the first graph w1 to the start node of the second graph w2 and annotate this edge with the probability of a monotone concatenation pm.","{'title': '3 Search', 'number': '3'}"
-"Second, we create a copy of each of the original word graphs w1 and w2.","{'title': '3 Search', 'number': '3'}"
-"Then, we add an 2-transition (g2, s1) from the end node of the copied second graph to the start node of the copied first graph.","{'title': '3 Search', 'number': '3'}"
-This edge is annotated with the probability of a inverted concatenation 1 — pm.,"{'title': '3 Search', 'number': '3'}"
-"Now, we have obtained two word graphs: one for a monotone and one for a inverted concatenation.","{'title': '3 Search', 'number': '3'}"
-"The final word graphs is constructed by merging the two start nodes and the two end nodes, respectively.","{'title': '3 Search', 'number': '3'}"
-"Let W(jl, jr) denote the word graph for the source sequence fjr jl .","{'title': '3 Search', 'number': '3'}"
-"This graph is constructed from the word graphs of all subsequences of (jl, jr).","{'title': '3 Search', 'number': '3'}"
-"Therefore, we assume, these word graphs have already been produced.","{'title': '3 Search', 'number': '3'}"
-"For all source positions k with jl < k < jr, we combine the word graphs W (jl, k) and W (k + 1, jr) as described above.","{'title': '3 Search', 'number': '3'}"
-"Finally, we merge all start nodes of these graphs as well as all end nodes.","{'title': '3 Search', 'number': '3'}"
-"Now, we have obtained the word graph W(jl, jr) for the source sequence fjr jl .","{'title': '3 Search', 'number': '3'}"
-"As initialization, we use the word graphs of the monotone IBM4 search.","{'title': '3 Search', 'number': '3'}"
-"In this section, we will extend the ITG constraints described in Sec.","{'title': '3 Search', 'number': '3'}"
-2.1.,"{'title': '3 Search', 'number': '3'}"
-This extension will go beyond basic reordering constraints.,"{'title': '3 Search', 'number': '3'}"
-We already mentioned that the use of consecutive phrases within the ITG approach is straightforward.,"{'title': '3 Search', 'number': '3'}"
-The only thing we have to change is the initialization of the Q-table.,"{'title': '3 Search', 'number': '3'}"
-"Now, we will extend this idea to phrases that are non-consecutive in the source language.","{'title': '3 Search', 'number': '3'}"
-"For this purpose, we adopt the view of the ITG constraints as a bilingual grammar as, e.g., in (Wu, 1997).","{'title': '3 Search', 'number': '3'}"
-"For the baseline ITG constraints, the resulting grammar is: A— [AA]  |(AA)  |f/e  |f/2  |2/e Here, [AA] denotes a monotone concatenation and (AA) denotes an inverted concatenation.","{'title': '3 Search', 'number': '3'}"
-Let us now consider the case of a source phrase consisting of two parts f1 and f2.,"{'title': '3 Search', 'number': '3'}"
-Let e denote the corresponding target phrase.,"{'title': '3 Search', 'number': '3'}"
-We add the productions A — [e/f1 A 2/f2]  |(e/f1 A 2/f2) to the grammar.,"{'title': '3 Search', 'number': '3'}"
-"The probabilities of these productions are, dependent on the translation direction, p(e|f1, f2) or p(f1, f2|e), respectively.","{'title': '3 Search', 'number': '3'}"
-"Obviously, these productions are not in the normal form of an ITG, but with the method described in (Wu, 1997), they can be normalized.","{'title': '3 Search', 'number': '3'}"
-In the following sections we will present results on two tasks.,"{'title': '4 Corpus Statistics', 'number': '4'}"
-"Therefore, in this section we will show the corpus statistics for each of these tasks.","{'title': '4 Corpus Statistics', 'number': '4'}"
-"The first task we will present results on is the Verbmobil task (Wahlster, 2000).","{'title': '4 Corpus Statistics', 'number': '4'}"
-"The domain of this corpus is appointment scheduling, travel planning, and hotel reservation.","{'title': '4 Corpus Statistics', 'number': '4'}"
-It consists of transcriptions of spontaneous speech.,"{'title': '4 Corpus Statistics', 'number': '4'}"
-Table 2 shows the corpus statistics of this corpus.,"{'title': '4 Corpus Statistics', 'number': '4'}"
-The training corpus (Train) was used to train the IBM model parameters.,"{'title': '4 Corpus Statistics', 'number': '4'}"
-"The remaining free parameters, i.e. pm and the model scaling factors (Och and Ney, 2002), were adjusted on the development corpus (Dev).","{'title': '4 Corpus Statistics', 'number': '4'}"
-The resulting system was evaluated on the test corpus (Test).,"{'title': '4 Corpus Statistics', 'number': '4'}"
-"Table 2: Statistics of training and test corpus for the Verbmobil task (PP=perplexity, SL=sentence length).","{'title': '4 Corpus Statistics', 'number': '4'}"
-"Additionally, we carried out experiments on the Canadian Hansards task.","{'title': '4 Corpus Statistics', 'number': '4'}"
-"This task contains the proceedings of the Canadian parliament, which are kept by law in both French and English.","{'title': '4 Corpus Statistics', 'number': '4'}"
-About 3 million parallel sentences of this bilingual data have been made available by the Linguistic Data Consortium (LDC).,"{'title': '4 Corpus Statistics', 'number': '4'}"
-"Here, we use a subset of the data containing only sentences with a maximum length of 30 words.","{'title': '4 Corpus Statistics', 'number': '4'}"
-Table 3 shows the training and test corpus statistics.,"{'title': '4 Corpus Statistics', 'number': '4'}"
-"In this section, we will investigate for each of the constraints the coverage of the training corpus alignment.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"For this purpose, we compute the Viterbi alignment of IBM Model 5 with GIZA++ (Och and Ney, 2000).","{'title': '5 Evaluation in Training', 'number': '5'}"
-This alignment is produced without any restrictions on word-reorderings.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-"Then, we check for every sentence if the alignment satisfies each of the constraints.","{'title': '5 Evaluation in Training', 'number': '5'}"
-The ratio of the number of satisfied alignments and the total number of sentences is referred to as coverage.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-Tab.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-4 shows the results for the Verbmobil task and for the Canadian Hansards task.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-"It contains the results for both translation directions German-English (S—*T) and English-German (T—*S) for the Verbmobil task and French-English (S—*T) and English-French (T—*S) for the Canadian Hansards task, respectively.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"For the Verbmobil task, the baseline ITG constraints and the IBM constraints result in a similar coverage.","{'title': '5 Evaluation in Training', 'number': '5'}"
-It is about 91% for the German-English translation direction and about 88% for the EnglishGerman translation direction.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-A significantly higher coverage of about 96% is obtained with the extended ITG constraints.,"{'title': '5 Evaluation in Training', 'number': '5'}"
-"Thus with the extended ITG constraints, the coverage increases by about 8% absolute.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"For the Canadian Hansards task, the baseline ITG constraints yield a worse coverage than the IBM constraints.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"Especially for the English-French translation direction, the ITG coverage of 73.6% is very low.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"Again, the extended ITG constraints obtained the best results.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"Here, the coverage increases from about 87% for the IBM constraints to about 96% for the extended ITG constraints.","{'title': '5 Evaluation in Training', 'number': '5'}"
-"In our experiments, we use the following error criteria: The WER is computed as the minimum number of substitution, insertion and deletion operations that have to be performed to convert the generated sentence into the target sentence.","{'title': '6 Translation Experiments', 'number': '6'}"
-"For each test sentence, not only a single reference translation is used, as for the WER, but a whole set of reference translations.","{'title': '6 Translation Experiments', 'number': '6'}"
-"For each translation hypothesis, the WER to the most similar sentence is calculated (Nießen et al., 2000).","{'title': '6 Translation Experiments', 'number': '6'}"
-"This score measures the precision of unigrams, bigrams, trigrams and fourgrams with respect to a whole set of reference translations with a penalty for too short sentences (Papineni et al., 2001).","{'title': '6 Translation Experiments', 'number': '6'}"
-"BLEU measures accuracy, i.e. large BLEU scores are better.","{'title': '6 Translation Experiments', 'number': '6'}"
-"For a more detailed analysis, subjective judgments by test persons are necessary.","{'title': '6 Translation Experiments', 'number': '6'}"
-"Each translated sentence was judged by a human examiner according to an error scale from 0.0 to 1.0 (Nießen et al., 2000).","{'title': '6 Translation Experiments', 'number': '6'}"
-"In this section, we will present the translation results for both the IBM constraints and the baseline ITG constraints.","{'title': '6 Translation Experiments', 'number': '6'}"
-We used a single-word based search with IBM Model 4.,"{'title': '6 Translation Experiments', 'number': '6'}"
-The initialization for the ITG constraints was done with monotone IBM Model 4 translations.,"{'title': '6 Translation Experiments', 'number': '6'}"
-"So, the only difference between the two systems are the reordering constraints.","{'title': '6 Translation Experiments', 'number': '6'}"
-In Tab.,"{'title': '6 Translation Experiments', 'number': '6'}"
-5 the results for the Verbmobil task are shown.,"{'title': '6 Translation Experiments', 'number': '6'}"
-We see that the results on this task are similar.,"{'title': '6 Translation Experiments', 'number': '6'}"
-The search with the ITG constraints yields slightly lower error rates.,"{'title': '6 Translation Experiments', 'number': '6'}"
-Some translation examples of the Verbmobil task are shown in Tab.,"{'title': '6 Translation Experiments', 'number': '6'}"
-6.,"{'title': '6 Translation Experiments', 'number': '6'}"
-"We have to keep in mind, that the Verbmobil task consists of transcriptions of spontaneous speech.","{'title': '6 Translation Experiments', 'number': '6'}"
-"Therefore, the source sentences as well as the reference translations may have an unorthodox grammatical structure.","{'title': '6 Translation Experiments', 'number': '6'}"
-"In the first example, the German verb-group (“w¨urde vorschlagen”) is split into two parts.","{'title': '6 Translation Experiments', 'number': '6'}"
-The search with the ITG constraints is able to produce a correct translation.,"{'title': '6 Translation Experiments', 'number': '6'}"
-"With the IBM constraints, it is not possible to translate this verb-group correctly, because the distance between the two parts is too large (more than four words).","{'title': '6 Translation Experiments', 'number': '6'}"
-"As we see in the second example, in German the verb of a subordinate clause is placed at the end (“¨ubernachten”).","{'title': '6 Translation Experiments', 'number': '6'}"
-"The IBM search is not able to perform the necessary long-range reordering, as it is done with the ITG search.","{'title': '6 Translation Experiments', 'number': '6'}"
-"The ITG constraints were introduced in (Wu, 1995).","{'title': '7 Related Work', 'number': '7'}"
-"The applications were, for instance, the segmentation of Chinese character sequences into Chinese “words” and the bracketing of the source sentence into sub-sentential chunks.","{'title': '7 Related Work', 'number': '7'}"
-"In (Wu, 1996) the baseline ITG constraints were used for statistical machine translation.","{'title': '7 Related Work', 'number': '7'}"
-The resulting algorithm is similar to the one presented in Sect.,"{'title': '7 Related Work', 'number': '7'}"
-"3.1, but here, we use monotone translation hypotheses of the full IBM Model 4 as initialization, whereas in (Wu, 1996) a single-word based lexicon model is used.","{'title': '7 Related Work', 'number': '7'}"
-"In (Vilar, 1998) a model similar to Wu’s method was considered.","{'title': '7 Related Work', 'number': '7'}"
-We have described the ITG constraints in detail and compared them to the IBM constraints.,"{'title': '8 Conclusions', 'number': '8'}"
-We draw the following conclusions: especially for long sentences the ITG constraints allow for higher flexibility in word-reordering than the IBM constraints.,"{'title': '8 Conclusions', 'number': '8'}"
-"Regarding the Viterbi alignment in training, the baseline ITG constraints yield a similar coverage as the IBM constraints on the Verbmobil task.","{'title': '8 Conclusions', 'number': '8'}"
-On the Canadian Hansards task the baseline ITG constraints were not sufficient.,"{'title': '8 Conclusions', 'number': '8'}"
-With the extended ITG constraints the coverage improves significantly on both tasks.,"{'title': '8 Conclusions', 'number': '8'}"
-On the Canadian Hansards task the coverage increases from about 87% to about 96%.,"{'title': '8 Conclusions', 'number': '8'}"
-We have presented a polynomial-time search algorithm for statistical machine translation based on the ITG constraints and its extension for the generation of word graphs.,"{'title': '8 Conclusions', 'number': '8'}"
-We have shown the translation results for the Verbmobil task.,"{'title': '8 Conclusions', 'number': '8'}"
-"On this task, the translation quality of the search with the baseline ITG constraints is already competitive with the results for the IBM constraints.","{'title': '8 Conclusions', 'number': '8'}"
-"Therefore, we expect the search with the extended ITG constraints to outperform the search with the IBM constraints.","{'title': '8 Conclusions', 'number': '8'}"
-Future work will include the automatic extraction of the bilingual grammar as well as the use of this grammar for the translation process.,"{'title': '8 Conclusions', 'number': '8'}"
+"In statistical machine translation, the generation of a translation hypothesis is computationally expensive.",Introduction
+"If arbitrary wordreorderings are permitted, the search problem is NP-hard.",Introduction
+"On the other hand, if we restrict the possible word-reorderings in an appropriate way, we obtain a polynomial-time search algorithm.",Introduction
+"In this paper, we compare two different reordering constraints, namely the ITG constraints and the IBM constraints.",Introduction
+This comparison includes a theoretical discussion on the permitted number of reorderings for each of these constraints.,Introduction
+We show a connection between the ITG constraints and the since 1870 known We evaluate these constraints on two tasks: the Verbmobil task and the Canadian Hansards task.,Introduction
+"The evaluation consists of two parts: First, we check how many of the Viterbi alignments of the training corpus satisfy each of these constraints.",Introduction
+"Second, we restrict the search to each of these constraints and compare the resulting translation hypotheses.",Introduction
+The experiments will show that the baseline ITG constraints are not sufficient on the Canadian Hansards task.,Introduction
+"Therefore, we present an extension to the ITG constraints.",Introduction
+These extended ITG constraints increase the alignment coverage from about 87% to 96%.,Introduction
+"In statistical machine translation, we are given a source language (‘French’) sentence fJ1 = f1 ... fj ... fJ, which is to be translated into a target language (‘English’) sentence eI1 = e1 ... ei ... eI.",Experiment/Discussion
+"Among all possible target language sentences, we will choose the sentence with the highest probability: The decomposition into two knowledge sources in Eq.",Experiment/Discussion
+"2 is the so-called source-channel approach to statistical machine translation (Brown et al., 1990).",Experiment/Discussion
+It allows an independent modeling of target language model Pr(eI1) and translation model Pr(fJ1 |eI1).,Experiment/Discussion
+The target language model describes the well-formedness of the target language sentence.,Experiment/Discussion
+The translation model links the source language sentence to the target language sentence.,Experiment/Discussion
+It can be further decomposed into alignment and lexicon model.,Experiment/Discussion
+"The argmax operation denotes the search problem, i.e. the generation of the output sentence in the target language.",Experiment/Discussion
+We have to maximize over all possible target language sentences.,Experiment/Discussion
+"In this paper, we will focus on the alignment problem, i.e. the mapping between source sentence positions and target sentence positions.",Experiment/Discussion
+"As the word order in source and target language may differ, the search algorithm has to allow certain word-reorderings.",Experiment/Discussion
+"If arbitrary word-reorderings are allowed, the search problem is NP-hard (Knight, 1999).",Experiment/Discussion
+"Therefore, we have to restrict the possible reorderings in some way to make the search problem feasible.",Experiment/Discussion
+"Here, we will discuss two such constraints in detail.",Experiment/Discussion
+"The first constraints are based on inversion transduction grammars (ITG) (Wu, 1995; Wu, 1997).",Experiment/Discussion
+"In the following, we will call these the ITG constraints.",Experiment/Discussion
+"The second constraints are the IBM constraints (Berger et al., 1996).",Experiment/Discussion
+"In the next section, we will describe these constraints from a theoretical point of view.",Experiment/Discussion
+"Then, we will describe the resulting search algorithm and its extension for word graph generation.",Experiment/Discussion
+"Afterwards, we will analyze the Viterbi alignments produced during the training of the alignment models.",Experiment/Discussion
+"Then, we will compare the translation results when restricting the search to either of these constraints.",Experiment/Discussion
+"In this section, we will discuss the reordering constraints from a theoretical point of view.",Experiment/Discussion
+We will answer the question of how many word-reorderings are permitted for the ITG constraints as well as for the IBM constraints.,Experiment/Discussion
+"Since we are only interested in the number of possible reorderings, the specific word identities are of no importance here.",Experiment/Discussion
+"Furthermore, we assume a one-to-one correspondence between source and target words.",Experiment/Discussion
+"Thus, we are interested in the number of word-reorderings, i.e. permutations, that satisfy the chosen constraints.",Experiment/Discussion
+"First, we will consider the ITG constraints.",Experiment/Discussion
+"Afterwards, we will describe the IBM constraints.",Experiment/Discussion
+Let us now consider the ITG constraints.,Experiment/Discussion
+"Here, we interpret the input sentence as a sequence of blocks.",Experiment/Discussion
+"In the beginning, each position is a block of its own.",Experiment/Discussion
+"Then, the permutation process can be seen as follows: we select two consecutive blocks and merge them to a single block by choosing between two options: either keep them in monotone order or invert the order.",Experiment/Discussion
+This idea is illustrated in Fig.,Experiment/Discussion
+1.,Experiment/Discussion
+The white boxes represent the two blocks to be merged.,Experiment/Discussion
+"Now, we investigate, how many permutations are obtainable with this method.",Experiment/Discussion
+A permutation derived by the above method can be represented as a binary tree where the inner nodes are colored either black or white.,Experiment/Discussion
+At black nodes the resulting sequences of the children are inverted.,Experiment/Discussion
+At white nodes they are kept in monotone order.,Experiment/Discussion
+"This representation is equivalent to the parse trees of the simple grammar in (Wu, 1997).",Experiment/Discussion
+We observe that a given permutation may be constructed in several ways by the above method.,Experiment/Discussion
+"For instance, let us consider the identity permutation of 1, 2,..., n. Any binary tree with n nodes and all inner nodes colored white (monotone order) is a possible representation of this permutation.",Experiment/Discussion
+"To obtain a unique representation, we pose an additional constraint on the binary trees: if the right son of a node is an inner node, it has to be colored with the opposite color.",Experiment/Discussion
+"With this constraint, each of these binary trees is unique and equivalent to a parse tree of the ’canonical-form’ grammar in (Wu, 1997).",Experiment/Discussion
+"In (Shapiro and Stephens, 1991), it is shown that the number of such binary trees with n nodes is the (n − 1)th large Schr¨oder number Sn−1.",Experiment/Discussion
+"The (small) Schr¨oder numbers have been first described in (Schr¨oder, 1870) as the number of bracketings of a given sequence (Schr¨oder’s second problem).",Experiment/Discussion
+The large Schr¨oder numbers are just twice the Schr¨oder numbers.,Experiment/Discussion
+"Schr¨oder remarked that the ratio between two consecutive Schr¨oder numbers approaches 3 + 2.\/2 = 5.8284.... A second-order recurrence for the large Schr¨oder numbers is: with n > 2 and S0 = 1, S1 = 2.",Experiment/Discussion
+The Schr¨oder numbers have many combinatorical interpretations.,Experiment/Discussion
+"Here, we will mention only two of them.",Experiment/Discussion
+The first one is another way of viewing at the ITG constraints.,Experiment/Discussion
+"The number of permutations of the sequence 1, 2, ..., n, which avoid the subsequences (3, 1, 4, 2) and (2, 4, 1, 3), is the large Schr¨oder number Sn−1.",Experiment/Discussion
+"More details on forbidden subsequences can be found in (West, 1995).",Experiment/Discussion
+The interesting point is that a search with the ITG constraints cannot generate a word-reordering that contains one of these two subsequences.,Experiment/Discussion
+"In (Wu, 1997), these forbidden subsequences are called ’inside-out’ transpositions.",Experiment/Discussion
+"Another interpretation of the Schr¨oder numbers is given in (Knuth, 1973): The number of permutations that can be sorted with an output-restricted doubleended queue (deque) is exactly the large Schr¨oder number.",Experiment/Discussion
+"Additionally, Knuth presents an approximation for the large Schr¨oder numbers: where c is set to 2 �(3√2 − 4)/π.",Experiment/Discussion
+"This approximation function confirms the result of Schr¨oder, and we obtain Sn ∈ o((3 + √8)n), i.e. the Schr¨oder numbers grow like (3 + √8)n ≈ 5.83n.",Experiment/Discussion
+"In this section, we will describe the IBM constraints (Berger et al., 1996).",Experiment/Discussion
+"Here, we mark each position in the source sentence either as covered or uncovered.",Experiment/Discussion
+"In the beginning, all source positions are uncovered.",Experiment/Discussion
+"Now, the target sentence is produced from bottom to top.",Experiment/Discussion
+A target position must be aligned to one of the first k uncovered source positions.,Experiment/Discussion
+The IBM constraints are illustrated in Fig.,Experiment/Discussion
+2.,Experiment/Discussion
+For most of the target positions there are k permitted source positions.,Experiment/Discussion
+Only towards the end of the sentence this is reduced to the number of remaining uncovered source positions.,Experiment/Discussion
+Let n denote the length of the input sequence and let rn denote the permitted number of permutations with the IBM constraints.,Experiment/Discussion
+"Then, we obtain: Typically, k is set to 4.",Experiment/Discussion
+"In this case, we obtain an asymptotic upper and lower bound of 4n, i.e. rn ∈ o(4n).",Experiment/Discussion
+In Tab.,Experiment/Discussion
+"1, the ratio of the number of permitted reorderings for the discussed constraints is listed as a function of the sentence length.",Experiment/Discussion
+We see that for longer sentences the ITG constraints allow for more reorderings than the IBM constraints.,Experiment/Discussion
+"For sentences of length 10 words, there are about twice as many reorderings for the ITG constraints than for the IBM constraints.",Experiment/Discussion
+This ratio steadily increases.,Experiment/Discussion
+"For longer sentences, the ITG constraints allow for much more flexibility than the IBM constraints.",Experiment/Discussion
+"Now, let us get back to more practical aspects.",Experiment/Discussion
+"Reordering constraints are more or less useless, if they do not allow the maximization of Eq.",Experiment/Discussion
+2 to be performed in an efficient way.,Experiment/Discussion
+"Therefore, in this section, we will describe different aspects of the search algorithm for the ITG constraints.",Experiment/Discussion
+"First, we will present the dynamic programming equations and the resulting complexity.",Experiment/Discussion
+"Then, we will describe pruning techniques to accelerate the search.",Experiment/Discussion
+"Finally, we will extend the basic algorithm for the generation of word graphs.",Experiment/Discussion
+The ITG constraints allow for a polynomial-time search algorithm.,Experiment/Discussion
+It is based on the following dynamic programming recursion equations.,Experiment/Discussion
+"During the search a table Qjl,jr,eb,et is constructed.",Experiment/Discussion
+"Here, Qjl,jr,eb,et denotes the probability of the best hypothesis translating the source words from position jl (left) to position jr (right) which begins with the target language word eb (bottom) and ends with the word et (top).",Experiment/Discussion
+This is illustrated in Fig.,Experiment/Discussion
+3.,Experiment/Discussion
+"Here, we initialize this table with monotone translations of IBM Model 4.",Experiment/Discussion
+"Therefore, Q0jl jr eb et denotes the probability of the best monotone hypothesis of IBM Model 4.",Experiment/Discussion
+"Alternatively, we could use any other single-word based lexicon as well as phrasebased models for this initialization.",Experiment/Discussion
+Our choice is the IBM Model4 to make the results as comparable as possible to the search with the IBM constraints.,Experiment/Discussion
+"We introduce a new parameter pm (m=ˆ monotone), which denotes the probability of a monotone combination of two partial hypotheses.",Experiment/Discussion
+"We formulated this equation for a bigram language model, but of course, the same method can also be applied for a trigram language model.",Experiment/Discussion
+The resulting algorithm is similar to the CYK-parsing algorithm.,Experiment/Discussion
+It has a worst-case complexity of O(J3 ' E4).,Experiment/Discussion
+"Here, J is the length of the source sentence and E is the vocabulary size of the target language.",Experiment/Discussion
+"Although the described search algorithm has a polynomial-time complexity, even with a bigram language model the search space is very large.",Experiment/Discussion
+A full search is possible but time consuming.,Experiment/Discussion
+The situation gets even worse when a trigram language model is used.,Experiment/Discussion
+"Therefore, pruning techniques are obligatory to reduce the translation time.",Experiment/Discussion
+Pruning is applied to hypotheses that translate the same subsequence fjr jl of the source sentence.,Experiment/Discussion
+We use pruning in the following two ways.,Experiment/Discussion
+The first pruning technique is histogram pruning: we restrict the number of translation hypotheses per sequence fjr jl .,Experiment/Discussion
+"For each sequence fjr jl , we keep only a fixed number of translation hypotheses.",Experiment/Discussion
+The second pruning technique is threshold pruning: the idea is to remove all hypotheses that have a low probability relative to the best hypothesis.,Experiment/Discussion
+"Therefore, we introduce a threshold pruning parameter q, with 0 < q < 1.",Experiment/Discussion
+"Let Q3�l,jr denote the maximum probability of all translation hypotheses for fjr Applying these pruning techniques the computational costs can be reduced significantly with almost no loss in translation quality.",Experiment/Discussion
+"The generation of word graphs for a bottom-top search with the IBM constraints is described in (Ueffing et al., 2002).",Experiment/Discussion
+These methods cannot be applied to the CYK-style search for the ITG constraints.,Experiment/Discussion
+"Here, the idea for the generation of word graphs is the following: assuming we already have word graphs for the source sequences fkjl and fjr in monotone or inverted order.",Experiment/Discussion
+"Now, we describe this idea in a more formal way.",Experiment/Discussion
+A word graph is a directed acyclic graph (dag) with one start and one end node.,Experiment/Discussion
+The edges are annotated with target language words or phrases.,Experiment/Discussion
+We also allow 2-transitions.,Experiment/Discussion
+These are edges annotated with the empty word.,Experiment/Discussion
+"Additionally, edges may be annotated with probabilities of the language or translation model.",Experiment/Discussion
+Each path from start node to end node represents one translation hypothesis.,Experiment/Discussion
+The probability of this hypothesis is calculated by multiplying the probabilities along the path.,Experiment/Discussion
+"During the search, we have to combine two word graphs in either monotone or inverted order.",Experiment/Discussion
+"This is done in the following way: we are given two word graphs w1 and w2 with start and end nodes (s1, g1) and (s2,g2), respectively.",Experiment/Discussion
+"First, we add an 2-transition (g1, s2) from the end node of the first graph w1 to the start node of the second graph w2 and annotate this edge with the probability of a monotone concatenation pm.",Experiment/Discussion
+"Second, we create a copy of each of the original word graphs w1 and w2.",Experiment/Discussion
+"Then, we add an 2-transition (g2, s1) from the end node of the copied second graph to the start node of the copied first graph.",Experiment/Discussion
+This edge is annotated with the probability of a inverted concatenation 1 — pm.,Experiment/Discussion
+"Now, we have obtained two word graphs: one for a monotone and one for a inverted concatenation.",Experiment/Discussion
+"The final word graphs is constructed by merging the two start nodes and the two end nodes, respectively.",Experiment/Discussion
+"Let W(jl, jr) denote the word graph for the source sequence fjr jl .",Experiment/Discussion
+"This graph is constructed from the word graphs of all subsequences of (jl, jr).",Experiment/Discussion
+"Therefore, we assume, these word graphs have already been produced.",Experiment/Discussion
+"For all source positions k with jl < k < jr, we combine the word graphs W (jl, k) and W (k + 1, jr) as described above.",Experiment/Discussion
+"Finally, we merge all start nodes of these graphs as well as all end nodes.",Experiment/Discussion
+"Now, we have obtained the word graph W(jl, jr) for the source sequence fjr jl .",Experiment/Discussion
+"As initialization, we use the word graphs of the monotone IBM4 search.",Experiment/Discussion
+"In this section, we will extend the ITG constraints described in Sec.",Experiment/Discussion
+2.1.,Experiment/Discussion
+This extension will go beyond basic reordering constraints.,Experiment/Discussion
+We already mentioned that the use of consecutive phrases within the ITG approach is straightforward.,Experiment/Discussion
+The only thing we have to change is the initialization of the Q-table.,Experiment/Discussion
+"Now, we will extend this idea to phrases that are non-consecutive in the source language.",Experiment/Discussion
+"For this purpose, we adopt the view of the ITG constraints as a bilingual grammar as, e.g., in (Wu, 1997).",Experiment/Discussion
+"For the baseline ITG constraints, the resulting grammar is: A— [AA]  |(AA)  |f/e  |f/2  |2/e Here, [AA] denotes a monotone concatenation and (AA) denotes an inverted concatenation.",Experiment/Discussion
+Let us now consider the case of a source phrase consisting of two parts f1 and f2.,Experiment/Discussion
+Let e denote the corresponding target phrase.,Experiment/Discussion
+We add the productions A — [e/f1 A 2/f2]  |(e/f1 A 2/f2) to the grammar.,Experiment/Discussion
+"The probabilities of these productions are, dependent on the translation direction, p(e|f1, f2) or p(f1, f2|e), respectively.",Experiment/Discussion
+"Obviously, these productions are not in the normal form of an ITG, but with the method described in (Wu, 1997), they can be normalized.",Experiment/Discussion
+In the following sections we will present results on two tasks.,Experiment/Discussion
+"Therefore, in this section we will show the corpus statistics for each of these tasks.",Experiment/Discussion
+"The first task we will present results on is the Verbmobil task (Wahlster, 2000).",Experiment/Discussion
+"The domain of this corpus is appointment scheduling, travel planning, and hotel reservation.",Experiment/Discussion
+It consists of transcriptions of spontaneous speech.,Experiment/Discussion
+Table 2 shows the corpus statistics of this corpus.,Experiment/Discussion
+The training corpus (Train) was used to train the IBM model parameters.,Experiment/Discussion
+"The remaining free parameters, i.e. pm and the model scaling factors (Och and Ney, 2002), were adjusted on the development corpus (Dev).",Experiment/Discussion
+The resulting system was evaluated on the test corpus (Test).,Experiment/Discussion
+"Table 2: Statistics of training and test corpus for the Verbmobil task (PP=perplexity, SL=sentence length).",Experiment/Discussion
+"Additionally, we carried out experiments on the Canadian Hansards task.",Experiment/Discussion
+"This task contains the proceedings of the Canadian parliament, which are kept by law in both French and English.",Experiment/Discussion
+About 3 million parallel sentences of this bilingual data have been made available by the Linguistic Data Consortium (LDC).,Experiment/Discussion
+"Here, we use a subset of the data containing only sentences with a maximum length of 30 words.",Experiment/Discussion
+Table 3 shows the training and test corpus statistics.,Experiment/Discussion
+"In this section, we will investigate for each of the constraints the coverage of the training corpus alignment.",Experiment/Discussion
+"For this purpose, we compute the Viterbi alignment of IBM Model 5 with GIZA++ (Och and Ney, 2000).",Experiment/Discussion
+This alignment is produced without any restrictions on word-reorderings.,Experiment/Discussion
+"Then, we check for every sentence if the alignment satisfies each of the constraints.",Experiment/Discussion
+The ratio of the number of satisfied alignments and the total number of sentences is referred to as coverage.,Experiment/Discussion
+Tab.,Experiment/Discussion
+4 shows the results for the Verbmobil task and for the Canadian Hansards task.,Experiment/Discussion
+"It contains the results for both translation directions German-English (S—*T) and English-German (T—*S) for the Verbmobil task and French-English (S—*T) and English-French (T—*S) for the Canadian Hansards task, respectively.",Experiment/Discussion
+"For the Verbmobil task, the baseline ITG constraints and the IBM constraints result in a similar coverage.",Experiment/Discussion
+It is about 91% for the German-English translation direction and about 88% for the EnglishGerman translation direction.,Experiment/Discussion
+A significantly higher coverage of about 96% is obtained with the extended ITG constraints.,Experiment/Discussion
+"Thus with the extended ITG constraints, the coverage increases by about 8% absolute.",Experiment/Discussion
+"For the Canadian Hansards task, the baseline ITG constraints yield a worse coverage than the IBM constraints.",Experiment/Discussion
+"Especially for the English-French translation direction, the ITG coverage of 73.6% is very low.",Experiment/Discussion
+"Again, the extended ITG constraints obtained the best results.",Experiment/Discussion
+"Here, the coverage increases from about 87% for the IBM constraints to about 96% for the extended ITG constraints.",Experiment/Discussion
+"In our experiments, we use the following error criteria: The WER is computed as the minimum number of substitution, insertion and deletion operations that have to be performed to convert the generated sentence into the target sentence.",Experiment/Discussion
+"For each test sentence, not only a single reference translation is used, as for the WER, but a whole set of reference translations.",Experiment/Discussion
+"For each translation hypothesis, the WER to the most similar sentence is calculated (Nießen et al., 2000).",Experiment/Discussion
+"This score measures the precision of unigrams, bigrams, trigrams and fourgrams with respect to a whole set of reference translations with a penalty for too short sentences (Papineni et al., 2001).",Experiment/Discussion
+"BLEU measures accuracy, i.e. large BLEU scores are better.",Experiment/Discussion
+"For a more detailed analysis, subjective judgments by test persons are necessary.",Experiment/Discussion
+"Each translated sentence was judged by a human examiner according to an error scale from 0.0 to 1.0 (Nießen et al., 2000).",Experiment/Discussion
+"In this section, we will present the translation results for both the IBM constraints and the baseline ITG constraints.",Experiment/Discussion
+We used a single-word based search with IBM Model 4.,Experiment/Discussion
+The initialization for the ITG constraints was done with monotone IBM Model 4 translations.,Experiment/Discussion
+"So, the only difference between the two systems are the reordering constraints.",Experiment/Discussion
+In Tab.,Experiment/Discussion
+5 the results for the Verbmobil task are shown.,Experiment/Discussion
+We see that the results on this task are similar.,Experiment/Discussion
+The search with the ITG constraints yields slightly lower error rates.,Experiment/Discussion
+Some translation examples of the Verbmobil task are shown in Tab.,Experiment/Discussion
+6.,Experiment/Discussion
+"We have to keep in mind, that the Verbmobil task consists of transcriptions of spontaneous speech.",Experiment/Discussion
+"Therefore, the source sentences as well as the reference translations may have an unorthodox grammatical structure.",Experiment/Discussion
+"In the first example, the German verb-group (“w¨urde vorschlagen”) is split into two parts.",Experiment/Discussion
+The search with the ITG constraints is able to produce a correct translation.,Experiment/Discussion
+"With the IBM constraints, it is not possible to translate this verb-group correctly, because the distance between the two parts is too large (more than four words).",Experiment/Discussion
+"As we see in the second example, in German the verb of a subordinate clause is placed at the end (“¨ubernachten”).",Experiment/Discussion
+"The IBM search is not able to perform the necessary long-range reordering, as it is done with the ITG search.",Experiment/Discussion
+"The ITG constraints were introduced in (Wu, 1995).",Results/Conclusion
+"The applications were, for instance, the segmentation of Chinese character sequences into Chinese “words” and the bracketing of the source sentence into sub-sentential chunks.",Results/Conclusion
+"In (Wu, 1996) the baseline ITG constraints were used for statistical machine translation.",Results/Conclusion
+The resulting algorithm is similar to the one presented in Sect.,Results/Conclusion
+"3.1, but here, we use monotone translation hypotheses of the full IBM Model 4 as initialization, whereas in (Wu, 1996) a single-word based lexicon model is used.",Results/Conclusion
+"In (Vilar, 1998) a model similar to Wu’s method was considered.",Results/Conclusion
+We have described the ITG constraints in detail and compared them to the IBM constraints.,Results/Conclusion
+We draw the following conclusions: especially for long sentences the ITG constraints allow for higher flexibility in word-reordering than the IBM constraints.,Results/Conclusion
+"Regarding the Viterbi alignment in training, the baseline ITG constraints yield a similar coverage as the IBM constraints on the Verbmobil task.",Results/Conclusion
+On the Canadian Hansards task the baseline ITG constraints were not sufficient.,Results/Conclusion
+With the extended ITG constraints the coverage improves significantly on both tasks.,Results/Conclusion
+On the Canadian Hansards task the coverage increases from about 87% to about 96%.,Results/Conclusion
+We have presented a polynomial-time search algorithm for statistical machine translation based on the ITG constraints and its extension for the generation of word graphs.,Results/Conclusion
+We have shown the translation results for the Verbmobil task.,Results/Conclusion
+"On this task, the translation quality of the search with the baseline ITG constraints is already competitive with the results for the IBM constraints.",Results/Conclusion
+"Therefore, we expect the search with the extended ITG constraints to outperform the search with the IBM constraints.",Results/Conclusion
+Future work will include the automatic extraction of the bilingual grammar as well as the use of this grammar for the translation process.,Results/Conclusion
